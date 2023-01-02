@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-python.vscode-pylance",
+        "ms-python.pylint",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "njpwerner.autodocstring",
+        "yzhang.markdown-all-in-one",
+    ]
+}
