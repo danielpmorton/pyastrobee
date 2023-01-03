@@ -28,7 +28,7 @@
   <xacro:property name="prefix" value="$(arg prefix)"/>
   <xacro:if value="${prefix == '/'}">
     <xacro:property name="prefix" value=""/>
-  </xacro:if>
+  </xacro:if> 
 
   <!-- BASE GEOMETRY -->
  <link name="${prefix}body">
@@ -37,7 +37,7 @@
     <visual name="body_visual">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/body.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/body.dae"/>
       </geometry>
     </visual>
     <collision name="body_collision">
@@ -50,19 +50,19 @@
     <visual name="pmc_port_visual">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc.dae"/>
       </geometry>
     </visual>
     <visual name="pmc_port_bumper_visual">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc_bumper.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_bumper.dae"/>
       </geometry>
     </visual>
     <visual name="pmc_port_skin_visual">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc_skin${ns}.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skin${ns}.dae"/>
       </geometry>
     </visual>
     <collision name="pmc_port_collision">
@@ -75,19 +75,19 @@
     <visual name="pmc_stbd_visual">
       <origin xyz="0 0 0" rpy="0 3.14 3.14" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc.dae"/>
       </geometry>
     </visual>
     <visual name="pmc_stbd_bumper_visual">
       <origin xyz="0 0 0" rpy="0 3.14 3.14" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc_bumper.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_bumper.dae"/>
       </geometry>
     </visual>
     <visual name="pmc_stbd_skin_visual">
       <origin xyz="0 0 0" rpy="0 3.14 3.14" />
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/pmc_skin${ns}.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skin${ns}.dae"/>
       </geometry>
     </visual>
     <collision name="pmc_stbd_collision">
@@ -113,27 +113,27 @@
   </joint>
 
   <!-- MODEL -->
-  <xacro:include filename="$(find description)/urdf/model_drag.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_pmc.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_eps.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_truth.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_laser.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_flashlights.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_speed_cam.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/model_signal_lights.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_drag.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_pmc.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_eps.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_truth.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_laser.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_flashlights.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_speed_cam.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_signal_lights.urdf.xacro" />
 
   <!-- Monitors -->
-  <xacro:include filename="$(find description)/urdf/model_monitors.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_monitors.urdf.xacro" />
 
   <!-- SENSORS -->
-  <xacro:include filename="$(find description)/urdf/sensor_imu.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/sensor_nav_cam.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/sensor_dock_cam.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/sensor_haz_cam.urdf.xacro" />
-  <xacro:include filename="$(find description)/urdf/sensor_perch_cam.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/sensor_imu.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/sensor_nav_cam.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/sensor_dock_cam.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/sensor_haz_cam.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/sensor_perch_cam.urdf.xacro" />
 
   <!-- PERCHING ARM -->
-  <xacro:include filename="$(find description)/urdf/macro_perching_arm.urdf.xacro" />
+  <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/macro_perching_arm.urdf.xacro" />
   <xacro:if value="${pay_top_aft == 'perching_arm'}">
     <xacro:perching_arm bay="top_aft"
                         xyz="-0.01 0.0 -0.065"
@@ -152,7 +152,7 @@
 
   <!-- GRANITE-SPECIFIC OPTIONS -->
   <xacro:if value="${world == 'granite'}">
-    <xacro:include filename="$(find description)/urdf/model_carriage.urdf.xacro" />
+    <xacro:include filename="/home/dan/astrobee/src/description/description/urdf/model_carriage.urdf.xacro" />
   </xacro:if>
 
 </robot>
