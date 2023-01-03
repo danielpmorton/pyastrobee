@@ -5,4 +5,8 @@
     },
     "files.insertFinalNewline": true,
     "editor.renderWhitespace": "all",
+    "files.associations": {
+        "*.urdf": "xml",
+        "*.xacro": "xml",
+      }
 }
