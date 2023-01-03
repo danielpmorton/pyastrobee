@@ -21,7 +21,7 @@
 <!-- permissions and limitations under the License.                          -->
 <robot name="astrobee">
   <!-- BASE GEOMETRY -->
-  <link name="honeybody">
+  <link name="honey_body">
     <self_collide>false</self_collide>
     <!-- body -->
     <visual name="body_visual">
@@ -52,7 +52,7 @@
     <visual name="pmc_port_skin_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skinhoney.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skin_honey.dae"/>
       </geometry>
     </visual>
     <collision name="pmc_port_collision">
@@ -77,7 +77,7 @@
     <visual name="pmc_stbd_skin_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skinhoney.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/pmc_skin_honey.dae"/>
       </geometry>
     </visual>
     <collision name="pmc_stbd_collision">
@@ -88,7 +88,7 @@
     </collision>
   </link>
   <!-- This is a workaround for KDL -->
-  <link name="honeyinertial_link">
+  <link name="honey_inertial_link">
     <self_collide>false</self_collide>
     <inertial>
       <mass value="9.0877"/>
@@ -98,8 +98,8 @@
   </link>
   <joint name="inertial_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="honeybody"/>
-    <child link="honeyinertial_link"/>
+    <parent link="honey_body"/>
+    <child link="honey_inertial_link"/>
   </joint>
   <gazebo>
     <plugin filename="libgazebo_model_plugin_drag.so" name="drag_ros">
@@ -204,7 +204,7 @@
       <namespace>/honey/</namespace>
     </plugin>
   </gazebo>
-  <gazebo reference="honeybody">
+  <gazebo reference="honey_body">
     <sensor name="imu" type="imu">
       <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
@@ -215,7 +215,7 @@
       </plugin>
     </sensor>
   </gazebo>
-  <gazebo reference="honeybody">
+  <gazebo reference="honey_body">
     <sensor name="nav_cam" type="wideanglecamera">
       <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
@@ -246,7 +246,7 @@
       </plugin>
     </sensor>
   </gazebo>
-  <gazebo reference="honeybody">
+  <gazebo reference="honey_body">
     <sensor name="dock_cam" type="wideanglecamera">
       <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
@@ -274,7 +274,7 @@
       </plugin>
     </sensor>
   </gazebo>
-  <gazebo reference="honeybody">
+  <gazebo reference="honey_body">
     <sensor name="haz_cam" type="depth">
       <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
@@ -300,7 +300,7 @@
       </plugin>
     </sensor>
   </gazebo>
-  <gazebo reference="honeybody">
+  <gazebo reference="honey_body">
     <sensor name="perch_cam" type="depth">
       <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
@@ -326,7 +326,7 @@
       </plugin>
     </sensor>
   </gazebo>
-  <link name="honeytop_aft">
+  <link name="honey_top_aft">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -336,7 +336,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/base_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/base_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -348,10 +348,10 @@
   </link>
   <joint name="top_aft" type="fixed">
     <origin rpy="0.0 3.1415 0.0" xyz="-0.01 0.0 -0.065"/>
-    <parent link="honeybody"/>
-    <child link="honeytop_aft"/>
+    <parent link="honey_body"/>
+    <child link="honey_top_aft"/>
   </joint>
-  <link name="honeytop_aft_arm_proximal_link">
+  <link name="honey_top_aft_arm_proximal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -361,7 +361,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/arm_proximal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/arm_proximal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -373,12 +373,12 @@
   </link>
   <joint name="top_aft_arm_proximal_joint" type="revolute">
     <origin rpy="0 1.57079632679 0" xyz="0.11945 0 0.065"/>
-    <parent link="honeytop_aft"/>
-    <child link="honeytop_aft_arm_proximal_link"/>
+    <parent link="honey_top_aft"/>
+    <child link="honey_top_aft_arm_proximal_link"/>
     <axis xyz="0 -1 0"/>
     <limit effort="1.0" lower="-2.0944" upper="1.57079" velocity="0.12"/>
   </joint>
-  <link name="honeytop_aft_arm_distal_link">
+  <link name="honey_top_aft_arm_distal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -388,7 +388,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/arm_distal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/arm_distal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -400,12 +400,12 @@
   </link>
   <joint name="top_aft_arm_distal_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.1 0 0"/>
-    <parent link="honeytop_aft_arm_proximal_link"/>
-    <child link="honeytop_aft_arm_distal_link"/>
+    <parent link="honey_top_aft_arm_proximal_link"/>
+    <child link="honey_top_aft_arm_distal_link"/>
     <axis xyz="0 0 1"/>
     <limit effort="1.0" lower="-1.57079" upper="1.57079" velocity="0.12"/>
   </joint>
-  <link name="honeytop_aft_gripper_left_proximal_link">
+  <link name="honey_top_aft_gripper_left_proximal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -415,7 +415,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/gripper_left_proximal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/gripper_left_proximal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -427,12 +427,12 @@
   </link>
   <joint name="top_aft_gripper_left_proximal_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.039 -0.010002 -0.0497"/>
-    <parent link="honeytop_aft_arm_distal_link"/>
-    <child link="honeytop_aft_gripper_left_proximal_link"/>
+    <parent link="honey_top_aft_arm_distal_link"/>
+    <child link="honey_top_aft_gripper_left_proximal_link"/>
     <axis xyz="0 0 1"/>
     <limit effort="0.1" lower="0.349066" upper="0.698132" velocity="0.12"/>
   </joint>
-  <link name="honeytop_aft_gripper_left_distal_link">
+  <link name="honey_top_aft_gripper_left_distal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -442,7 +442,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/gripper_left_distal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/gripper_left_distal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -454,12 +454,12 @@
   </link>
   <joint name="top_aft_gripper_left_distal_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.05 0 0"/>
-    <parent link="honeytop_aft_gripper_left_proximal_link"/>
-    <child link="honeytop_aft_gripper_left_distal_link"/>
+    <parent link="honey_top_aft_gripper_left_proximal_link"/>
+    <child link="honey_top_aft_gripper_left_distal_link"/>
     <axis xyz="0 0 1"/>
     <limit effort="0.1" lower="-1.22173" upper="-0.69813" velocity="0.12"/>
   </joint>
-  <link name="honeytop_aft_gripper_right_proximal_link">
+  <link name="honey_top_aft_gripper_right_proximal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -469,7 +469,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/gripper_right_proximal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/gripper_right_proximal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -481,12 +481,12 @@
   </link>
   <joint name="top_aft_gripper_right_proximal_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.039 0.010002 -0.0497"/>
-    <parent link="honeytop_aft_arm_distal_link"/>
-    <child link="honeytop_aft_gripper_right_proximal_link"/>
+    <parent link="honey_top_aft_arm_distal_link"/>
+    <child link="honey_top_aft_gripper_right_proximal_link"/>
     <axis xyz="0 0 1"/>
     <limit effort="0.1" lower="-0.698132" upper="-0.349066" velocity="0.12"/>
   </joint>
-  <link name="honeytop_aft_gripper_right_distal_link">
+  <link name="honey_top_aft_gripper_right_distal_link">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -496,7 +496,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://astrobee_freeflyer/meshes/gripper_right_distal_link.dae"/>
+        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_freeflyer/meshes/gripper_right_distal_link.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -508,8 +508,8 @@
   </link>
   <joint name="top_aft_gripper_right_distal_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.05 0 0"/>
-    <parent link="honeytop_aft_gripper_right_proximal_link"/>
-    <child link="honeytop_aft_gripper_right_distal_link"/>
+    <parent link="honey_top_aft_gripper_right_proximal_link"/>
+    <child link="honey_top_aft_gripper_right_distal_link"/>
     <axis xyz="0 0 1"/>
     <limit effort="0.1" lower="0.69813" upper="1.22173" velocity="0.12"/>
   </joint>
