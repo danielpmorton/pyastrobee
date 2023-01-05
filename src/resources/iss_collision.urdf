@@ -49,7 +49,7 @@
     <visual name="iss_eu_lab_visual">
       <origin xyz="10.9325664  2.3509732 4.8505872" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_iss/meshes/eu_lab.dae"/>
+        <mesh filename="/home/dan/astrobee_pybullet/src/resources/iss_objs/vhacd_results/eu_lab.obj"/>
       </geometry>
     </visual>
     <collision name="iss_eu_lab_collision">
@@ -69,7 +69,7 @@
     <visual name="iss_jpm_visual">
       <origin xyz="10.9358938 -2.3364698 4.8505872" rpy="3.1415 0 -1.570796" />
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_iss/meshes/jpm.dae"/>
+        <mesh filename="/home/dan/astrobee_pybullet/src/resources/iss_objs/vhacd_results/jpm.obj"/>
       </geometry>
     </visual>
     <collision name="iss_jpm_collision">
@@ -109,7 +109,7 @@
     <visual name="iss_node_2_visual">
       <origin xyz="10.9344206  0.0107442 4.8558958" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_iss/meshes/node_2.dae"/>
+        <mesh filename="/home/dan/astrobee_pybullet/src/resources/iss_objs/vhacd_results/node_2.obj"/>
       </geometry>
     </visual>
     <collision name="iss_node_2_collision">
@@ -129,7 +129,7 @@
     <visual name="iss_node_3_visual">
       <origin xyz="-4.4586144 -6.6356992 4.8434244" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_iss/meshes/node_3.dae"/>
+        <mesh filename="/home/dan/astrobee_pybullet/src/resources/iss_objs/vhacd_results/node_3.obj"/>
       </geometry>
     </visual>
     <collision name="iss_node_3_collision">
@@ -149,7 +149,7 @@
     <visual name="iss_us_lab_visual">
       <origin xyz="6.3085472  0.0064770 4.8508920" rpy="3.1415 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee/src/description/media/astrobee_iss/meshes/us_lab.dae"/>
+        <mesh filename="/home/dan/astrobee_pybullet/src/resources/iss_objs/vhacd_results/us_lab.obj"/>
       </geometry>
     </visual>
     <collision name="iss_us_lab_collision">
