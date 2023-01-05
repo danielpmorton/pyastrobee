@@ -1,0 +1,82 @@
+# Blender 3.4.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Generic_Hub.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl Generic_Lights.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl Generic_Metals.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl JPM_Bulkhead.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/JPM_Bulkhead.png
+
+newmtl JPM_Racks_01.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/JPM_Racks_01.png
+
+newmtl JPM_Racks_02.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/JPM_Racks_02.png
+
+newmtl JPM_Racks_03.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/JPM_Racks_03.png
+
+newmtl Material_004.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Airlock_externalDoor_inside.png

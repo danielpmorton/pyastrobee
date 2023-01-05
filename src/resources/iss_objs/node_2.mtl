@@ -1,0 +1,62 @@
+# Blender 3.4.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Generic_Hub.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl Generic_Lights.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl Generic_Metals.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+
+newmtl Generic_Misc_Details.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Generic_Misc_Details.png
+
+newmtl Node2_Bulkhead.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Node2_Bulkheads.png
+
+newmtl Node2_Rack.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /home/dan/astrobee_pybullet/src/resources/astrobee_iss/media/materials/textures/Node2_Interior_Racks.png
