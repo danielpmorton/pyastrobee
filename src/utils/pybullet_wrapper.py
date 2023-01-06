@@ -37,13 +37,18 @@ def load_ground() -> int:
     load_urdf("plane.urdf")
 
 
-def initialize_pybullet(use_gui: bool = True, use_pybullet_data: bool = True) -> int:
+def initialize_pybullet(
+    use_gui: bool = True,
+    use_pybullet_data: bool = True,
+    use_deformability: bool = False,
+) -> int:
     """Starts a pybullet client
 
     Args:
         use_gui (bool, optional): Whether or not to use the GUI as opposed to headless. Defaults to True
         use_pybullet_data (bool, optional): Whether or not to also search through pybullet's provided models.
             Defaults to True
+        use_deformability (bool, optional): Whether or not to allow for soft bodies in the world. Defaults to False
 
     Returns:
         int: A Physics Client ID
@@ -54,6 +59,8 @@ def initialize_pybullet(use_gui: bool = True, use_pybullet_data: bool = True) ->
         client = p.connect(p.DIRECT)
     if use_pybullet_data:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
+    if use_deformability:
+        p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
     return client
 
 
