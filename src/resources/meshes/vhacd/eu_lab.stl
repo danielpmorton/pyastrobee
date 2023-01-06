@@ -1,4 +1,4 @@
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab000
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab000
  facet normal -0.999322560 0.036800996 -0.000328341
   outer loop
    vertex 1.119611822 0.957976832 -3.449211756
@@ -83,8 +83,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab000
    vertex 1.043003258 -0.670189067 -5.371544940
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab000
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab001
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab000
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab001
  facet normal -0.054104459 0.993682177 -0.098328214
   outer loop
    vertex -0.687191452 0.977412248 -3.449172253
@@ -225,8 +225,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab001
    vertex 0.663967680 1.142647865 -4.429443836
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab001
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab002
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab001
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab002
  facet normal -0.991195397 0.011735074 -0.131886215
   outer loop
    vertex -1.050482970 0.838108640 -2.521869633
@@ -437,8 +437,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab002
    vertex -1.070891976 -0.886929989 -2.521976864
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab002
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab003
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab002
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab003
  facet normal -0.678202741 -0.396889458 -0.618481852
   outer loop
    vertex 0.606015504 1.001253009 -0.405867271
@@ -677,8 +677,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab003
    vertex -1.035117984 0.702726007 -0.405865997
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab003
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab004
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab003
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab004
  facet normal -0.999582872 -0.016769795 -0.023512872
   outer loop
    vertex -0.842789042 -0.380472824 -0.336872995
@@ -931,8 +931,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab004
    vertex -1.200276790 -1.084316714 -0.643519957
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab004
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab005
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab004
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab005
  facet normal -0.999439814 0.000589251 -0.033462094
   outer loop
    vertex 0.954022507 -0.939534859 -1.188212569
@@ -1171,8 +1171,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab005
    vertex 0.953884440 -0.939534855 -1.216637377
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab005
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab006
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab005
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab006
  facet normal -0.000000202 0.000000608 -1.000000000
   outer loop
    vertex -1.035118025 0.430857707 -0.435698330
@@ -1313,8 +1313,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab006
    vertex -1.035118025 0.430857707 -0.435698330
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab006
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab007
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab006
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab007
  facet normal -0.996276991 -0.017858047 -0.084340075
   outer loop
    vertex 1.087306904 0.836526723 -2.521976818
@@ -1567,8 +1567,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab007
    vertex 1.119584436 -0.910232582 -2.985593603
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab007
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab008
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab007
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab008
  facet normal -0.004624554 -0.999989307 0.000000000
   outer loop
    vertex 0.602494705 -0.378470383 -0.261962481
@@ -1933,8 +1933,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab008
    vertex 1.043662100 -1.317072071 -0.674967277
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab008
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab009
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab008
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab009
  facet normal -0.059282199 0.993589680 -0.096255746
   outer loop
    vertex -0.585481321 0.970082235 -2.522067668
@@ -2075,8 +2075,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab009
    vertex -0.686550021 0.964797974 -3.350584984
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab009
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab010
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab009
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab010
  facet normal -0.399196019 -0.916865605 0.000035858
   outer loop
    vertex -1.111337011 0.958978140 -4.492340899
@@ -2203,8 +2203,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab010
    vertex -1.043931800 0.662620684 -5.369893119
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab010
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab011
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab010
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab011
  facet normal -0.882968855 -0.469431573 0.000000406
   outer loop
    vertex 1.134942855 -0.881844997 -1.420885376
@@ -2415,8 +2415,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab011
    vertex 0.948435748 -1.056986286 -5.395502619
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab011
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab012
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab011
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab012
  facet normal -0.707106503 -0.707105900 0.001280879
   outer loop
    vertex 1.014505446 1.129108627 -5.361633696
@@ -2725,8 +2725,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab012
    vertex 0.654025084 0.974964866 -4.318570732
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab012
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab013
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab012
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab013
  facet normal -1.000000000 0.000000000 -0.000000000
   outer loop
    vertex 1.035491943 -0.380472824 -0.435698356
@@ -2965,8 +2965,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab013
    vertex 0.953848004 -0.192586005 -0.336872995
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab013
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab014
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab013
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab014
  facet normal -0.850431724 -0.043949511 0.524246434
   outer loop
    vertex 1.134942855 -0.881844997 -1.420885376
@@ -3177,8 +3177,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab014
    vertex 1.086032585 0.850713941 -1.183846455
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab014
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab015
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab014
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab015
  facet normal -0.988842393 -0.148965504 -0.000000033
   outer loop
    vertex 0.026493670 0.959683001 -5.593442445
@@ -3291,8 +3291,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab015
    vertex -0.958425999 0.959683001 -5.593442445
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab015
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab016
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab015
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab016
  facet normal -0.000415006 -0.465424672 0.885087398
   outer loop
    vertex 0.543396456 -0.779272976 -0.347558887
@@ -3783,8 +3783,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab016
    vertex 0.356536092 -1.331441451 -0.510411904
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab016
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab017
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab016
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab017
  facet normal -0.589993194 -0.543670145 -0.596934506
   outer loop
    vertex 0.556113005 0.234859005 -5.566640854
@@ -4065,8 +4065,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab017
    vertex -0.704728024 0.017089204 -5.630998461
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab017
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab018
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab017
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab018
  facet normal -0.379971023 -0.921596780 0.079255260
   outer loop
    vertex -1.177689867 -0.938997601 -0.583319516
@@ -4599,8 +4599,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab018
    vertex -0.978423621 -1.778267736 -1.188801402
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab018
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab019
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab018
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab019
  facet normal 0.707104370 -0.707109193 -0.000000338
   outer loop
    vertex -1.001464009 1.143002033 -5.428070068
@@ -4769,8 +4769,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab019
    vertex -0.961068121 1.142647982 -1.420885427
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab019
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab020
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab019
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab020
  facet normal 0.000000068 -0.990690233 0.136135452
   outer loop
    vertex 0.374139952 1.047185979 -5.391303421
@@ -4925,8 +4925,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab020
    vertex 0.026427771 1.046635167 -5.391407889
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab020
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab021
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab020
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab021
  facet normal -0.719693417 -0.098803550 -0.687225759
   outer loop
    vertex -1.050895817 0.672493670 -5.245821594
@@ -5193,8 +5193,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab021
    vertex -1.069259119 0.681020975 -5.245654541
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab021
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab022
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab021
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab022
  facet normal 0.000171166 -0.999999982 0.000081745
   outer loop
    vertex -0.842789042 -0.380472824 -0.336872995
@@ -5601,8 +5601,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab022
    vertex -0.818693568 -0.767483394 -0.392871056
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab022
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab023
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab022
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab023
  facet normal -1.000000000 0.000000000 0.000000000
   outer loop
    vertex 0.895776382 -0.728185879 -6.028082121
@@ -5785,8 +5785,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab023
    vertex 0.291584015 -0.770684004 -5.565491199
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab023
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab024
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab023
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab024
  facet normal -0.913557815 -0.117073655 -0.389494389
   outer loop
    vertex 0.691200802 0.662666431 -0.435698306
@@ -5955,8 +5955,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab024
    vertex 0.646963000 0.324310005 -0.422201991
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab024
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab025
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab024
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab025
  facet normal 0.000000342 0.000000502 1.000000000
   outer loop
    vertex -0.726884680 -0.728185937 -6.028082121
@@ -6167,8 +6167,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab025
    vertex -0.355612010 -0.483841002 -5.561080933
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab025
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab026
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab025
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab026
  facet normal -0.571258208 -0.820770398 -0.000120764
   outer loop
    vertex 0.936544337 -1.104767964 -2.174448954
@@ -6309,8 +6309,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab026
    vertex -0.673863093 -1.064552015 -1.420885429
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab026
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab027
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab026
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab027
  facet normal -0.819129486 -0.022788365 0.573155803
   outer loop
    vertex 1.145140052 -0.827835977 -5.396154881
@@ -6507,8 +6507,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab027
    vertex 1.134941097 -0.881844997 -5.245729301
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab027
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab028
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab027
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab028
  facet normal 0.000000000 -1.000000000 -0.000000000
   outer loop
    vertex 0.887539029 1.001253009 -1.015220164
@@ -6747,8 +6747,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab028
    vertex 0.712843547 0.655217763 -0.336872995
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab028
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab029
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab028
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab029
  facet normal -0.021523516 0.995460250 -0.092712616
   outer loop
    vertex -0.808291018 -1.117408803 -2.521976847
@@ -6903,8 +6903,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab029
    vertex -0.842801175 -1.117554725 -5.359957364
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab029
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab030
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab029
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab030
  facet normal -0.983395417 -0.181423439 -0.004357663
   outer loop
    vertex -0.568823317 0.439515166 -0.001072000
@@ -7045,8 +7045,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab030
    vertex -0.557583181 -0.466461848 -0.001067149
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab030
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab031
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab030
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab031
  facet normal -0.000000013 -0.000000003 -1.000000000
   outer loop
    vertex -0.842789042 0.702725213 -1.015220140
@@ -7271,8 +7271,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab031
    vertex -1.086807428 0.852327254 -1.183845997
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab031
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab032
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab031
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab032
  facet normal -0.999050791 -0.041071319 -0.014514248
   outer loop
    vertex -1.035118160 -0.670233702 -1.073172344
@@ -7455,8 +7455,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab032
    vertex -1.145564015 -0.842788778 -2.188584089
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab032
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab033
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab032
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab033
  facet normal -0.550317291 -0.832713716 -0.061145281
   outer loop
    vertex -0.726884680 0.702725968 -0.435698408
@@ -7611,8 +7611,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab033
    vertex -0.657453574 -0.385508194 -0.574845155
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab033
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab034
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab033
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab034
  facet normal 0.461964204 -0.886898571 -0.000000335
   outer loop
    vertex -1.145292044 -0.925683791 -1.420885451
@@ -7795,8 +7795,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab034
    vertex -0.884932995 -1.147264957 -2.190717936
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab034
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab035
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab034
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab035
  facet normal 0.005159764 -0.000000000 0.999986688
   outer loop
    vertex 1.799373031 -0.939556003 -1.220999956
@@ -8021,8 +8021,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab035
    vertex 1.605352323 -0.940918364 -0.841925668
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab035
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab036
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab035
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab036
  facet normal -1.000000000 -0.000000000 0.000000000
   outer loop
    vertex 1.035491943 -0.380472824 -0.435698356
@@ -8177,8 +8177,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab036
    vertex 1.035491220 0.662666444 -1.015220193
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab036
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab037
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab036
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab037
  facet normal -0.996471706 -0.083915573 0.001521487
   outer loop
    vertex -1.051480542 0.837576404 -1.420885329
@@ -8277,8 +8277,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab037
    vertex -1.052690589 0.838288032 -2.174135756
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab037
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab038
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab037
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab038
  facet normal 0.130401144 -0.931798032 -0.338744697
   outer loop
    vertex 1.206092461 -1.448658454 -0.864660322
@@ -8601,8 +8601,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab038
    vertex 0.526975217 -1.875663158 -0.923067956
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab038
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab039
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab038
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab039
  facet normal 0.000000000 -0.669814173 0.742528770
   outer loop
    vertex 1.000607014 1.143007040 -5.428071022
@@ -8799,8 +8799,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab039
    vertex -0.959816095 1.124670787 -5.245729361
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab039
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab040
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab039
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab040
  facet normal -0.000000001 -1.000000000 -0.000000033
   outer loop
    vertex -0.958425964 0.894475154 -5.593442445
@@ -8885,8 +8885,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab040
    vertex -0.704209063 -0.012816926 -5.630698837
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab040
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab041
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab040
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab041
  facet normal -0.785704775 0.453322336 -0.420911945
   outer loop
    vertex 0.563333336 -0.447231600 -0.001063839
@@ -9013,8 +9013,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab041
    vertex -0.399619846 -0.593751111 -0.001069354
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab041
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab042
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab041
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab042
  facet normal -1.000000000 -0.000000529 -0.000000000
   outer loop
    vertex 0.957568024 0.894475156 -5.593442445
@@ -9141,8 +9141,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab042
    vertex 0.812534294 0.010738174 -5.693734428
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab042
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab043
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab042
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab043
  facet normal -0.025284782 -0.419353283 -0.907470938
   outer loop
    vertex 0.663967641 1.044666889 -2.174263779
@@ -9297,8 +9297,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab043
    vertex -0.585481321 0.970082235 -2.522067668
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab043
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab044
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab043
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab044
  facet normal -0.105740285 0.994393781 0.000000125
   outer loop
    vertex 0.818631778 -1.137535786 -2.308140195
@@ -9495,8 +9495,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab044
    vertex 0.952341083 -1.065031189 -2.296075812
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab044
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab045
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab044
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab045
  facet normal -0.141716480 -0.916349272 -0.374460213
   outer loop
    vertex -0.741182582 -1.740122377 -0.864996663
@@ -9805,8 +9805,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab045
    vertex -0.820103828 -1.812446111 -1.032160509
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab045
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab046
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab045
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab046
  facet normal -0.000000091 -0.008361682 0.999965041
   outer loop
    vertex -0.684815022 0.430857719 -0.435698378
@@ -10031,8 +10031,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab046
    vertex -0.957437992 -0.192585006 -0.336872995
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab046
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab047
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab046
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab047
  facet normal -0.003560069 -0.000118628 0.999993656
   outer loop
    vertex -1.052991152 0.930999104 -4.492136502
@@ -10215,8 +10215,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab047
    vertex -1.111463102 0.958939201 -4.202580055
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab047
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab048
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab047
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab048
  facet normal -0.969844956 -0.243648070 -0.006031449
   outer loop
    vertex -1.050482970 0.838108640 -2.521869633
@@ -10399,8 +10399,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab048
    vertex -0.961640000 -0.737514019 -2.211484909
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab048
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab049
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab048
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab049
  facet normal -0.999720628 -0.006100177 -0.022835382
   outer loop
    vertex 1.130410521 1.013204979 -2.174263753
@@ -10597,8 +10597,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab049
    vertex 1.118599523 -0.909230410 -2.521980415
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab049
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab050
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab049
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab050
  facet normal -0.006224589 0.000222692 0.999980602
   outer loop
    vertex 1.053248956 -0.844090295 -4.492351053
@@ -10725,8 +10725,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab050
    vertex 1.145141006 -0.827835977 -4.306405067
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab050
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab051
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab050
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab051
  facet normal -0.999962045 -0.008331952 -0.002546935
   outer loop
    vertex -1.053186804 0.923202877 -2.985201038
@@ -10839,8 +10839,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab051
    vertex -1.111401302 0.958697989 -2.985594314
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab051
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab052
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab051
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab052
  facet normal 0.000000085 -0.985345353 0.170571200
   outer loop
    vertex -0.031458511 0.959683001 -5.651394626
@@ -11009,8 +11009,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab052
    vertex -0.321219415 0.026647000 -5.536585808
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab052
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab053
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab052
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab053
  facet normal -0.000000585 -0.000000689 1.000000000
   outer loop
    vertex 0.663973959 -1.081983453 -4.492350127
@@ -11193,8 +11193,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab053
    vertex 0.562162995 -1.002094030 -4.392203808
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab053
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab054
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab053
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab054
  facet normal -0.733620068 -0.679439431 -0.012792798
   outer loop
    vertex -1.070891976 -0.844090270 -2.985594310
@@ -11349,8 +11349,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab054
    vertex -1.001464009 -1.138700008 -5.428071022
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab054
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab055
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab054
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab055
  facet normal 0.019566773 0.775706678 0.630790212
   outer loop
    vertex -0.842790437 -1.117580955 -5.394550800
@@ -11505,8 +11505,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab055
    vertex -0.553077330 -1.083274568 -5.245731080
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab055
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab056
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab055
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab056
  facet normal -0.051471747 -0.381028033 -0.923129621
   outer loop
    vertex 0.961756583 -1.122316723 -3.275355220
@@ -11675,8 +11675,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab056
    vertex 0.921548009 -1.003775954 -3.426572084
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab056
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab057
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab056
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab057
  facet normal 0.133328460 0.986423471 0.095876262
   outer loop
    vertex 0.961756199 -1.122317361 -5.013920638
@@ -11803,8 +11803,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab057
    vertex 0.903784990 -1.002094030 -4.960925102
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab057
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab058
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab057
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab058
  facet normal -0.065829604 -0.000000994 -0.997830879
   outer loop
    vertex 0.895776382 0.372905498 -6.028083217
@@ -11903,8 +11903,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab058
    vertex 0.026493684 0.372905541 -6.028083046
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab058
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab059
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab058
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab059
  facet normal -0.999999967 -0.000101333 0.000234737
   outer loop
    vertex 0.663973684 -1.082090810 -3.275354997
@@ -12073,8 +12073,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab059
    vertex -0.125478998 -1.003285050 -3.363902092
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab059
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab060
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab059
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab060
  facet normal -0.000000000 -1.000000000 -0.000000502
   outer loop
    vertex 0.837824201 -0.206616252 -6.028082640
@@ -12159,8 +12159,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab060
    vertex 0.895776382 -0.728185937 -6.028082121
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab060
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab061
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab060
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab061
  facet normal 0.000000577 -0.999631097 -0.027160087
   outer loop
    vertex 0.663967672 1.044665848 -4.492350983
@@ -12217,8 +12217,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab061
    vertex 0.663967658 1.044664979 -5.361633722
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab061
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab062
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab061
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab062
  facet normal -0.000000051 1.000000000 0.000000000
   outer loop
    vertex 0.663967658 1.044666190 -1.420885394
@@ -12275,8 +12275,8 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab062
    vertex 0.663967641 1.044666889 -2.174263779
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab062
-solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab063
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab062
+solid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab063
  facet normal -0.836556485 -0.003806568 -0.547867463
   outer loop
    vertex 1.046112145 0.837305386 -1.420863696
@@ -12319,4 +12319,4 @@ solid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab063
    vertex 1.053249795 -0.728185908 -1.420885412
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/iss_objs/eu_lab063
+endsolid /home/dan/astrobee_pybullet/src/resources/meshes/eu_lab063

@@ -1,5 +1,5 @@
 mtllib decomp.mtl
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab000
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab000
 usemtl Material000
 v -6.880541308 0.626230350 0.663321188
 v -6.810560956 0.703494466 0.431423376
@@ -57,7 +57,7 @@ f 20 19 15
 f 20 14 19
 f 20 15 9
 f 20 9 14
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab001
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab001
 usemtl Material001
 v -6.837618209 -0.414968892 0.675631905
 v -6.789050885 -0.712441461 0.654538125
@@ -94,7 +94,7 @@ f 33 31 24
 f 33 28 31
 f 33 30 28
 f 33 26 30
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab002
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab002
 usemtl Material002
 v -1.913936019 0.714052975 1.201884985
 v -1.823314351 -0.919522818 1.112645214
@@ -143,7 +143,7 @@ f 49 44 48
 f 50 45 41
 f 50 41 34
 f 50 34 45
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab003
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab003
 usemtl Material003
 v -0.734672096 -1.111874816 0.877678270
 v -1.005238454 -0.617672408 -1.810903955
@@ -201,7 +201,7 @@ f 70 59 64
 f 70 64 68
 f 70 63 59
 f 70 56 63
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab004
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab004
 usemtl Material004
 v -6.880541185 0.648770174 -0.460996849
 v -6.880541376 -0.449252054 -0.643898067
@@ -256,7 +256,7 @@ f 89 83 73
 f 89 73 87
 f 89 87 79
 f 89 79 86
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab005
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab005
 usemtl Material005
 v -2.938894740 0.965165084 1.113008875
 v -2.938882492 0.886231005 1.113507706
@@ -302,7 +302,7 @@ f 104 91 99
 f 105 102 98
 f 105 98 97
 f 105 97 102
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab006
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab006
 usemtl Material006
 v -1.005616391 -1.000856377 -0.600733249
 v -1.823318602 -0.617672408 -1.810903955
@@ -369,7 +369,7 @@ f 127 110 122
 f 128 125 111
 f 128 111 116
 f 128 116 125
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab007
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab007
 usemtl Material007
 v -0.856497887 0.987789000 1.090263889
 v -0.734672103 1.115623393 0.877658199
@@ -430,7 +430,7 @@ f 149 147 132
 f 149 142 147
 f 149 132 137
 f 149 137 142
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab008
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab008
 usemtl Material008
 v -3.980075355 0.626234904 1.037714819
 v -3.980075355 -0.489328981 1.037714105
@@ -473,7 +473,7 @@ f 164 155 158
 f 164 158 161
 f 164 163 155
 f 164 161 163
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab009
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab009
 usemtl Material009
 v -2.788154547 0.700641776 1.100683292
 v -2.809184074 -0.638070819 1.034325004
@@ -507,7 +507,7 @@ f 176 165 167
 f 176 167 168
 f 176 168 169
 f 176 169 172
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab010
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab010
 usemtl Material010
 v -2.938882439 -1.003991951 0.877650430
 v -1.972060447 -1.008193391 0.505795924
@@ -562,7 +562,7 @@ f 195 190 177
 f 195 177 178
 f 195 178 185
 f 195 185 190
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab011
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab011
 usemtl Material011
 v -2.810819884 -0.998252066 -0.684150772
 v -6.749585152 -0.861184971 -1.115125712
@@ -629,7 +629,7 @@ f 218 206 213
 f 218 212 206
 f 218 216 199
 f 218 199 212
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab012
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab012
 usemtl Material012
 v -0.106964470 -0.408609842 0.791402970
 v -0.006180000 -0.430121988 0.662181020
@@ -675,7 +675,7 @@ f 233 229 232
 f 234 233 227
 f 234 227 229
 f 234 229 233
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab013
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab013
 usemtl Material013
 v -5.764977495 0.795142413 1.102550932
 v -5.541858023 -0.489329017 1.016775443
@@ -724,7 +724,7 @@ f 251 236 249
 f 251 250 237
 f 251 249 247
 f 251 247 250
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab014
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab014
 usemtl Material014
 v -1.302400598 1.001450615 -0.602079284
 v -0.933476985 0.774785206 -1.013874771
@@ -776,7 +776,7 @@ f 269 262 266
 f 269 266 265
 f 269 267 255
 f 269 265 267
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab015
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab015
 usemtl Material015
 v -6.731807482 0.923712459 1.113504954
 v -6.749582737 -0.861172362 1.113194585
@@ -813,7 +813,7 @@ f 282 280 273
 f 282 273 275
 f 282 275 278
 f 282 278 280
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab016
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab016
 usemtl Material016
 v -4.777996063 -0.924508989 0.654537772
 v -4.723784517 -1.031330779 0.654537833
@@ -853,7 +853,7 @@ f 296 293 295
 f 296 295 286
 f 296 286 285
 f 296 285 290
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab017
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab017
 usemtl Material017
 v -2.790140644 1.116733302 -0.884631385
 v -2.790140625 0.700605803 -1.007166156
@@ -914,7 +914,7 @@ f 316 298 309
 f 317 315 308
 f 317 308 300
 f 317 300 315
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab018
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab018
 usemtl Material018
 v -0.865914719 0.774976725 0.877650556
 v -0.335900151 -0.414960062 0.662185005
@@ -975,7 +975,7 @@ f 338 323 319
 f 338 319 332
 f 338 333 323
 f 338 332 333
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab019
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab019
 usemtl Material019
 v -3.831345781 0.965280103 1.113124624
 v -3.781537056 0.954282999 0.964739978
@@ -1039,7 +1039,7 @@ f 359 354 356
 f 360 357 356
 f 360 356 347
 f 360 347 357
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab020
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab020
 usemtl Material020
 v -1.005238460 1.003469003 0.728908698
 v -6.749584985 1.116722571 -0.758505712
@@ -1076,7 +1076,7 @@ f 373 369 365
 f 373 372 370
 f 373 365 361
 f 373 361 372
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab021
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab021
 usemtl Material021
 v -1.823318602 -1.089694466 0.789802063
 v -1.005219568 -1.007752998 0.505795927
@@ -1116,7 +1116,7 @@ f 386 375 383
 f 387 384 377
 f 387 377 376
 f 387 376 384
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab022
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab022
 usemtl Material022
 v -0.734672010 0.964881003 1.112722993
 v -0.734673023 -0.963256001 1.112380028
@@ -1171,7 +1171,7 @@ f 405 396 404
 f 406 405 404
 f 406 404 398
 f 406 398 405
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab023
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab023
 usemtl Material023
 v -6.731803405 1.116436113 0.951891801
 v -6.731799488 0.700605786 1.005473018
@@ -1214,7 +1214,7 @@ f 420 412 418
 f 421 419 411
 f 421 411 417
 f 421 417 419
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab024
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab024
 usemtl Material024
 v -1.972060474 0.849347651 -1.007166934
 v -1.972060399 -0.882472633 -1.011983286
@@ -1251,7 +1251,7 @@ f 434 433 429
 f 434 429 426
 f 434 426 427
 f 434 427 433
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab025
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab025
 usemtl Material025
 v -0.522005975 1.559393048 -0.624010980
 v -0.096643001 -0.414958051 -0.609767911
@@ -1303,7 +1303,7 @@ f 452 450 449
 f 452 446 450
 f 452 449 438
 f 452 438 448
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab026
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab026
 usemtl Material026
 v -7.640395164 0.097692840 0.871350156
 v -7.178025013 0.551859442 0.663283802
@@ -1364,7 +1364,7 @@ f 472 471 466
 f 473 472 465
 f 473 465 471
 f 473 471 472
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab027
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab027
 usemtl Material027
 v -7.192370892 1.565606952 0.647921026
 v -6.816206940 -0.460831262 0.700812800
@@ -1407,7 +1407,7 @@ f 488 484 477
 f 488 486 487
 f 488 477 480
 f 488 480 486
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab028
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab028
 usemtl Material028
 v -0.846667816 0.707072504 -0.684135191
 v -0.734673841 -1.110862097 -0.832852348
@@ -1453,7 +1453,7 @@ f 504 502 492
 f 504 495 502
 f 504 500 495
 f 504 492 500
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab029
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab029
 usemtl Material029
 v -6.731799488 -0.712441462 1.005472793
 v -6.731793359 -1.111146357 0.952044916
@@ -1484,7 +1484,7 @@ f 514 508 513
 f 515 514 505
 f 515 505 508
 f 515 508 514
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab030
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab030
 usemtl Material030
 v -6.789051118 0.923718656 -0.461025957
 v -6.749586019 -1.111685432 -0.758526217
@@ -1530,7 +1530,7 @@ f 530 517 520
 f 531 528 523
 f 531 523 517
 f 531 517 528
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab031
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab031
 usemtl Material031
 v -1.005242349 -0.919481433 1.112555745
 v -1.005246309 -0.963254386 1.112415115
@@ -1579,7 +1579,7 @@ f 547 539 546
 f 548 545 540
 f 548 540 538
 f 548 538 545
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab032
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab032
 usemtl Material032
 v -0.832906094 0.551863941 -0.700070893
 v -0.865917219 -0.712441814 -0.684138906
@@ -1610,7 +1610,7 @@ f 559 552 553
 f 559 553 557
 f 559 558 552
 f 559 557 558
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab033
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab033
 usemtl Material033
 v -0.912932992 0.626234864 -1.650960826
 v -0.912932992 -0.638070819 -1.650960826
@@ -1644,7 +1644,7 @@ f 571 568 566
 f 571 566 569
 f 571 564 565
 f 571 565 568
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab034
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab034
 usemtl Material034
 v -3.236366116 -1.111110616 0.882971023
 v -2.899827957 -1.773746014 0.638357997
@@ -1693,7 +1693,7 @@ f 587 576 585
 f 588 584 577
 f 588 577 573
 f 588 573 584
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab035
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab035
 usemtl Material035
 v -3.765314687 -1.084295392 0.431425011
 v -3.512315035 -1.939561963 0.247881994
@@ -1736,7 +1736,7 @@ f 602 599 600
 f 603 602 598
 f 603 598 599
 f 603 599 602
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab036
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab036
 usemtl Material036
 v -3.831337363 -0.919624400 1.112864821
 v -3.831341317 -0.963237513 1.112781598
@@ -1779,7 +1779,7 @@ f 617 606 614
 f 618 615 611
 f 618 611 609
 f 618 609 615
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab037
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab037
 usemtl Material037
 v -0.332690810 0.595343927 0.505795896
 v -0.865916761 0.774977297 -0.758509715
@@ -1819,7 +1819,7 @@ f 632 619 623
 f 632 623 629
 f 632 631 625
 f 632 629 631
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab038
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab038
 usemtl Material038
 v -2.891135736 -0.340587133 1.059636192
 v -2.790148419 -0.963243729 1.112646578
@@ -1871,7 +1871,7 @@ f 649 645 639
 f 650 647 641
 f 650 641 636
 f 650 636 647
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab039
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab039
 usemtl Material039
 v -1.005250819 0.964915875 1.112758086
 v -1.005238536 0.845507979 1.108035066
@@ -1923,7 +1923,7 @@ f 668 666 661
 f 668 661 667
 f 668 667 654
 f 668 654 666
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab040
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab040
 usemtl Material040
 v -0.001234000 0.563874205 -0.393302582
 v -0.001234000 -0.422702288 -0.547936469
@@ -1972,7 +1972,7 @@ f 684 674 677
 f 685 681 670
 f 685 670 680
 f 685 680 681
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab041
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab041
 usemtl Material041
 v -0.143481001 0.307912250 1.032064922
 v -0.006180000 -0.414921376 0.662189376
@@ -2030,7 +2030,7 @@ f 704 698 702
 f 705 702 690
 f 705 690 686
 f 705 686 702
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab042
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab042
 usemtl Material042
 v -2.786889076 0.774976709 1.175134229
 v -2.788154547 0.700641776 1.100683292
@@ -2082,7 +2082,7 @@ f 722 711 720
 f 723 721 715
 f 723 715 718
 f 723 718 721
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab043
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab043
 usemtl Material043
 v -7.640395164 -0.398648918 0.772767357
 v -7.475508792 -0.430541009 0.662778768
@@ -2155,7 +2155,7 @@ f 748 733 738
 f 748 738 743
 f 748 745 728
 f 748 728 739
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab044
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab044
 usemtl Material044
 v -1.972060447 -1.004426646 -0.312210767
 v -2.790140581 -0.919625998 -1.115134408
@@ -2195,7 +2195,7 @@ f 761 755 759
 f 762 760 751
 f 762 751 749
 f 762 749 760
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab045
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab045
 usemtl Material045
 v -1.823322838 1.115798189 0.951921599
 v -1.815779227 0.998087939 0.952023139
@@ -2238,7 +2238,7 @@ f 777 775 772
 f 777 772 768
 f 777 768 766
 f 777 766 775
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab046
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab046
 usemtl Material046
 v -0.038416444 0.648651004 0.662774095
 v -0.001233000 0.480324409 0.510380474
@@ -2302,7 +2302,7 @@ f 799 795 780
 f 799 780 781
 f 799 781 791
 f 799 791 795
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab047
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab047
 usemtl Material047
 v -3.839943904 -0.994598389 -0.163549559
 v -3.831332363 -1.027941182 -0.163542317
@@ -2348,7 +2348,7 @@ f 814 803 812
 f 815 813 803
 f 815 803 811
 f 815 811 813
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab048
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab048
 usemtl Material048
 v -2.788537979 -1.084296354 0.877650539
 v -2.788537979 -1.095355528 0.801446938
@@ -2400,7 +2400,7 @@ f 832 818 816
 f 833 828 821
 f 833 821 823
 f 833 823 828
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab049
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab049
 usemtl Material049
 v -0.001234000 -0.578265039 -0.315100556
 v -0.006181699 -0.644559665 -0.312291875
@@ -2455,7 +2455,7 @@ f 852 845 836
 f 852 836 839
 f 852 851 845
 f 852 839 851
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab050
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab050
 usemtl Material050
 v -3.608220744 0.850211024 1.099074789
 v -3.608220742 -0.645717978 1.059635997
@@ -2513,7 +2513,7 @@ f 872 862 867
 f 872 867 856
 f 872 856 864
 f 872 864 871
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab051
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab051
 usemtl Material051
 v -1.982139170 1.003244328 -0.610070640
 v -1.917003989 0.801482975 -1.098106027
@@ -2553,7 +2553,7 @@ f 885 881 882
 f 886 884 880
 f 886 880 877
 f 886 877 884
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab052
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab052
 usemtl Material052
 v -2.899762648 -1.084285469 -0.312284190
 v -2.900006056 -1.842595438 -0.304631676
@@ -2590,7 +2590,7 @@ f 899 896 894
 f 899 894 888
 f 899 888 893
 f 899 893 896
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab053
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab053
 usemtl Material053
 v -2.899953475 -1.679251905 0.431423505
 v -2.900005153 -1.835247384 0.422273874
@@ -2645,7 +2645,7 @@ f 917 908 914
 f 918 915 912
 f 918 912 901
 f 918 901 915
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab054
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab054
 usemtl Material054
 v -5.767261982 0.506540000 -0.922538996
 v -5.541755749 -0.489259281 -1.009342560
@@ -2691,7 +2691,7 @@ f 934 927 930
 f 934 930 933
 f 934 933 928
 f 934 928 919
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab055
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab055
 usemtl Material055
 v -0.143481001 -0.633873078 0.872535636
 v -0.006180201 -0.644483262 0.357046419
@@ -2743,7 +2743,7 @@ f 951 943 947
 f 952 948 936
 f 952 936 942
 f 952 942 948
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab056
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab056
 usemtl Material056
 v -3.831333197 -1.018939018 0.937558412
 v -3.831327429 -1.111520461 0.952044731
@@ -2786,7 +2786,7 @@ f 967 953 966
 f 967 966 959
 f 967 959 961
 f 967 961 964
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab057
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab057
 usemtl Material057
 v -1.830803698 0.843539555 -0.950426595
 v -1.823173579 -0.862358684 -0.981761528
@@ -2826,7 +2826,7 @@ f 981 977 971
 f 981 971 978
 f 981 978 969
 f 981 969 972
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab058
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab058
 usemtl Material058
 v -4.832204819 0.506678998 -0.926853001
 v -4.723784471 -0.489328974 -1.008296095
@@ -2866,7 +2866,7 @@ f 995 991 987
 f 995 987 993
 f 995 993 988
 f 995 988 991
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab059
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab059
 usemtl Material059
 v -1.841559052 0.774976709 -1.055993446
 v -1.841559052 -0.786812664 -1.055993446
@@ -2936,7 +2936,7 @@ f 1019 1015 1001
 f 1019 1001 1009
 f 1019 1009 1013
 f 1019 1013 1015
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab060
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab060
 usemtl Material060
 v -4.723784580 1.009009145 0.654537779
 v -4.752835086 1.019442998 0.654852626
@@ -2976,7 +2976,7 @@ f 1032 1028 1030
 f 1033 1030 1028
 f 1033 1028 1025
 f 1033 1025 1030
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab061
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab061
 usemtl Material061
 v -2.814093113 0.493984014 -0.922571003
 v -2.795394856 -0.786975334 -1.009019588
@@ -3007,7 +3007,7 @@ f 1044 1038 1040
 f 1044 1040 1043
 f 1044 1043 1041
 f 1044 1041 1038
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab062
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab062
 usemtl Material062
 v -1.005238527 0.774976754 1.030326050
 v -1.005254149 -0.721194454 1.030822480
@@ -3029,7 +3029,7 @@ f 1052 1050 1046
 f 1052 1046 1051
 f 1052 1051 1049
 f 1052 1049 1050
-o /home/dan/astrobee_pybullet/src/resources/iss_objs/us_lab063
+o /home/dan/astrobee_pybullet/src/resources/meshes/us_lab063
 usemtl Material063
 v -7.196816921 0.889137983 0.091430999
 v -7.203740035 0.895417255 0.091438444
