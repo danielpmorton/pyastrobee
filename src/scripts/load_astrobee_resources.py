@@ -13,14 +13,14 @@ from src.utils.pybullet_wrapper import initialize_pybullet, load_urdf, set_gravi
 
 def main():
     initialize_pybullet(use_deformability=True)
-    astrobee_urdf = "src/resources/astrobee.urdf"
-    iss_urdf = "src/resources/iss.urdf"
+    astrobee_urdf = "src/resources/urdf/astrobee.urdf"
+    iss_urdf = "src/resources/urdf/iss.urdf"
     # Debugging URDF for collision visualization
-    astrobee_debug_urdf = "src/resources/astrobee_collision.urdf"
-    iss_debug_urdf = "src/resources/iss_collision.urdf"
+    astrobee_debug_urdf = "src/resources/urdf/astrobee_collision.urdf"
+    iss_debug_urdf = "src/resources/urdf/iss_collision.urdf"
 
-    bag_urdf = "src/resources/cargo_bag.urdf"
-    bag_debug_urdf = "src/resources/cargo_bag_rigid.urdf"
+    bag_urdf = "src/resources/urdf/cargo_bag.urdf"
+    bag_debug_urdf = "src/resources/urdf/cargo_bag_rigid.urdf"
 
     # Some starting positions for the astrobee within the ISS
     cupola = (-5.0, 0.0, 5.0)  # Don't use this one for now until the mesh is fixed
