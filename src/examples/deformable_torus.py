@@ -20,7 +20,7 @@ boxId = p.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
 
 bunnyId = p.loadSoftBody(
     "torus/torus_textured.obj",
-    simFileName="torus.vtk",
+    # simFileName="torus.vtk",
     mass=3,
     useNeoHookean=1,
     NeoHookeanMu=180,
@@ -34,9 +34,9 @@ bunnyId = p.loadSoftBody(
 p.changeVisualShape(bunnyId, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0)
 
 
-bunny2 = p.loadURDF("torus_deform.urdf", [0, 1, 0.5], flags=p.URDF_USE_SELF_COLLISION)
+# bunny2 = p.loadURDF("torus_deform.urdf", [0, 1, 0.5], flags=p.URDF_USE_SELF_COLLISION)
 
-p.changeVisualShape(bunny2, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0)
+# p.changeVisualShape(bunny2, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0)
 p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
 p.setRealTimeSimulation(0)
 
