@@ -8,32 +8,45 @@ TODO
 import time
 import pybullet as p
 
-from src.scripts.set_env_vars import set_env_vars
-from src.utils.pybullet_wrapper import initialize_pybullet, load_urdf
+from src.utils.pybullet_wrapper import initialize_pybullet, load_urdf, set_gravity
 
 
 def main():
-    set_env_vars()
-    initialize_pybullet()
+    initialize_pybullet(use_deformability=True)
     astrobee_urdf = "src/resources/astrobee.urdf"
     iss_urdf = "src/resources/iss.urdf"
     # Debugging URDF for collision visualization
     astrobee_debug_urdf = "src/resources/astrobee_collision.urdf"
     iss_debug_urdf = "src/resources/iss_collision.urdf"
 
+    bag_urdf = "src/resources/cargo_bag.urdf"
+    bag_debug_urdf = "src/resources/cargo_bag_rigid.urdf"
+
     # Some starting positions for the astrobee within the ISS
-    cupola = (-5.0, 0.0, 5)  # Don't use this one for now until the mesh is fixed
-    us_lab = (3.0, 0.0, 5)
+    cupola = (-5.0, 0.0, 5.0)  # Don't use this one for now until the mesh is fixed
+    us_lab = (3.0, 0.0, 5.0)
+    outside = (0.0, -5.0, 5.0)  # A random place outside the ISS
+    origin = (0.0, 0.0, 0.0)
 
     # Loading the standard ISS and Astrobee
     load_urdf(iss_urdf, fixed=True)
     load_urdf(astrobee_urdf, pos=us_lab)
+    # load_urdf(bag_urdf, pos=origin)
+    load_urdf(bag_debug_urdf, pos=outside)
+    # load_urdf("cube.urdf", pos=origin)
+
+    # p.loadSoftBody("src/resources/meshes/cargo_bag.obj")
+    # p.loadSoftBody("cube.obj")
 
     # Loading the "debugging" versions to visualize the collision info
     # load_urdf(iss_debug_urdf, fixed=True)
     # load_urdf(astrobee_debug_urdf, pos=us_lab)
 
-    time.sleep(10)
+    # For some reason I had to call this after the loadSoftBody because the soft body would somehow
+    # still be affected by gravity even if everything else wasn't?
+    set_gravity("iss")
+
+    # time.sleep(10)
     for _ in range(100000):
         p.stepSimulation()
         time.sleep(1.0 / 240.0)
