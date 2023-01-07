@@ -8,7 +8,11 @@ TODO
 import time
 import pybullet as p
 
-from src.utils.pybullet_wrapper import initialize_pybullet, load_urdf, set_gravity
+from astrobee_pybullet.utils.pybullet_wrapper import (
+    initialize_pybullet,
+    load_urdf,
+    set_gravity,
+)
 
 
 def main():

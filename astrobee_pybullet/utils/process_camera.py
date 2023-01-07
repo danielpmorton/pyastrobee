@@ -18,7 +18,7 @@ np.set_printoptions(precision=4, linewidth=150, threshold=np.inf, suppress=True)
 import pybullet
 from typing import Optional
 
-from src.utils.camera_utils import cameraConfig
+from astrobee_pybullet.utils.camera_utils import cameraConfig
 
 
 def assert_close(ars, ars0):

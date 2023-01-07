@@ -9,7 +9,6 @@ setup(
     name="astrobee_pybullet",
     version="0.0.1",
     install_requires=["numpy", "pybullet"],
-    include_package_data=True,
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",

@@ -16,7 +16,7 @@ import os
 import pybullet
 import pybullet_data
 
-from src.utils.mesh_utils import get_mesh_data
+from astrobee_pybullet.utils.mesh_utils import get_mesh_data
 
 
 def get_preset_properties(object_preset_dict, deform_obj_name, key):
