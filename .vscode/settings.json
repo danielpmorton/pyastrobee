@@ -8,5 +8,7 @@
     "files.associations": {
         "*.urdf": "xml",
         "*.xacro": "xml",
-      }
+    },
+    // TODO: turn type checking on to "basic"
+    "python.analysis.typeCheckingMode": "off" 
 }
