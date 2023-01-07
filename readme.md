@@ -1,11 +1,16 @@
 # Astrobee Pybullet/ROS Integration
 
-Run `./setup.sh` to get started
+### Getting started
+
+```
+conda create --name astrobee # Optional
+conda activate astrobee # Optional
+pip install -e .
+```
 
 ### TODOs:
 - [ ] Merge in Dedo utility functions 
 - [ ] Import Dedo bag assets
-- [ ] Set up virtual environment
 - [ ] Solve the Cupola/Node 1 mesh issues
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
 - [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
@@ -23,9 +28,10 @@ Run `./setup.sh` to get started
 - [X] Import Astobee resources into Pybullet
 - [X] Fix the ISS interior collisions with V-HACD
 - [X] Model cargo bag in CAD and export mesh
+- [X] Set up virtual environment
 
 ### Ask NASA:
-- Can we upgrade numpy and python to newer versions?
+- Does the version of Python matter for any of your Python code? e.g. 3.8 vs 3.10
 - Can we get some of the cad files used to make the meshes?
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
