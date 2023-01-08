@@ -9,8 +9,8 @@ pip install -e .
 ```
 
 ### TODOs:
-- [ ] Merge in Dedo utility functions 
-- [ ] Import Dedo bag assets
+- [ ] Try out MuJoCo just to see what it can do
+- [ ] Try out pybullet 3.1.7 to see if this is more stable at all
 - [ ] Solve the Cupola/Node 1 mesh issues
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
 - [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
@@ -20,6 +20,9 @@ pip install -e .
 - [ ] Figure out more TODOs
 
 ### In Progress:
+- [ ] Simplify/improve cargo bag mesh (try a thin mesh handle?)
+- [ ] Merge in Dedo utility functions
+- [ ] Import Dedo bag assets (remember to try the duffel bag attachment in Slack)
 - [ ] Create cargo bag URDF and import into Pybullet
 - [ ] Get correct physical properties for cargo bag
 
