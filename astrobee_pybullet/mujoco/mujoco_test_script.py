@@ -32,7 +32,9 @@ import cv2
 
 def main():
     # Make model and data
-    model = mujoco.MjModel.from_xml_path("astrobee_pybullet/mujoco/my_demo.mjcf")
+    # model = mujoco.MjModel.from_xml_path("astrobee_pybullet/mujoco/my_demo.mjcf")
+    model = mujoco.MjModel.from_xml_path("astrobee_pybullet/mujoco/astrobee_demo.mjcf")
+    # mujoco.mj_saveLastXML("astrobee_pybullet/mujoco/saved.xml", model)
     data = mujoco.MjData(model)
 
     # Make renderer, render and show the pixels
