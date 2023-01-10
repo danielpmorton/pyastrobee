@@ -1,4 +1,4 @@
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm000
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm000
  facet normal -0.048968502 -0.947346994 0.316442348
   outer loop
    vertex 7.170633793 -0.755124310 1.077759079
@@ -167,8 +167,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm000
    vertex 7.225711823 -0.755124302 1.428902984
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm000
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm001
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm000
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm001
  facet normal 0.008820292 -0.011999078 -0.999889106
   outer loop
    vertex 6.952182539 1.164575530 0.867617745
@@ -351,8 +351,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm001
    vertex 6.896076859 0.869382276 -1.185761765
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm001
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm002
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm001
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm002
  facet normal -0.184027933 0.651363095 -0.736111295
   outer loop
    vertex 6.132208503 -1.166315912 0.671344324
@@ -535,8 +535,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm002
    vertex 6.097296448 -1.166316032 -0.796171746
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm002
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm003
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm002
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm003
  facet normal 0.000000000 0.242263471 -0.970210498
   outer loop
    vertex 9.048433285 -0.363786776 0.084337862
@@ -719,8 +719,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm003
    vertex 9.733273955 0.423198041 0.251329737
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm003
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm004
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm003
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm004
  facet normal -0.133987227 -0.000000021 0.990983059
   outer loop
    vertex 0.785583973 -0.755124302 -0.796171571
@@ -973,8 +973,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm004
    vertex -0.001246760 0.553373817 -0.814270669
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm004
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm005
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm004
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm005
  facet normal 0.012118575 -0.161657517 0.986772510
   outer loop
    vertex 8.169058502 -1.146545935 -0.991840335
@@ -1129,8 +1129,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm005
    vertex 6.896076883 -1.079655842 -0.806127884
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm005
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm006
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm005
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm006
  facet normal 1.000000000 0.000000697 -0.000000035
   outer loop
    vertex 3.080535934 1.152511001 -0.682439118
@@ -1285,8 +1285,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm006
    vertex 5.135058133 1.133399963 -1.033321218
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm006
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm007
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm006
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm007
  facet normal -0.012755680 0.999185977 -0.038271085
   outer loop
    vertex 5.050985223 1.027058442 -0.502464097
@@ -1441,8 +1441,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm007
    vertex 6.211236220 1.101818918 0.964847295
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm007
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm008
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm007
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm008
  facet normal -0.998365394 -0.057153657 0.000001604
   outer loop
    vertex 2.904869699 -1.146461828 -0.502668459
@@ -1667,8 +1667,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm008
    vertex 1.809489012 -0.981404006 -0.779520988
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm008
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm009
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm008
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm009
  facet normal -0.026817206 -0.683543462 -0.729417009
   outer loop
    vertex 4.037449837 -1.035886049 0.926669002
@@ -1893,8 +1893,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm009
    vertex 4.020247409 -1.048728943 -0.502668385
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm009
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm010
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm009
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm010
  facet normal 0.000001210 0.049825307 0.998757948
   outer loop
    vertex 2.591364295 -0.848001256 -1.100082086
@@ -2105,8 +2105,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm010
    vertex 2.787032643 -0.859060846 -1.099455384
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm010
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm011
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm010
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm011
  facet normal -0.997439036 -0.001617881 -0.071503510
   outer loop
    vertex 5.118114948 1.077260017 -0.951012015
@@ -2233,8 +2233,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm011
    vertex 3.080327390 1.036589797 -1.119497917
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm011
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm012
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm011
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm012
  facet normal -0.957384410 -0.154275054 -0.244160397
   outer loop
    vertex 7.170631969 -1.048728990 -0.796171551
@@ -2473,8 +2473,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm012
    vertex 7.189580037 -1.166314960 -0.983049989
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm012
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm013
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm012
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm013
  facet normal -0.000000115 0.996562477 -0.082844608
   outer loop
    vertex 5.135057973 0.908060182 1.133123847
@@ -2699,8 +2699,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm013
    vertex 2.004357770 1.146649896 0.964846913
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm013
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm014
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm013
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm014
  facet normal -0.488663995 0.850372600 -0.195125450
   outer loop
    vertex 0.785586811 0.908060139 0.671344193
@@ -2953,8 +2953,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm014
    vertex 0.747930790 0.810010112 -1.148313924
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm014
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm015
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm014
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm015
  facet normal 0.002238071 0.250046478 -0.968231248
   outer loop
    vertex 4.939389132 -1.078049914 1.090801348
@@ -3165,8 +3165,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm015
    vertex 4.992952143 -0.853261176 1.128834018
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm015
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm016
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm015
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm016
  facet normal -0.997844402 -0.030968677 -0.057857508
   outer loop
    vertex 7.164430141 0.910933018 -1.067042947
@@ -3279,8 +3279,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm016
    vertex 7.170631886 -0.755124302 -1.079849958
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm016
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm017
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm016
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm017
  facet normal 0.000092205 -0.015598454 0.999878332
   outer loop
    vertex 9.594167709 0.806514978 -1.432095051
@@ -3435,8 +3435,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm017
    vertex 9.048300057 0.810304426 -1.430891852
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm017
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm018
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm017
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm018
  facet normal -0.088438998 -0.996081595 -0.000018540
   outer loop
    vertex 9.048143170 1.590394920 0.687461972
@@ -3675,8 +3675,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm018
    vertex 9.048433418 1.052147031 1.046188270
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm018
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm019
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm018
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm019
  facet normal -1.000000000 -0.000000000 -0.000000000
   outer loop
    vertex 9.048433285 -0.370853024 0.716343498
@@ -3943,8 +3943,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm019
    vertex 8.337776184 0.220091000 0.493557990
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm019
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm020
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm019
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm020
  facet normal -0.001144640 0.885640731 0.464369666
   outer loop
    vertex 1.123848366 -0.969745994 1.150064360
@@ -4071,8 +4071,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm020
    vertex 2.591364057 1.048384180 1.105182002
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm020
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm021
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm020
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm021
  facet normal -0.810300219 -0.169925054 0.560837794
   outer loop
    vertex 1.123848445 0.321053877 1.090105016
@@ -4241,8 +4241,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm021
    vertex 0.803211143 -0.289835989 0.616531244
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm021
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm022
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm021
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm022
  facet normal -1.000000000 0.000000000 -0.000000000
   outer loop
    vertex 10.172378540 -1.195036400 0.084271317
@@ -4509,8 +4509,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm022
    vertex 9.048433285 -1.168629008 0.573509834
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm022
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm023
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm022
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm023
  facet normal -0.000019978 -0.000216211 0.999999976
   outer loop
    vertex 9.595041992 1.397207096 -0.600536995
@@ -4623,8 +4623,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm023
    vertex 8.361134972 1.669284840 -0.600502820
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm023
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm024
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm023
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm024
  facet normal -0.879576476 0.000000278 -0.475757526
   outer loop
    vertex 9.594170570 0.712391434 1.428901975
@@ -4821,8 +4821,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm024
    vertex 9.724387169 0.205466740 1.160769493
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm024
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm025
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm024
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm025
  facet normal 0.000226228 -0.001698778 0.999998531
   outer loop
    vertex 9.439770899 -0.755119581 -1.431928702
@@ -4963,8 +4963,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm025
    vertex 8.071237301 -1.145410461 -0.991840335
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm025
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm026
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm025
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm026
  facet normal -1.000000000 0.000000650 0.000000054
   outer loop
    vertex 9.048433219 -0.360018558 -0.639173915
@@ -5175,8 +5175,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm026
    vertex 8.430717468 0.075861588 0.066340209
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm026
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm027
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm026
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm027
  facet normal -0.005063090 -0.955528507 -0.294855282
   outer loop
    vertex 9.439770789 1.056803942 1.428902031
@@ -5331,8 +5331,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm027
    vertex 9.445077312 0.908060182 1.356472925
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm027
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm028
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm027
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm028
  facet normal -0.042451001 -0.999094963 -0.002677142
   outer loop
    vertex 2.004357770 1.146649896 0.964846913
@@ -5501,8 +5501,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm028
    vertex 0.928179571 1.130872965 1.034786750
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm028
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm029
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm028
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm029
  facet normal 0.006796876 0.941739001 -0.336275862
   outer loop
    vertex 9.048529361 1.187086390 -0.980110309
@@ -5671,8 +5671,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm029
    vertex 7.186186092 1.242712577 -0.939533128
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm029
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm030
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm029
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm030
  facet normal -0.057415856 0.698080550 -0.713713504
   outer loop
    vertex 7.170248655 0.906432376 -1.091284330
@@ -5785,8 +5785,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm030
    vertex 9.048437945 0.907272789 -1.430470265
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm030
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm031
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm030
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm031
  facet normal -0.010019724 -0.133169981 -0.991042563
   outer loop
    vertex 8.047593147 1.882943034 0.663132412
@@ -5969,8 +5969,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm031
    vertex 9.048433783 1.495068882 0.687480257
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm031
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm032
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm031
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm032
  facet normal 0.884744094 -0.466076962 -0.000391355
   outer loop
    vertex 9.594829660 1.103861178 -0.992619362
@@ -6223,8 +6223,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm032
    vertex 9.733274157 -0.878400981 -0.702825073
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm032
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm033
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm032
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm033
  facet normal 0.999990113 -0.000653853 -0.004398522
   outer loop
    vertex 0.755680618 -1.166315903 0.671344159
@@ -6351,8 +6351,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm033
    vertex 0.755677998 -1.166314960 -0.983040988
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm033
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm034
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm033
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm034
  facet normal -0.059683789 0.925236063 -0.374667950
   outer loop
    vertex 5.050985223 1.027058442 -0.502464097
@@ -6521,8 +6521,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm034
    vertex 6.933255196 1.167214990 -1.037760973
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm034
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm035
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm034
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm035
  facet normal -1.000000000 -0.000000772 0.000001390
   outer loop
    vertex 9.724385262 0.612062225 -0.605170282
@@ -6649,8 +6649,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm035
    vertex 9.724385262 0.418888275 -0.600502808
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm035
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm036
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm035
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm036
  facet normal -0.984124404 0.130986139 -0.119757208
   outer loop
    vertex 8.657095760 0.299507850 0.082192901
@@ -6819,8 +6819,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm036
    vertex 8.279163951 0.208194205 -0.343859007
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm036
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm037
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm036
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm037
  facet normal -0.993119244 0.098448930 -0.063419038
   outer loop
    vertex 2.904752016 -0.852958665 1.128837953
@@ -7017,8 +7017,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm037
    vertex 1.123848380 -1.155033638 0.846554667
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm037
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm038
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm037
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm038
  facet normal 0.019637074 -0.201785199 0.979232924
   outer loop
    vertex 0.501378000 1.715134978 0.704442978
@@ -7159,8 +7159,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm038
    vertex 0.747934548 1.103729985 0.769178517
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm038
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm039
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm038
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm039
  facet normal 0.003953888 -0.593361849 0.804926135
   outer loop
    vertex 9.037166595 0.050668839 -0.797672501
@@ -7357,8 +7357,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm039
    vertex 8.279163361 -0.450946947 -0.686622237
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm039
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm040
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm039
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm040
  facet normal -0.123400362 -0.991936640 0.028879972
   outer loop
    vertex 0.719399896 -0.687329512 0.671346442
@@ -7443,8 +7443,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm040
    vertex 0.243306884 -0.686712761 0.573505212
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm040
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm041
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm040
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm041
  facet normal -0.999999957 0.000234437 0.000175910
   outer loop
    vertex 2.591539963 1.054269669 1.112465898
@@ -7571,8 +7571,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm041
    vertex 2.591106114 1.126990810 1.038779496
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm041
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm042
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm041
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm042
  facet normal -0.003389219 -0.988504846 0.151151192
   outer loop
    vertex 1.319517189 1.146649485 0.964847295
@@ -7713,8 +7713,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm042
    vertex 0.801247447 0.265493934 0.659213624
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm042
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm043
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm042
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm043
  facet normal -0.999999113 0.000831217 -0.001040247
   outer loop
    vertex 3.080535935 1.101429181 -0.781933738
@@ -7883,8 +7883,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm043
    vertex 1.319517134 1.105680832 -0.810460862
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm043
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm044
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm043
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm044
  facet normal 0.987937207 -0.000263064 0.154854791
   outer loop
    vertex 7.223122120 -0.755208536 -1.431427384
@@ -7969,8 +7969,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm044
    vertex 7.580913134 0.908137407 -1.428636581
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm044
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm045
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm044
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm045
  facet normal -0.650226710 -0.000000413 0.759740236
   outer loop
    vertex 7.580917563 0.908060182 1.428902984
@@ -8055,8 +8055,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm045
    vertex 7.170633793 -0.755124310 1.077759079
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm045
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm046
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm045
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm046
  facet normal -0.150579975 -0.981854904 0.115267599
   outer loop
    vertex 2.895421028 -0.981405020 -0.269618988
@@ -8211,8 +8211,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm046
    vertex 3.080536022 -1.078051990 1.090802161
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm046
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm047
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm046
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm047
  facet normal 0.000000553 -1.000000000 -0.000000809
   outer loop
    vertex 8.282300672 1.882943988 -0.457674586
@@ -8395,8 +8395,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm047
    vertex 8.167922779 1.690735231 0.687453274
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm047
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm048
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm047
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm048
  facet normal -0.000000617 0.166822198 -0.985986995
   outer loop
    vertex 3.080536022 -1.078051990 1.090802161
@@ -8565,8 +8565,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm048
    vertex 4.645886054 -0.747530630 1.095559655
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm048
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm049
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm048
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm049
  facet normal -0.010802469 -0.611200190 -0.791402321
   outer loop
    vertex 6.897683362 1.165622772 1.034778041
@@ -8707,8 +8707,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm049
    vertex 7.776586326 1.592900853 0.687440991
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm049
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm050
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm049
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm050
  facet normal -0.847742872 -0.530407412 0.000005675
   outer loop
    vertex 0.109034002 -0.472032765 0.589578950
@@ -8835,8 +8835,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm050
    vertex -0.001246000 -0.884386885 -0.377327643
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm050
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm051
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm050
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm051
  facet normal -0.000668535 -0.520549908 0.853830982
   outer loop
    vertex 3.765376675 -1.079655398 -0.806125968
@@ -8991,8 +8991,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm051
    vertex 2.896897732 -1.166315205 -0.502668399
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm051
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm052
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm051
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm052
  facet normal 0.154443936 -0.987873452 -0.015909544
   outer loop
    vertex 0.785584761 0.810225729 -0.796171514
@@ -9077,8 +9077,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm052
    vertex 1.123848384 0.810225803 -1.092178363
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm052
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm053
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm052
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm053
  facet normal 1.000000000 -0.000000068 -0.000001689
   outer loop
    vertex -0.001244778 -0.802132228 0.534509285
@@ -9233,8 +9233,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm053
    vertex -0.001244000 -0.581812204 0.768649025
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm053
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm054
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm053
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm054
  facet normal -0.995134062 0.096617053 -0.019322127
   outer loop
    vertex 0.785584921 0.614557038 -0.796171414
@@ -9361,8 +9361,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm054
    vertex 0.640101442 0.690658098 -0.404842149
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm054
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm055
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm054
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm055
  facet normal -1.000000000 -0.000000000 -0.000000000
   outer loop
    vertex 10.172378540 -0.722067001 -0.783855570
@@ -9573,8 +9573,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm055
    vertex 9.733274157 -0.878400981 -0.702825073
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm055
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm056
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm055
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm056
  facet normal -0.000001333 0.007776814 -0.999969760
   outer loop
    vertex 4.939389253 1.020277977 1.148620106
@@ -9673,8 +9673,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm056
    vertex 4.939389530 0.027550666 1.090099544
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm056
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm057
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm056
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm057
  facet normal -0.652998719 0.000084661 0.757359008
   outer loop
    vertex 9.473881267 0.830412863 -1.402695659
@@ -9745,8 +9745,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm057
    vertex 7.483083273 -0.755205986 -1.431441973
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm057
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm058
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm057
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm058
  facet normal -0.843162741 0.537622499 -0.006216114
   outer loop
    vertex 5.135058026 -1.061066843 0.671344143
@@ -9887,8 +9887,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm058
    vertex 5.037031493 -1.048729063 -0.698337250
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm058
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm059
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm058
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm059
  facet normal -1.000000000 0.000000382 -0.000025368
   outer loop
    vertex 9.439770823 -0.752070500 -0.594727868
@@ -10001,8 +10001,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm059
    vertex 8.197733879 -1.077608943 -0.599457026
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm059
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm060
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm059
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm060
  facet normal -0.002202280 -0.999997575 0.000003699
   outer loop
    vertex 10.173528671 -0.363786776 0.084337862
@@ -10115,8 +10115,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm060
    vertex 8.461426951 -0.360018916 -0.639173194
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm060
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm061
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm060
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm061
  facet normal -0.988309132 0.152463308 0.000001403
   outer loop
    vertex 0.303142812 1.060443997 0.573509822
@@ -10243,8 +10243,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm061
    vertex -0.001244612 0.803382975 0.568258788
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm061
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm062
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm061
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm062
  facet normal 0.000915704 -0.871880357 0.489718087
   outer loop
    vertex 9.439770809 -0.754445958 0.572557620
@@ -10329,8 +10329,8 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm062
    vertex 9.439770810 -1.168629008 0.573509834
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm062
-solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm063
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm062
+solid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm063
  facet normal -0.997326872 -0.000000015 -0.073069210
   outer loop
    vertex 9.439770789 0.908060182 1.428902031
@@ -10387,4 +10387,4 @@ solid /home/dan/astrobee_pybullet/src/resources/meshes/jpm063
    vertex 7.483083159 -0.755124291 1.428902886
   endloop
  endfacet
-endsolid /home/dan/astrobee_pybullet/src/resources/meshes/jpm063
+endsolid /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/jpm063

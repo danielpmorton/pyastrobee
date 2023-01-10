@@ -49,13 +49,13 @@
     <visual name="iss_eu_lab_visual">
       <origin xyz="10.9325664  2.3509732 4.8505872" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/eu_lab.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/eu_lab.obj"/>
       </geometry>
     </visual>
     <collision name="iss_eu_lab_collision">
       <origin xyz="10.9325664  2.3509732 4.8505872" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/eu_lab.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/eu_lab.obj"/>
       </geometry>
       <gazebo>
         <surface>
@@ -69,13 +69,13 @@
     <visual name="iss_jpm_visual">
       <origin xyz="10.9358938 -2.3364698 4.8505872" rpy="3.1415 0 -1.570796" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/jpm.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/jpm.obj"/>
       </geometry>
     </visual>
     <collision name="iss_jpm_collision">
       <origin xyz="10.9358938 -2.3364698 4.8505872" rpy="3.1415 0 -1.570796" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/jpm.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/jpm.obj"/>
       </geometry>
       <gazebo>
         <surface>
@@ -109,13 +109,13 @@
     <visual name="iss_node_2_visual">
       <origin xyz="10.9344206  0.0107442 4.8558958" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/node_2.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/node_2.obj"/>
       </geometry>
     </visual>
     <collision name="iss_node_2_collision">
       <origin xyz="10.9344206  0.0107442 4.8558958" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/node_2.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/node_2.obj"/>
       </geometry>
       <gazebo>
         <surface>
@@ -129,13 +129,13 @@
     <visual name="iss_node_3_visual">
       <origin xyz="-4.4586144 -6.6356992 4.8434244" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/node_3.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/node_3.obj"/>
       </geometry>
     </visual>
     <collision name="iss_node_3_collision">
       <origin xyz="-4.4586144 -6.6356992 4.8434244" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/node_3.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/node_3.obj"/>
       </geometry>
       <gazebo>
         <surface>
@@ -149,13 +149,13 @@
     <visual name="iss_us_lab_visual">
       <origin xyz="6.3085472  0.0064770 4.8508920" rpy="3.1415 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/us_lab.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/us_lab.obj"/>
       </geometry>
     </visual>
     <collision name="iss_us_lab_collision">
       <origin xyz="6.3085472  0.0064770 4.8508920" rpy="3.1415 0 0" />
       <geometry>
-        <mesh filename="/home/dan/astrobee_pybullet/src/resources/meshes/vhacd/us_lab.obj"/>
+        <mesh filename="/home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/vhacd/us_lab.obj"/>
       </geometry>
       <gazebo>
         <surface>

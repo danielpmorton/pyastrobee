@@ -17,14 +17,14 @@ from astrobee_pybullet.utils.pybullet_wrapper import (
 
 def main():
     initialize_pybullet(use_deformability=True)
-    astrobee_urdf = "src/resources/urdf/astrobee.urdf"
-    iss_urdf = "src/resources/urdf/iss.urdf"
+    astrobee_urdf = "astrobee_pybullet/resources/urdf/astrobee.urdf"
+    iss_urdf = "astrobee_pybullet/resources/urdf/iss.urdf"
     # Debugging URDF for collision visualization
-    astrobee_debug_urdf = "src/resources/urdf/astrobee_collision.urdf"
-    iss_debug_urdf = "src/resources/urdf/iss_collision.urdf"
+    astrobee_debug_urdf = "astrobee_pybullet/resources/urdf/astrobee_collision.urdf"
+    iss_debug_urdf = "astrobee_pybullet/resources/urdf/iss_collision.urdf"
 
-    bag_urdf = "src/resources/urdf/cargo_bag.urdf"
-    bag_debug_urdf = "src/resources/urdf/cargo_bag_rigid.urdf"
+    bag_urdf = "astrobee_pybullet/resources/urdf/cargo_bag.urdf"
+    bag_debug_urdf = "astrobee_pybullet/resources/urdf/cargo_bag_rigid.urdf"
 
     # Some starting positions for the astrobee within the ISS
     cupola = (-5.0, 0.0, 5.0)  # Don't use this one for now until the mesh is fixed
@@ -39,7 +39,7 @@ def main():
     load_urdf(bag_debug_urdf, pos=outside)
     # load_urdf("cube.urdf", pos=origin)
 
-    # p.loadSoftBody("src/resources/meshes/cargo_bag.obj")
+    # p.loadSoftBody("astrobee_pybullet/resources/meshes/cargo_bag.obj")
     # p.loadSoftBody("cube.obj")
 
     # Loading the "debugging" versions to visualize the collision info

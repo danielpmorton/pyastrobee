@@ -1,5 +1,5 @@
 mtllib decomp.mtl
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2000
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2000
 usemtl Material000
 v 0.622385929 -1.588765025 -0.982435961
 v 0.685645930 -1.457915273 -1.225107166
@@ -54,7 +54,7 @@ f 19 15 14
 f 19 14 9
 f 19 18 15
 f 19 9 18
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2001
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2001
 usemtl Material001
 v 0.721315980 1.068911577 1.178132884
 v 1.366526008 -1.046795011 1.046790957
@@ -121,7 +121,7 @@ f 42 39 28
 f 42 28 24
 f 42 24 34
 f 42 34 39
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2002
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2002
 usemtl Material002
 v 1.750787973 0.369410119 1.110666397
 v 1.750787973 -0.790394603 0.864996365
@@ -218,7 +218,7 @@ f 75 74 71
 f 75 62 74
 f 75 71 57
 f 75 57 43
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2003
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2003
 usemtl Material003
 v 1.789669950 0.389570755 -0.427140319
 v 1.750787973 -1.098311019 -0.410153633
@@ -309,7 +309,7 @@ f 106 88 100
 f 106 91 79
 f 106 103 91
 f 106 100 103
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2004
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2004
 usemtl Material004
 v -0.797416454 0.883719961 -1.066809058
 v -0.797415617 -0.906465922 -1.066820449
@@ -352,7 +352,7 @@ f 121 120 116
 f 121 116 108
 f 121 108 114
 f 121 114 120
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2005
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2005
 usemtl Material005
 v -0.550494301 1.587792638 -0.982155354
 v -0.685717747 -1.338592418 -0.982448308
@@ -413,7 +413,7 @@ f 142 134 122
 f 142 122 133
 f 142 133 128
 f 142 128 140
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2006
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2006
 usemtl Material006
 v 0.697501613 1.776249051 0.644612723
 v 0.920898319 1.776249051 0.230373071
@@ -531,7 +531,7 @@ f 181 163 172
 f 182 180 154
 f 182 154 163
 f 182 163 180
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2007
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2007
 usemtl Material007
 v 1.750787973 0.974259558 0.657270557
 v 1.789050710 -0.536099375 0.437356035
@@ -652,7 +652,7 @@ f 223 218 217
 f 223 217 183
 f 223 183 196
 f 223 196 218
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2008
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2008
 usemtl Material008
 v -3.821569645 -1.026987252 0.669325779
 v -3.574672990 -1.070266066 0.622558038
@@ -695,7 +695,7 @@ f 238 228 230
 f 238 230 237
 f 238 237 234
 f 238 234 228
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2009
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2009
 usemtl Material009
 v -4.138471127 0.369409218 1.110664572
 v -3.756942321 -0.782788656 0.931210730
@@ -777,7 +777,7 @@ f 265 253 260
 f 266 261 254
 f 266 254 248
 f 266 248 261
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2010
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2010
 usemtl Material010
 v 1.366526932 1.046805024 -0.982435988
 v 1.366526961 0.883719961 -0.982435961
@@ -835,7 +835,7 @@ f 285 279 283
 f 286 284 282
 f 286 282 279
 f 286 279 284
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2011
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2011
 usemtl Material011
 v -0.675855157 1.066491647 1.175703630
 v -0.685793996 0.636797808 1.178132884
@@ -908,7 +908,7 @@ f 311 299 302
 f 311 302 309
 f 311 309 300
 f 311 300 308
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2012
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2012
 usemtl Material012
 v -2.748899592 0.665342419 -0.806088817
 v -2.402410453 -0.659543499 -1.064159989
@@ -957,7 +957,7 @@ f 327 316 317
 f 328 326 316
 f 328 316 320
 f 328 320 326
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2013
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2013
 usemtl Material013
 v -3.698751760 1.066805005 0.931210730
 v -3.442681675 1.014888546 0.684303789
@@ -1000,7 +1000,7 @@ f 342 336 337
 f 343 339 336
 f 343 336 333
 f 343 333 339
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2014
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2014
 usemtl Material014
 v -0.920878716 1.066812442 -0.673782859
 v -0.427033212 0.867337923 -1.122279252
@@ -1073,7 +1073,7 @@ f 367 362 363
 f 368 363 357
 f 368 357 349
 f 368 349 363
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2015
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2015
 usemtl Material015
 v -0.568997497 0.525324559 2.121758938
 v -0.359440185 -0.626118339 2.121758938
@@ -1134,7 +1134,7 @@ f 389 386 385
 f 389 385 370
 f 389 388 386
 f 389 370 388
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2016
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2016
 usemtl Material016
 v 0.685717604 0.513267293 -1.537886410
 v 0.927771762 -0.207713507 -1.776252985
@@ -1198,7 +1198,7 @@ f 410 402 409
 f 411 410 408
 f 411 408 400
 f 411 400 410
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2017
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2017
 usemtl Material017
 v 0.685341054 1.098408420 1.578012526
 v 0.699328005 0.986123979 1.595111012
@@ -1313,7 +1313,7 @@ f 450 449 446
 f 450 446 429
 f 450 429 441
 f 450 441 449
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2018
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2018
 usemtl Material018
 v -0.675545972 -0.717412475 -1.338551152
 v -0.427033224 -1.176604856 -1.499379443
@@ -1365,7 +1365,7 @@ f 467 454 464
 f 468 465 460
 f 468 460 458
 f 468 458 465
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2019
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2019
 usemtl Material019
 v 0.629197001 -0.227429664 2.121759073
 v 0.684697010 -0.660019940 1.776230047
@@ -1420,7 +1420,7 @@ f 486 474 478
 f 487 484 470
 f 487 470 469
 f 487 469 484
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2020
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2020
 usemtl Material020
 v 0.557010220 0.532708783 2.121759892
 v 0.585180765 0.489230615 2.121759892
@@ -1475,7 +1475,7 @@ f 506 505 499
 f 506 499 491
 f 506 491 501
 f 506 501 505
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2021
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2021
 usemtl Material021
 v 0.375463776 -1.708962653 0.708649993
 v 0.375784612 -1.771251183 0.685877453
@@ -1551,7 +1551,7 @@ f 531 524 528
 f 532 530 523
 f 532 523 508
 f 532 508 530
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2022
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2022
 usemtl Material022
 v -2.550932557 -0.698684083 1.464361443
 v -2.402410444 -1.164716005 1.030728412
@@ -1648,7 +1648,7 @@ f 564 552 562
 f 565 563 546
 f 565 546 561
 f 565 561 563
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2023
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2023
 usemtl Material023
 v -4.138471127 -0.753506792 0.895267653
 v -4.010855198 -1.066794991 0.622558038
@@ -1727,7 +1727,7 @@ f 592 590 567
 f 592 567 577
 f 592 591 590
 f 592 577 591
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2024
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2024
 usemtl Material024
 v 0.690524604 0.653126271 1.776234984
 v 0.685343859 -1.109776328 1.566635620
@@ -1791,7 +1791,7 @@ f 613 600 612
 f 614 611 596
 f 614 596 605
 f 614 605 611
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2025
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2025
 usemtl Material025
 v -0.734515019 0.512613596 1.774273414
 v -0.427033224 -1.541889864 1.134521255
@@ -1852,7 +1852,7 @@ f 634 631 633
 f 635 631 622
 f 635 622 626
 f 635 626 631
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2026
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2026
 usemtl Material026
 v -0.705830865 -1.089429694 0.959874074
 v -0.685615818 -1.523772714 0.992974957
@@ -1901,7 +1901,7 @@ f 651 641 647
 f 652 650 643
 f 652 643 647
 f 652 647 650
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2027
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2027
 usemtl Material027
 v -0.685844440 1.096940570 0.964923831
 v -0.694303899 1.068202268 0.945253015
@@ -1944,7 +1944,7 @@ f 667 660 653
 f 667 653 664
 f 667 664 657
 f 667 657 660
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2028
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2028
 usemtl Material028
 v -2.554763091 0.635207357 1.550512318
 v -2.405315004 -0.721213726 1.090118845
@@ -2023,7 +2023,7 @@ f 693 676 681
 f 694 693 681
 f 694 681 688
 f 694 688 693
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2029
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2029
 usemtl Material029
 v 0.931038622 0.513336731 -1.066809058
 v 0.931038622 -0.721274038 -1.066809058
@@ -2057,7 +2057,7 @@ f 706 704 700
 f 706 700 699
 f 706 699 703
 f 706 703 704
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2030
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2030
 usemtl Material030
 v -4.183643818 0.575067269 -0.550322192
 v -4.068944030 -0.345628577 -0.668774588
@@ -2118,7 +2118,7 @@ f 726 713 724
 f 727 725 711
 f 727 711 719
 f 727 719 725
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2031
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2031
 usemtl Material031
 v 0.721315980 -1.400309960 0.684288576
 v 0.920897391 -1.776239038 0.230372790
@@ -2167,7 +2167,7 @@ f 743 733 738
 f 744 741 729
 f 744 729 728
 f 744 728 741
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2032
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2032
 usemtl Material032
 v 1.366526961 0.883719961 -0.982435961
 v 1.366526961 -1.046795011 -0.982435961
@@ -2198,7 +2198,7 @@ f 755 749 751
 f 755 753 754
 f 755 754 752
 f 755 752 749
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2033
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2033
 usemtl Material033
 v -0.797416453 -1.066806189 0.684288747
 v -2.406080908 -1.091788075 -0.735513800
@@ -2232,7 +2232,7 @@ f 766 756 764
 f 767 765 762
 f 767 762 757
 f 767 757 765
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2034
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2034
 usemtl Material034
 v -0.427033224 -1.587699871 0.992958079
 v -0.417599544 -1.776239038 0.851830962
@@ -2290,7 +2290,7 @@ f 786 771 781
 f 787 786 777
 f 787 777 771
 f 787 771 786
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2035
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2035
 usemtl Material035
 v 1.346526027 1.046805024 1.066791058
 v 1.366526008 0.389875654 1.046790957
@@ -2321,7 +2321,7 @@ f 798 792 797
 f 798 797 790
 f 798 790 789
 f 798 789 795
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2036
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2036
 usemtl Material036
 v -2.555631361 1.523366744 0.645334543
 v -2.408052181 1.068808587 0.684292505
@@ -2409,7 +2409,7 @@ f 828 826 819
 f 828 819 810
 f 828 827 826
 f 828 810 827
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2037
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2037
 usemtl Material037
 v 0.375463776 0.636797808 -1.770661950
 v 0.383967190 0.619043056 -1.784931734
@@ -2446,7 +2446,7 @@ f 841 832 835
 f 841 835 837
 f 841 840 832
 f 841 837 840
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2038
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2038
 usemtl Material038
 v -0.241841609 0.635307671 1.981044151
 v -0.685468560 1.377506877 1.178075191
@@ -2498,7 +2498,7 @@ f 859 856 842
 f 859 842 849
 f 859 849 851
 f 859 851 856
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2039
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2039
 usemtl Material039
 v 0.566928395 0.517401160 2.121759892
 v 0.927772846 -0.207712990 1.776234984
@@ -2553,7 +2553,7 @@ f 877 867 864
 f 878 875 865
 f 878 865 870
 f 878 870 875
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2040
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2040
 usemtl Material040
 v 1.177960775 -1.066794991 0.931210730
 v 1.555649122 -1.054924601 0.614333345
@@ -2581,7 +2581,7 @@ f 887 882 884
 f 888 887 884
 f 888 884 886
 f 888 886 887
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2041
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2041
 usemtl Material041
 v -3.698751760 1.046805024 1.066789985
 v -3.451829607 -0.813049018 1.102159023
@@ -2609,7 +2609,7 @@ f 898 891 890
 f 898 890 894
 f 898 895 891
 f 898 894 895
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2042
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2042
 usemtl Material042
 v -0.685588868 1.562767183 0.684394666
 v -0.687896397 1.074688916 0.684247937
@@ -2649,7 +2649,7 @@ f 911 908 910
 f 912 911 900
 f 912 900 908
 f 912 908 911
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2043
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2043
 usemtl Material043
 v 0.622385945 -1.029752030 1.587413736
 v 0.685441666 -1.400374495 1.178197040
@@ -2689,7 +2689,7 @@ f 926 919 921
 f 926 921 924
 f 926 922 920
 f 926 920 919
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2044
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2044
 usemtl Material044
 v -3.574243984 -0.783004576 1.070524512
 v -3.542707920 -1.071475983 1.071460962
@@ -2732,7 +2732,7 @@ f 941 937 934
 f 941 934 940
 f 941 940 939
 f 941 939 937
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2045
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2045
 usemtl Material045
 v 1.366526173 1.046805024 0.684288550
 v 1.610074544 0.636797808 0.684113842
@@ -2766,7 +2766,7 @@ f 952 946 950
 f 953 951 947
 f 953 947 944
 f 953 944 951
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2046
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2046
 usemtl Material046
 v 0.685573469 1.562767984 0.684402182
 v 0.745847006 1.066805005 0.684288576
@@ -2809,7 +2809,7 @@ f 968 965 959
 f 968 957 965
 f 968 963 960
 f 968 960 957
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2047
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2047
 usemtl Material047
 v 0.721316449 1.498432089 -0.932771927
 v 0.685627406 1.501025539 -0.982439849
@@ -2838,7 +2838,7 @@ f 978 976 972
 f 979 978 972
 f 979 972 971
 f 979 971 978
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2048
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2048
 usemtl Material048
 v -0.707269754 0.636797808 1.087986235
 v -0.797416454 -0.844735122 1.066790042
@@ -2878,7 +2878,7 @@ f 992 980 988
 f 993 991 985
 f 993 985 981
 f 993 981 991
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2049
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2049
 usemtl Material049
 v -0.797416453 -1.066796854 -0.673783098
 v -2.385972023 -0.966305971 -1.188601017
@@ -2930,7 +2930,7 @@ f 1011 1002 994
 f 1011 994 1009
 f 1011 1008 1000
 f 1011 1000 1002
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2050
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2050
 usemtl Material050
 v 0.807577545 -1.066794991 0.992941268
 v 0.685597413 -1.523771227 0.992945079
@@ -2955,7 +2955,7 @@ f 1020 1019 1013
 f 1020 1013 1016
 f 1020 1016 1017
 f 1020 1017 1019
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2051
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2051
 usemtl Material051
 v -0.797416454 -0.964329072 1.166089701
 v -0.797416445 -1.164716005 1.030729027
@@ -3010,7 +3010,7 @@ f 1038 1029 1034
 f 1039 1038 1024
 f 1039 1024 1035
 f 1039 1035 1038
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2052
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2052
 usemtl Material052
 v 0.807577545 -1.066794991 -0.673783269
 v 0.685760463 -1.400310208 -0.673783408
@@ -3047,7 +3047,7 @@ f 1052 1051 1046
 f 1052 1049 1051
 f 1052 1046 1044
 f 1052 1044 1049
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2053
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2053
 usemtl Material053
 v -0.427033224 0.883720406 -1.588778710
 v -0.427033224 0.724591970 -1.654512048
@@ -3102,7 +3102,7 @@ f 1071 1065 1058
 f 1071 1058 1069
 f 1071 1069 1064
 f 1071 1064 1065
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2054
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2054
 usemtl Material054
 v -4.157686451 0.639281661 0.874127154
 v -4.069134991 0.636797808 0.684110999
@@ -3169,7 +3169,7 @@ f 1094 1091 1087
 f 1094 1087 1092
 f 1094 1092 1078
 f 1094 1078 1085
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2055
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2055
 usemtl Material055
 v 1.750787973 -0.820666781 0.840152728
 v 1.731029034 -1.012022972 0.762525022
@@ -3248,7 +3248,7 @@ f 1121 1096 1108
 f 1121 1108 1119
 f 1121 1120 1096
 f 1121 1119 1120
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2056
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2056
 usemtl Material056
 v 0.622385929 1.133376242 -1.540758892
 v 0.802213899 0.510469813 -1.776252985
@@ -3309,7 +3309,7 @@ f 1141 1127 1126
 f 1142 1141 1126
 f 1142 1126 1137
 f 1142 1137 1141
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2057
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2057
 usemtl Material057
 v -1.291260762 0.965958540 1.173864009
 v -1.291260762 -0.844735122 1.066790040
@@ -3349,7 +3349,7 @@ f 1156 1151 1148
 f 1156 1148 1152
 f 1156 1152 1145
 f 1156 1145 1151
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2058
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2058
 usemtl Material058
 v -3.762036085 0.575067282 -0.695774064
 v -3.762036085 -0.956772029 -0.695774972
@@ -3383,7 +3383,7 @@ f 1168 1166 1159
 f 1168 1163 1166
 f 1168 1165 1162
 f 1168 1162 1163
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2059
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2059
 usemtl Material059
 v -2.525871534 0.830056012 -1.102177992
 v -2.497236327 -0.659474415 -1.090045044
@@ -3429,7 +3429,7 @@ f 1184 1183 1174
 f 1184 1174 1176
 f 1184 1176 1180
 f 1184 1180 1183
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2060
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2060
 usemtl Material060
 v 0.685597413 -1.523771227 0.992945079
 v 0.699328005 -1.595114946 0.986109972
@@ -3469,7 +3469,7 @@ f 1197 1186 1196
 f 1198 1196 1186
 f 1198 1186 1195
 f 1198 1195 1196
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2061
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2061
 usemtl Material061
 v 0.992769160 1.066805005 0.992941268
 v 1.301421852 1.066805005 0.684288576
@@ -3497,7 +3497,7 @@ f 1208 1205 1200
 f 1208 1200 1204
 f 1208 1204 1203
 f 1208 1203 1205
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2062
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2062
 usemtl Material062
 v 0.685756841 -0.783009913 1.363334061
 v 0.675422869 -0.962767893 1.234638282
@@ -3534,7 +3534,7 @@ f 1221 1216 1213
 f 1221 1213 1220
 f 1221 1220 1219
 f 1221 1219 1216
-o /home/dan/astrobee_pybullet/src/resources/meshes/node_2063
+o /home/dan/astrobee_pybullet/astrobee_pybullet/resources/meshes/node_2063
 usemtl Material063
 v -2.896254761 -0.720744101 0.870010128
 v -2.896254761 -0.808284576 0.659008678
