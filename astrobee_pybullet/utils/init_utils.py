@@ -144,13 +144,14 @@ def load_deform_object(
     # PyBullet examples for loading and anchoring deformables:
     # github.com/bulletphysics/bullet3/examples/pybullet/examples/deformable_anchor.py
     sim.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
-    texture_id = sim.loadTexture(str(Path(texture_file_name)))
-    kwargs = {}
-    if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
-        kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
-    sim.changeVisualShape(
-        deform_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=texture_id, **kwargs
-    )
+    if texture_file_name is not None:
+        texture_id = sim.loadTexture(str(Path(texture_file_name)))
+        kwargs = {}
+        if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
+            kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+        sim.changeVisualShape(
+            deform_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=texture_id, **kwargs
+        )
     num_mesh_vertices = get_mesh_data(sim, deform_id)[0]
 
     if debug:
