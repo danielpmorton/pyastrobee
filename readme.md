@@ -41,3 +41,10 @@ pip install -e .
 ### Bugs/Issues:
 - The `cupola.dae` and `node_1.dae` files in the `astrobee_iss` meshes cannot be loaded into Blender, whereas all of the other ISS meshes can.
   - Regarding this, I originally tested simulating the Astrobee in the cupola and was getting some weird collision behavior. I wonder if this is due to these meshes being messed-up somehow
+
+## Thoughts
+- Mujoco is interesting because it models the deformables as composites - for instance, a soft box is a collection of spheres/capsules wrapped up in a skin. I wonder if we can change the properties of these smaller particles inside the composite?
+
+## General notes
+- Recall that to run the NASA Gazebo/Rviz code, go to `~/astrobee`, run `source devel/setup.bash`, then `roslaunch astrobee sim.launch dds:=false robot:=sim_pub rviz:=true sviz:=true`.
+  - NOTE: this does not currently work if the conda `astrobee` environment you made is active, so run `conda deactivate` before running the command. This could be an issue in the future, but for now we will put this off. 
