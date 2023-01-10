@@ -2,8 +2,7 @@
 
 Note:
 If you want to just load the mjcf in the interactive viewer, run:
-python -m mujoco.viewer --mjcf=/home/dan/astrobee_pybullet_astrobee_pybullet/mujoco/my_demo.mjcf 
-
+python -m mujoco.viewer --mjcf=/home/dan/astrobee_pybullet/astrobee_pybullet/mujoco/my_demo.mjcf
 
 TODO
 update the mjcf file (or make a new one) for a cargo bag
@@ -17,7 +16,6 @@ Note: XML for a soft cylinder:
     <geom type="capsule" size=".015 0.05" rgba=".8 .2 .1 1"/>
     </composite>
 </body>
-    
 
 """
 

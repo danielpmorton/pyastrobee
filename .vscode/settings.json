@@ -11,5 +11,5 @@
         "*.mjcf": "xml",
     },
     // TODO: turn type checking on to "basic"
-    "python.analysis.typeCheckingMode": "off" 
+    "python.analysis.typeCheckingMode": "off"
 }

@@ -6,5 +6,6 @@
         "ms-python.black-formatter",
         "njpwerner.autodocstring",
         "yzhang.markdown-all-in-one",
+        "DotJoshJohnson.xml",
     ]
 }
