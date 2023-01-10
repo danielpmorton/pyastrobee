@@ -32,7 +32,7 @@ import cv2
 
 def main():
     # Make model and data
-    # model = mujoco.MjModel.from_xml_path("astrobee_pybullet/mujoco/xml/my_demo.mjcf")
+    # model = mujoco.MjModel.from_xml_path("astrobee_pybullet/mujoco/xml/soft_cube_demo.mjcf")
     model = mujoco.MjModel.from_xml_path(
         "astrobee_pybullet/mujoco/xml/astrobee_demo.mjcf"
     )
