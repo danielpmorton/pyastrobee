@@ -17,8 +17,8 @@
             <freejoint/>
             <body name="main_compartment">
                 <composite type="box" count="7 7 7" spacing="0.04">
-                    <skin texcoord="true" material="matsponge" rgba=".7 .7 .7 1"/>
-                    <geom type="capsule" size=".015 0.05" rgba=".8 .2 .1 1"/>
+                    <!-- <skin texcoord="true" material="matsponge" rgba=".7 .7 .7 1"/> -->
+                    <geom type="sphere" size=".015" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
             <!-- Add three extra components to form the soft handle -->
@@ -27,20 +27,20 @@
             <!-- Note: using prefixes so that each has a unique name (got a weird error otherwise) -->
             <body name="handle_top" pos="0 0 .15" quat="0.707 0.0 0.707 0.0">
                 <composite prefix="A" type="box" count="2 3 7" spacing="0.01">
-                    <skin rgba="1 0 0 1"/>
-                    <geom type="capsule" size=".015 0.05" rgba=".8 .2 .1 1"/>
+                    <!-- <skin rgba="1 0 0 1"/> -->
+                    <geom type="sphere" size=".002" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
             <body name="handle_left" pos=".05 0 .125" quat=".924 0.0 -0.383 0.0">
                 <composite prefix="B" type="box" count="2 3 7" spacing="0.01">
-                    <skin rgba="0 1 0 1"/>
-                    <geom type="capsule" size=".015 0.05" rgba=".8 .2 .1 1"/>
+                    <!-- <skin rgba="0 1 0 1"/> -->
+                    <geom type="sphere" size=".002" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
             <body name="handle_right" pos="-.05 0 .125" quat=".924 0.0 0.383 0.0">
                 <composite prefix="C" type="box" count="2 3 7" spacing="0.01">
-                    <skin rgba="0 0 1 1"/>
-                    <geom type="capsule" size=".015 0.05" rgba=".8 .2 .1 1"/>
+                    <!-- <skin rgba="0 0 1 1"/> -->
+                    <geom type="sphere" size=".002" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
         </body>
