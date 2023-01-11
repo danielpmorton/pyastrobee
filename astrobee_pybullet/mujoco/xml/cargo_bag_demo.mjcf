@@ -20,29 +20,39 @@
                     <!-- <skin texcoord="true" material="matsponge" rgba=".7 .7 .7 1"/> -->
                     <geom type="sphere" size=".015" rgba=".8 .2 .1 1"/>
                 </composite>
+                <body name="handle" pos="0 0 0.15">
+                    <composite prefix="D" type="grid" count="15 1 1" spacing="0.01">
+                        <!-- <skin rgba="1 0 0 1"/> -->
+                        <joint kind="main" damping="0.001"/>
+                        <tendon kind="main" width="0.001"/>
+                        <geom size=".002" rgba=".8 .2 .1 1"/>
+                        <pin coord="0"/>
+                        <pin coord="14"/>
+                    </composite>
+                </body>
             </body>
             <!-- Add three extra components to form the soft handle -->
             <!-- TODO: change around the sizes to be more accurate -->
             <!-- TODO: try out a combination of ropes? -->
             <!-- Note: using prefixes so that each has a unique name (got a weird error otherwise) -->
-            <body name="handle_top" pos="0 0 .15" quat="0.707 0.0 0.0 0.707">
+            <!-- <body name="handle_top" pos="0 0 .15" quat="0.707 0.0 0.0 0.707">
                 <composite prefix="A" type="grid" count="2 5 1" spacing="0.01">
-                    <!-- <skin rgba="1 0 0 1"/> -->
+                    <skin rgba="1 0 0 1"/>
                     <geom size=".005" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
             <body name="handle_left" pos=".05 0 .125" quat="0.653 0.271 0.271 0.653">
                 <composite prefix="B" type="grid" count="2 5 1" spacing="0.01">
-                    <!-- <skin rgba="0 1 0 1"/> -->
+                    <skin rgba="0 1 0 1"/>
                     <geom size=".005" rgba=".8 .2 .1 1"/>
                 </composite>
             </body>
             <body name="handle_right" pos="-.05 0 .125" quat="0.653 -0.271 -0.271 0.653">
                 <composite prefix="C" type="grid" count="2 5 1" spacing="0.01">
-                    <!-- <skin rgba="0 0 1 1"/> -->
+                    <skin rgba="0 0 1 1"/>
                     <geom size=".005" rgba=".8 .2 .1 1"/>
                 </composite>
-            </body>
+            </body> -->
         </body>
     </worldbody>
 </mujoco>
