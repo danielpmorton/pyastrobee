@@ -9,7 +9,7 @@ pip install -e .
 ```
 
 ### TODOs:
-- [ ] Try out MuJoCo just to see what it can do
+- [ ] Make a comparison of the pros/cons/functionality of pybullet and mujoco
 - [ ] Try out pybullet 3.1.7 to see if this is more stable at all
 - [ ] Solve the Cupola/Node 1 mesh issues
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
@@ -20,13 +20,14 @@ pip install -e .
 - [ ] Figure out more TODOs
 
 ### In Progress:
-- [ ] Simplify/improve cargo bag mesh (try a thin mesh handle?)
+- [ ] Try out MuJoCo just to see what it can do (see `mujoco` branch)
 - [ ] Merge in Dedo utility functions
 - [ ] Import Dedo bag assets (remember to try the duffel bag attachment in Slack)
 - [ ] Create cargo bag URDF and import into Pybullet
 - [ ] Get correct physical properties for cargo bag
 
 ### Done:
+- [X] Simplify/improve cargo bag mesh (try a thin mesh handle?)
 - [X] Set up repository and packaging
 - [X] Import Astobee resources into Pybullet
 - [X] Fix the ISS interior collisions with V-HACD
