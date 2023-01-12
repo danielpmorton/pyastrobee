@@ -1,3 +1,13 @@
+<!-- 
+Good files for reference:
+softbox.xml in mujoco/model/composite
+belt.xml in mujoco/model/plugin
+
+
+ -->
+
+
+
 <mujoco>
     <asset>
         <!-- Grid texture for floor -->
@@ -8,28 +18,72 @@
         <material name="matsponge" texture="texsponge" specular="0.3"/>
     </asset>
 
+    <extension>
+        <required plugin="mujoco.elasticity.cable"/>
+    </extension>
+
     <worldbody>
         <!-- Load the floor -->
         <geom name="floor" size="0 0 .05" type="plane" material="grid" condim="3"/>
         <light name="top" pos="0 0 2"/>
+
+
         <!-- Load a soft box -->
         <body name="bag" pos="0 0 1">
             <freejoint/>
             <body name="main_compartment">
-                <composite type="box" count="7 7 7" spacing="0.04">
+                <composite type="box" count="10 8 5" spacing="0.05">
                     <!-- <skin texcoord="true" material="matsponge" rgba=".7 .7 .7 1"/> -->
                     <geom type="sphere" size=".015" rgba=".8 .2 .1 1"/>
                 </composite>
-                <body name="handle" pos="0 0 0.15">
-                    <composite prefix="D" type="grid" count="15 1 1" spacing="0.01">
-                        <!-- <skin rgba="1 0 0 1"/> -->
+                <!-- <body name="handle" pos="0 0 0.15"> -->
+
+                    <!-- <composite prefix="D" type="grid" count="15 1 1" spacing="0.01">
+                        <skin rgba="1 0 0 1"/>
                         <joint kind="main" damping="0.001"/>
                         <tendon kind="main" width="0.001"/>
                         <geom size=".002" rgba=".8 .2 .1 1"/>
                         <pin coord="0"/>
                         <pin coord="14"/>
-                    </composite>
-                </body>
+                    </composite> -->
+                    <!-- <composite prefix="D" type="cable" curve="sin(s)" count="15 1 1"> -->
+                        <!-- <skin rgba="1 0 0 1"/> -->
+                        <!-- <joint kind="main" damping="0.001"/> -->
+                        <!-- <tendon kind="main" width="0.001"/> -->
+                        <!-- <geom type="box" size=".002" rgba=".8 .2 .1 1"/> -->
+                        <!-- <pin coord="0"/> -->
+                        <!-- <pin coord="14"/> -->
+                    <!-- </composite> -->
+                <!-- </body> -->
+            </body>
+            <body name="handle">
+                <composite type="cable" offset="0 0 0.125" initial="none"
+                    vertex="
+                    0.     0.   0.
+                    0.01   0.   0.01
+                    0.02   0.   0.02
+                    0.03   0.   0.03
+                    0.04   0.   0.04
+                    0.05   0.   0.04
+                    0.06   0.   0.04
+                    0.07   0.   0.04
+                    0.08   0.   0.04
+                    0.09   0.   0.03
+                    0.10   0.   0.02
+                    0.11   0.   0.01
+                    0.12   0.   0.0">
+                    <plugin plugin="mujoco.elasticity.cable">
+                        <!--Units are in Pa (SI)-->
+                        <config key="twist" value="1e2"/>
+                        <config key="bend" value="1e2"/>
+                        <config key="vmax" value="0.1"/>
+                    </plugin>
+                    <joint kind="main" damping="0.001"/>
+                    <geom type="box" size="0.030 0.010 0.001" rgba=".8 .2 .1 1" group="3"/>
+                    <skin subgrid="3"/>
+                    <!-- <pin coord="0">
+                    <pin coord="12"> -->
+                </composite>
             </body>
             <!-- Add three extra components to form the soft handle -->
             <!-- TODO: change around the sizes to be more accurate -->
@@ -55,4 +109,10 @@
             </body> -->
         </body>
     </worldbody>
+
+<!-- TODO: mess around with this. I think this allows the end of the handle to be fixed too -->
+  <equality>
+    <connect name="right_boundary" body1="B_last" body2="B_first" anchor="0.07 0 0"/>
+  </equality>
+
 </mujoco>
