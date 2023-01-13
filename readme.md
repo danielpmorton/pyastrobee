@@ -9,6 +9,7 @@ pip install -e .[dev]
 ```
 - A conda environment is optional but recommended
 - The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
+- Recommended git trick: `git config --global alias.graph "log --all --graph --decorate --oneline"`, then `git graph` will work nicely
 
 ## Status
 ### TODOs:
