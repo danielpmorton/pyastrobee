@@ -20,6 +20,7 @@ pip install -e .[dev]
 - [ ] Send cargo bag properties to ROS
 - [ ] Get Astrobee ROS/simulation processes working in Pybullet
 - [ ] Figure out how to send robot state from bullet to ROS
+- [ ] Add tests
 - [ ] Figure out more TODOs
 
 ### In Progress:
@@ -52,6 +53,7 @@ pip install -e .[dev]
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
 ### Bugs/Issues:
+- The dedo duffel bag cannot load as a soft body
 - The joint of the astrobee nearest to the body does not seem to be moving properly in simulation - check the URDF to see if there is an issue with how this joint is defined
 - The `cupola.dae` and `node_1.dae` files in the `astrobee_iss` meshes cannot be loaded into Blender, whereas all of the other ISS meshes can.
 

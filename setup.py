@@ -1,6 +1,8 @@
 """Sets up the current directory as a python package for easier imports
 
 This is used in conjunction with "pip install -e ."
+
+TODO add specific versions to the package requirements
 """
 
 from setuptools import setup
