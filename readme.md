@@ -1,7 +1,6 @@
 # Astrobee Pybullet/ROS Integration
 
 ## Getting started
-
 ```
 conda create --name astrobee # Optional
 conda activate astrobee # Optional
@@ -15,7 +14,6 @@ pip install -e .[dev]
 ### TODOs:
 - [ ] Get a texture file for astrobee and import it
 - [ ] Organize meshes
-- [ ] Make a comparison of the pros/cons/functionality of pybullet and mujoco
 - [ ] Solve the Cupola/Node 1 mesh issues
 - [ ] Send cargo bag properties to ROS
 - [ ] Get Astrobee ROS/simulation processes working in Pybullet
@@ -24,8 +22,6 @@ pip install -e .[dev]
 - [ ] Figure out more TODOs
 
 ### In Progress:
-- [ ] Try out MuJoCo just to see what it can do (see `mujoco` branch)
-- [ ] Merge in Dedo utility functions
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
@@ -38,6 +34,8 @@ pip install -e .[dev]
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Try out MuJoCo
+- [X] Merge in Dedo utility functions
 - [X] Import Dedo bag assets
 - [X] Create cargo bag URDF and import into Pybullet
 - [X] Simplify/improve cargo bag mesh (try a thin mesh handle?)
@@ -55,6 +53,7 @@ pip install -e .[dev]
 ### Bugs/Issues:
 - The dedo duffel bag cannot load as a soft body
 - The joint of the astrobee nearest to the body does not seem to be moving properly in simulation - check the URDF to see if there is an issue with how this joint is defined
+- Some softbodies have very strange inertia when moving them around in the Bullet gui (likely, some parameters need to be refined)
 - The `cupola.dae` and `node_1.dae` files in the `astrobee_iss` meshes cannot be loaded into Blender, whereas all of the other ISS meshes can.
 
 ## Thoughts
@@ -63,3 +62,6 @@ pip install -e .[dev]
 ## General notes
 - Recall that to run the NASA Gazebo/Rviz code, go to `~/astrobee`, run `source devel/setup.bash`, then `roslaunch astrobee sim.launch dds:=false robot:=sim_pub rviz:=true sviz:=true`.
   - NOTE: this does not currently work if the conda `astrobee` environment you made is active, so run `conda deactivate` before running the command. This could be an issue in the future, but for now we will put this off. 
+- Meshing steps: 
+  - Construction: Create CAD model -> Export as OBJ
+  - Refinement: Delete any extra faces near the handle (Meshmixer) -> fill any holes (Blender) -> perform remeshing to improve uniformity (Meshmixer)
