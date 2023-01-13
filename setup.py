@@ -10,7 +10,7 @@ from setuptools import setup
 setup(
     name="astrobee_pybullet",
     version="0.0.1",
-    install_requires=["numpy", "pybullet"],
+    install_requires=["numpy", "pybullet", "opencv-python"],
     extras_require={"dev": ["pylint", "black"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",

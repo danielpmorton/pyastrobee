@@ -3,10 +3,8 @@ Good files for reference:
 softbox.xml in mujoco/model/composite
 belt.xml in mujoco/model/plugin
 
-
+WORK IN PROGRESS!!! 
  -->
-
-
 
 <mujoco>
     <asset>
