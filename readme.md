@@ -1,19 +1,18 @@
 # Astrobee Pybullet/ROS Integration
 
-### Getting started
+## Getting started
 
 ```
 conda create --name astrobee # Optional
 conda activate astrobee # Optional
 pip install -e .
 ```
-
+## Status
 ### TODOs:
+- [ ] Get a texture file for astrobee and import it
+- [ ] Organize meshes
 - [ ] Make a comparison of the pros/cons/functionality of pybullet and mujoco
-- [ ] Try out pybullet 3.1.7 to see if this is more stable at all
 - [ ] Solve the Cupola/Node 1 mesh issues
-- [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
-- [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
 - [ ] Send cargo bag properties to ROS
 - [ ] Get Astrobee ROS/simulation processes working in Pybullet
 - [ ] Figure out how to send robot state from bullet to ROS
@@ -22,11 +21,20 @@ pip install -e .
 ### In Progress:
 - [ ] Try out MuJoCo just to see what it can do (see `mujoco` branch)
 - [ ] Merge in Dedo utility functions
-- [ ] Import Dedo bag assets (remember to try the duffel bag attachment in Slack)
-- [ ] Create cargo bag URDF and import into Pybullet
-- [ ] Get correct physical properties for cargo bag
+- [ ] Get correct physical properties for cargo bag (check on weird inertia?)
+
+### Backlog/Optional:
+- [ ] Try out pybullet 3.1.7 to see if this is more stable at all
+- [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
+- [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
+- [ ] Consider switching from conda to pyenv
+- [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
+- [ ] Add in debugging and exception handling
+- [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Import Dedo bag assets
+- [X] Create cargo bag URDF and import into Pybullet
 - [X] Simplify/improve cargo bag mesh (try a thin mesh handle?)
 - [X] Set up repository and packaging
 - [X] Import Astobee resources into Pybullet
@@ -40,8 +48,8 @@ pip install -e .
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
 ### Bugs/Issues:
+- The joint of the astrobee nearest to the body does not seem to be moving properly in simulation - check the URDF to see if there is an issue with how this joint is defined
 - The `cupola.dae` and `node_1.dae` files in the `astrobee_iss` meshes cannot be loaded into Blender, whereas all of the other ISS meshes can.
-  - Regarding this, I originally tested simulating the Astrobee in the cupola and was getting some weird collision behavior. I wonder if this is due to these meshes being messed-up somehow
 
 ## Thoughts
 - Mujoco is interesting because it models the deformables as composites - for instance, a soft box is a collection of spheres/capsules wrapped up in a skin. I wonder if we can change the properties of these smaller particles inside the composite?

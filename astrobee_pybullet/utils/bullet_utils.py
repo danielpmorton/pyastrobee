@@ -47,15 +47,16 @@ def load_rigid_object(
     Returns:
         int: ID number for the object
     """
-    assert mass >= 0
+    # Deal with pybullet's weird handling of mass = 0 being fixed
+    if mass < 0:
+        raise ValueError("Mass should not be a negative value")
     if mass == 0:
         print_red(
             f"Warning: the mass of {filename} is 0, which will make it fixed. Use the 'fixed' parameter instead"
         )
+    if fixed:
+        mass = 0.0
     if filename.endswith(".obj"):  # mesh info
-        if fixed:
-            # For OBJs, setting the mass to 0 is the only way to fix it in space
-            mass = 0.0
         xyz_scale = [scale, scale, scale]
         visual_id = pybullet.createVisualShape(
             shapeType=pybullet.GEOM_MESH,
@@ -243,7 +244,7 @@ def initialize_pybullet(
 
 
 def configure_visualization(
-    camera_params: Optional(list[float]) = None,
+    camera_params: Optional[list[float]] = None,
     flags_to_enable: Optional[list[float]] = None,
     flags_to_disable: Optional[list[float]] = None,
     **kwargs,
