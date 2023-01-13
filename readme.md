@@ -5,8 +5,11 @@
 ```
 conda create --name astrobee # Optional
 conda activate astrobee # Optional
-pip install -e .
+pip install -e .[dev]
 ```
+- A conda environment is optional but recommended
+- The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
+
 ## Status
 ### TODOs:
 - [ ] Get a texture file for astrobee and import it
