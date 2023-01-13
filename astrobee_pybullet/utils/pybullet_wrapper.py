@@ -6,7 +6,7 @@ TODO:
 
 from typing import Union
 
-import pybullet as p
+import pybullet
 import pybullet_data
 
 
@@ -17,13 +17,13 @@ def set_gravity(location: str = "Earth") -> None:
         location (str, optional): Location of the simulation (e.g. Earth, Space, Moon, ...). Defaults to "Earth".
     """
     if location.lower() == "earth":
-        return p.setGravity(0, 0, -9.81)
+        return pybullet.setGravity(0, 0, -9.81)
     elif location.lower() in {"space", "iss"}:
         # Pybullet defaults to 0 gravity, but this option can allow us to reset it to 0-g
         # if it had previously been changed
-        return p.setGravity(0, 0, 0)
+        return pybullet.setGravity(0, 0, 0)
     elif location.lower() == "moon":
-        return p.setGravity(0, 0, -1.62)
+        return pybullet.setGravity(0, 0, -1.62)
     else:
         raise Exception("Invalid location")
 
@@ -54,13 +54,13 @@ def initialize_pybullet(
         int: A Physics Client ID
     """
     if use_gui:
-        client = p.connect(p.GUI)
+        client = pybullet.connect(pybullet.GUI)
     else:
-        client = p.connect(p.DIRECT)
+        client = pybullet.connect(pybullet.DIRECT)
     if use_pybullet_data:
-        p.setAdditionalSearchPath(pybullet_data.getDataPath())
+        pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
     if use_deformability:
-        p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
+        pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
     return client
 
 
@@ -82,9 +82,9 @@ def load_urdf(
         int: A unique ID for the body which was loaded
     """
     if fixed:
-        return p.loadURDF(urdf_loc, pos, orn, useFixedBase=True)
-    return p.loadURDF(urdf_loc, pos, orn)
+        return pybullet.loadURDF(urdf_loc, pos, orn, useFixedBase=True)
+    return pybullet.loadURDF(urdf_loc, pos, orn)
 
 
 def check_pybullet_connection():
-    return p.is_connected()
+    return pybullet.is_connected()

@@ -6,7 +6,7 @@ TODO
 """
 
 import time
-import pybullet as p
+import pybullet
 
 from astrobee_pybullet.utils.pybullet_wrapper import (
     initialize_pybullet,
@@ -52,7 +52,7 @@ def main():
 
     # time.sleep(10)
     for _ in range(100000):
-        p.stepSimulation()
+        pybullet.stepSimulation()
         time.sleep(1.0 / 240.0)
 
 

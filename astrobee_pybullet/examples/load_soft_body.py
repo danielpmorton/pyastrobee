@@ -1,18 +1,18 @@
 """https://github.com/bulletphysics/bullet3/blob/master/examples/pybullet/examples/load_soft_body.py
 """
 
-import pybullet as p
+import pybullet
 from time import sleep
 import pybullet_data
 
 
-physicsClient = p.connect(p.GUI)
+physicsClient = pybullet.connect(pybullet.GUI)
 
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
-p.setGravity(0, 0, -10)
-planeId = p.loadURDF("plane.urdf", [0, 0, -2])
-boxId = p.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
-bunnyId = p.loadSoftBody("bunny.obj")  # .obj")#.vtk")
+pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+pybullet.setGravity(0, 0, -10)
+planeId = pybullet.loadURDF("plane.urdf", [0, 0, -2])
+boxId = pybullet.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
+bunnyId = pybullet.loadSoftBody("bunny.obj")  # .obj")#.vtk")
 
 # meshData = p.getMeshData(bunnyId)
 # print("meshData=",meshData)
@@ -20,17 +20,17 @@ bunnyId = p.loadSoftBody("bunny.obj")  # .obj")#.vtk")
 useRealTimeSimulation = 1
 
 if useRealTimeSimulation:
-    p.setRealTimeSimulation(1)
+    pybullet.setRealTimeSimulation(1)
 
-print(p.getDynamicsInfo(planeId, -1))
+print(pybullet.getDynamicsInfo(planeId, -1))
 # print(p.getDynamicsInfo(bunnyId, 0))
-print(p.getDynamicsInfo(boxId, -1))
-p.changeDynamics(boxId, -1, mass=10)
-while p.isConnected():
-    p.setGravity(0, 0, -10)
+print(pybullet.getDynamicsInfo(boxId, -1))
+pybullet.changeDynamics(boxId, -1, mass=10)
+while pybullet.isConnected():
+    pybullet.setGravity(0, 0, -10)
     if useRealTimeSimulation:
 
         sleep(0.01)  # Time in seconds.
         # p.getCameraImage(320,200,renderer=p.ER_BULLET_HARDWARE_OPENGL )
     else:
-        p.stepSimulation()
+        pybullet.stepSimulation()

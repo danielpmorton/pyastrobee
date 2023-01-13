@@ -1,24 +1,24 @@
 """https://github.com/bulletphysics/bullet3/blob/master/examples/pybullet/examples/deformable_torus.py
 """
 
-import pybullet as p
+import pybullet
 from time import sleep
 import pybullet_data
 
-physicsClient = p.connect(p.GUI)
+physicsClient = pybullet.connect(pybullet.GUI)
 
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
+pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
 
-p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
-p.resetDebugVisualizerCamera(3, -420, -30, [0.3, 0.9, -2])
-p.setGravity(0, 0, -10)
+pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
+pybullet.resetDebugVisualizerCamera(3, -420, -30, [0.3, 0.9, -2])
+pybullet.setGravity(0, 0, -10)
 
-tex = p.loadTexture("uvmap.png")
-planeId = p.loadURDF("plane.urdf", [0, 0, -2])
+tex = pybullet.loadTexture("uvmap.png")
+planeId = pybullet.loadURDF("plane.urdf", [0, 0, -2])
 
-boxId = p.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
+boxId = pybullet.loadURDF("cube.urdf", [0, 3, 2], useMaximalCoordinates=True)
 
-bunnyId = p.loadSoftBody(
+bunnyId = pybullet.loadSoftBody(
     "torus/torus_textured.obj",
     # simFileName="torus.vtk",
     mass=3,
@@ -31,16 +31,18 @@ bunnyId = p.loadSoftBody(
     frictionCoeff=0.5,
     repulsionStiffness=800,
 )
-p.changeVisualShape(bunnyId, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0)
+pybullet.changeVisualShape(
+    bunnyId, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0
+)
 
 
 # bunny2 = p.loadURDF("torus_deform.urdf", [0, 1, 0.5], flags=p.URDF_USE_SELF_COLLISION)
 
 # p.changeVisualShape(bunny2, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=tex, flags=0)
-p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
-p.setRealTimeSimulation(0)
+pybullet.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
+pybullet.setRealTimeSimulation(0)
 
-while p.isConnected():
-    p.stepSimulation()
-    p.getCameraImage(320, 200)
-    p.setGravity(0, 0, -10)
+while pybullet.isConnected():
+    pybullet.stepSimulation()
+    pybullet.getCameraImage(320, 200)
+    pybullet.setGravity(0, 0, -10)
