@@ -12,6 +12,11 @@ pip install -e .[dev]
 
 ## Status
 ### TODOs:
+- [ ] Work on improving bag meshes
+- [ ] Import textures - see png files from dedo as examples
+- [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
+- [ ] Figure out if it's possible to load arbitrary meshes into mujoco
+- [ ] Test out `from mujoco import viewer` and `viewer.launch(...)`
 - [ ] Get a texture file for astrobee and import it
 - [ ] Organize meshes
 - [ ] Solve the Cupola/Node 1 mesh issues

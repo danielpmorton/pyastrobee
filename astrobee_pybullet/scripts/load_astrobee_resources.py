@@ -26,7 +26,9 @@ def main():
     initialize_pybullet(use_gui=True)
     load_rigid_object(iss_urdf, fixed=True)
     load_rigid_object(astrobee_urdf, pos=outside)
-    load_deformable_object(bag_obj, pos=origin)
+    load_deformable_object(
+        bag_obj, pos=origin, elastic_stiffness=100, bending_stiffness=100
+    )
     run_sim()
 
 
