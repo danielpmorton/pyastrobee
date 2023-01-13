@@ -1,72 +1,93 @@
+"""Pybullet-specific helper functions
+
+TODO:
+- Clear up URDF/OBJ method confusion
 """
-Utilities for deform sim in PyBullet.
 
+import time
+from typing import Optional
 
-Note: this code is for research i.e. quick experimentation; it has minimal
-comments for now, but if we see further interest from the community -- we will
-add further comments, unify the style, improve efficiency and add unittests.
-
-@contactrika
-
-"""
-from pathlib import Path  # automatically converts forward slashes if needed
-
-import numpy as np
-import os
 import pybullet
 import pybullet_data
 
 from astrobee_pybullet.utils.mesh_utils import get_mesh_data
-
-
-def get_preset_properties(object_preset_dict, deform_obj_name, key):
-    if object_preset_dict is None or deform_obj_name not in object_preset_dict.keys():
-        return None
-    if key in object_preset_dict[deform_obj_name].keys():
-        return object_preset_dict[deform_obj_name][key]
+from astrobee_pybullet.utils.python_utils import print_red
 
 
 def load_rigid_object(
-    sim,
-    obj_file_name,
-    scale,
-    init_pos,
-    init_ori,
-    mass=0.0,
-    texture_file=None,
-    rgba_color=None,
-):
-    """Load a rigid object from file, create visual and collision shapes."""
-    if obj_file_name.endswith(".obj"):  # mesh info
+    filename: str,
+    texture_filename: Optional[str] = None,
+    scale: float = 1.0,
+    pos: list[float] = [0.0, 0.0, 0.0],
+    orn: list[float] = [0.0, 0.0, 0.0],
+    mass: float = 1.0,
+    fixed: bool = False,
+    rgba: list[float] = [1.0, 1.0, 1.0, 1.0],
+) -> int:
+    """Loads a rigid object from an OBJ or URDF file
+
+    TODO consider clearing up some of the confusion between which inputs apply to which import methods
+    (e.g. mass/fixed differs between these, and rgba only applies to obj)
+
+    Args:
+        filename (str): Path to the OBJ/URDF file to load
+        texture_filename (str, optional): Path to a texture file to apply. Defaults to None, in which case no
+            texture will be applied
+        scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
+        pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        orn (list[float], optional): Initial (euler) orientation for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        mass (float, optional): Mass of the loaded object. Defaults to 1.0.
+        fixed (bool, optional): Whether or not to fix the object in space. Defaults to False.
+        rgba (list[float], optional): Color of the object, expressed as RGBA, each within range [0, 1].
+            Defaults to [1.0, 1.0, 1.0, 1.0] (white).
+
+    Raises:
+        ValueError: If the filename is not a valid OBJ or URDF
+
+    Returns:
+        int: ID number for the object
+    """
+    assert mass >= 0
+    if mass == 0:
+        print_red(
+            f"Warning: the mass of {filename} is 0, which will make it fixed. Use the 'fixed' parameter instead"
+        )
+    if filename.endswith(".obj"):  # mesh info
+        if fixed:
+            # For OBJs, setting the mass to 0 is the only way to fix it in space
+            mass = 0.0
         xyz_scale = [scale, scale, scale]
-        viz_shape_id = sim.createVisualShape(
+        visual_id = pybullet.createVisualShape(
             shapeType=pybullet.GEOM_MESH,
-            rgbaColor=rgba_color,
-            fileName=obj_file_name,
+            rgbaColor=rgba,
+            fileName=filename,
             meshScale=xyz_scale,
         )
-        col_shape_id = sim.createCollisionShape(
-            shapeType=pybullet.GEOM_MESH, fileName=obj_file_name, meshScale=xyz_scale
+        collision_id = pybullet.createCollisionShape(
+            shapeType=pybullet.GEOM_MESH, fileName=filename, meshScale=xyz_scale
         )
-        rigid_id = sim.createMultiBody(
+        rigid_id = pybullet.createMultiBody(
             baseMass=mass,  # mass==0 => fixed at position where it is loaded
-            basePosition=init_pos,
-            baseCollisionShapeIndex=col_shape_id,
-            baseVisualShapeIndex=viz_shape_id,
-            baseOrientation=pybullet.getQuaternionFromEuler(init_ori),
+            basePosition=pos,
+            baseCollisionShapeIndex=collision_id,
+            baseVisualShapeIndex=visual_id,
+            baseOrientation=pybullet.getQuaternionFromEuler(orn),
         )
-    elif obj_file_name.endswith(".urdf"):  # URDF file
-        rigid_id = sim.loadURDF(
-            obj_file_name,
-            init_pos,
-            pybullet.getQuaternionFromEuler(init_ori),
-            useFixedBase=True if mass <= 0 else False,
+    elif filename.endswith(".urdf"):  # URDF file
+        rigid_id = pybullet.loadURDF(
+            filename,
+            pos,
+            pybullet.getQuaternionFromEuler(orn),
+            useFixedBase=fixed,
             globalScaling=scale,
         )
     else:
-        print("Unknown file extension", obj_file_name)
-        assert False, "load_rigid_object supports only obj and URDF files"
-    sim.changeDynamics(
+        raise ValueError(
+            f"Invalid filename: {filename}. Import either an OBJ or URDF file"
+        )
+
+    # TODO: decide if these parameters should be included as inputs rather than hard-coded
+    pybullet.changeDynamics(
         rigid_id,
         -1,
         mass,
@@ -75,59 +96,100 @@ def load_rigid_object(
         rollingFriction=1.0,
         restitution=0.0,
     )
-    n_jt = sim.getNumJoints(rigid_id)
 
-    if texture_file is not None:
-        texture_id = sim.loadTexture(texture_file)
-        kwargs = {}
-        if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
-            kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
-
-        if obj_file_name.endswith("figure_headless.urdf"):
-            sim.changeVisualShape(  # only changing the body of the figure
-                rigid_id,
-                0,
-                rgbaColor=[1, 1, 1, 1],
-                textureUniqueId=texture_id,
-                **kwargs
-            )
-        else:
-            for i in range(-1, n_jt):
-                sim.changeVisualShape(
-                    rigid_id,
-                    i,
-                    rgbaColor=[1, 1, 1, 1],
-                    textureUniqueId=texture_id,
-                    **kwargs
-                )
+    if texture_filename is not None:
+        add_texture_to_rigid(rigid_id, texture_filename)
 
     return rigid_id
 
 
-def load_deform_object(
-    sim,
-    obj_file_name,
-    texture_file_name,
-    scale,
-    init_pos,
-    init_ori,
-    bending_stiffness,
-    damping_stiffness,
-    elastic_stiffness,
-    friction_coeff,
-    self_collision,
-    debug,
-):
-    """Load object from obj file with pybullet's loadSoftBody()."""
-    if debug:
-        print("Loading filename", obj_file_name)
-    # Note: do not set very small mass (e.g. 0.01 causes instabilities).
-    deform_id = sim.loadSoftBody(
-        mass=1,  # 1kg is default; bad sim with lower mass
-        fileName=str(Path(obj_file_name)),
+def add_texture_to_rigid(object_id: int, texture_filename: str) -> None:
+    """Applies a texture to a rigid object
+
+    Args:
+        object_id (int): The ID of the rigid object in the pybullet simulation
+        texture_filename (str): Path to the texture file
+    """
+    texture_id = pybullet.loadTexture(texture_filename)
+    kwargs = {}
+    if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
+        kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+
+    num_joints = pybullet.getNumJoints(object_id)
+    # TODO: check on the indexing here (for now, assuming dedo is correct)
+    for i in range(-1, num_joints):
+        pybullet.changeVisualShape(
+            object_id,
+            i,
+            rgbaColor=[1, 1, 1, 1],
+            textureUniqueId=texture_id,
+            **kwargs,
+        )
+
+
+def add_texture_to_deformable(object_id: int, texture_filename: str) -> None:
+    """Applies a texture to a deformable object
+
+    Args:
+        object_id (int): The ID of the deformable object in the pybullet simulation
+        texture_filename (str): Path to the texture file
+    """
+    texture_id = pybullet.loadTexture(texture_filename)
+    kwargs = {}
+    if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
+        kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+    pybullet.changeVisualShape(
+        object_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=texture_id, **kwargs
+    )
+
+
+def load_deformable_object(
+    filename: str,
+    texture_filename: Optional[str] = None,
+    scale: float = 1.0,
+    pos: list[float] = [0.0, 0.0, 0.0],
+    orn: list[float] = [0.0, 0.0, 0.0],
+    mass: float = 1.0,
+    bending_stiffness: float = 1.0,
+    damping_stiffness: float = 0.1,
+    elastic_stiffness: float = 1.0,
+    friction_coeff: float = 0.1,
+    self_collision: bool = True,
+) -> int:
+    """Loads a deformable object from an OBJ file
+
+    TODO add support for deformable URDF files!
+    TODO check if it makes any sense (or is even possible) to have a fixed deformable?
+
+    Args:
+        filename (str): Path to the deformable object to load
+        texture_filename (str, optional): Path to a texture file to apply. Defaults to None, in which case no
+            texture will be applied
+        scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
+        pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        orn (list[float], optional): Initial (euler) orientation for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        mass (float, optional): Mass of the loaded object. Defaults to 1.0 (Keeping at 1.0 is the most stable option).
+        bending_stiffness (float, optional): Bending stiffness of the loaded object. Defaults to 1.0.
+        damping_stiffness (float, optional): Damping stiffness of the loaded object. Defaults to 0.1.
+        elastic_stiffness (float, optional): Elastic stiffness of the loaded object. Defaults to 1.0.
+        friction_coeff (float, optional): Friction coefficient of the loaded object. Defaults to 0.1.
+        self_collision (bool, optional): Whether or not to allow self-collisions for the object. Defaults to True.
+
+    Returns:
+        int: ID number for the object
+    """
+    if mass != 1.0:
+        print_red(
+            "Warning: mass = 1 is the most stable for deformables. Small mass can cause instabilities"
+        )
+
+    # TODO: decide if some of these parameters should be included as inputs rather than hard-coded
+    deform_id = pybullet.loadSoftBody(
+        mass=mass,
+        fileName=filename,
         scale=scale,
-        basePosition=init_pos,
-        baseOrientation=pybullet.getQuaternionFromEuler(init_ori),
+        basePosition=pos,
+        baseOrientation=pybullet.getQuaternionFromEuler(orn),
         springElasticStiffness=elastic_stiffness,
         springDampingStiffness=damping_stiffness,
         springBendingStiffness=bending_stiffness,
@@ -141,141 +203,145 @@ def load_deform_object(
         useBendingSprings=True,
         # repulsionStiffness=10000000,
     )
-    # PyBullet examples for loading and anchoring deformables:
-    # github.com/bulletphysics/bullet3/examples/pybullet/examples/deformable_anchor.py
-    sim.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
-    if texture_file_name is not None:
-        texture_id = sim.loadTexture(str(Path(texture_file_name)))
-        kwargs = {}
-        if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
-            kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
-        sim.changeVisualShape(
-            deform_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=texture_id, **kwargs
-        )
-    num_mesh_vertices = get_mesh_data(sim, deform_id)[0]
 
-    if debug:
-        print(
-            "Loaded deform_id",
-            deform_id,
-            "with",
-            num_mesh_vertices,
-            "mesh vertices",
-            "init_pos",
-            init_pos,
+    # TODO figure out what this sparseSdfVoxelSize parameter actually does (it's not documented)
+    # See pybullet examples/deformable_anchor.py for its usage there
+    pybullet.setPhysicsEngineParameter(sparseSdfVoxelSize=0.25)
+    if texture_filename is not None:
+        add_texture_to_deformable(deform_id, texture_filename)
+
+    # Validate the size of the mesh to assure stability
+    num_mesh_vertices = get_mesh_data(pybullet, deform_id)[0]
+    if num_mesh_vertices > 2**13:
+        print_red(
+            f"Warning: high number of mesh vertices: {num_mesh_vertices}. Consider a lower-res mesh"
         )
-    # Pybullet will struggle with very large meshes, so we should keep mesh
-    # sizes to a limited number of vertices and faces.
-    # Large meshes will load on Linux/Ubuntu, but sim will run too slowly.
-    # Meshes with >2^13=8196 vertices will fail to load on OS X due to shared
-    # memory limits, as noted here:
-    # github.com/bulletphysics/bullet3/issues/1965
-    assert num_mesh_vertices < 2**13  # make sure mesh has less than ~8K verts
+
     return deform_id
 
 
-def reset_bullet_legacy(args, sim, plane_texture=None, debug=False):
-    """Reset/initialize pybullet simulation."""
-    dist, pitch, yaw, pos_x, pos_y, pos_z = args.cam_viewmat
-    cam_args = {
-        "cameraDistance": dist,
-        "cameraPitch": pitch,
-        "cameraYaw": yaw,
-        "cameraTargetPosition": np.array([pos_x, pos_y, pos_z]),
-    }
-    if args.viz:
-        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
-        sim.resetDebugVisualizerCamera(**cam_args)
-        if debug:
-            res = sim.getDebugVisualizerCamera()
-            print("Camera info for", cam_args)
-            print("viewMatrix", res[2])
-            print("projectionMatrix", res[3])
-    sim.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)  # FEM deform sim
-    sim.setGravity(0, 0, args.sim_gravity)
-    sim.setTimeStep(1.0 / args.sim_freq)
-    # Could experiment with physic engine parameters, but so far we have not
-    # noticed a stark improvement from changing these.
-    # sim.setPhysicsEngineParameter(numSubSteps=10, allowedCcdPenetration=0.01)
-    #
-    # Load floor plane and rigid objects
-    #
-    sim.setAdditionalSearchPath(pybullet_data.getDataPath())
-    floor_id = sim.loadURDF("plane.urdf")
-    if plane_texture is not None:
-        if debug:
-            print("texture file", plane_texture)
-        texture_id = sim.loadTexture(plane_texture)
-        sim.changeVisualShape(
+def initialize_pybullet(
+    use_gui: bool = True,
+) -> int:
+    """Starts a pybullet client
+
+    Args:
+        use_gui (bool, optional): Whether or not to use the GUI as opposed to headless. Defaults to True
+
+    Returns:
+        int: A Physics Client ID
+    """
+
+    if use_gui:
+        client_id = pybullet.connect(pybullet.GUI)
+    else:
+        client_id = pybullet.connect(pybullet.DIRECT)
+    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+    pybullet.setAdditionalSearchPath("astrobee_pybullet/resources")
+    pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
+    return client_id
+
+
+def configure_visualization(
+    camera_params: Optional(list[float]) = None,
+    flags_to_enable: Optional[list[float]] = None,
+    flags_to_disable: Optional[list[float]] = None,
+    **kwargs,
+) -> None:
+    """Configures the pybullet debug visualizer
+
+    Args:
+        camera_params (list[float], optional): Used to reset camera position. [dist, pitch, yaw, pos_x, pos_y, pos_z]
+            where dist is the distance from eye to camera target, yaw is left/right angle, pitch is up/down angle, and
+            the xyz positions are for the focus point. Defaults to None.
+        flags_to_enable (list[float], optional): A list of pybullet flags (for example, COV_ENABLE_WIREFRAME).
+            Defaults to None.
+        flags_to_disable (list[float], optional): A list of pybullet flags (for example, COV_ENABLE_WIREFRAME).
+            Defaults to None.
+        **kwargs: Any additional kwargs to set. See the pybullet configureDebugVisualizer documentation for more info
+    """
+    if camera_params:
+        dist, pitch, yaw, pos_x, pos_y, pos_z = camera_params
+        pybullet.resetDebugVisualizerCamera(
+            cameraDistance=dist,
+            cameraPitch=pitch,
+            cameraYaw=yaw,
+            cameraTargetPosition=[pos_x, pos_y, pos_z],
+        )
+    if flags_to_enable:
+        for flag in flags_to_enable:
+            pybullet.configureDebugVisualizer(flag, True)
+    if flags_to_disable:
+        for flag in flags_to_disable:
+            pybullet.configureDebugVisualizer(flag, False)
+    if kwargs:
+        pybullet.configureDebugVisualizer(**kwargs)
+
+
+def configure_physics(
+    gravity: Optional[list[float]] = None, timestep: Optional[float] = None
+) -> None:
+    """Configures the physics of the pybullet simulation
+
+    TODO add more parameters using setPhysicsEngineParameter
+
+    Args:
+        gravity (list[float], optional): Gravitational force vector for the simulation.
+            If unspecified, the default default pybullet value is zero gravity [0, 0, 0]
+        timestep (float, optional): Simulation timestep. If unspecified, the default pybullet value is 1/240 (240Hz)
+    """
+    if gravity:
+        pybullet.setGravity(*gravity)
+    if timestep:
+        pybullet.setTimeStep(timestep)
+
+
+def load_floor(texture_filename: Optional[str] = None) -> None:
+    """Loads a floor into the pybullet simulation
+
+    Args:
+        texture_filename (str, optional): If adding a texture to the floor plane, pass in the filename.
+            Defaults to None.
+    """
+    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+    floor_id = pybullet.loadURDF("plane.urdf")
+    if texture_filename is not None:
+        texture_id = pybullet.loadTexture(texture_filename)
+        pybullet.changeVisualShape(
             floor_id,
             -1,
             rgbaColor=[1, 1, 1, 1],
             textureUniqueId=texture_id,
         )
-    assert floor_id == 0  # camera assumes floor/ground is loaded first
-    return sim
 
 
-def reset_bullet(args, sim, plane_texture=None, debug=False):
-    """Reset/initialize pybullet simulation."""
-    dist, pitch, yaw, pos_x, pos_y, pos_z = args.cam_viewmat
-    cam_args = {
-        "cameraDistance": dist,
-        "cameraPitch": pitch,
-        "cameraYaw": yaw,
-        "cameraTargetPosition": np.array([pos_x, pos_y, pos_z]),
-    }
-    if args.viz:
-        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
-        sim.resetDebugVisualizerCamera(**cam_args)
-        if debug:
-            res = sim.getDebugVisualizerCamera()
-            print("Camera info for", cam_args)
-            print("viewMatrix", res[2])
-            print("projectionMatrix", res[3])
-    sim.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)  # FEM deform sim
-    sim.setGravity(0, 0, args.sim_gravity)
-    sim.setTimeStep(1.0 / args.sim_freq)
-    sim.setAdditionalSearchPath(pybullet_data.getDataPath())
-    # sim.setRealTimeSimulation(1)
-    return
+def run_sim(viz_freq: float = 120, timeout: Optional[float] = None):
+    """Runs the pybullet simulation
 
+    Args:
+        viz_freq (float, optional): Frequency (Hz) to run the visualization (if connected via GUI). Defaults to 120.
+        timeout (float, optional): Amount of time to run the simulation. Defaults to None, in which case the simulation
+            will remain open until it is killed manually.
 
-def load_deformable(
-    args, sim, deform_obj, data_path="deps/dedo/dedo/data/", debug=False
-):
-    # Load deformable object.
-    texture_path = args.deform_texture_file
-    deform_id = load_deform_object(
-        sim,
-        os.path.join(data_path, deform_obj),
-        os.path.join(data_path, texture_path),
-        args.deform_scale,
-        args.deform_init_pos,
-        args.deform_init_ori,
-        args.deform_bending_stiffness,
-        args.deform_damping_stiffness,
-        args.deform_elastic_stiffness,
-        args.deform_friction_coeff,
-        not args.disable_self_collision,
-        debug,
-    )
-
-    return deform_id
-
-
-def load_floor(sim, plane_texture=None, debug=False):
-    sim.setAdditionalSearchPath(pybullet_data.getDataPath())
-    floor_id = sim.loadURDF("plane.urdf")
-    if plane_texture is not None:
-        if debug:
-            print("texture file", plane_texture)
-        texture_id = sim.loadTexture(plane_texture)
-        sim.changeVisualShape(
-            floor_id,
-            -1,
-            rgbaColor=[1, 1, 1, 1],
-            textureUniqueId=texture_id,
+    Raises:
+        ConnectionError: If a pybullet client is not currently running
+        ValueError: If the visualization frequency is greater than the physics frequency
+    """
+    connect_info: dict[str, int] = pybullet.getConnectionInfo()
+    if not connect_info["isConnected"]:
+        raise ConnectionError("Connect to a pybullet client before running the sim")
+    connect_mode = "GUI" if connect_info["connectionMethod"] == 1 else "DIRECT"
+    phys_info = pybullet.getPhysicsEngineParameters()
+    phys_freq = 1.0 / phys_info["fixedTimeStep"]
+    if viz_freq > phys_freq:
+        raise ValueError(
+            f"Cannot visualize ({viz_freq} Hz) faster than the physics ({phys_freq} Hz)"
         )
-    # assert(floor_id == 1)  # camera assumes floor/ground is loaded second, AFTER THE DEFORMABLE
-    return sim
+
+    if timeout is None:
+        timeout = float("inf")
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        pybullet.stepSimulation()
+        if connect_mode == "GUI":
+            time.sleep(1.0 / viz_freq)
