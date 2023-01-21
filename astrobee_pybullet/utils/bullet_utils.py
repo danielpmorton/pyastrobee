@@ -4,6 +4,7 @@ TODO:
 - Clear up URDF/OBJ method confusion
 """
 
+import os
 import time
 from typing import Optional
 
@@ -155,7 +156,7 @@ def load_deformable_object(
     damping_stiffness: float = 0.1,
     elastic_stiffness: float = 1.0,
     friction_coeff: float = 0.1,
-    self_collision: bool = True,
+    self_collision: bool = False,
 ) -> int:
     """Loads a deformable object from an OBJ file
 
@@ -174,7 +175,8 @@ def load_deformable_object(
         damping_stiffness (float, optional): Damping stiffness of the loaded object. Defaults to 0.1.
         elastic_stiffness (float, optional): Elastic stiffness of the loaded object. Defaults to 1.0.
         friction_coeff (float, optional): Friction coefficient of the loaded object. Defaults to 0.1.
-        self_collision (bool, optional): Whether or not to allow self-collisions for the object. Defaults to True.
+        self_collision (bool, optional): Whether or not to allow self-collisions for the object. Defaults to False.
+            Note: setting this as True seemed to lead to mesh collapse
 
     Returns:
         int: ID number for the object
@@ -222,12 +224,15 @@ def load_deformable_object(
 
 
 def initialize_pybullet(
-    use_gui: bool = True,
+    use_gui: bool = True, physics_freq: float = 350, gravity: float = 0.0
 ) -> int:
-    """Starts a pybullet client
+    """Starts a pybullet client with the required physics parameters we care about
 
     Args:
         use_gui (bool, optional): Whether or not to use the GUI as opposed to headless. Defaults to True
+        physics_freq (float, optional): Physics simulation frequency, in Hz. Defaults to 350.
+            Note: Pybullet defaults to 240 Hz, but this seemed to be unstable for soft bodies
+        gravity (float, optional): Z component of gravitational acceleration vector. Defaults to 0.
 
     Returns:
         int: A Physics Client ID
@@ -237,9 +242,15 @@ def initialize_pybullet(
         client_id = pybullet.connect(pybullet.GUI)
     else:
         client_id = pybullet.connect(pybullet.DIRECT)
-    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
-    pybullet.setAdditionalSearchPath("astrobee_pybullet/resources")
+    # Configure physics
     pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
+    pybullet.setTimeStep(1.0 / physics_freq)
+    pybullet.setGravity(0, 0, gravity)
+    # Configure search paths
+    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+    pybullet.setAdditionalSearchPath(
+        os.path.join(os.getcwd(), "astrobee_pybullet/resources")
+    )
     return client_id
 
 
@@ -277,24 +288,6 @@ def configure_visualization(
             pybullet.configureDebugVisualizer(flag, False)
     if kwargs:
         pybullet.configureDebugVisualizer(**kwargs)
-
-
-def configure_physics(
-    gravity: Optional[list[float]] = None, timestep: Optional[float] = None
-) -> None:
-    """Configures the physics of the pybullet simulation
-
-    TODO add more parameters using setPhysicsEngineParameter
-
-    Args:
-        gravity (list[float], optional): Gravitational force vector for the simulation.
-            If unspecified, the default default pybullet value is zero gravity [0, 0, 0]
-        timestep (float, optional): Simulation timestep. If unspecified, the default pybullet value is 1/240 (240Hz)
-    """
-    if gravity:
-        pybullet.setGravity(*gravity)
-    if timestep:
-        pybullet.setTimeStep(timestep)
 
 
 def load_floor(texture_filename: Optional[str] = None) -> None:
