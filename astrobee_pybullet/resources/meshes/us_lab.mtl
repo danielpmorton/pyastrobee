@@ -9,7 +9,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Generic_Intersection.png
 
 newmtl Generic_Lights.008
 Ns 250.000000
@@ -19,7 +19,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Generic_Intersection.png
 
 newmtl Generic_Metals.008
 Ns 250.000000
@@ -29,7 +29,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Generic_Intersection.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Generic_Intersection.png
 
 newmtl Generic_Misc_Details.005
 Ns 250.000000
@@ -39,7 +39,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Generic_Misc_Details.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Generic_Misc_Details.png
 
 newmtl Generic_Misc_Details_LIGHTS.001
 Ns 250.000000
@@ -49,7 +49,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Generic_Misc_Details.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Generic_Misc_Details.png
 
 newmtl USLab_AFT_Bulkhead.001
 Ns 250.000000
@@ -59,7 +59,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Untitled.004.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Untitled.004.png
 
 newmtl USLab_FWD_Bulkhead.001
 Ns 250.000000
@@ -69,7 +69,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/USLab_FWD_Bulkhead.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/USLab_FWD_Bulkhead.png
 
 newmtl USLab_Racks_01.001
 Ns 250.000000
@@ -79,7 +79,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Untitled.002.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Untitled.002.png
 
 newmtl USLab_Racks_02.001
 Ns 250.000000
@@ -89,7 +89,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/USLab_Racks_02.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/USLab_Racks_02.png
 
 newmtl USLab_Racks_03.001
 Ns 250.000000
@@ -99,4 +99,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd /home/dan/astrobee_pybullet/astrobee_pybullet/resources/astrobee_iss/media/materials/textures/Untitled.005.png
+map_Kd /home/dan/astrobee/src/description/media/astrobee_iss/media/materials/textures/Untitled.005.png
