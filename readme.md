@@ -1,14 +1,48 @@
 # Astrobee Pybullet/ROS Integration
 
-## Getting started
+
+## Getting started:
+
+### Pyenv
+
+A virtual environment is optional, but recommended. Pyenv was found to work a bit better than conda here.
+
+If pyenv is not already installed, run
 ```
-conda create --name astrobee # Optional
-conda activate astrobee # Optional
+curl https://pyenv.run | bash
+```
+Then, set up `~/.bashrc` -- Make sure the following lines are included
+```
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+```
+
+Set up the virtual environment
+```
+# pyenv install 3.10.8 if not already installed
+pyenv virtualenv 3.10.8 astrobee
+pyenv shell astrobee
+```
+### Configure the repository as a python package
+
+The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
+```
 pip install -e .[dev]
 ```
-- A conda environment is optional but recommended
-- The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
-- Recommended git trick: `git config --global alias.graph "log --all --graph --decorate --oneline"`, then `git graph` will work nicely
+
+### Other stuff
+
+To get a nice visual graph of Git history via `git graph`:
+```
+git config --global alias.graph "log --all --graph --decorate --oneline"
+```
+
+To make sure Ipython (via `ipython`) uses the same python version as your environment: in `~/.bashrc`, add:
+```
+alias ipython="python -m IPython"
+```
 
 ## Status
 ### TODOs:
@@ -18,7 +52,6 @@ pip install -e .[dev]
 - [ ] Try out adding a small anchor object to the handle - see dedo anchor utils. Make it a small nonzero mass
 - [ ] Figure out if it's the combination of nonmanifoldity and self-collision that cauese the issues
 - [ ] Try flipping all of the face normals on the non-manifold mesh
-- [ ] Update docs and bashrc, etcetera - switch from conda to pyenv!!
 - [ ] Change pybullet version back to most recent in the pyenv astrobee env?
 - [ ] Get dedo pointcloud stuff working
 - [ ] Work on improving bag meshes

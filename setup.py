@@ -11,7 +11,7 @@ setup(
     name="astrobee_pybullet",
     version="0.0.1",
     install_requires=["numpy", "pybullet==3.1.7", "opencv-python"],
-    extras_require={"dev": ["pylint", "black"]},
+    extras_require={"dev": ["pylint", "black", "ipython"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
