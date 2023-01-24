@@ -12,6 +12,15 @@ pip install -e .[dev]
 
 ## Status
 ### TODOs:
+- [ ] Try a manifold mesh with the handle being solid
+- [ ] Try loading the iss as multiple objs (with the texture files). Or, see if the texture can be included in urdf
+- [ ] Try out FEM deformables?
+- [ ] Try out adding a small anchor object to the handle - see dedo anchor utils. Make it a small nonzero mass
+- [ ] Figure out if it's the combination of nonmanifoldity and self-collision that cauese the issues
+- [ ] Try flipping all of the face normals on the non-manifold mesh
+- [ ] Update docs and bashrc, etcetera - switch from conda to pyenv!!
+- [ ] Change pybullet version back to most recent in the pyenv astrobee env?
+- [ ] Get dedo pointcloud stuff working
 - [ ] Work on improving bag meshes
 - [ ] Import textures - see png files from dedo as examples
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
@@ -30,7 +39,6 @@ pip install -e .[dev]
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
-- [ ] Try out pybullet 3.1.7 to see if this is more stable at all
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
 - [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
 - [ ] Consider switching from conda to pyenv
@@ -39,6 +47,7 @@ pip install -e .[dev]
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Try out pybullet 3.1.7 to see if this is more stable at all
 - [X] Try out MuJoCo
 - [X] Merge in Dedo utility functions
 - [X] Import Dedo bag assets
@@ -70,3 +79,10 @@ pip install -e .[dev]
 - Meshing steps: 
   - Construction: Create CAD model -> Export as OBJ
   - Refinement: Delete any extra faces near the handle (Meshmixer) -> fill any holes (Blender) -> perform remeshing to improve uniformity (Meshmixer)
+- Softbody mesh behavior debugging and notes
+  - If it collapses/shrinks in on itself, this could be an issue with self-collision. Try turning this to False
+  - If it looks like it's having a seizure, try increasing the frequency -- 240 Hz might be too low, so try 350 or 500
+  - If the triangles blow up when you drag on them, check to make sure you've specified the elastic parameters
+  - The more sparse meshes seem to perform better (this makes sense)
+  - With self collision turned off, the thin handles tend to enter the inside of the bag more than the thick handles, which hold their shape a little better
+  - The thick handles might represent a thick duffel bag handle better than the thin handles anyways, which act more like a thin shirt
