@@ -119,3 +119,38 @@ alias ipython="python -m IPython"
   - The more sparse meshes seem to perform better (this makes sense)
   - With self collision turned off, the thin handles tend to enter the inside of the bag more than the thick handles, which hold their shape a little better
   - The thick handles might represent a thick duffel bag handle better than the thin handles anyways, which act more like a thin shirt
+
+
+## Loading ISS meshes into Pybullet
+
+For each iss module, do the following:
+
+### VISUAL
+- Create an empty directory with the module name
+- Import the associated DAE into Blender
+  - Click on Viewport Shading in the top right corner to confirm that the textures loaded properly
+- Export the module from Blender as an OBJ with the following options specified:
+  - Grouping -> Object Groups
+  - Grouping -> Material Groups
+  - Path Mode -> Relative
+  - (Ensure that the save directory is the folder for the ISS module. This should add an OBJ and MTL file)
+- Run the obj2sdf tool in Bullet on the OBJ
+  ```
+  cd ~/software/bullet3/build_cmake/Extras/obj2sdf
+  ./App_obj2sdf --fileName=PATH_TO_OBJ_FILE
+  ```
+  - This will populate the directory with a number of OBJ files as well as an SDF
+  - (This requires Bullet C++ to be locally built first)
+- Update the paths in the obj2sdf results
+  - The paths at the top of the OBJ files from this output (part0, part1, ...) will be *absolute* paths, but pybullet works best with these as *relative* paths. These will need to be manually modified, but a directory search/replace shouldn't take much effort. 
+- Since importing the SDF does not appear to work properly on its own (no textures load), import each obj as a visual shape
+- NOT DONE. Look into visualShapeArray?
+
+### COLLISION
+
+
+### MERGED
+
+
+
+
