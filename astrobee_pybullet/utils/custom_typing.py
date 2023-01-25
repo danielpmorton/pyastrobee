@@ -1,4 +1,4 @@
-from typing import Annotated, Union, NewType, Dict
+from typing import Union, NewType, Dict
 
 import numpy as np
 
