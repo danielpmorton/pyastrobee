@@ -46,6 +46,9 @@ alias ipython="python -m IPython"
 
 ## Status
 ### TODOs:
+- [ ] Set up camera 
+- [ ] Set up pointcloud
+- [ ] Add info to readme about setting up the submodule
 - [ ] Try a manifold mesh with the handle being solid
 - [ ] Try loading the iss as multiple objs (with the texture files). Or, see if the texture can be included in urdf
 - [ ] Try out FEM deformables?
@@ -69,6 +72,8 @@ alias ipython="python -m IPython"
 - [ ] Figure out more TODOs
 
 ### In Progress:
+- [ ] Load the ISS and astrobee with all textures applied
+  - [ ] Document all steps too (finish vhacd info)
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
@@ -78,6 +83,7 @@ alias ipython="python -m IPython"
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Add in debugging and exception handling
 - [ ] Consider using pathlib Path with str(Path(filename))?
+- [ ] Reduced the amount of hardcoded directory/file locations (especially absolute paths)
 
 ### Done:
 - [X] Try out pybullet 3.1.7 to see if this is more stable at all
@@ -123,9 +129,18 @@ alias ipython="python -m IPython"
 
 ## Loading ISS meshes into Pybullet
 
+Loading complex meshes with lots of textures into pybullet is tricky. 
+- If you load an OBJ file through createVisualShape(), this will look for an MTL file in the same directory and apply it to the OBJ. However, if the OBJ has multiple bodies each with different textures, pybullet will mess this up and apply only one of the textures to every body in the OBJ.
+  - Note: createVisualShapeArray sounds like it might be useful here, but it isn't - this is limited to a single texture applied to all of the visual objects too. 
+- To fix this problem, we have to load the complex mesh as multiple OBJs, one OBJ corresponding to a single texture. To do this, run the `obj2sdf` executable in the `bullet3/build_cmake/Extras/obj2sdf` folder, which will then populate the directory of the reference OBJ file with the split-up meshes, named like `part*.obj`
+- Once we have these, we can start loading these into pybullet. We now have some number n different obj files which represent the visual components of the ISS module, but we only have 1 VHACD file for the module. Pybullet needs 1 collision object for each visual object (if we want to get the textures to load properly), so we need to do some hacky stuff to get this to work.
+- The solution to this is to create "dummy" invisible objects outside of the ISS workspace area - these objects will form the collision body requirement, but won't affect the simulation at all other than allowing the visuals to be seen properly.
+
+A full workflow of the steps required to go from the NASA-provided DAE meshes to a correct pybullet environment can be found below:
+
 For each iss module, do the following:
 
-### VISUAL
+### Visual
 - Create an empty directory with the module name
 - Import the associated DAE into Blender
   - Click on Viewport Shading in the top right corner to confirm that the textures loaded properly
@@ -134,7 +149,7 @@ For each iss module, do the following:
   - Grouping -> Material Groups
   - Path Mode -> Relative
   - (Ensure that the save directory is the folder for the ISS module. This should add an OBJ and MTL file)
-- Run the obj2sdf tool in Bullet on the OBJ
+- Run the `obj2sdf` tool in Bullet on the OBJ
   ```
   cd ~/software/bullet3/build_cmake/Extras/obj2sdf
   ./App_obj2sdf --fileName=PATH_TO_OBJ_FILE
@@ -143,14 +158,22 @@ For each iss module, do the following:
   - (This requires Bullet C++ to be locally built first)
 - Update the paths in the obj2sdf results
   - The paths at the top of the OBJ files from this output (part0, part1, ...) will be *absolute* paths, but pybullet works best with these as *relative* paths. These will need to be manually modified, but a directory search/replace shouldn't take much effort. 
-- Since importing the SDF does not appear to work properly on its own (no textures load), import each obj as a visual shape
-- NOT DONE. Look into visualShapeArray?
 
-### COLLISION
+### Collision
+- If we just import an ISS module into pybullet, the collision body will not be the mesh itself, but rather the convex hull of the entire body (which is not useful for us, since we need to go inside the ISS)
+- Running VHACD is the solution here - this will give us a decomposition of the module into multiple convex hulls and allow for it to be hollow. 
+- Note: running `obj2sdf` in the previous section gave us multiple OBJs to work with, but NASA split these up in a weird way, so running VHACD on each individual one would be overly complex. VHACD should be run on just the main OBJ which contains the full mesh for the module.
+- To run this on an OBJ file (for example, `us_lab.obj`):
+  ```
+  TODO TODO TODO
+  ```
 
+### Merging and Importing
+- Since importing the SDF does not appear to work properly on its own (no textures load), each obj will need to be loaded individually.
+- To load this (see the explanation in the above section for the reasoning), 
+  - For the first OBJ file, load it as a visual shape. Pybullet will see the associated MTL file in the same directory and apply the texture. For the collision body, load the full VHACD result for the entire module.
+  - For each other OBJ file, load the visual shape as before, but set the collision body to a "dummy" object outside the bounds of the ISS workspace
 
-### MERGED
-
-
+The ISS module should be fully loaded at this point. Repeat for each other module. 
 
 
