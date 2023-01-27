@@ -46,6 +46,8 @@ alias ipython="python -m IPython"
 
 ## Status
 ### TODOs:
+- [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
+- [ ] Clean up the debugging script and any files leftover from the `meshing` branch rebase that are no longer needed
 - [ ] Set up camera 
 - [ ] Set up pointcloud
 - [ ] Add info to readme about setting up the submodule
@@ -79,13 +81,13 @@ alias ipython="python -m IPython"
 ### Backlog/Optional:
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
 - [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
-- [ ] Consider switching from conda to pyenv
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Add in debugging and exception handling
 - [ ] Consider using pathlib Path with str(Path(filename))?
 - [ ] Reduced the amount of hardcoded directory/file locations (especially absolute paths)
 
 ### Done:
+- [X] Switch from conda to pyenv
 - [X] Try out pybullet 3.1.7 to see if this is more stable at all
 - [X] Try out MuJoCo
 - [X] Merge in Dedo utility functions
@@ -114,7 +116,7 @@ alias ipython="python -m IPython"
 
 ## General notes
 - Recall that to run the NASA Gazebo/Rviz code, go to `~/astrobee`, run `source devel/setup.bash`, then `roslaunch astrobee sim.launch dds:=false robot:=sim_pub rviz:=true sviz:=true`.
-  - NOTE: this does not currently work if the conda `astrobee` environment you made is active, so run `conda deactivate` before running the command. This could be an issue in the future, but for now we will put this off. 
+  - NOTE: this does not currently work if the conda `astrobee` environment you made is active, so run `conda deactivate` before running the command. This could be an issue in the future, but for now we will put this off.
 - Meshing steps: 
   - Construction: Create CAD model -> Export as OBJ
   - Refinement: Delete any extra faces near the handle (Meshmixer) -> fill any holes (Blender) -> perform remeshing to improve uniformity (Meshmixer)
