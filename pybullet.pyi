@@ -715,7 +715,7 @@ def createVisualShape(
     planeNormal: list[float],
     flags: int,
     visualFramePosition: list[float],
-    visualFrameOrientationosition: list[float],
+    visualFrameOrientation: list[float],
     vertices: list[float],
     indices: list[int],
     heightfieldTextureScaling: float,
