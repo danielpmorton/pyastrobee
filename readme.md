@@ -3,6 +3,18 @@
 
 ## Getting started:
 
+### Cloning the repo
+
+```
+cd $HOME
+git clone https://github.com/danielpmorton/astrobee_pybullet
+cd astrobee_pybullet
+cd astrobee_media
+git submodule init
+git submodule update
+cd ..
+```
+
 ### Pyenv
 
 A virtual environment is optional, but recommended. Pyenv was found to work a bit better than conda here.
