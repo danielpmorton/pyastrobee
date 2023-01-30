@@ -5,7 +5,7 @@ This is used in conjunction with "pip install -e ."
 TODO add specific versions to the package requirements
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="astrobee_pybullet",
@@ -16,4 +16,5 @@ setup(
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
     url="https://github.com/danielpmorton/astrobee_pybullet",
+    packages=find_packages(exclude=["astrobee_media"]),
 )
