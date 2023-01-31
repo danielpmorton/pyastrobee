@@ -196,3 +196,14 @@ For each iss module, do the following:
 The ISS module should be fully loaded at this point. Repeat for each other module. 
 
 
+## Working with Astrobee textures
+
+Certain texture PNG images are unable to be loaded into pybullet. After some debugging, this appears to be an issue with the PNG filetype - some were exported as PNG8 whereas others are PNG16/24. Pybullet seems to need PNGs to be 8-bit, so these need to be converted. 
+
+To do so, import each problematic PNG into Gimp and then export/overwrite the image to the same location, with the `pixelformat` dropdown set to `8bpc RGBA`
+
+Problematic images:
+- `Generic_Intersection.png`
+- `Node2_Interior_Racks.png`
+- `Node2_Bulkheads.png`
+
