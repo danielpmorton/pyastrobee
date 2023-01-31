@@ -179,8 +179,13 @@ For each iss module, do the following:
 - Note: running `obj2sdf` in the previous section gave us multiple OBJs to work with, but NASA split these up in a weird way, so running VHACD on each individual one would be overly complex. VHACD should be run on just the main OBJ which contains the full mesh for the module.
 - To run this on an OBJ file (for example, `us_lab.obj`):
   ```
-  TODO TODO TODO
+  cd $HOME/software/v-hacd-4.1.0/app/build
+  ./TestVHACD /home/dan/astrobee_pybullet/astrobee_media/astrobee_iss/meshes/us_lab/us_lab.obj
   ```
+- This will save two files inside the `$HOME/software/v-hacd-4.1.0/app/build` folder: `decomp.obj` and `decomp.stl`. We only need the OBJ file, so rename this (for example, `vhacd_us_lab.obj`) and then move it into the correct folder (for example, `$HOME/astrobee_pybullet/astrobee_media/astrobee_iss/meshes/us_lab`)
+- To double-check that things look correct, import the OBJ into MeshLab just to visualize the results. If it looks like it doesn't match up the source mesh, try changing some of the additional parameters mentioned in the [vhacd readme](https://github.com/kmammou/v-hacd). Note: the default parameters seemed to work fine for a first attempt
+- Additional step: the VHACD result will append the object's path to the name of the objects in the OBJ file, and this isn't totally needed, so remove the path from the file.
+  - For example, the line in the output OBJ `o /home/dan/astrobee_pybullet/astrobee_media/astrobee_iss/meshes/cupola/cupola000` can be simplified to just `cupola000`
 
 ### Merging and Importing
 - Since importing the SDF does not appear to work properly on its own (no textures load), each obj will need to be loaded individually.
