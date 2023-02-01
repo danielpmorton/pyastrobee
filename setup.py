@@ -3,6 +3,7 @@
 This is used in conjunction with "pip install -e ."
 
 TODO add specific versions to the package requirements
+TODO add obj2mjcf to the dev requirements?
 """
 
 from setuptools import setup, find_packages
@@ -11,7 +12,7 @@ setup(
     name="astrobee_pybullet",
     version="0.0.1",
     install_requires=["numpy", "pybullet==3.1.7", "opencv-python"],
-    extras_require={"dev": ["pylint", "black", "ipython"]},
+    extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
