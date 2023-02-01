@@ -9,6 +9,7 @@
         "*.urdf": "xml",
         "*.xacro": "xml",
         "*.mjcf": "xml",
+        "*.sdf": "xml",
     },
     // TODO: turn type checking on to "basic"
     "python.analysis.typeCheckingMode": "off"
