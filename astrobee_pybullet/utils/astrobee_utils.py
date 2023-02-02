@@ -1,13 +1,8 @@
 """Functions related to loading Astrobee components
 
-TODO need to confirm that:
-- All of the ISS modules can be loaded properly
-- When loading all of the modules at once, they're in the correct position and orientation
-- No dummy objects are anywhere near the working environment (especially check this if you need to modify the
-  orientation of any of the ISS parts)
-
+TODO need to reorient the iss (should just be [np.pi/2, 0, 0])
 TODO make a function to visualize the dummy objects
-TODO get the cupola and node 1 VHACD working, then put in the right directories with the vhacd_ prefix
+TODO confirm that the dummy objects are not near the working environment
 TODO check if there is an easier solution (no dummies) with a URDF or SDF? Multiple fixed links?
 """
 
@@ -68,7 +63,7 @@ def load_iss_module(
 
     # Get the paths for all files in the directory (visual and collision)
     cwd = os.getcwd()
-    directory = f"{cwd}/astrobee_media/astrobee_iss/meshes/{name}"
+    directory = f"astrobee_pybullet/meshes/obj/{name}"
     if not os.path.exists(directory):
         raise NotADirectoryError(
             f"{directory} is not valid.\nCheck on the input, {name}, or current working directory, {cwd}"
@@ -76,7 +71,7 @@ def load_iss_module(
     part_paths = []
     vhacd_path = ""
     for filename in os.listdir(directory):
-        if filename.startswith("vhacd"):
+        if filename == "decomp.obj":
             vhacd_path = os.path.join(directory, filename)
         elif filename.startswith("part"):
             part_paths.append(os.path.join(directory, filename))
@@ -143,7 +138,6 @@ def load_iss_module(
 
 # TODO remove this once we're done with testing these functions
 if __name__ == "__main__":
-    initialize_pybullet(use_gui=True)
-    load_iss_module("us_lab")
-    load_floor(z_pos=-3)
+    initialize_pybullet()
+    load_iss()
     run_sim()
