@@ -637,7 +637,7 @@ def createCollisionShape(
     planeNormal: list[float],
     flags: int,
     collisionFramePosition: list[float],
-    collisionFrameOrientationosition: list[float],
+    collisionFrameOrientation: list[float],
     vertices: list[float],
     indices: list[int],
     heightfieldTextureScaling: float,
