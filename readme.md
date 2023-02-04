@@ -10,6 +10,11 @@
 
 ## Status
 ### TODOs:
+- [ ] Understand which joint indices on the astrobee correspond to which locations (and which are fixed / not usable)
+- [ ] Figure out a way to move the astrobee in space (not via controlling a joint)
+- [ ] Write a script to move different joints back and forth and show which index it is
+- [ ] Get the inertial properties for the base link updated
+- [ ] Get a feel for how pybullet controls robot links. Write helper functions to control joints
 - [ ] Rename the new meshes folder to iss_meshes?
 - [ ] Completely remove the astrobee_media submodule and any reference to it?
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
@@ -67,14 +72,12 @@
 
 ### Ask NASA:
 - Does the version of Python matter for any of your Python code? e.g. 3.8 vs 3.10
-- Can we get some of the cad files used to make the meshes?
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
 ### Bugs/Issues:
 - The dedo duffel bag cannot load as a soft body
 - The joint of the astrobee nearest to the body does not seem to be moving properly in simulation - check the URDF to see if there is an issue with how this joint is defined
 - Some softbodies have very strange inertia when moving them around in the Bullet gui (likely, some parameters need to be refined)
-- The `cupola.dae` and `node_1.dae` files in the `astrobee_iss` meshes cannot be loaded into Blender, whereas all of the other ISS meshes can.
 
 ## Thoughts
 - Mujoco is interesting because it models the deformables as composites - for instance, a soft box is a collection of spheres/capsules wrapped up in a skin. I wonder if we can change the properties of these smaller particles inside the composite?
