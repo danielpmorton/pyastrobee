@@ -7,5 +7,6 @@
         "njpwerner.autodocstring",
         "yzhang.markdown-all-in-one",
         "DotJoshJohnson.xml",
+        "eamodio.gitlens",
     ]
 }
