@@ -36,12 +36,19 @@ Set up the virtual environment
 pyenv virtualenv 3.10.8 astrobee
 pyenv shell astrobee
 ```
-## Configure the repository as a python package
+## Install dependencies
 
 The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
 ```
 pip install -e .[dev]
 ```
+
+After doing this, open a python interpreter and run the following commands:
+```
+import pybullet
+pybullet.isNumpyEnabled()
+```
+The `isNumpyEnabled()` line should return `1`. If not, `pip uninstall pybullet`, then make sure that numpy is installed in your current environment, and retry `pip install pybullet`
 
 ## Other stuff
 

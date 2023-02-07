@@ -11,7 +11,8 @@ from setuptools import setup, find_packages
 setup(
     name="astrobee_pybullet",
     version="0.0.1",
-    install_requires=["numpy", "pybullet==3.1.7", "opencv-python"],
+    # Note on install_requires: order matters! Keep wheel and numpy before pybullet
+    install_requires=["numpy", "wheel", "pybullet", "opencv-python", "matplotlib"],
     extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
