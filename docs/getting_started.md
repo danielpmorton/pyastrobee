@@ -6,8 +6,8 @@
 
 ```
 cd $HOME
-git clone https://github.com/danielpmorton/astrobee_pybullet
-cd astrobee_pybullet
+git clone https://github.com/danielpmorton/pyastrobee
+cd pyastrobee
 cd astrobee_media
 git submodule init
 git submodule update

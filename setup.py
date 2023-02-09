@@ -9,7 +9,7 @@ TODO add obj2mjcf to the dev requirements?
 from setuptools import setup, find_packages
 
 setup(
-    name="astrobee_pybullet",
+    name="pyastrobee",
     version="0.0.1",
     # Note on install_requires: order matters! Keep wheel and numpy before pybullet
     install_requires=["numpy", "wheel", "pybullet", "opencv-python", "matplotlib"],
@@ -17,6 +17,6 @@ setup(
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
-    url="https://github.com/danielpmorton/astrobee_pybullet",
+    url="https://github.com/danielpmorton/pyastrobee",
     packages=find_packages(exclude=["astrobee_media"]),
 )
