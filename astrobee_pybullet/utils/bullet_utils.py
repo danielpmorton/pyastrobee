@@ -336,7 +336,7 @@ def run_sim(viz_freq: float = 120, timeout: Optional[float] = None):
     if timeout is None:
         timeout = float("inf")
     start_time = time.time()
-    while time.time() - start_time < timeout:
+    while (time.time() - start_time < timeout) and pybullet.isConnected():
         pybullet.stepSimulation()
         if connect_mode == "GUI":
             time.sleep(1.0 / viz_freq)

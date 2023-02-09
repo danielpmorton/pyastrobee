@@ -944,7 +944,7 @@ def getLinkState(
     computeLinkVelocity: int = 0,
     computeForwardKinematics: int = 0,
     physicsClientId: int = 0,
-):  # real signature unknown; restored from __doc__
+) -> tuple[tuple[float], ...]:  # real signature unknown; restored from __doc__
     """
     position_linkcom_world, world_rotation_linkcom,
     position_linkcom_frame, frame_rotation_linkcom,
