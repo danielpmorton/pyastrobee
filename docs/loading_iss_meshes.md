@@ -78,6 +78,12 @@ The meshes for the ISS were loaded in crazy locations and orientations because N
 
 This will add `(module).obj` and `(module).mtl` into the `obj/(module)` folder. The `dae` folder is a backup in case this is needed later.
 
+## (2.5) A script for running both OBJ2SDF and VHACD
+
+Prior to running steps 3 and 4, consider using the script at `pyastrobee/scripts/manage_objs.sh`, which will loop through the directory structure and automatically run these commands on the files. The only requirement is that the directory containing the OBJs is set up so each folder corresponds to an ISS module, containing that module's multi-texture OBJ inside it (with the same name). See the Folder Structure section above for reference. 
+
+If you use this script, and it runs without issue, you can safely skip steps 3 and 4. 
+
 ## 3. OBJ2SDF
 
 (Ensure that the C++ version of Bullet is locally built first)
