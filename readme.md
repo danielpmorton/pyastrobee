@@ -10,6 +10,12 @@
 
 ## Status
 ### TODOs:
+- [ ] Change repo name (and name of all local folder systems) to pyastrobee
+- [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
+- [ ] Remove all absolute filepaths, and make sure any external resources are made available in this repo so that it can work on multiple computers
+- [ ] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
+- [ ] Move things over to workstation 7 - set up NASA resources on that too
+- [ ] Switch over to pytransform3d for rotations/transformations
 - [ ] Understand which joint indices on the astrobee correspond to which locations (and which are fixed / not usable)
 - [ ] Figure out a way to move the astrobee in space (not via controlling a joint)
 - [ ] Write a script to move different joints back and forth and show which index it is
