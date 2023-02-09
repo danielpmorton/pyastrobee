@@ -85,7 +85,7 @@ This will add `(module).obj` and `(module).mtl` into the `obj/(module)` folder. 
 - For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`, run `obj2sdf` as follows:
 - For example: 
     ```
-    cd ~/pyastrobee/pyastrobee/meshes/obj/cupola
+    cd ~/pyastrobee/pyastrobee/meshes/iss/obj/cupola
     ./../../../software/bullet3/build_cmake/Extras/obj2sdf/App_obj2sdf --fileName="cupola.obj"
     ```
 This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into the `obj/(module)` folder.
@@ -96,7 +96,7 @@ This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into
 - For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`, run `VHACD` as follows:
 - For example: 
     ```
-    cd ~/pyastrobee/pyastrobee/meshes/obj/cupola
+    cd ~/pyastrobee/pyastrobee/meshes/iss/obj/cupola
     ./../../../software/v-hacd-4.1.0/app/build/TestVHACD cupola.obj
     ```
 

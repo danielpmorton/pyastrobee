@@ -63,7 +63,7 @@ def load_iss_module(
 
     # Get the paths for all files in the directory (visual and collision)
     cwd = os.getcwd()
-    directory = f"pyastrobee/meshes/obj/{name}"
+    directory = f"{cwd}/pyastrobee/meshes/iss/obj/{name}"
     if not os.path.exists(directory):
         raise NotADirectoryError(
             f"{directory} is not valid.\nCheck on the input, {name}, or current working directory, {cwd}"
