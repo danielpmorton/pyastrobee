@@ -6,7 +6,7 @@ TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="pyastrobee",
@@ -18,5 +18,4 @@ setup(
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
     url="https://github.com/danielpmorton/pyastrobee",
-    packages=find_packages(exclude=["astrobee_media"]),
 )

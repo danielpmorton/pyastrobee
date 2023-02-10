@@ -21,7 +21,6 @@
 - [ ] Figure out a way to move the astrobee in space (not via controlling a joint)
 - [ ] Write a script to move different joints back and forth and show which index it is
 - [ ] Get a feel for how pybullet controls robot links. Write helper functions to control joints
-- [ ] Completely remove the astrobee_media submodule and any reference to it?
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
 - [ ] Clean up the debugging script and any files leftover from the `meshing` branch rebase that are no longer needed
 - [ ] Set up camera (see dedo)
@@ -53,6 +52,7 @@
 - [ ] See if it is possible to get URDFs working with multiple textures
 
 ### Done:
+- [X] Completely remove the astrobee_media submodule and any reference to it?
 - [X] Reduce the amount of hardcoded directory/file locations (especially absolute paths)
 - [X] Figure out how to work with relative file paths in the urdf/xacro/xml files
 - [X] Load the ISS with all textures applied
