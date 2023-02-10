@@ -237,7 +237,14 @@ def initialize_pybullet(
     Returns:
         int: A Physics Client ID
     """
-
+    # Make sure we're in the right directory so filepaths work well with pybullet
+    # TODO: See if there is a more robust option here
+    cwd = os.getcwd()
+    if not cwd.endswith("pyastrobee") or cwd.endswith("pyastrobee/pyastrobee"):
+        raise Exception(
+            f"You are running scripts from {cwd}.\nEnsure you're at $HOME/pyastrobee"
+        )
+    # Connect to pybullet
     if use_gui:
         client_id = pybullet.connect(pybullet.GUI)
     else:
@@ -248,7 +255,9 @@ def initialize_pybullet(
     pybullet.setGravity(0, 0, gravity)
     # Configure search paths
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
-    pybullet.setAdditionalSearchPath(os.path.join(os.getcwd(), "pyastrobee/resources"))
+    # TODO: update the resources path(s) once the mesh locations are finalized
+    # pybullet.setAdditionalSearchPath(os.path.join(os.getcwd(), "pyastrobee/resources"))
+    pybullet.setAdditionalSearchPath(cwd)
     return client_id
 
 

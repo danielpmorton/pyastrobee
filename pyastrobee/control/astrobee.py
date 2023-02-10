@@ -1,16 +1,23 @@
 import pybullet
 
+from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
+
 
 class Astrobee:
+    URDF = "pyastrobee/urdf/astrobee.urdf"
+
     def __init__(
         self,
-        pos,
-        orn,
+        pos=[0, 0, 0],
+        orn=[0, 0, 0],
     ):
+        if not pybullet.isConnected():
+            raise ConnectionError(
+                "Need to connect to pybullet before initializing an astrobee"
+            )
+        # TODO update default values for pos/orn or improve how we specify initial location
         # TODO need to finish this
-        self.id = pybullet.loadURDF(
-            "home/dan/pyastrobee/pyastrobee/resources/urdf/astrobee.urdf"
-        )
+        self.id = pybullet.loadURDF(Astrobee.URDF)
         self.num_joints = pybullet.getNumJoints(self.id)
         pass
 
@@ -57,3 +64,9 @@ class Astrobee:
     @state.setter
     def state(self, state):
         pass
+
+
+if __name__ == "__main__":
+    initialize_pybullet()
+    robot = Astrobee()
+    run_sim()

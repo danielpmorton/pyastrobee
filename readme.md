@@ -10,18 +10,17 @@
 
 ## Status
 ### TODOs:
-- [ ] Change repo name (and name of all local folder systems) to pyastrobee
+- [ ] Rotate the ISS so it's flat
+- [ ] Reorganize the `resources/` folder (obsolete?)
+- [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
-- [ ] Remove all absolute filepaths, and make sure any external resources are made available in this repo so that it can work on multiple computers
 - [ ] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [ ] Move things over to workstation 7 - set up NASA resources on that too
 - [ ] Switch over to pytransform3d for rotations/transformations
 - [ ] Understand which joint indices on the astrobee correspond to which locations (and which are fixed / not usable)
 - [ ] Figure out a way to move the astrobee in space (not via controlling a joint)
 - [ ] Write a script to move different joints back and forth and show which index it is
-- [ ] Get the inertial properties for the base link updated
 - [ ] Get a feel for how pybullet controls robot links. Write helper functions to control joints
-- [ ] Rename the new meshes folder to iss_meshes?
 - [ ] Completely remove the astrobee_media submodule and any reference to it?
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
 - [ ] Clean up the debugging script and any files leftover from the `meshing` branch rebase that are no longer needed
@@ -31,7 +30,6 @@
 - [ ] Try out FEM deformables?
 - [ ] Try out adding a small anchor object to the handle - see dedo anchor utils. Make it a small nonzero mass
 - [ ] Try flipping all of the face normals on the non-manifold mesh
-- [ ] Change pybullet version back to most recent in the pyenv astrobee env?
 - [ ] Work on improving bag meshes
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
@@ -45,19 +43,25 @@
 - [ ] Figure out more TODOs
 
 ### In Progress:
-- [ ] Load the ISS and astrobee with all textures applied
-- [ ] See if it is possible to get URDFs working with multiple textures
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
-- [ ] Figure out how to work with relative file paths in the urdf/xacro/xml files
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Add in debugging and exception handling
 - [ ] Consider using pathlib Path with str(Path(filename))?
-- [ ] Reduced the amount of hardcoded directory/file locations (especially absolute paths)
+- [ ] See if it is possible to get URDFs working with multiple textures
 
 ### Done:
+- [X] Reduce the amount of hardcoded directory/file locations (especially absolute paths)
+- [X] Figure out how to work with relative file paths in the urdf/xacro/xml files
+- [X] Load the ISS with all textures applied
+- [X] Load the astrobee URDF
+- [X] Change pybullet version back to most recent in the pyenv astrobee env?
+- [X] Change repo name (and name of all local folder systems) to pyastrobee
+- [X] Remove all absolute filepaths, and make sure any external resources are made available in this repo so that it can work on multiple computers
+- [X] Rename the new meshes folder to iss_meshes?
+- [X] Get the inertial properties for the base link updated
 - [X] Debugged weird collapsing/exploding/stuttering issues with the cargo bag meshes
 - [X] Add info to readme about setting up the submodule
 - [X] Import ISS modules with textures
