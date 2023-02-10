@@ -1,4 +1,0 @@
-[submodule "astrobee_media"]
-	path = astrobee_media
-	url = https://github.com/danielpmorton/astrobee_media
-	branch = iprl
