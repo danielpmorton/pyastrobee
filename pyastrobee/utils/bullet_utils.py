@@ -320,6 +320,10 @@ def load_floor(texture_filename: Optional[str] = None, z_pos: float = 0.0) -> No
 def run_sim(viz_freq: float = 120, timeout: Optional[float] = None):
     """Runs the pybullet simulation
 
+    TODO:
+    - Add subprocessing so this can run separately?
+    - Add interrupt handling so we can pause this?
+
     Args:
         viz_freq (float, optional): Frequency (Hz) to run the visualization (if connected via GUI). Defaults to 120.
         timeout (float, optional): Amount of time to run the simulation. Defaults to None, in which case the simulation
