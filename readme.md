@@ -1,5 +1,5 @@
-# Astrobee Pybullet/ROS Integration
-
+![Pyastrobee](imgs/banner.png)
+# Pyastrobee: A space robotics simulation environment in Python
 
 ## Documentation Overview
 [Getting Started](docs/getting_started.md): Setting up the repository
