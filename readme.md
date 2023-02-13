@@ -10,6 +10,8 @@
 
 ## Status
 ### TODOs:
+- [ ] Add test cases for quaternions
+- [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
 - [ ] Rotate the ISS so it's flat
 - [ ] Reorganize the `resources/` folder (obsolete?)

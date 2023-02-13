@@ -365,3 +365,115 @@ def rotate_point(rmat: np.ndarray, point: npt.ArrayLike):
     # Use rotation matrix as operator within a single frame
     # TODO
     raise NotImplementedError
+
+
+# NASA quaternion code from astrobee/config/rotations.lua
+# TODO all quaternion stuff is untested - need to add test cases!!
+# (ok, moderately tested via some quick messing around in python, looks ok, but should do more)
+
+# TODO figure out a better place for this
+def normalize(vec):
+    return np.array(vec) / np.linalg.norm(vec)
+
+
+# function quat4_normalize(q)
+#   n = math.sqrt(q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w)
+#   return quat4(q.x/n, q.y/n, q.z/n, q.w/n)
+# end
+class Quaternion:
+    """Quaternion class to handle the XYZW/WXYZ ordering with less confusion
+
+    **Defaults to XYZW, which matches Pybullet's convention**
+
+    TODO decide if this class is even useful, or if it just makes sense to use the XYZW convention consistently
+
+    Args:
+        xyzw (npt.ArrayLike): Quaternions, in XYZW order
+    """
+
+    def __init__(self, xyzw: npt.ArrayLike):
+        self.x, self.y, self.z, self.w = xyzw
+
+    @property
+    def xyzw(self):
+        return np.array([self.x, self.y, self.z, self.w])
+
+    @property
+    def wxyz(self):
+        return np.array([self.w, self.x, self.y, self.z])
+
+    @xyzw.setter
+    def xyzw(self, xyzw: npt.ArrayLike):
+        self.x, self.y, self.z, self.w = xyzw
+
+    @wxyz.setter
+    def wxyz(self, wxyz: npt.ArrayLike):
+        self.w, self.x, self.y, self.z = wxyz
+
+
+def quat_to_rmat(quat: npt.ArrayLike) -> np.ndarray:
+    """Converts XYZW quaternions to a rotation matrix
+
+    Args:
+        quat (npt.ArrayLike): XYZW quaternions
+
+    Returns:
+        np.ndarray: (3,3) rotation matrix
+    """
+    quat = normalize(quat)
+    x, y, z, w = quat
+    x2 = x * x
+    y2 = y * y
+    z2 = z * z
+    # w2 = w * w
+    return np.array(
+        [
+            [1 - 2 * y2 - 2 * z2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
+            [2 * x * y + 2 * w * z, 1 - 2 * x2 - 2 * z2, 2 * y * z - 2 * w * x],
+            [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x2 - 2 * y2],
+        ]
+    )
+
+
+def rmat_to_quat(rmat: np.ndarray) -> np.ndarray:
+    """Converts a rotation matrix into XYZW quaternions
+
+    (computer graphics solution by Shoemake 1994, same as NASA's code)
+
+    Args:
+        rmat (np.ndarray): (3,3) rotation matrix
+
+    Returns:
+        np.ndarray: XYZW quaternions
+    """
+
+    tr = rmat[0, 0] + rmat[1, 1] + rmat[2, 2]
+    if tr >= 0:
+        s4 = 2.0 * np.sqrt(tr + 1.0)
+        x = (rmat[2, 1] - rmat[1, 2]) / s4
+        y = (rmat[0, 2] - rmat[2, 0]) / s4
+        z = (rmat[1, 0] - rmat[0, 1]) / s4
+        w = s4 / 4.0
+    elif rmat[0, 0] > rmat[1, 1] and rmat[0, 0] > rmat[2, 2]:
+        s4 = 2.0 * np.sqrt(1.0 + rmat[0, 0] - rmat[1, 1] - rmat[2, 2])
+        x = s4 / 4.0
+        y = (rmat[0, 1] + rmat[1, 0]) / s4
+        z = (rmat[2, 0] + rmat[0, 2]) / s4
+        w = (rmat[2, 1] - rmat[1, 2]) / s4
+    elif rmat[1, 1] > rmat[2, 2]:
+        s4 = 2.0 * np.sqrt(1.0 + rmat[1, 1] - rmat[0, 0] - rmat[2, 2])
+        x = (rmat[0, 1] + rmat[1, 0]) / s4
+        y = s4 / 4.0
+        z = (rmat[1, 2] + rmat[2, 1]) / s4
+        w = (rmat[0, 2] - rmat[2, 0]) / s4
+    else:
+        s4 = 2.0 * np.sqrt(1.0 + rmat[2, 2] - rmat[0, 0] - rmat[1, 1])
+        x = (rmat[2, 0] + rmat[0, 2]) / s4
+        y = (rmat[1, 2] + rmat[2, 1]) / s4
+        z = s4 / 4.0
+        w = (rmat[1, 0] - rmat[0, 1]) / s4
+
+    return np.array([x, y, z, w])
+
+
+# TODO make a function to compare nearness of quaternions? Or just use pytransform3d's

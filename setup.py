@@ -4,6 +4,7 @@ This is used in conjunction with "pip install -e ."
 
 TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
+TODO decide if we should add pytransform3d or not
 """
 
 from setuptools import setup
