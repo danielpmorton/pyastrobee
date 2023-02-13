@@ -1,4 +1,5 @@
-"""
+"""Camera classes and hardware specifications
+
 TODO figure out which astrobee cameras need to be modeled
 TODO need to figure out what camera parameters are really needed
 TODO determine how to best use the class inheritance
@@ -9,6 +10,10 @@ Do they have a fixed focal distance? If so, what?
 positions and orientations of each on the astrobee
 intrinsics
 
+Info on the camera specs and transformations can be found in:
+astrobee/config/robots/sim.config
+astrobee/config/robots/honey.config
+astrobee/config/cameras.config
 """
 
 from typing import Any
@@ -20,6 +25,7 @@ import pybullet
 
 # From astrobee/config/robots/sim.config
 # Also check out astrobee/config/cameras.config
+# And, astrobee/config/robots/honey.config
 
 # TODO rename specs to something better
 # And remove any parameters that pybullet can't use
@@ -109,6 +115,17 @@ PERCH_CAM_SPECS = {
 #   nav_cam_to_haz_cam_timestamp_offset = -0.02,
 #   nav_cam_to_sci_cam_timestamp_offset = 0.18
 # }
+
+
+# -- Engineering positions with idealized orientations
+#   perch_cam_transform      = transform(vec3(-0.1331, 0.0509, -0.0166), quat4(0.000, -0.70710678118, 0.000, 0.70710678118)),-- placeholder, not valid!
+#   haz_cam_transform        = transform(vec3(0.1328, 0.0362, -0.0826), quat4(-0.500, 0.500, -0.500, 0.500)), -- placeholder, not valid!
+#   nav_cam_transform        = transform(vec3(0.1157+0.002, -0.0422, -0.0826), quat4(0.500, 0.500, 0.500, 0.500) ),
+#   dock_cam_transform       = transform(vec3(-0.1032-0.0029, -0.0540, -0.0064), quat4(0.500, -0.500, -0.500, 0.500) ),
+#   imu_transform            = transform(vec3(0.0247, 0.0183, 0.0094), quat4(0.000, 0.000, 0.70710678118, 0.70710678118) ),
+#   -- Not accurate only for sim purposes
+#   sci_cam_transform        = transform(vec3(0.118, 0.0, -0.096), quat4(0.500, 0.500, 0.500, 0.500) )
+# };
 
 
 def compute_view_matrix(robot_pose, camera_config) -> tuple[float, ...]:
