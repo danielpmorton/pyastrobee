@@ -10,6 +10,7 @@
 
 ## Status
 ### TODOs:
+- [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
 - [ ] Rotate the ISS so it's flat
 - [ ] Reorganize the `resources/` folder (obsolete?)
 - [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
