@@ -241,7 +241,7 @@ def initialize_pybullet(
     # TODO: See if there is a more robust option here
     cwd = os.getcwd()
     if not cwd.endswith("pyastrobee") or cwd.endswith("pyastrobee/pyastrobee"):
-        raise Exception(
+        raise ConnectionRefusedError(
             f"You are running scripts from {cwd}.\nEnsure you're at $HOME/pyastrobee"
         )
     # Connect to pybullet
@@ -347,7 +347,10 @@ def run_sim(viz_freq: float = 120, timeout: Optional[float] = None):
     if timeout is None:
         timeout = float("inf")
     start_time = time.time()
-    while (time.time() - start_time < timeout) and pybullet.isConnected():
-        pybullet.stepSimulation()
-        if connect_mode == "GUI":
-            time.sleep(1.0 / viz_freq)
+    try:
+        while (time.time() - start_time < timeout) and pybullet.isConnected():
+            pybullet.stepSimulation()
+            if connect_mode == "GUI":
+                time.sleep(1.0 / viz_freq)
+    finally:
+        pybullet.disconnect()

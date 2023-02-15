@@ -16,6 +16,7 @@ from pyastrobee.utils.bullet_utils import (
     run_sim,
     load_floor,
 )
+from pyastrobee.utils.errors import PybulletError
 
 
 def load_iss() -> list[int]:
@@ -123,9 +124,9 @@ def load_iss_module(
             )
         # Check to make sure things were loaded properly before forming the multibody
         if visual_id < 0:
-            raise Exception(f"Pybullet could not load the visual shape for {path}")
+            raise PybulletError(f"Could not load the visual shape for {path}", visual_id)
         if collision_id < 0:
-            raise Exception(f"Pybullet could not load the collision shape for {path}")
+            raise PybulletError(f"Could not load the collision shape for {path}", collision_id)
 
         rigid_id = pybullet.createMultiBody(
             baseMass=0,  # Fixed position
