@@ -121,6 +121,14 @@ Get the pre-built binaries:
 2. Extract the contents to `$HOME/software`
 
 
+## Assimp
+
+This is only required if you'll be modifying/converting meshes outside of Blender
+```
+sudo apt install libassimp-dev
+sudo apt install assimp-utils
+```
+
 ## VSCode
 
 ```

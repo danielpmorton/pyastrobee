@@ -10,6 +10,8 @@
 
 ## Status
 ### TODOs:
+- [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
+  - [ ] Check out the assimp library he mentioned in the commit message as well
 - [ ] Add test cases for quaternions
 - [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
