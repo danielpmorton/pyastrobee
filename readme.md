@@ -10,6 +10,8 @@
 
 ## Status
 ### TODOs:
+- [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
+  - [ ] https://github.com/bulletphysics/bullet3/issues/4406
 - [ ] Debug loading the texture for Astrobee
   - [ ] Did the DAE -> OBJ conversion go wrong? Things look like they might be in the wrong place
   - [ ] Is is just the texture image? If we're only applying one texture image, maybe the UVmap for some parts aren't realistic for that image
