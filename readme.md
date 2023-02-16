@@ -10,6 +10,10 @@
 
 ## Status
 ### TODOs:
+- [ ] Debug loading the texture for Astrobee
+  - [ ] Did the DAE -> OBJ conversion go wrong? Things look like they might be in the wrong place
+  - [ ] Is is just the texture image? If we're only applying one texture image, maybe the UVmap for some parts aren't realistic for that image
+  - [ ] Move the modified Honey skin file into the correct place (not `imgs/`)
 - [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
   - [ ] Check out the assimp library he mentioned in the commit message as well
 - [ ] Add test cases for quaternions
