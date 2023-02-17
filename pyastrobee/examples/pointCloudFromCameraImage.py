@@ -1,12 +1,12 @@
-import pybullet as p
+import pybullet
 import math
 import numpy as np
 import pybullet_data
 
-p.connect(p.GUI)
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
-plane = p.loadURDF("plane100.urdf")
-cube = p.loadURDF("cube.urdf", [0, 0, 1])
+pybullet.connect(pybullet.GUI)
+pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+plane = pybullet.loadURDF("plane100.urdf")
+cube = pybullet.loadURDF("cube.urdf", [0, 0, 1])
 
 
 def getRayFromTo(mouseX, mouseY):
@@ -23,7 +23,7 @@ def getRayFromTo(mouseX, mouseY):
         _,
         dist,
         camTarget,
-    ) = p.getDebugVisualizerCamera()
+    ) = pybullet.getDebugVisualizerCamera()
     camPos = [
         camTarget[0] - dist * camForward[0],
         camTarget[1] - dist * camForward[1],
@@ -105,7 +105,7 @@ def getRayFromTo(mouseX, mouseY):
     _,
     dist,
     camTarget,
-) = p.getDebugVisualizerCamera()
+) = pybullet.getDebugVisualizerCamera()
 camPos = [
     camTarget[0] - dist * camForward[0],
     camTarget[1] - dist * camForward[1],
@@ -141,7 +141,7 @@ corners3D = []
 imgW = int(width / 10)
 imgH = int(height / 10)
 
-img = p.getCameraImage(imgW, imgH, renderer=p.ER_BULLET_HARDWARE_OPENGL)
+img = pybullet.getCameraImage(imgW, imgH, renderer=pybullet.ER_BULLET_HARDWARE_OPENGL)
 rgbBuffer = np.reshape(img[2], (imgH, imgW, 4))
 # NOTE: this depth buffer's reshaping does not match the [w, h] convention for
 # OpenGL depth buffers.  See getCameraImageTest.py for an OpenGL depth buffer
@@ -150,11 +150,11 @@ print("rgbBuffer.shape=", rgbBuffer.shape)
 print("depthBuffer.shape=", depthBuffer.shape)
 
 # disable rendering temporary makes adding objects faster
-p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
-p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-p.configureDebugVisualizer(p.COV_ENABLE_TINY_RENDERER, 0)
-visualShapeId = p.createVisualShape(
-    shapeType=p.GEOM_SPHERE, rgbaColor=[1, 1, 1, 1], radius=0.03
+pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_RENDERING, 0)
+pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, 0)
+pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_TINY_RENDERER, 0)
+visualShapeId = pybullet.createVisualShape(
+    shapeType=pybullet.GEOM_SPHERE, rgbaColor=[1, 1, 1, 1], radius=0.03
 )
 collisionShapeId = (
     -1
@@ -171,7 +171,7 @@ for i in range(4):
     newTo = (0.01 / l) * vec + rf
     # print("len vec=",np.sqrt(np.dot(vec,vec)))
 
-    p.addUserDebugLine(rayFrom, newTo, [1, 0, 0])
+    pybullet.addUserDebugLine(rayFrom, newTo, [1, 0, 0])
     corners3D.append(newTo)
 count = 0
 
@@ -193,8 +193,8 @@ for w in range(0, imgW, stepX):
         depth = far * near / (far - (far - near) * depthImg)
         depth /= math.cos(alpha)
         newTo = (depth / l) * vec + rf
-        p.addUserDebugLine(rayFrom, newTo, [1, 0, 0])
-        mb = p.createMultiBody(
+        pybullet.addUserDebugLine(rayFrom, newTo, [1, 0, 0])
+        mb = pybullet.createMultiBody(
             baseMass=0,
             baseCollisionShapeIndex=collisionShapeId,
             baseVisualShapeIndex=visualShapeId,
@@ -203,14 +203,14 @@ for w in range(0, imgW, stepX):
         )
         color = rgbBuffer[h, w]
         color = [color[0] / 255.0, color[1] / 255.0, color[2] / 255.0, 1]
-        p.changeVisualShape(mb, -1, rgbaColor=color)
-p.addUserDebugLine(corners3D[0], corners3D[1], [1, 0, 0])
-p.addUserDebugLine(corners3D[1], corners3D[2], [1, 0, 0])
-p.addUserDebugLine(corners3D[2], corners3D[3], [1, 0, 0])
-p.addUserDebugLine(corners3D[3], corners3D[0], [1, 0, 0])
-p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
+        pybullet.changeVisualShape(mb, -1, rgbaColor=color)
+pybullet.addUserDebugLine(corners3D[0], corners3D[1], [1, 0, 0])
+pybullet.addUserDebugLine(corners3D[1], corners3D[2], [1, 0, 0])
+pybullet.addUserDebugLine(corners3D[2], corners3D[3], [1, 0, 0])
+pybullet.addUserDebugLine(corners3D[3], corners3D[0], [1, 0, 0])
+pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_RENDERING, 1)
 print("ready\n")
 # p.removeBody(plane)
 # p.removeBody(cube)
 while 1:
-    p.setGravity(0, 0, -10)
+    pybullet.setGravity(0, 0, -10)

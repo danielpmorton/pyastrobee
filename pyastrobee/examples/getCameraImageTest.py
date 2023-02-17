@@ -1,18 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pybullet as p
+import pybullet
 import time
 import pybullet_data
 
-direct = p.connect(p.GUI)  # , options="--window_backend=2 --render_device=0")
+direct = pybullet.connect(pybullet.GUI)  # , options="--window_backend=2 --render_device=0")
 # egl = p.loadPlugin("eglRendererPlugin")
 
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
-p.loadURDF("plane.urdf")
-p.loadURDF("r2d2.urdf", [0, 0, 1])
-p.loadURDF("cube_small.urdf", basePosition=[0.0, 0.0, 0.025])
-cube_trans = p.loadURDF("cube_small.urdf", basePosition=[0.0, 0.1, 0.025])
-p.changeVisualShape(cube_trans, -1, rgbaColor=[1, 1, 1, 0.1])
+pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+pybullet.loadURDF("plane.urdf")
+pybullet.loadURDF("r2d2.urdf", [0, 0, 1])
+pybullet.loadURDF("cube_small.urdf", basePosition=[0.0, 0.0, 0.025])
+cube_trans = pybullet.loadURDF("cube_small.urdf", basePosition=[0.0, 0.1, 0.025])
+pybullet.changeVisualShape(cube_trans, -1, rgbaColor=[1, 1, 1, 0.1])
 width = 128
 height = 128
 
@@ -21,17 +21,17 @@ aspect = width / height
 near = 0.02
 far = 1
 
-view_matrix = p.computeViewMatrix([0, 0, 0.5], [0, 0, 0], [1, 0, 0])
-projection_matrix = p.computeProjectionMatrixFOV(fov, aspect, near, far)
+view_matrix = pybullet.computeViewMatrix([0, 0, 0.5], [0, 0, 0], [1, 0, 0])
+projection_matrix = pybullet.computeProjectionMatrixFOV(fov, aspect, near, far)
 
 # Get depth values using the OpenGL renderer
-images = p.getCameraImage(
+images = pybullet.getCameraImage(
     width,
     height,
     view_matrix,
     projection_matrix,
     shadow=True,
-    renderer=p.ER_BULLET_HARDWARE_OPENGL,
+    renderer=pybullet.ER_BULLET_HARDWARE_OPENGL,
 )
 # NOTE: the ordering of height and width change based on the conversion
 rgb_opengl = np.reshape(images[2], (height, width, 4)) * 1.0 / 255.0
@@ -41,13 +41,13 @@ seg_opengl = np.reshape(images[4], [width, height]) * 1.0 / 255.0
 time.sleep(1)
 
 # Get depth values using Tiny renderer
-images = p.getCameraImage(
+images = pybullet.getCameraImage(
     width,
     height,
     view_matrix,
     projection_matrix,
     shadow=True,
-    renderer=p.ER_TINY_RENDERER,
+    renderer=pybullet.ER_TINY_RENDERER,
 )
 depth_buffer_tiny = np.reshape(images[3], [width, height])
 depth_tiny = far * near / (far - (far - near) * depth_buffer_tiny)
@@ -55,16 +55,16 @@ rgb_tiny = np.reshape(images[2], (height, width, 4)) * 1.0 / 255.0
 seg_tiny = np.reshape(images[4], [width, height]) * 1.0 / 255.0
 
 bearStartPos1 = [-3.3, 0, 0]
-bearStartOrientation1 = p.getQuaternionFromEuler([0, 0, 0])
-bearId1 = p.loadURDF("plane.urdf", bearStartPos1, bearStartOrientation1)
+bearStartOrientation1 = pybullet.getQuaternionFromEuler([0, 0, 0])
+bearId1 = pybullet.loadURDF("plane.urdf", bearStartPos1, bearStartOrientation1)
 bearStartPos2 = [0, 0, 0]
-bearStartOrientation2 = p.getQuaternionFromEuler([0, 0, 0])
-bearId2 = p.loadURDF("teddy_large.urdf", bearStartPos2, bearStartOrientation2)
-textureId = p.loadTexture("checker_grid.jpg")
-for b in range(p.getNumBodies()):
-    p.changeVisualShape(b, linkIndex=-1, textureUniqueId=textureId)
-    for j in range(p.getNumJoints(b)):
-        p.changeVisualShape(b, linkIndex=j, textureUniqueId=textureId)
+bearStartOrientation2 = pybullet.getQuaternionFromEuler([0, 0, 0])
+bearId2 = pybullet.loadURDF("teddy_large.urdf", bearStartPos2, bearStartOrientation2)
+textureId = pybullet.loadTexture("checker_grid.jpg")
+for b in range(pybullet.getNumBodies()):
+    pybullet.changeVisualShape(b, linkIndex=-1, textureUniqueId=textureId)
+    for j in range(pybullet.getNumJoints(b)):
+        pybullet.changeVisualShape(b, linkIndex=j, textureUniqueId=textureId)
 
 viewMat = [
     0.642787516117096,
@@ -102,26 +102,26 @@ projMat = [
     -0.02000020071864128,
     0.0,
 ]
-images = p.getCameraImage(
+images = pybullet.getCameraImage(
     width,
     height,
     viewMatrix=viewMat,
     projectionMatrix=projMat,
-    renderer=p.ER_BULLET_HARDWARE_OPENGL,
-    flags=p.ER_USE_PROJECTIVE_TEXTURE,
+    renderer=pybullet.ER_BULLET_HARDWARE_OPENGL,
+    flags=pybullet.ER_USE_PROJECTIVE_TEXTURE,
     projectiveTextureView=viewMat,
     projectiveTextureProj=projMat,
 )
 proj_opengl = np.reshape(images[2], (height, width, 4)) * 1.0 / 255.0
 time.sleep(1)
 
-images = p.getCameraImage(
+images = pybullet.getCameraImage(
     width,
     height,
     viewMatrix=viewMat,
     projectionMatrix=projMat,
-    renderer=p.ER_TINY_RENDERER,
-    flags=p.ER_USE_PROJECTIVE_TEXTURE,
+    renderer=pybullet.ER_TINY_RENDERER,
+    flags=pybullet.ER_USE_PROJECTIVE_TEXTURE,
     projectiveTextureView=viewMat,
     projectiveTextureProj=projMat,
 )
