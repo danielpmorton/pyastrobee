@@ -180,6 +180,7 @@ PERCH_CAM_CONFIG = {
 }
 
 
+# TODO implement this as an ABC?
 class Camera:
     def __init__(
         # TODO remove the default as none? See if there is a better way to load the config
@@ -198,6 +199,7 @@ class Camera:
         cam_tgt=None,
     ):
         if not pybullet.isNumpyEnabled():
+            # TODO switch this exception to a pybullet error
             raise Exception(
                 "Camera functions assume that numpy is enabled. Check on your pybullet installation"
             )

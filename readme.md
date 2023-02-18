@@ -10,6 +10,9 @@
 
 ## Status
 ### TODOs:
+- [ ] Start with a simple trajectory and motion with the astrobee in pybullet
+  - [ ] Then see if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
+- [ ] Add threading once commands get too complicated
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
 - [ ] Debug loading the texture for Astrobee
@@ -18,6 +21,7 @@
   - [ ] Move the modified Honey skin file into the correct place (not `imgs/`)
 - [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
   - [ ] Check out the assimp library he mentioned in the commit message as well
+  - [ ] Figure out what the deal is with some of the gripper links disappearing
 - [ ] Add test cases for quaternions
 - [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel

@@ -2,14 +2,37 @@
 
 In general, we assume that we're working with Honey. Multiple astrobees can be loaded, but
 we assume that they all have the exact same configuration
+
+
+TO ADD:
+follow_trajectory -- given a sequence of poses for the constraints, continually update the state of the constraint to follow this
+plan_trajectory -- given a pose target, plan a sequence of constraint values to get from the current pose to desired
+
+
+
 """
 
+from enum import Enum
+
+import numpy as np
 import pybullet
 import numpy.typing as npt
 
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.rotations import euler_angles_to_rmat
+
+
+# TODO: should refine these states so it is clear what is going on
+# Should it be possible for the robot to be in multiple states? e.g. moving and manipulating??
+# Should we keep multiple states in separate enumerations?
+# These states are all just ideas for now
+# Add an error state?   
+class States(Enum):
+    IDLE = 1
+    PLANNING = 2
+    MOVING = 3
+    MANIPULATING = 4
 
 
 class Astrobee:
@@ -66,6 +89,8 @@ class Astrobee:
 
         # Property internal variables
         self._tcp_offset = None  # TODO
+        # Constraint is for position control
+        self.constraint_id = pybullet.createConstraint(self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0))
 
     # Is an unloading method needed?
     def _unload(self, robot_id: int):
@@ -210,6 +235,21 @@ class Astrobee:
             bool: _description_
         """
         raise NotImplementedError
+
+
+
+    def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
+        pass
+
+
+    def plan_trajectory(self, desired_pose):
+        cur_pose = self.get_robot_pose()
+        cur_xyz = cur_pose[:3]
+        vec_from_to = 
+
+
+
+
 
 
 if __name__ == "__main__":
