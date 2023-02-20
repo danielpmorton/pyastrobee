@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 
-from pyastrobee.utils import rotations as rot
+from pyastrobee.utils import rotations as rts
 from pyastrobee.utils import transformations as tfs
 
 
@@ -22,7 +22,7 @@ class TransformsTest(unittest.TestCase):
         )
 
     def test_transform_inversion(self):
-        rmat = rot.euler_angles_to_rmat("xyz", 1, 2, 3)
+        rmat = rts.euler_xyz_to_rmat([1, 2, 3])
         trans = [1, 2, 3]
         T = tfs.make_transform_mat(rmat, trans)
         T_inv = tfs.invert_transform_mat(T)
@@ -40,7 +40,7 @@ class TransformsTest(unittest.TestCase):
         )
         self.assertTrue(
             tfs.check_transform_mat(
-                tfs.make_transform_mat(rot.Rx(1), np.random.rand(3))
+                tfs.make_transform_mat(rts.Rx(1), np.random.rand(3))
             )
         )
 
