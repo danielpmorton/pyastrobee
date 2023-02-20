@@ -8,8 +8,11 @@
 
 [Assorted Notes](docs/assorted_notes.md): Things I thought seemed important
 
+[Testing](docs/testing.md): Information about running test cases
+
 ## Status
 ### TODOs:
+- [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
 - [ ] Start with a simple trajectory and motion with the astrobee in pybullet
   - [ ] Then see if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
 - [ ] Add threading once commands get too complicated
