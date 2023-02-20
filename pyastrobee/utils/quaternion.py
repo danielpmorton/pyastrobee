@@ -1,0 +1,83 @@
+"""Class for managing quaternion conventions
+
+Usage examples:
+q = Quaternion() # This will initialize it as empty
+q.xyzw = [0.1, 0.2, 0.3, 0.4] # This will assign the values after initialization
+q = Quaternion(xyzw=[0.1, 0.2, 0.3, 0.4]) # This will assign values at initialization
+some_pytransform3d_function(q.wxyz) # Pass the wxyz data into modules that use this convention
+"""
+
+from typing import Optional
+
+import numpy as np
+import numpy.typing as npt
+
+
+class Quaternion:
+    """Quaternion class to handle the XYZW/WXYZ conventions with less confusion
+
+    We will always default to using XYZW convention
+
+    Args:
+        xyzw (npt.ArrayLike, optional): Quaternions, in XYZW order. Defaults to None, in which
+            case wxyz should be provided, or else the quaternion will be empty
+        wxyz (npt.ArrayLike, optional): Quaternions, in WXYZ order. Defaults to None, in which
+            case xyzw should be provided, or else the quaternion will be empty
+    """
+
+    def __init__(
+        self, xyzw: Optional[npt.ArrayLike] = None, wxyz: Optional[npt.ArrayLike] = None
+    ):
+        if xyzw is not None and wxyz is not None:
+            raise ValueError("Specify one of XYZW/WXYZ, not both")
+        elif xyzw is not None:
+            self.xyzw = xyzw
+        elif wxyz is not None:
+            self.wxyz = wxyz
+        else:
+            self._initialize_as_empty()
+
+    def _check_if_loaded(self):
+        vals = [self.x, self.y, self.z, self.w]
+        if any(val is None for val in vals):
+            raise ValueError(
+                f"Quaternion has been initialized, but not set (value is {vals})"
+            )
+
+    def _validate(self, quat):
+        if len(quat) != 4:
+            raise ValueError(f"Invalid quaternion ({quat}):\nNot of length 4!")
+        # TODO
+        # pytransform3d just semems to check the shape of the input
+        # But, the entries should be within -1 and 1 as well??? Check on this
+        # try:
+        #     rt.check_quaternion(self.wxyz)
+        # except ValueError as exc:
+        #     raise ValueError(f"Not a valid quaternion!\n(XYZW is {self.xyzw})") from exc
+
+    def _initialize_as_empty(self):
+        self.x, self.y, self.z, self.w = [None, None, None, None]
+
+    # TODO need to decide if this is needed
+    def normalize(self):
+        self.x, self.y, self.z, self.w = self.xyzw / np.linalg.norm(self.xyzw)
+
+    @property
+    def xyzw(self):
+        self._check_if_loaded()
+        return np.array([self.x, self.y, self.z, self.w])
+
+    @property
+    def wxyz(self):
+        self._check_if_loaded()
+        return np.array([self.w, self.x, self.y, self.z])
+
+    @xyzw.setter
+    def xyzw(self, xyzw: npt.ArrayLike):
+        self._validate(xyzw)
+        self.x, self.y, self.z, self.w = xyzw
+
+    @wxyz.setter
+    def wxyz(self, wxyz: npt.ArrayLike):
+        self._validate(wxyz)
+        self.w, self.x, self.y, self.z = wxyz
