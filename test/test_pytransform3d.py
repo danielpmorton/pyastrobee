@@ -8,8 +8,8 @@ import numpy as np
 import pytransform3d.rotations as rt
 import pytransform3d.transformations as tr
 
-from pyastrobee.utils import my_rotations as my_rt
-from pyastrobee.utils import my_transformations as my_tr
+from pyastrobee.archive import my_rotations as my_rt
+from pyastrobee.archive import my_transformations as my_tr
 
 
 class Pytransform3dTest(unittest.TestCase):

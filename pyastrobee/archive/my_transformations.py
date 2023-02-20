@@ -1,26 +1,15 @@
 """Helper functions associated with transformations (rotations + translations)
 
-Notation for transformation matrices:
-A
-  T
-B
-describes the frame B with respect to frame A. AKA "B in A", or "B to A"
-In code, this can be described as T_B_in_A or T_B2A
-
-Composing transformations:
-A       A     B     C
-  T  =    T     T     T
-D       B     C     D
-e.g. T_D2A = T_B2A @ T_C2B @ T_D2C
-
-All angles are in radians
+NOTE: This code has been replaced by the wrapper around pytransform3d.
+However, it is still useful for test cases, to ensure pytransform3d's conventions
+and math match what we expect
 """
 
 from typing import Union
 
 import numpy as np
 
-from pyastrobee.utils.my_rotations import check_rotation_mat
+from pyastrobee.archive.my_rotations import check_rotation_mat
 
 
 def make_transform_mat(rot: np.ndarray, trans: np.ndarray) -> np.ndarray:

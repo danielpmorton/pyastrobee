@@ -1,28 +1,8 @@
 """Helper functions associated with rotations
 
-Notation for rotation matrices:
-A
-  R
-B
-describes the orientation of frame B with respect to frame A. AKA "B in A", or "B to A"
-In code, this can be described as R_B_in_A or R_B2A
-
-The columns of this matrix are the unit vectors of B expressed in the coordinates A
-The rows of this matrix are the unit vectors of A expressed in the coordinates of B
-
-Composing rotations:
-A       A     B     C
-  R  =    R     R     R
-D       B     C     D
-e.g. R_D2A = R_B2A @ R_C2B @ R_D2C
-
-All angles are in radians
-
-TODO
-- Make rmat_to_euler_angles() (More general version with multiple conventions)
-- Make rmat_to_fixed_angles() (More general version with multiple conventions)
-- Make sure naming conventions are consistent
-- Finish any NotImplemented functions
+NOTE: This code has been replaced by the wrapper around pytransform3d.
+However, it is still useful for test cases, to ensure pytransform3d's conventions
+and math match what we expect
 """
 
 import numpy as np
