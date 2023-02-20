@@ -6,6 +6,7 @@ Current test cases cover:
 - Rotations
 - Transformations
 - Testing pytransform3d conventions
+- Poses
 
 ## CI/CD
 
