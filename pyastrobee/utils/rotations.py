@@ -10,96 +10,133 @@ In code, this can be described as R_B_in_A or R_B2A
 The columns of this matrix are the unit vectors of B expressed in the coordinates A
 The rows of this matrix are the unit vectors of A expressed in the coordinates of B
 
+Operator vs mapping example, with Rx(theta)
+As an operator: Rx @ P will rotate point P by theta about the X axis
+As a mapping: Gives R_B_in_A (R_B2A), where frame B is rotated theta radians about A's X axis
+
 Composing rotations:
 A       A     B     C
   R  =    R     R     R
 D       B     C     D
 e.g. R_D2A = R_B2A @ R_C2B @ R_D2C
 
+Conventions:
+- Euler angles are in XYZ convention
+    - Euler angles correspond to "intrinsic" convention in pytransform3d
+- Fixed angles are also XYZ convention
+    - Fixed angles correspond to "extrinsic" convention in pytransform3d
+- Quaternions are in XYZW
+    - Who uses XYZW?
+        - NASA
+        - ROS
+        - Bullet/Pybullet
+    - Who uses WXYZ?
+        - Pytransform3d
+        - Mujoco
+    - We'll need to convert XYZW -> WXYZ for pytransform3d
+
 All angles are in radians
 
 TODO
-- Make rmat_to_euler_angles() (More general version with multiple conventions)
-- Make rmat_to_fixed_angles() (More general version with multiple conventions)
+- Decide if we want to get rid of the _xyz in the euler namings
+- make a new function for custom euler angle conventions
 - Make sure naming conventions are consistent
 - Finish any NotImplemented functions
+- Decide if the singularity exceptions from the old code should be re-included
+- Update the documentation anywhere pytransform3d changed something
+- Determine if the matrix checks should raise an exception or just return true/false
+- Decide if it's useful to add back in other conventions (like zyx)? - Removed for now
+- Make the angles inputs an array rather than multiple inputs
 """
+
+from typing import Union
 
 import numpy as np
 import numpy.typing as npt
+import pytransform3d.rotations as rt
+
+from pyastrobee.utils.quaternion import Quaternion
+
+# Parameters to clarify meaning of pytransform3d inputs
+_EULER = 0
+_FIXED = 1
+_X = 0
+_Y = 1
+_Z = 2
 
 
 def Rx(theta: float) -> np.ndarray:
     """Rotation matrix for a rotation by theta radians about the X axis
 
-    As an operator: Rx @ P will rotate point P by theta about the X axis
-    As a mapping: Gives R_B_in_A ({A/B}R), where frame B is rotated theta radians about A's X axis
+    Args:
+        theta (float): Rotation angle about the X axis (radians)
+
+    Returns:
+        np.ndarray: The associated (3,3) rotation matrix
     """
-    return np.array(
-        [
-            [1, 0, 0],
-            [0, np.cos(theta), -np.sin(theta)],
-            [0, np.sin(theta), np.cos(theta)],
-        ]
-    )
+    return rt.matrix_from_euler([theta, 0, 0], _X, _Y, _Z, _EULER)
 
 
 def Ry(theta: float) -> np.ndarray:
     """Rotation matrix for a rotation by theta radians about the Y axis
 
-    As an operator: Ry @ P will rotate point P by theta about the Y axis
-    As a mapping: Gives R_B_in_A ({A/B}R), where frame B is rotated theta radians about A's Y axis
+    Args:
+        theta (float): Rotation angle about the Y axis (radians)
+
+    Returns:
+        np.ndarray: The associated (3,3) rotation matrix
     """
-    return np.array(
-        [
-            [np.cos(theta), 0, np.sin(theta)],
-            [0, 1, 0],
-            [-np.sin(theta), 0, np.cos(theta)],
-        ]
-    )
+    return rt.matrix_from_euler([0, theta, 0], _X, _Y, _Z, _EULER)
 
 
 def Rz(theta: float) -> np.ndarray:
     """Rotation matrix for a rotation by theta radians about the Z axis
 
-    As an operator: Rz @ P will rotate point P by theta about the Z axis
-    As a mapping: Gives R_B_in_A ({A/B}R), where frame B is rotated theta radians about A's Z axis
-    """
-    return np.array(
-        [
-            [np.cos(theta), -np.sin(theta), 0],
-            [np.sin(theta), np.cos(theta), 0],
-            [0, 0, 1],
-        ]
-    )
-
-
-def euler_zyx_to_rmat(th_z: float, th_y: float, th_x: float) -> np.ndarray:
-    """ZYX 3-angle Euler rotation matrix
-
     Args:
-        th_z (float): Starting with frame A, angle to rotate about Z_A to obtain intermediate frame B'
-        th_y (float): Angle to rotate about Y_B' to obtain intermediate frame B''
-        th_x (float): Angle to rotate about X_B'' to obtain B
+        theta (float): Rotation angle about the Z axis (radians)
 
     Returns:
-        np.ndarray: R_B_in_A ({A/B}R) where frame B is composed by three rotations in ZYX order starting from frame A
+        np.ndarray: The associated (3,3) rotation matrix
     """
-    return Rz(th_z) @ Ry(th_y) @ Rx(th_x)
+    return rt.matrix_from_euler([0, 0, theta], _X, _Y, _Z, _EULER)
 
 
-def euler_xyz_to_rmat(th_x: float, th_y: float, th_z: float) -> np.ndarray:
-    """XYZ 3-angle Euler rotation matrix
+def euler_xyz_to_rmat(angles: npt.ArrayLike) -> np.ndarray:
+    """Euler XYZ 3-angle rotation matrix
+
+    Operations will be in the following order:
+    1) Starting with frame A, rotate by the first angle about X_A to obtain intermediate frame B'
+    2) Rotate by the second angle about Y_B' to obtain intermediate frame B''
+    3) Rotate by the third angle about Z_B'' to obtain B
 
     Args:
-        th_x (float): Starting with frame A, angle to rotate about X_A to obtain intermediate frame B'
-        th_y (float): Angle to rotate about Y_B' to obtain intermediate frame B''
-        th_z (float): Angle to rotate about Z_B'' to obtain B
+        angles (npt.ArrayLike): Three angles (radians) corresponding to the XYZ rotations
 
     Returns:
-        np.ndarray: R_B_in_A ({A/B}R) where frame B is composed by three rotations in XYZ order starting from frame A
+        np.ndarray: R_B2A, where frame B is composed by three rotations in XYZ order starting from frame A
     """
-    return Rx(th_x) @ Ry(th_y) @ Rz(th_z)
+    if len(angles) != 3:
+        raise ValueError(f"Must provide 3 angles.\nGot:{angles}")
+    return rt.matrix_from_euler(angles, _X, _Y, _Z, _EULER)
+
+
+def fixed_xyz_to_rmat(angles: npt.ArrayLike) -> np.ndarray:
+    """Fixed XYZ 3-angle rotation matrix
+
+    Operations will be in the following order:
+    1) Rotate by the first angle about X_A
+    2) Rotate by the second angle about Y_A
+    3) Rotate by the third angle about Z_A
+
+    (This differs from Euler angles, as the rotation is not about the intermediate frames)
+
+    Args:
+        angles (npt.ArrayLike): Three angles (radians) corresponding to the XYZ rotations
+
+    Returns:
+        np.ndarray: R_B2A, where frame B is composed by three rotations in XYZ order starting from frame A
+    """
+    return rt.matrix_from_euler(angles, _X, _Y, _Z, _FIXED)
 
 
 def rmat_to_axis_angle(rmat: np.ndarray) -> tuple[np.ndarray, float]:
@@ -108,21 +145,14 @@ def rmat_to_axis_angle(rmat: np.ndarray) -> tuple[np.ndarray, float]:
     Args:
         rmat (np.ndarray): (3, 3) rotation matrix
 
-    Raises:
-        ZeroDivisionError: If the rotation matrix leads to a singularity
-            when represented in axis-angle form
-
     Returns:
         Tuple of:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle
     """
-    angle = np.arccos((rmat[0, 0] + rmat[1, 1] + rmat[2, 2] - 1) / 2)
-    if np.abs(np.sin(angle)) < 1e-14:
-        raise ZeroDivisionError("Cannot convert to axis-angle: Near singularity")
-    axis = (1 / (2 * np.sin(angle))) * np.array(
-        [rmat[2, 1] - rmat[1, 2], rmat[0, 2] - rmat[2, 0], rmat[1, 0] - rmat[0, 1]]
-    )
+    axis_and_angle = rt.axis_angle_from_matrix(rmat)
+    axis = axis_and_angle[:3]
+    angle = axis_and_angle[3]
     return axis, angle
 
 
@@ -136,78 +166,59 @@ def axis_angle_to_rmat(axis: list[float], angle: float) -> np.ndarray:
     Returns:
         np.ndarray: Rotation matrix equivalent for the axis-angle representation
     """
-    # Converting to a slightly more compact notation
-    kx, ky, kz = axis
-    ct = np.cos(angle)
-    st = np.sin(angle)
-    vt = 1 - ct
-    return np.array(
-        [
-            [kx * kx * vt + ct, kx * ky * vt - kz * st, kx * kz * vt + ky * st],
-            [kx * ky * vt + kz * st, ky * ky * vt + ct, ky * kz * vt - kx * st],
-            [kx * kz * vt - ky * st, ky * kz * vt + kx * st, kz * kz * vt + ct],
-        ]
-    )
+    axis_and_angle = np.concatenate([axis, [angle]])
+    return rt.matrix_from_axis_angle(axis_and_angle)
 
 
-def euler_angles_to_rmat(convention: str, *angles: float) -> np.ndarray:
-    """Converts euler angles of a specified convention (like 'xyz') to a rotation matrix
+def custom_euler_to_rmat(convention: str, angles: npt.ArrayLike) -> np.ndarray:
+    """Converts euler angles of a specified convention (like 'zyx') to a rotation matrix
+
+    Use this if a convention other than XYZ is needed
 
     Args:
-        convention (str): Rotation axis order for the specified angles: Must be some
-            permutation of 'xyz' - e.g. 'zyx', 'yxy', 'xyxyxyxyxy', ... and the length
-            of the string must match the number of angles in the inputs
-        *angles (float): Angle arguments. Length must match the convention string length
-
-    Returns:
-        np.ndarray: (3,3) rotation matrix
-    """
-    if not len(angles) == len(convention):
-        raise ValueError("Number of angles must match the specified convention")
-    if not all(c in {"x", "y", "z"} for c in convention.lower()):
-        raise ValueError("Convention must only include x, y, and z")
-    funcs = {"x": Rx, "y": Ry, "z": Rz}
-    R = np.eye(3)
-    for angle, axis in zip(angles, convention):
-        R = R @ funcs[axis](angle)
-    return R
-
-
-def fixed_angles_to_rmat(convention: str, *angles: float) -> np.ndarray:
-    """Converts fixed angles of a specified convention (like 'xyz') to a rotation matrix
-
-    Args:
-        convention (str): Rotation axis order for the specified angles: Must be some
-            permutation of 'xyz' - e.g. 'zyx', 'yxy', 'xyxyxyxyxy', ... and the length
-            of the string must match the number of angles in the inputs
-        *angles (float): Angle arguments. Length must match the convention string length
-
-    Returns:
-        np.ndarray: (3,3) rotation matrix
-    """
-    return euler_angles_to_rmat(convention[::-1], *angles[::-1])
-
-
-def rmat_to_euler_zyx(rmat: np.ndarray) -> tuple[float, float, float]:
-    """Converts a rotation matrix to Euler ZYX angles
-
-    Args:
-        rmat (np.ndarray): (3,3) rotation matrix
+        convention (str): Axis order for the three rotations: Must be some length=3
+            permutation of 'xyz' - e.g. 'zyx', 'yxy', ...
+        angles (npt.ArrayLike): Rotation angles, length = 3
 
     Raises:
-        ZeroDivisionError: If there is a singularity in the representation
+        ValueError: If the convention or the angles are not of length 3, or if the
+            convention does not strictly contain just "x", "y", or "z"
 
     Returns:
-        tuple[float, float, float]: ZYX Euler angles
+        np.ndarray: (3, 3) rotation matrix
     """
-    [r11, _, _], [r21, _, _], [r31, r32, r33] = rmat
-    beta = np.arctan2(-r31, np.sqrt(r11**2 + r21**2))
-    cb = np.cos(beta)
-    if abs(cb) < 1e-14:
-        raise ZeroDivisionError("At a singularity")
-    alpha = np.arctan2(r21 / cb, r11 / cb)
-    gamma = np.arctan2(r32 / cb, r33 / cb)
-    return alpha, beta, gamma
+    if not len(convention) == 3:
+        raise ValueError(f"Convention should be length 3.\nGot: {convention}")
+    if not len(angles) == 3:
+        raise ValueError(f"Angles should be length 3.\nGot: {angles}")
+    convention = convention.lower()
+    if not all(c in {"x", "y", "z"} for c in convention):
+        raise ValueError(
+            f"Convention must only include x, y, and z.\nGot: {convention}"
+        )
+    ax_to_ind = {"x": 0, "y": 1, "z": 2}
+    inds = [ax_to_ind[convention[i]] for i in range(3)]
+    return rt.matrix_from_euler(angles, *inds, _EULER)
+
+
+def custom_fixed_to_rmat(convention: str, angles: npt.ArrayLike) -> np.ndarray:
+    """Converts fixed angles of a specified convention (like 'zyx') to a rotation matrix
+
+    Use this if a convention other than XYZ is needed
+
+    Args:
+        convention (str): Axis order for the three rotations: Must be some length=3
+            permutation of 'xyz' - e.g. 'zyx', 'yxy', ...
+        angles (npt.ArrayLike): Rotation angles, length = 3
+
+    Raises:
+        ValueError: If the convention or the angles are not of length 3, or if the
+            convention does not strictly contain just "x", "y", or "z"
+
+    Returns:
+        np.ndarray: (3, 3) rotation matrix
+    """
+    return custom_euler_to_rmat(convention[::-1], angles[::-1])
 
 
 def rmat_to_euler_xyz(rmat: np.ndarray) -> tuple[float, float, float]:
@@ -216,20 +227,10 @@ def rmat_to_euler_xyz(rmat: np.ndarray) -> tuple[float, float, float]:
     Args:
         rmat (np.ndarray): (3,3) rotation matrix
 
-    Raises:
-        ZeroDivisionError: If there is a singularity in the representation
-
     Returns:
         tuple[float, float, float]: XYZ Euler angles
     """
-    [r11, r12, r13], [_, _, r23], [_, _, r33] = rmat
-    beta = np.arctan2(r13, np.sqrt(r23**2 + r33**2))
-    cb = np.cos(beta)
-    if abs(cb) < 1e-14:
-        raise ZeroDivisionError("At a singularity")
-    alpha = np.arctan2(-r23 / cb, r33 / cb)
-    gamma = np.arctan2(-r12 / cb, r11 / cb)
-    return alpha, beta, gamma
+    return rt.euler_from_matrix(rmat, _X, _Y, _Z, _EULER)
 
 
 def rmat_to_fixed_xyz(rmat: np.ndarray) -> tuple[float, float, float]:
@@ -241,7 +242,7 @@ def rmat_to_fixed_xyz(rmat: np.ndarray) -> tuple[float, float, float]:
     Returns:
         tuple[float, float, float]: XYZ Fixed angles
     """
-    return rmat_to_euler_zyx(rmat)[::-1]
+    return rt.euler_from_matrix(rmat, _X, _Y, _Z, _FIXED)
 
 
 def rmat_to_fixed_zyx(rmat: np.ndarray) -> tuple[float, float, float]:
@@ -253,162 +254,29 @@ def rmat_to_fixed_zyx(rmat: np.ndarray) -> tuple[float, float, float]:
     Returns:
         tuple[float, float, float]: ZYX Fixed angles
     """
-    return rmat_to_euler_xyz(rmat)[::-1]
+    return rt.euler_from_matrix(rmat, _Z, _Y, _X, _FIXED)
 
 
-def rmat_to_euler_params(rmat: np.ndarray, eta: int = 1) -> list[float]:
-    """Converts a rotation matrix into Euler parameters
-
-    Args:
-        rmat (np.ndarray): (3,3) rotation matrix
-        eta (int, optional): Parameter for sign determination, must be either 1 or -1. Defaults to 1.
-
-    Returns:
-        list[float]: The four Euler parameters
-    """
-    if eta not in {1, -1}:
-        raise ValueError(f"Invalid eta: {eta}. Must be 1 or -1")
-    [r11, r12, r13], [r21, r22, r23], [r31, r32, r33] = rmat
-    # Perform an initial solve for the parameters
-    l3 = (eta / 2) * np.sqrt(r11 + r22 + r33 + 1)
-    l2 = (eta / 2) * np.sign(r21 - r12) * np.sqrt(-r11 - r22 + r33 + 1)
-    l1 = (eta / 2) * np.sign(r13 - r31) * np.sqrt(-r11 + r22 - r33 + 1)
-    l0 = (eta / 2) * np.sign(r32 - r23) * np.sqrt(r11 - r22 - r33 + 1)
-    params = [l0, l1, l2, l3]
-    # Update the solution based on which is largest
-    d0 = 2 * np.sign(l0) * np.sqrt(r11 + r22 + r33 + 1)
-    d1 = 2 * np.sign(l1) * np.sqrt(r11 - r22 - r33 + 1)
-    d2 = 2 * np.sign(l2) * np.sqrt(-r11 + r22 - r33 + 1)
-    d3 = 2 * np.sign(l3) * np.sqrt(-r11 - r22 + r33 + 1)
-    max_ind = np.argmax(np.abs(params))
-    if max_ind == 0:
-        l0 = d0 / 4
-        l1 = (r32 - r23) / d0
-        l2 = (r13 - r31) / d0
-        l3 = (r21 - r12) / d0
-    elif max_ind == 1:
-        l0 = (r32 - r23) / d1
-        l1 = d1 / 4
-        l2 = (r21 + r12) / d1
-        l3 = (r13 + r31) / d1
-    elif max_ind == 2:
-        l0 = (r13 - r31) / d2
-        l1 = (r21 + r12) / d2
-        l2 = d2 / 4
-        l3 = (r32 + r23) / d2
-    else:  # max_ind == 3
-        l0 = (r21 - r12) / d3
-        l1 = (r13 + r31) / d3
-        l2 = (r32 + r23) / d3
-        l3 = d3 / 4
-    return [l0, l1, l2, l3]
-
-
-def euler_params_to_rmat(l0: float, l1: float, l2: float, l3: float) -> np.ndarray:
-    """Converts Euler parameters into a rotation matrix
-
-    Args:
-        l0 (float): 1st Euler parameter
-        l1 (float): 2nd Euler parameter
-        l2 (float): 3rd Euler parameter
-        l3 (float): 4th Euler parameter
-
-    Returns:
-        np.ndarray: Rotation matrix equivalent for the Euler parameter representation
-    """
-    return np.array(
-        [
-            [
-                2 * (l0**2 + l1**2) - 1,
-                2 * (l1 * l2 - l0 * l3),
-                2 * (l1 * l3 + l0 * l2),
-            ],
-            [
-                2 * (l1 * l2 + l0 * l3),
-                2 * (l0**2 + l2**2) - 1,
-                2 * (l2 * l3 - l0 * l1),
-            ],
-            [
-                2 * (l1 * l3 - l0 * l2),
-                2 * (l2 * l3 + l0 * l1),
-                2 * (l0**2 + l3**2) - 1,
-            ],
-        ]
-    )
-
-
-def check_rotation_mat(R: np.ndarray, atol: float = 1e-14) -> bool:
-    """Determines if a rotation matrix is valid by checking orthogonality and determinant
+def check_rotation_mat(R: np.ndarray) -> bool:
+    """Determines if a rotation matrix is valid (3x3, orthogonal, and determinant = 1)
 
     Args:
         R (np.ndarray): A rotation matrix
-        atol (float): Absolute tolerance on the closeness checks. Defaults to 1e-14.
 
     Returns:
         bool: Whether or not R is a valid rotation matrix
     """
-    if not np.shape(R) == (3, 3):
-        return False  # Incorrect size
-    if not np.allclose(R @ np.transpose(R), np.eye(R.shape[0]), atol=atol):
-        return False  # Its transpose is not its inverse
-    if not np.isclose(np.linalg.det(R), 1):
-        return False  # Determinant is not 1
-    return True
-
-
-def check_euler_params(l0: float, l1: float, l2: float, l3: float) -> bool:
-    # TODO!
-    raise NotImplementedError
+    try:
+        rt.check_matrix(R, strict_check=True)
+        return True
+    except ValueError:
+        return False
 
 
 def rotate_point(rmat: np.ndarray, point: npt.ArrayLike):
     # Use rotation matrix as operator within a single frame
     # TODO
     raise NotImplementedError
-
-
-# NASA quaternion code from astrobee/config/rotations.lua
-# TODO all quaternion stuff is untested - need to add test cases!!
-# (ok, moderately tested via some quick messing around in python, looks ok, but should do more)
-
-# TODO figure out a better place for this
-def normalize(vec):
-    return np.array(vec) / np.linalg.norm(vec)
-
-
-# function quat4_normalize(q)
-#   n = math.sqrt(q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w)
-#   return quat4(q.x/n, q.y/n, q.z/n, q.w/n)
-# end
-class Quaternion:
-    """Quaternion class to handle the XYZW/WXYZ ordering with less confusion
-
-    **Defaults to XYZW, which matches Pybullet's convention**
-
-    TODO decide if this class is even useful, or if it just makes sense to use the XYZW convention consistently
-
-    Args:
-        xyzw (npt.ArrayLike): Quaternions, in XYZW order
-    """
-
-    def __init__(self, xyzw: npt.ArrayLike):
-        self.x, self.y, self.z, self.w = xyzw
-
-    @property
-    def xyzw(self):
-        return np.array([self.x, self.y, self.z, self.w])
-
-    @property
-    def wxyz(self):
-        return np.array([self.w, self.x, self.y, self.z])
-
-    @xyzw.setter
-    def xyzw(self, xyzw: npt.ArrayLike):
-        self.x, self.y, self.z, self.w = xyzw
-
-    @wxyz.setter
-    def wxyz(self, wxyz: npt.ArrayLike):
-        self.w, self.x, self.y, self.z = wxyz
 
 
 def quat_to_rmat(quat: npt.ArrayLike) -> np.ndarray:
@@ -420,25 +288,16 @@ def quat_to_rmat(quat: npt.ArrayLike) -> np.ndarray:
     Returns:
         np.ndarray: (3,3) rotation matrix
     """
-    quat = normalize(quat)
-    x, y, z, w = quat
-    x2 = x * x
-    y2 = y * y
-    z2 = z * z
-    # w2 = w * w
-    return np.array(
-        [
-            [1 - 2 * y2 - 2 * z2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y],
-            [2 * x * y + 2 * w * z, 1 - 2 * x2 - 2 * z2, 2 * y * z - 2 * w * x],
-            [2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, 1 - 2 * x2 - 2 * y2],
-        ]
-    )
+    q = Quaternion(quat)
+    return rt.matrix_from_quaternion(q.wxyz)
 
 
 def rmat_to_quat(rmat: np.ndarray) -> np.ndarray:
     """Converts a rotation matrix into XYZW quaternions
 
-    (computer graphics solution by Shoemake 1994, same as NASA's code)
+    NOTE: When computing a quaternion from the rotation matrix there is a sign ambiguity:
+    q and -q represent the same rotation. (TODO: add a reference quaternion input to see
+    which quaternion is closer, choose the sign accordingly?)
 
     Args:
         rmat (np.ndarray): (3,3) rotation matrix
@@ -446,34 +305,88 @@ def rmat_to_quat(rmat: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: XYZW quaternions
     """
-
-    tr = rmat[0, 0] + rmat[1, 1] + rmat[2, 2]
-    if tr >= 0:
-        s4 = 2.0 * np.sqrt(tr + 1.0)
-        x = (rmat[2, 1] - rmat[1, 2]) / s4
-        y = (rmat[0, 2] - rmat[2, 0]) / s4
-        z = (rmat[1, 0] - rmat[0, 1]) / s4
-        w = s4 / 4.0
-    elif rmat[0, 0] > rmat[1, 1] and rmat[0, 0] > rmat[2, 2]:
-        s4 = 2.0 * np.sqrt(1.0 + rmat[0, 0] - rmat[1, 1] - rmat[2, 2])
-        x = s4 / 4.0
-        y = (rmat[0, 1] + rmat[1, 0]) / s4
-        z = (rmat[2, 0] + rmat[0, 2]) / s4
-        w = (rmat[2, 1] - rmat[1, 2]) / s4
-    elif rmat[1, 1] > rmat[2, 2]:
-        s4 = 2.0 * np.sqrt(1.0 + rmat[1, 1] - rmat[0, 0] - rmat[2, 2])
-        x = (rmat[0, 1] + rmat[1, 0]) / s4
-        y = s4 / 4.0
-        z = (rmat[1, 2] + rmat[2, 1]) / s4
-        w = (rmat[0, 2] - rmat[2, 0]) / s4
-    else:
-        s4 = 2.0 * np.sqrt(1.0 + rmat[2, 2] - rmat[0, 0] - rmat[1, 1])
-        x = (rmat[2, 0] + rmat[0, 2]) / s4
-        y = (rmat[1, 2] + rmat[2, 1]) / s4
-        z = s4 / 4.0
-        w = (rmat[1, 0] - rmat[0, 1]) / s4
-
-    return np.array([x, y, z, w])
+    q = Quaternion()
+    q.wxyz = rt.quaternion_from_matrix(rmat)
+    return q.xyzw
 
 
-# TODO make a function to compare nearness of quaternions? Or just use pytransform3d's
+def euler_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
+    """Converts Euler XYZ angles to XYZW quaternions
+
+    Args:
+        angles (npt.ArrayLike): Angles (radians), length=3
+
+    Returns:
+        np.ndarray: XYZW quaternions
+    """
+    if len(angles) != 3:
+        raise ValueError(f"Must provide 3 angles.\nGot: {angles}")
+    q = Quaternion()
+    q.wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _EULER)
+    return q.xyzw
+
+
+def fixed_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
+    """Converts Fixed XYZ angles to XYZW quaternions
+
+    Args:
+        angles (npt.ArrayLike): Angles (radians), length=3
+
+    Returns:
+        np.ndarray: XYZW quaternions
+    """
+    if len(angles) != 3:
+        raise ValueError(f"Must provide 3 angles.\nGot: {angles}")
+    q = Quaternion()
+    q.wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _FIXED)
+    return q.xyzw
+
+
+def quat_to_euler_xyz(quat: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+    """Converts XYZW quaternions to Euler XYZ angles
+
+    Args:
+        quat (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
+            an array of the XYZW quaternions (length = 4)
+
+    Returns:
+        np.ndarray: (3,) Euler XYZ angles
+    """
+    if not isinstance(quat, Quaternion):
+        quat = Quaternion(xyzw=quat)
+    return rt.euler_from_quaternion(quat.wxyz, _X, _Y, _Z, _EULER)
+
+
+def quat_to_fixed_xyz(quat: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+    """Converts XYZW quaternions to Fixed XYZ angles
+
+    Args:
+        quat (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
+            an array of the XYZW quaternions (length = 4)
+
+    Returns:
+        np.ndarray: (3,) Fixed XYZ angles
+    """
+    if not isinstance(quat, Quaternion):
+        quat = Quaternion(xyzw=quat)
+    return rt.euler_from_quaternion(quat.wxyz, _X, _Y, _Z, _FIXED)
+
+
+def quaternion_dist(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> float:
+    """Computes the distance between two quaternions
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
+            an array of the XYZW quaternions (length = 4)
+        q2 (Union[Quaternion, npt.ArrayLike]): A second quaterion to compare against
+
+    Returns:
+        float: Distance between the two quaternions
+    """
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    return rt.quaternion_dist(q1.wxyz, q2.wxyz)

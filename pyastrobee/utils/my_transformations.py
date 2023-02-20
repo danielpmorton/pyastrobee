@@ -19,11 +19,15 @@ All angles are in radians
 from typing import Union
 
 import numpy as np
-import pytransform3d.transformations as tr
+
+from pyastrobee.utils.my_rotations import check_rotation_mat
 
 
 def make_transform_mat(rot: np.ndarray, trans: np.ndarray) -> np.ndarray:
     """Creates a transformation matrix from a rotation matrix and translation vector
+
+    TODO add checks that the rotation matrix is valid, and that the translation
+    is the correct size
 
     Args:
         rot (np.ndarray): (3,3) rotation matrix
@@ -32,7 +36,10 @@ def make_transform_mat(rot: np.ndarray, trans: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: Transformation matrix, shape (4, 4)
     """
-    return tr.transform_from(rot, trans)
+    T = np.eye(4, 4)
+    T[:3, :3] = rot
+    T[:3, 3] = trans
+    return T
 
 
 def check_transform_mat(T: np.ndarray) -> bool:
@@ -44,11 +51,13 @@ def check_transform_mat(T: np.ndarray) -> bool:
     Returns:
         bool: Whether or not the transformation matrix is valid
     """
-    try:
-        tr.check_transform(T, strict_check=True)
-        return True
-    except ValueError:
+    if not T.shape == (4, 4):
         return False
+    rot = T[:3, :3]
+    last_row = T[3, :]
+    return check_rotation_mat(rot) and np.array_equal(
+        last_row, np.array([0.0, 0.0, 0.0, 1.0])
+    )
 
 
 def invert_transform_mat(T: np.ndarray) -> np.ndarray:
@@ -62,7 +71,12 @@ def invert_transform_mat(T: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: (4, 4) matrix representing the inverse transform of T
     """
-    return tr.invert_transform(T)
+    rot = T[:3, :3]
+    trans = T[:3, 3]
+    T_inv = np.eye(4)
+    T_inv[:3, :3] = np.transpose(rot)
+    T_inv[:3, 3] = -np.transpose(rot) @ trans
+    return T_inv
 
 
 def transform_point(
@@ -76,8 +90,6 @@ def transform_point(
         Example: new_point = transform_point(transform, orig_point)
 
     TODO: validate inputs?
-
-    NOTE: pytransform3d has a function for this but it handles the dimensions of the point strangely
 
     Args:
         tmat (np.ndarray): (4, 4) transformation matrix
