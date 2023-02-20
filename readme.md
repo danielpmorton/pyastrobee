@@ -12,6 +12,9 @@
 
 ## Status
 ### TODOs:
+- [ ] Check out Klampt for motion planning code
+  - [ ] (Seems like this might be a bit too convoluted for easy integration. Maybe just snag the RRT* code and adapt it to this?)\
+  - [ ] Can we steal some motion planning code from NASA?
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
 - [ ] Start with a simple trajectory and motion with the astrobee in pybullet
   - [ ] Then see if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet

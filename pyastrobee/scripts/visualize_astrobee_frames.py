@@ -2,6 +2,10 @@
 # Also, launch ROS on the nuc and see if these match up with what we expect
 # Also the astrobee collision urdf should probably be moved out of resources
 
+# CHECK OUT:
+# https://dfki-ric.github.io/pytransform3d/_auto_examples/visualizations/render_urdf.html
+# https://github.com/mmatl/pyrender
+
 import os
 import numpy as np
 from pytransform3d.urdf import UrdfTransformManager
