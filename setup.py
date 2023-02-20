@@ -5,6 +5,12 @@ This is used in conjunction with "pip install -e ."
 TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
 TODO decide if we should add pytransform3d or not
+
+Dependencies notes (outside of the usual suspects):
+- pytransform3d: Manages rotations and transformation math
+- beautifulsoup4: For XML/URDF parsing
+- Pylint/Black: For code formatting
+- Open3D: For visualizations with pytransform3d
 """
 
 from setuptools import setup, find_packages
@@ -13,7 +19,16 @@ setup(
     name="pyastrobee",
     version="0.0.1",
     # Note on install_requires: order matters! Keep wheel and numpy before pybullet
-    install_requires=["numpy", "wheel", "pybullet", "opencv-python", "matplotlib", "pytransform3d"],
+    install_requires=[
+        "numpy",
+        "wheel",
+        "pybullet",
+        "opencv-python",
+        "matplotlib",
+        "pytransform3d",
+        "beautifulsoup4",
+        "open3d",
+    ],
     extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
