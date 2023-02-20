@@ -23,6 +23,9 @@ class Quaternion:
             case wxyz should be provided, or else the quaternion will be empty
         wxyz (npt.ArrayLike, optional): Quaternions, in WXYZ order. Defaults to None, in which
             case xyzw should be provided, or else the quaternion will be empty
+
+    Raises:
+        ValueError: if both XYZW and WXYZ inputs are provided at instantiation
     """
 
     def __init__(
@@ -64,20 +67,30 @@ class Quaternion:
 
     @property
     def xyzw(self):
+        """Quaternion expressed in XYZW format. Shape = (4,)"""
         self._check_if_loaded()
         return np.array([self.x, self.y, self.z, self.w])
 
     @property
     def wxyz(self):
+        """Quaternion expressed in WXYZ format. Shape = (4,)"""
         self._check_if_loaded()
         return np.array([self.w, self.x, self.y, self.z])
 
     @xyzw.setter
     def xyzw(self, xyzw: npt.ArrayLike):
+        """Sets the quaternion based on an array in XYZW form"""
         self._validate(xyzw)
         self.x, self.y, self.z, self.w = xyzw
 
     @wxyz.setter
     def wxyz(self, wxyz: npt.ArrayLike):
+        """Sets the quaternion based on an array in WXYZ form"""
         self._validate(wxyz)
         self.w, self.x, self.y, self.z = wxyz
+
+
+# TODO: should we check that a quaternion is normalized?
+# Should we just automatically normalize things?
+def check_quaternion(quat: npt.ArrayLike) -> bool:
+    raise NotImplementedError

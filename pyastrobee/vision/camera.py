@@ -3,7 +3,7 @@
 TODO figure out which astrobee cameras need to be modeled
 TODO need to figure out what camera parameters are really needed
 TODO determine how to best use the class inheritance
-
+TODO look into pytransform3d.camera
 
 Things we need to know about the cameras:
 Do they have a fixed focal distance? If so, what?
