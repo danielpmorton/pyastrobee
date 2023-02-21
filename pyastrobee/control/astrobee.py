@@ -27,7 +27,7 @@ from pyastrobee.utils.rotations import euler_angles_to_rmat
 # Should it be possible for the robot to be in multiple states? e.g. moving and manipulating??
 # Should we keep multiple states in separate enumerations?
 # These states are all just ideas for now
-# Add an error state?   
+# Add an error state?
 class States(Enum):
     IDLE = 1
     PLANNING = 2
@@ -90,7 +90,9 @@ class Astrobee:
         # Property internal variables
         self._tcp_offset = None  # TODO
         # Constraint is for position control
-        self.constraint_id = pybullet.createConstraint(self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0))
+        self.constraint_id = pybullet.createConstraint(
+            self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
+        )
 
     # Is an unloading method needed?
     def _unload(self, robot_id: int):
@@ -236,20 +238,13 @@ class Astrobee:
         """
         raise NotImplementedError
 
-
-
     def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
         pass
-
 
     def plan_trajectory(self, desired_pose):
         cur_pose = self.get_robot_pose()
         cur_xyz = cur_pose[:3]
-        vec_from_to = 
-
-
-
-
+        # vec_from_to =
 
 
 if __name__ == "__main__":

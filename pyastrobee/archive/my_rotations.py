@@ -3,6 +3,9 @@
 NOTE: This code has been replaced by the wrapper around pytransform3d.
 However, it is still useful for test cases, to ensure pytransform3d's conventions
 and math match what we expect
+
+Math for all non-quaternion rotations is from "Introduction to Robotics - CS223A Lecture Notes", Khatib and Kolarov
+Quaternion math is from the computer graphics solution by Shoemake 1994 (as used by NASA)
 """
 
 import numpy as np
