@@ -10,6 +10,8 @@
 
 [Testing](docs/testing.md): Information about running test cases
 
+[References](docs/references.md): Links to hepful resources
+
 ## Status
 ### TODOs:
 - [ ] Integrate new pose and transformation code into astrobee class
