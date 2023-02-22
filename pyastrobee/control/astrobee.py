@@ -8,19 +8,26 @@ TO ADD:
 follow_trajectory -- given a sequence of poses for the constraints, continually update the state of the constraint to follow this
 plan_trajectory -- given a pose target, plan a sequence of constraint values to get from the current pose to desired
 
-
-
+TODO
+- Can we rename the joints and the links in the urdf? e.g. remove "honey", "top_aft"
+- What's the deal with the "top_aft" fixed joint? Is that part of the KDL workaround?
+- Decide how to define the gripper position. Map it to a range between 0-100 (fully closed vs fully open?)
 """
 
+import time
 from enum import Enum
+from typing import Optional
 
-import numpy as np
 import pybullet
+import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.utils.rotations import euler_angles_to_rmat
+from pyastrobee.utils.rotations import quat_to_rmat, quaternion_dist, quaternion_interp
+from pyastrobee.utils.poses import tmat_to_pos_quat
+from pyastrobee.config import astrobee_transforms
+from pyastrobee.utils.quaternion import Quaternion
 
 
 # TODO: should refine these states so it is clear what is going on
@@ -36,18 +43,54 @@ class States(Enum):
 
 
 class Astrobee:
+    # TODO docstring
 
     # TODO add these to a constants or config file? Probably fine here for now
     URDF = "pyastrobee/urdf/astrobee.urdf"
-    LOADED_IDS = []
-    NUM_LOADED = 0  # TODO make this into a property?
-    NUM_JOINTS = 6
+    LOADED_IDS = []  # Initialization
+    NUM_ROBOTS = 0  # Initialization. TODO make this into a property?
+    NUM_JOINTS = 7
     NUM_LINKS = 7
-    ARM_DISTAL_TO_GRIPPER_OFFSET = None  # TODO!!!
+    TRANSFORMS = astrobee_transforms  # TODO figure out if this is the best way to store this info
+
+    # Constants from geometry.config in the NASA code
+    # LENGTH = 0.2
+    # REACH = 0.155
+
+    # Should these actually be enums, or would a dict be better? The names can be tricky,
+    # so typing those out as strings every time could be not ideal
+    class Joints(Enum):
+        """Enumerates the different joints on the astrobee via their Pybullet index"""
+
+        # Comments indicate the name of the joint in the URDF
+        TOP_AFT = 0  # top_aft
+        ARM_PROXIMAL = 1  # top_aft_arm_proximal_joint
+        ARM_DISTAL = 2  # top_aft_arm_distal_joint
+        GRIPPER_LEFT_PROXIMAL = 3  # top_aft_gripper_left_proximal_joint
+        GRIPPER_LEFT_DISTAL = 4  # top_aft_gripper_left_distal_joint
+        GRIPPER_RIGHT_PROXIMAL = 5  # top_aft_gripper_right_proximal_joint
+        GRIPPER_RIGHT_DISTAL = 6  # top_aft_gripper_right_distal_joint
+
+    class Links(Enum):
+        """Enumerates the different links on the astrobee via their Pybullet index
+
+        Note: the URDF technically has 8 links, but it appears that pybullet considers
+        the very first link to be the base link
+        """
+
+        # Comments indicate the name of the link in the URDF
+        TOP_AFT = 0  # honey_top_aft
+        ARM_PROXIMAL = 1  # honey_top_aft_arm_proximal_link
+        ARM_DISTAL = 2  # honey_top_aft_arm_distal_link
+        GRIPPER_LEFT_PROXIMAL = 3  # honey_top_aft_gripper_left_proximal_link
+        GRIPPER_LEFT_DISTAL = 4  # honey_top_aft_gripper_left_distal_link
+        GRIPPER_RIGHT_PROXIMAL = 5  # honey_top_aft_gripper_right_proximal_link
+        GRIPPER_RIGHT_DISTAL = 6  # honey_top_aft_gripper_right_distal_link
 
     # Joint limit information is extracted from the URDF
     # Joint pos limits are [lower, upper] for each joint
     JOINT_POS_LIMITS = [
+        [0.0, 0.0],  # top aft (fixed)
         [-2.0944, 1.57079],  # arm proximal joint
         [-1.57079, 1.57079],  # arm distal joint
         [0.349066, 0.698132],  # gripper left proximal joint
@@ -56,6 +99,7 @@ class Astrobee:
         [0.69813, 1.22173],  # gripper right distal joint
     ]
     JOINT_EFFORT_LIMITS = [
+        0.0,  # top aft (fixed)
         1.0,  # arm proximal joint
         1.0,  # arm distal joint
         0.1,  # gripper left proximal joint
@@ -64,6 +108,7 @@ class Astrobee:
         0.1,  # gripper right distal joint
     ]
     JOINT_VEL_LIMITS = [
+        0.00,  # top aft (fixed)
         0.12,  # arm proximal joint
         0.12,  # arm distal joint
         0.12,  # gripper left proximal joint
@@ -72,43 +117,45 @@ class Astrobee:
         0.12,  # gripper right distal joint
     ]
 
+    # TODO change default initialization values
     def __init__(
         self,
-        pos: npt.ArrayLike = [0, 0, 0],
-        orn: npt.ArrayLike = [0, 0, 0],
+        pose: npt.ArrayLike = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+        arm_joints: npt.ArrayLike = None,
+        gripper_state=None,  # TODO figure out what type this should be
     ):
         if not pybullet.isConnected():
             raise ConnectionError(
                 "Need to connect to pybullet before initializing an astrobee"
             )
-        # TODO update default values for pos/orn or improve how we specify initial location
-        # TODO need to finish this
-        self.id = pybullet.loadURDF(Astrobee.URDF)
+        self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
         Astrobee.LOADED_IDS.append(self.id)
-        Astrobee.NUM_LOADED += 1
+        Astrobee.NUM_ROBOTS += 1
+        # TODO set the arm joints
+        # TODO set the gripper
 
         # Property internal variables
         self._tcp_offset = None  # TODO
         # Constraint is for position control
+        # TODO check on the input parameters here
         self.constraint_id = pybullet.createConstraint(
             self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
         )
 
-    # Is an unloading method needed?
-    def _unload(self, robot_id: int):
+    @classmethod
+    def unload_robot(cls, robot_id: int) -> None:
+        """Removes an Astrobee from the simulation
+
+        Args:
+            robot_id (int): ID of the robot to remove (the self.id parameter)
+        """
         if robot_id not in Astrobee.LOADED_IDS:
             raise ValueError(f"Invalid ID: {robot_id}, cannot unload the astrobee")
         pybullet.removeBody(robot_id)
         Astrobee.LOADED_IDS.remove(robot_id)
-        Astrobee.NUM_LOADED -= 1
+        Astrobee.NUM_ROBOTS -= 1
 
-    # Control might be tricky, but NASA already has path planning and stuff implemented
-    # Should we communicate back and forth with ROS for this?
-    # If so, when we're in contact with the bag and working with the Bullet physics, how can
-    # we tell ROS and Gazebo to properly update the state of the system?
-
-    # determine how getters and setters should work in conjunction with ROS!
-
+    # TODO figure this out (use the gripper/distal transform?)
     @property
     def tcp_offset(self):
         return self._tcp_offset
@@ -118,94 +165,167 @@ class Astrobee:
     def tcp_offset(self, offset):
         self._tcp_offset = offset
 
-    # TODO this function needs some work!! Need to get transformations as well as confirm where the frames are
-    def get_arm_pose_base(self):
-        base_to_world = self.get_robot_pose()
-        # Link index 2 should be the distal joint of the arm (AKA the one nearest to the gripper but not the fingers)
+    @property
+    def pose(self) -> np.ndarray:
+        """The current robot pose (position + XYZW quaternion) expressed in world frame
+
+        Returns:
+            np.ndarray: Position and quaternion, size (7,)
+        """
+        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
+        return np.concatenate([pos, orn])
+
+    # TODO decide if this is useful
+    @property
+    def position(self) -> np.ndarray:
+        """Just the position component of the full pose"""
+        return self.pose[:3]
+
+    # TODO decide if this is useful
+    @property
+    def orientation(self) -> np.ndarray:
+        """Just the quaternion component of the full pose"""
+        return self.pose[3:]
+
+    @property
+    def ee_pose(self) -> np.ndarray:
+        """The current end-effector pose (position + XYZW quaternion) expressed in world frame
+
+        Returns:
+            np.ndarray: Position and quaternion, size (7,)
+        """
+        T_G2D = Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL  # Gripper to distal
+        T_D2W = self.get_link_transform(
+            Astrobee.Links.ARM_DISTAL.value
+        )  # Distal to world
+        T_G2W = T_D2W @ T_G2D  # Gripper to world
+        return tmat_to_pos_quat(T_G2W)
+
+    @property
+    def joint_angles(self) -> np.ndarray:
+        """Angular positions (radians) of each joint on the Astrobee
+
+        Returns:
+            np.ndarray: Joint angles, shape (NUM_JOINTS,)
+        """
+        # States: tuple[tuple], size (7, 4)
+        # 7 corresponds to NUM_JOINTS
+        # 4 corresponds to position, velocity, reaction forces, and applied torque
+        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        return [states[i][0] for i in range(Astrobee.NUM_JOINTS)]  # Index 0: position
+
+    @property
+    def joint_vels(self) -> np.ndarray:
+        """Angular velocities (radians/sec) of each joint on the Astrobee
+
+        Returns:
+            np.ndarray: Joint velocities, shape (NUM_JOINTS,)
+        """
+        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        return [states[i][1] for i in range(Astrobee.NUM_JOINTS)]  # Index 1: velocity
+
+    @property
+    def joint_reaction_forces(self) -> np.ndarray:
+        # TODO: decide if we should use this
+        # Need to figure out if we are enabling torque sensors on these joints
+        # states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        # return [
+        #     states[i][1] for i in range(Astrobee.NUM_JOINTS)
+        # ]  # Index 2: reaction forces
+        raise NotImplementedError
+
+    @property
+    def joint_torques(self) -> np.ndarray:
+        """Torques (N-m) applied by each joint on the Astrobee
+
+        Returns:
+            np.ndarray: Joint torques, shape (NUM_JOINTS,)
+        """
+        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        return [states[i][3] for i in range(Astrobee.NUM_JOINTS)]  # Index 3: torque
+
+    def get_link_transform(self, link_index: int) -> np.ndarray:
+        """Calculates the transformation matrix (w.r.t the world) for a specified link
+
+        Args:
+            link_index (int): Index of the link on the robot
+
+        Returns:
+            np.ndarray: Transformation matrix (link to world). Shape = (4,4)
+        """
+        if link_index >= Astrobee.NUM_LINKS or link_index < 0:
+            raise ValueError(f"Invalid link index: {link_index}")
         link_state = pybullet.getLinkState(
-            self.id,
-            linkIndex=2,
-            computeLinkVelocity=False,
-            computeForwardKinematics=True,
+            self.id, link_index, computeForwardKinematics=True
         )
-        (
-            COM_world_pos,
-            COM_world_orn,
-            local_pos,
-            local_orn,
-            world_pos,
-            world_orn,
-        ) = link_state
-        return NotImplementedError
-        arm_to_base = NotImplemented
+        # First two link state values are linkWorldPosition, linkWorldOrientation
+        # There are other state positions and orientations, but they're confusing. (TODO check on these)
+        pos, quat = link_state[:2]
+        return make_transform_mat(quat_to_rmat(quat), pos)
 
-        arm_tcp_to_distal = NotImplemented
-        arm_distal_to_world = NotImplemented
-
-        return base_to_world @ arm_to_base
-        return arm_distal_to_world @ arm_tcp_to_distal
-
-    def set_arm_pose_base(self, pose):
+    def set_ee_pose(self, pose):
         pass
 
-    def get_arm_pose_world(self):
-        pass
+    def set_gripper_position(self, position: float) -> None:
+        """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
 
-    # need to decide on how to deal with gripper because each side has two joints
-    def set_gripper_pos(self, angles):
-        # angles will need to be an array of 4 values
-        pass
+        Args:
+            position (float): Gripper position, in range [0, 100]
+        """
+        if position < 0 or position > 100:
+            raise ValueError("Position should be in range [0, 100]")
+        # The last four joint indices correspond to the gripper joints
+        gripper_joints = list(range(self.NUM_JOINTS))[-4:]
+        left_gripper_joints = gripper_joints[:2]
+        right_gripper_joints = gripper_joints[2:]
+        # As a numpy array, each row will correspond to a joint, and the two columns are [min, max]
+        joint_lims_array = np.array(Astrobee.JOINT_POS_LIMITS)
+        # Fully closed: right side at joint max, left side at joint min
+        # Fully open: right side at joint min, left side at joint max
+        left_min, left_max = joint_lims_array[left_gripper_joints].T
+        right_min, right_max = joint_lims_array[right_gripper_joints].T
+        left_pos = left_min + (position / 100) * (left_max - left_min)
+        right_pos = right_max + (position / 100) * (right_min - right_max)
+        angle_cmd = [*left_pos, *right_pos]
+        pybullet.setJointMotorControlArray(
+            self.id, gripper_joints, pybullet.POSITION_CONTROL, angle_cmd
+        )
+        # TODO REMOVE THIS!!! - for testing purposes
+        for _ in range(100):  # Totally abritrary for now
+            pybullet.stepSimulation()
+            time.sleep(1 / 120)
 
-    def get_gripper_pos(self):
-        pass
+    def open_gripper(self) -> None:
+        """Fully opens the gripper"""
+        self.set_gripper_position(100)
 
-    def open_gripper(self):
-        pass
+    def close_gripper(self) -> None:
+        """Fully closes the gripper
 
-    def close_gripper(self):
-        # Should this implement a mix of position and torque control?
+        TODO add force/torque control?
+        """
+        self.set_gripper_position(0)
+
+    # def set_gripper_angles(self, angles):
+    #     pass
+
+    def get_gripper_position(self):
         pass
 
     def set_arm_pose_world(self, pose):
         pass
 
-    def get_robot_pose(self):
-        # TODO need to clear up any confusion on base frame vs link 0 frame!
-        # Note pybullet orientation is quaternions: [x, y, z, w]
-        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
-        rmat = pybullet.getMatrixFromQuaternion(orn)
-        return make_transform_mat(rmat, pos)
-
     def set_robot_pose(self, pose):
         pass
 
-    def get_joint_angles(self):
-        # States: tuple[tuple], size (6, 4)
-        # 6 corresponds to NUM_JOINTS
-        # 4 corresponds to position, velocity, reaction forces, and applied torque
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][0] for i in range(Astrobee.NUM_JOINTS)]  # Index 0: position
-
-    def get_joint_vels(self):
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][1] for i in range(Astrobee.NUM_JOINTS)]  # Index 1: velocity
-
-    def get_joint_torques(self):
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][3] for i in range(Astrobee.NUM_JOINTS)]  # Index 3: torque
-
-    def set_joint_angles(self, angles: npt.ArrayLike):
-        # TODO Add a target velocity?
-        if len(angles) != Astrobee.NUM_JOINTS:
+    def set_joint_angles(
+        self, angles: npt.ArrayLike, indices: Optional[npt.ArrayLike] = None
+    ):
+        if indices is None:
+            indices = list(range(Astrobee.NUM_JOINTS))
+        if len(indices) != len(angles):
             raise ValueError(
-                f"Incorrect number of angles ({len(angles)}). Must = {Astrobee.NUM_JOINTS}"
-            )
-        self.set_joint_angles_by_index(angles, list(range(Astrobee.NUM_JOINTS)))
-
-    def set_joint_angles_by_index(self, angles: npt.ArrayLike, indices: npt.ArrayLike):
-        if not len(angles) == len(indices):
-            raise Exception(
-                "Number of angles must match with the number of provided indices"
+                "Number of angles must match with the length of provided indices"
             )
         pybullet.setJointMotorControlArray(
             self.id, indices, pybullet.POSITION_CONTROL, angles
@@ -245,6 +365,40 @@ class Astrobee:
         cur_pose = self.get_robot_pose()
         cur_xyz = cur_pose[:3]
         # vec_from_to =
+
+    def align_to(self, goal_orn: np.ndarray) -> None:
+        """Rotates the Astrobee about its current position to align with a specified orientation
+
+        TODO this is super hacky, needs to be cleaned up significantly!!
+        And, need to improve the stepping mechanic
+
+        Args:
+            goal_orn (np.ndarray): Desired XYZW quaternion orientation
+        """
+        # TODO: use a check_quaternion function instead of this
+        if len(goal_orn) != 4:
+            raise ValueError(f"Invalid quaternion.\nGot: {goal_orn}")
+        # CLEAN THIS UP!!!
+        initial_pose = self.pose
+        pos = initial_pose[:3]
+        tol = 0.03  # placeholder
+        # These don't seem to need to be Quaternion objects?
+        q1 = Quaternion(xyzw=self.orientation)
+        q2 = Quaternion(xyzw=goal_orn)
+        # This method of stepping through the interpolated values is not ideal
+        # It should use some sort of stepsize or enforce velocity constraints (TODO)
+        pct = 0.01
+        dpct = 0.01
+        while quaternion_dist(self.orientation, goal_orn) > tol:
+            q = quaternion_interp(q1, q2, pct)
+            # TODO decide if any other inputs to the change constraint function are needed
+            pybullet.changeConstraint(self.constraint_id, pos, q)
+            pybullet.stepSimulation()
+            time.sleep(1 / 120)
+            pct = min(pct + dpct, 1)
+
+    def follow_line_to(self, goal_pos) -> None:
+        pass
 
 
 if __name__ == "__main__":
