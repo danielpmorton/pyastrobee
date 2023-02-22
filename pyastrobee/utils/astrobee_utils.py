@@ -20,13 +20,15 @@ from pyastrobee.utils.errors import PybulletError
 
 
 def load_iss() -> list[int]:
-    # NOT DONE
-    # TODO need to confirm if these will be loaded in the correct positions or not,
-    # or if there is more info needed from the URDF
-    modules = ["cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"]
+    """Loads all modules of the ISS into pybullet
 
+    Returns:
+        list[int]: The pybullet IDs for each of the modules' collision body
+    """
+    modules = ["cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"]
     dummy_radius = 0.01
     dummy_z_pos = -5
+    # Load the floor above the "dummy" collision objects we needed to make to get the textures to load
     load_floor(z_pos=dummy_z_pos + 3 * dummy_radius)
     ids = []
     for name in modules:
@@ -124,9 +126,13 @@ def load_iss_module(
             )
         # Check to make sure things were loaded properly before forming the multibody
         if visual_id < 0:
-            raise PybulletError(f"Could not load the visual shape for {path}", visual_id)
+            raise PybulletError(
+                f"Could not load the visual shape for {path}", visual_id
+            )
         if collision_id < 0:
-            raise PybulletError(f"Could not load the collision shape for {path}", collision_id)
+            raise PybulletError(
+                f"Could not load the collision shape for {path}", collision_id
+            )
 
         rigid_id = pybullet.createMultiBody(
             baseMass=0,  # Fixed position
