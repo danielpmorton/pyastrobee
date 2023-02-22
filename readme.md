@@ -14,6 +14,7 @@
 
 ## Status
 ### TODOs:
+- [ ] Quaternion test cases (functions + class)
 - [ ] Integrate new pose and transformation code into astrobee class
 - [ ] Get a softbody anchor working between the astrobee gripper and the bag
 - [ ] Simple motion/trajectory planning

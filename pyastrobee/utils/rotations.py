@@ -390,3 +390,36 @@ def quaternion_dist(
     if not isinstance(q2, Quaternion):
         q2 = Quaternion(xyzw=q2)
     return rt.quaternion_dist(q1.wxyz, q2.wxyz)
+
+
+def quaternion_interp(
+    q1: Union[Quaternion, npt.ArrayLike],
+    q2: Union[Quaternion, npt.ArrayLike],
+    pct: float,
+) -> np.ndarray:
+    """Interpolates between two quaternions via SLERP (spherical linear interpolation)
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
+            must be in XYZW order (length = 4)
+        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
+            must be in XYZW order (length = 4)
+        pct (float): Percent between start -> end, expressed as a float in [0, 1]
+
+    Returns:
+        np.ndarray: The interpolated XYZW quaternion, shape = (4,)
+    """
+    if not 0 <= pct <= 1:
+        raise ValueError(
+            f"Interpolation percentage must be between 0 and 1.\nGot: {pct}"
+        )
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    # The shortest path parameter does not add too much extra computation and should handle quaternion ambiguity well
+    shortest_path = True
+    q_interp = Quaternion(
+        wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct, shortest_path)
+    )
+    return q_interp.xyzw

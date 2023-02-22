@@ -1,4 +1,11 @@
-"""Test cases for rotations"""
+"""Test cases for rotations
+
+TODO
+Add test cases for:
+- Quaternion distance
+- Quaternion interpolation
+- Pretty much a lot more quaternion stuff, there aren't many cases here
+"""
 
 import unittest
 import numpy as np
