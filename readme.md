@@ -14,13 +14,19 @@
 
 ## Status
 ### TODOs:
+- [ ] Get demo script started for Rika
+- [ ] Finish cleanup of Astrobee() code
+  - [ ] Figure out timesteps, tolerances, step parameters
+  - [ ] Figure out if the while loops shuold be moved somewhere else
+  - [ ] Clear out a bunch of the random TODOs
+- [ ] Delete the constraint_test file, but only after messing around with some of the other parameters they used
+  - [ ] Additional parameters in createConstraint, changeConstraint (maxForce?)
+  - [ ] setRealTimeSimulation()?
 - [ ] Quaternion test cases (functions + class)
-- [ ] Integrate new pose and transformation code into astrobee class
 - [ ] Get a softbody anchor working between the astrobee gripper and the bag
-- [ ] Simple motion/trajectory planning
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
 - [ ] Start with a simple trajectory and motion with the astrobee in pybullet
-  - [ ] Then see if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
+- [ ] See if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
 - [ ] Add threading once commands get too complicated
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
@@ -39,14 +45,7 @@
 - [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
 - [ ] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
-- [ ] Move things over to workstation 7 - set up NASA resources on that too
-- [ ] Switch over to pytransform3d for rotations/transformations
-- [ ] Understand which joint indices on the astrobee correspond to which locations (and which are fixed / not usable)
-- [ ] Figure out a way to move the astrobee in space (not via controlling a joint)
-- [ ] Write a script to move different joints back and forth and show which index it is
-- [ ] Get a feel for how pybullet controls robot links. Write helper functions to control joints
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
-- [ ] Clean up the debugging script and any files leftover from the `meshing` branch rebase that are no longer needed
 - [ ] Set up camera (see dedo)
 - [ ] Set up pointcloud (see dedo)
 - [ ] Try a manifold mesh with the handle being solid
@@ -56,16 +55,14 @@
 - [ ] Work on improving bag meshes
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
-- [ ] Test out `from mujoco import viewer` and `viewer.launch(...)`
-- [ ] Get a texture file for astrobee and import it
 - [ ] Organize meshes
 - [ ] Send cargo bag properties to ROS
 - [ ] Get Astrobee ROS/simulation processes working in Pybullet
 - [ ] Figure out how to send robot state from bullet to ROS
-- [ ] Add tests
-- [ ] Figure out more TODOs
+- [ ] Add more tests
 
 ### In Progress:
+- [ ] Move things over to workstation 7 - set up NASA resources on that too
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
@@ -76,6 +73,12 @@
 - [ ] See if it is possible to get URDFs working with multiple textures
 
 ### Done:
+- [X] Simple motion/trajectory planning
+- [X] Integrate new pose and transformation code into astrobee class
+- [X] Switch over to pytransform3d for rotations/transformations
+- [X] Understand which joint indices on the astrobee correspond to which locations (and which are fixed / not usable)
+- [X] Figure out a way to move the astrobee in space (not via controlling a joint)
+- [X] Get a feel for how pybullet controls robot links. Write helper functions to control joints
 - [X] Completely remove the astrobee_media submodule and any reference to it?
 - [X] Reduce the amount of hardcoded directory/file locations (especially absolute paths)
 - [X] Figure out how to work with relative file paths in the urdf/xacro/xml files
