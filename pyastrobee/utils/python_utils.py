@@ -13,3 +13,12 @@ def print_red(message: Any):
         message (Any): The message to print out in red
     """
     print(f"\033[31m{message}\033[0m")
+
+
+def print_green(message: Any):
+    """Helper function for printing in green text
+
+    Args:
+        message (Any): The message to print out in green
+    """
+    print(f"\033[32m{message}\033[0m")
