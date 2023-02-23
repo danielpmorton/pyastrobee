@@ -12,6 +12,7 @@ TODO
 - Can we rename the joints and the links in the urdf? e.g. remove "honey", "top_aft"
 - What's the deal with the "top_aft" fixed joint? Is that part of the KDL workaround?
 - Decide how to define the gripper position. Map it to a range between 0-100 (fully closed vs fully open?)
+- Figure out the sleep time in the while loops. What value should we use?
 """
 
 import time
@@ -22,12 +23,20 @@ import pybullet
 import numpy as np
 import numpy.typing as npt
 
+# TODO REMOVE THIS (integrate it into the rotations file)
+from pytransform3d.rotations import (
+    axis_angle_from_two_directions,
+    quaternion_from_axis_angle,
+)
+
+
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat, quaternion_dist, quaternion_interp
 from pyastrobee.utils.poses import tmat_to_pos_quat
 from pyastrobee.config import astrobee_transforms
 from pyastrobee.utils.quaternion import Quaternion
+from pyastrobee.utils.math_utils import normalize
 
 
 # TODO: should refine these states so it is clear what is going on
@@ -52,6 +61,9 @@ class Astrobee:
     NUM_JOINTS = 7
     NUM_LINKS = 7
     TRANSFORMS = astrobee_transforms  # TODO figure out if this is the best way to store this info
+
+    GRIPPER_JOINT_IDXS = [3, 4, 5, 6]
+    ARM_JOINT_IDXS = [1, 2]
 
     # Constants from geometry.config in the NASA code
     # LENGTH = 0.2
@@ -142,6 +154,9 @@ class Astrobee:
             self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
         )
 
+        # TODO we should probably initialize the astrobee with the gripper open
+        # It initializes in a weird state if you just load the URDF
+
     @classmethod
     def unload_robot(cls, robot_id: int) -> None:
         """Removes an Astrobee from the simulation
@@ -175,17 +190,38 @@ class Astrobee:
         pos, orn = pybullet.getBasePositionAndOrientation(self.id)
         return np.concatenate([pos, orn])
 
-    # TODO decide if this is useful
     @property
     def position(self) -> np.ndarray:
-        """Just the position component of the full pose"""
+        """Just the position component of the full pose
+
+        Returns:
+            np.ndarray: (3,) position vector
+        """
         return self.pose[:3]
 
-    # TODO decide if this is useful
     @property
     def orientation(self) -> np.ndarray:
-        """Just the quaternion component of the full pose"""
+        """Just the quaternion component of the full pose
+
+        Returns:
+            np.ndarray: (4,) XYZW quaternion
+        """
         return self.pose[3:]
+
+    @property
+    def heading(self) -> np.ndarray:
+        """A unit vector in the forward (x) component of the astrobee
+
+        Some notes:
+        - This is NOT a full description of orientation since rotation about this axis is undefined
+        - The arm is on the REAR side of the astrobee, not the front
+        - The y vector points to the port (left) side of the astrobee, and the z vector is up
+
+        Returns:
+            np.ndarray: (3,) unit vector
+        """
+        R_R2W = quat_to_rmat(self.orientation)  # Robot to world
+        return R_R2W[:, 0]  # Robot frame x vector expressed in world
 
     @property
     def ee_pose(self) -> np.ndarray:
@@ -269,31 +305,44 @@ class Astrobee:
     def set_gripper_position(self, position: float) -> None:
         """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
 
+        TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
+
         Args:
             position (float): Gripper position, in range [0, 100]
         """
         if position < 0 or position > 100:
             raise ValueError("Position should be in range [0, 100]")
-        # The last four joint indices correspond to the gripper joints
-        gripper_joints = list(range(self.NUM_JOINTS))[-4:]
-        left_gripper_joints = gripper_joints[:2]
-        right_gripper_joints = gripper_joints[2:]
-        # As a numpy array, each row will correspond to a joint, and the two columns are [min, max]
-        joint_lims_array = np.array(Astrobee.JOINT_POS_LIMITS)
-        # Fully closed: right side at joint max, left side at joint min
-        # Fully open: right side at joint min, left side at joint max
-        left_min, left_max = joint_lims_array[left_gripper_joints].T
-        right_min, right_max = joint_lims_array[right_gripper_joints].T
-        left_pos = left_min + (position / 100) * (left_max - left_min)
-        right_pos = right_max + (position / 100) * (right_min - right_max)
+        l_closed, l_open, r_closed, r_open = self._get_gripper_joint_ranges()
+        left_pos = l_closed + (position / 100) * (l_open - l_closed)
+        right_pos = r_closed + (position / 100) * (r_open - r_closed)
         angle_cmd = [*left_pos, *right_pos]
         pybullet.setJointMotorControlArray(
-            self.id, gripper_joints, pybullet.POSITION_CONTROL, angle_cmd
+            self.id, Astrobee.GRIPPER_JOINT_IDXS, pybullet.POSITION_CONTROL, angle_cmd
         )
-        # TODO REMOVE THIS!!! - for testing purposes
-        for _ in range(100):  # Totally abritrary for now
+        # TODO this is a lot of computations for just setting the gripper
+        # (because we recalculate the gripper position at each step). Is there a better way to do this?
+        while self.gripper_position != position:  # Do we need to add any tolerance?
             pybullet.stepSimulation()
             time.sleep(1 / 120)
+
+    def _get_gripper_joint_ranges(self) -> tuple[np.ndarray, ...]:
+        """Helper function to determine the range of motion (closed -> open) of the gripper joints
+
+        - This is a bit confusing because of how the URDF specifies joint min/max and how this translates
+        to an open/closed position on the gripper
+        - For a fully-closed gripper, the right side joints are at their max, and the left side joints are at their min
+        - Likewise, for a fully-open gripper, the right side is at the joint min, and the left at joint max
+
+        Returns:
+            _type_: _description_ TODO
+        """
+        left_gripper_joints = Astrobee.GRIPPER_JOINT_IDXS[:2]
+        right_gripper_joints = Astrobee.GRIPPER_JOINT_IDXS[2:]
+        # As a numpy array, each row will correspond to a joint, and the two columns are [min, max]
+        joint_lims_array = np.array(Astrobee.JOINT_POS_LIMITS)
+        left_closed, left_open = joint_lims_array[left_gripper_joints].T
+        right_open, right_closed = joint_lims_array[right_gripper_joints].T
+        return left_closed, left_open, right_closed, right_open
 
     def open_gripper(self) -> None:
         """Fully opens the gripper"""
@@ -306,11 +355,20 @@ class Astrobee:
         """
         self.set_gripper_position(0)
 
-    # def set_gripper_angles(self, angles):
-    #     pass
+    @property  # Is this better as a property or as a "getter"?
+    def gripper_position(self) -> int:
+        """The current position of the gripper, in range [0, 100]
 
-    def get_gripper_position(self):
-        pass
+        Returns:
+            int: Position of the gripper, an integer between 0 (closed) and 100 (open)
+        """
+        joint_states = pybullet.getJointStates(self.id, Astrobee.GRIPPER_JOINT_IDXS)
+        joint_angles = [state[0] for state in joint_states]
+        l_angles, r_angles = np.split(joint_angles, [2])
+        l_closed, l_open, r_closed, r_open = self._get_gripper_joint_ranges()
+        l_pct = 100 * (l_angles - l_closed) / (l_open - l_closed)
+        r_pct = 100 * (r_angles - r_closed) / (r_open - r_closed)
+        return np.round(np.average(np.concatenate([l_pct, r_pct]))).astype(int)
 
     def set_arm_pose_world(self, pose):
         pass
@@ -359,37 +417,33 @@ class Astrobee:
         raise NotImplementedError
 
     def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
-        pass
+        # TODO. Remove while loops from individual functions and use this instead?
+        raise NotImplementedError
 
-    def plan_trajectory(self, desired_pose):
-        cur_pose = self.get_robot_pose()
-        cur_xyz = cur_pose[:3]
-        # vec_from_to =
-
-    def align_to(self, goal_orn: np.ndarray) -> None:
+    def align_to(self, orn: npt.ArrayLike) -> None:
         """Rotates the Astrobee about its current position to align with a specified orientation
 
         TODO this is super hacky, needs to be cleaned up significantly!!
         And, need to improve the stepping mechanic
 
         Args:
-            goal_orn (np.ndarray): Desired XYZW quaternion orientation
+            goal_orn (npt.ArrayLike): Desired XYZW quaternion orientation
         """
         # TODO: use a check_quaternion function instead of this
-        if len(goal_orn) != 4:
-            raise ValueError(f"Invalid quaternion.\nGot: {goal_orn}")
+        if len(orn) != 4:
+            raise ValueError(f"Invalid quaternion.\nGot: {orn}")
         # CLEAN THIS UP!!!
         initial_pose = self.pose
         pos = initial_pose[:3]
         tol = 0.03  # placeholder
         # These don't seem to need to be Quaternion objects?
         q1 = Quaternion(xyzw=self.orientation)
-        q2 = Quaternion(xyzw=goal_orn)
+        q2 = Quaternion(xyzw=orn)
         # This method of stepping through the interpolated values is not ideal
         # It should use some sort of stepsize or enforce velocity constraints (TODO)
         pct = 0.01
         dpct = 0.01
-        while quaternion_dist(self.orientation, goal_orn) > tol:
+        while quaternion_dist(self.orientation, orn) > tol:
             q = quaternion_interp(q1, q2, pct)
             # TODO decide if any other inputs to the change constraint function are needed
             pybullet.changeConstraint(self.constraint_id, pos, q)
@@ -397,8 +451,37 @@ class Astrobee:
             time.sleep(1 / 120)
             pct = min(pct + dpct, 1)
 
-    def follow_line_to(self, goal_pos) -> None:
-        pass
+    def follow_line_to(self, position: npt.ArrayLike) -> None:
+        if len(position) != 3:
+            raise ValueError(f"Invalid position.\nGot: {position}")
+        pos, orn = np.split(self.pose, [3])
+        step = 0.1  # Totally arbitrary for now
+        # Need to improve the stepping mechanic.. increase and decrease speed/stepsize as needed
+        while np.linalg.norm(pos - position) > step:
+            direction = normalize(position - pos)  # Unit vector
+            new_pos = pos + step * direction
+            pybullet.changeConstraint(self.constraint_id, new_pos, orn)
+            pybullet.stepSimulation()
+            time.sleep(1 / 120)
+            pos = self.position  # Update after moving
+
+    def go_to_pose(self, pose: npt.ArrayLike) -> None:
+        # TODO improve this pose checking. Check if Pose() instance too?
+        if len(pose) != 7:
+            raise ValueError(f"Invalid pose.\nGot: {pose}")
+        goal_pos, goal_orn = np.split(pose, [3])
+        direction = goal_pos - self.position
+        # Move to the next position specified if we are far from it
+        # If we are within a stepsize, we should just orient ourselves to avoid unnecessary rotation
+        tol = 1e-3  # UPDATE THIS ONCE YOU DECIDE ON A STEPSIZE
+        if np.linalg.norm(direction) > tol:
+            axis_and_angle = axis_angle_from_two_directions(self.heading, direction)
+            axis, angle = np.split(axis_and_angle, [3])
+            q = Quaternion(wxyz=quaternion_from_axis_angle(axis_and_angle))
+            self.align_to(q.xyzw)
+            self.follow_line_to(goal_pos)
+        # Orient the astrobee to the desired ending orientation
+        self.align_to(goal_orn)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
+from pyastrobee.utils.math_utils import normalize
+
 
 class Quaternion:
     """Quaternion class to handle the XYZW/WXYZ conventions with less confusion
@@ -63,7 +65,7 @@ class Quaternion:
 
     # TODO need to decide if this is needed
     def normalize(self):
-        self.x, self.y, self.z, self.w = self.xyzw / np.linalg.norm(self.xyzw)
+        self.xyzw = normalize(self.xyzw)
 
     @property
     def xyzw(self):

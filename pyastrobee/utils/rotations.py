@@ -47,6 +47,7 @@ TODO
 - Determine if the matrix checks should raise an exception or just return true/false
 - Decide if it's useful to add back in other conventions (like zyx)? - Removed for now
 - Make the angles inputs an array rather than multiple inputs
+- Make functions to add deltas to the orientation
 """
 
 from typing import Union
