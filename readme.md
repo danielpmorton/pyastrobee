@@ -14,7 +14,6 @@
 
 ## Status
 ### TODOs:
-- [ ] Get demo script started for Rika
 - [ ] Finish cleanup of Astrobee() code
   - [ ] Figure out timesteps, tolerances, step parameters
   - [ ] Figure out if the while loops shuold be moved somewhere else
@@ -62,6 +61,7 @@
 - [ ] Add more tests
 
 ### In Progress:
+- [ ] Get demo script started for Rika
 - [ ] Move things over to workstation 7 - set up NASA resources on that too
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
