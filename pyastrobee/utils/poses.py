@@ -1,8 +1,11 @@
 """Class/functions for managing poses and conversions between different representations
 
+Our default representation of a pose will be position (xyz) + quaternion (xyzw)
+
 TODO
 - Decide if we can eliminate any representations that won't be used
 - Add pos_fixed_xyz??
+- Is the Pose class useful?
 """
 from typing import Optional
 from enum import Enum
