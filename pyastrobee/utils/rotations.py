@@ -149,7 +149,7 @@ def rmat_to_axis_angle(rmat: np.ndarray) -> tuple[np.ndarray, float]:
     Returns:
         Tuple of:
             np.ndarray: Axis of rotation. Shape (3,)
-            float: Rotation angle
+            float: Rotation angle, in radians
     """
     axis_and_angle = rt.axis_angle_from_matrix(rmat)
     axis = axis_and_angle[:3]
@@ -424,3 +424,50 @@ def quaternion_interp(
         wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct, shortest_path)
     )
     return q_interp.xyzw
+
+
+def axis_angle_between_two_vectors(
+    v1: npt.ArrayLike, v2: npt.ArrayLike
+) -> tuple[np.ndarray, float]:
+    """Gives the axis/angle rotation that would rotate vector v1 to align with v2 (magnitude-independent)
+
+    Args:
+        v1 (npt.ArrayLike): (3,) Starting vector/direction
+        v2 (npt.ArrayLike): (3,) Ending vector/direction
+
+    Returns:
+        Tuple of:
+            np.ndarray: Axis of rotation. Shape (3,)
+            float: Rotation angle, in radians
+    """
+    axis_and_angle = rt.axis_angle_from_two_directions(v1, v2)
+    return axis_and_angle[:3], axis_and_angle[3]
+
+
+def axis_angle_to_quat(axis: npt.ArrayLike, angle: float) -> np.ndarray:
+    """Converts an axis/angle rotation representation to XYZW quaternion
+
+    Args:
+        axis (npt.ArrayLike): Axis of rotation. Shape (3,)
+        angle (float): Rotation angle, in radians
+
+    Returns:
+        np.ndarray: (4,) XYZW quaternion
+    """
+    q = Quaternion()
+    q.wxyz = rt.quaternion_from_axis_angle([*axis, angle])
+    return q.xyzw
+
+
+def quaternion_between_two_vectors(v1: npt.ArrayLike, v2: npt.ArrayLike) -> np.ndarray:
+    """Gives the quaternion rotation that would rotate vector v1 to align with v2 (magnitude-independent)
+
+    Args:
+        v1 (npt.ArrayLike): (3,) Starting vector/direction
+        v2 (npt.ArrayLike): (3,) Ending vector/direction
+
+    Returns:
+        np.ndarray: (4,) XYZW quaternion
+    """
+    axis, angle = axis_angle_between_two_vectors(v1, v2)
+    return axis_angle_to_quat(axis, angle)
