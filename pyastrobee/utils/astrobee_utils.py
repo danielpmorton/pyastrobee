@@ -6,8 +6,7 @@ Notes:
 - If the mesh directory gets changed, the hardcoded relative paths need to be updated
 
 TODO check if there is an easier solution (no dummies) with a URDF or SDF? Multiple fixed links?
-TODO make the modules an Enum?
-TODO The dummy objects for each module load all in the same place (overlapping). Is this an issue?
+TODO check with Gazebo to see if we should be positioning the ISS in the exact same position as in NASA's sim
 """
 
 import os
@@ -25,6 +24,21 @@ from pyastrobee.utils.bullet_utils import (
 from pyastrobee.utils.errors import PybulletError
 
 
+class ISSModule(Enum):
+    """Enumerates the different ISS modules
+
+    - The naming of these corresponds with NASA code and mesh filenames (typically lowercase)
+    """
+
+    CUPOLA = 0
+    EU_LAB = 1
+    JPM = 2
+    NODE_1 = 3
+    NODE_2 = 4
+    NODE_3 = 5
+    US_LAB = 6
+
+
 def load_iss(orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2]) -> list[int]:
     """Loads all modules of the ISS into pybullet
 
@@ -36,31 +50,30 @@ def load_iss(orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2]) -> lis
     Returns:
         list[int]: The pybullet IDs for each of the modules' collision body
     """
-    modules = ["cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"]
     dummy_radius = 0.01
     dummy_z_pos = -5
     # Load the floor above the "dummy" collision objects we needed to make to get the textures to load
     load_floor(z_pos=dummy_z_pos + 3 * dummy_radius)
     ids = []
-    for name in modules:
-        module_id = load_iss_module(name, orn=orn)
+    for module in ISSModule:
+        module_id = load_iss_module(module, orn=orn)
         ids.append(module_id)
     return ids
 
 
 def load_iss_module(
-    name: str,
+    module: ISSModule,
     orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2],
     dummy_z_pos: float = -5,
     dummy_radius: float = 0.01,
 ) -> int:
-    """Loads a single ISS module. For example, "us_lab"
+    """Loads a single ISS module. For example, US_LAB
 
     Note: this will also load some "dummy" collision objects into the environment. This is necessary to get all of the
     visuals for the ISS to load. These objects will be invisible and outside of the ISS workspace
 
     Args:
-        name (str): The module to load. One of {"cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"}
+        module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...
         orn (npt.ArrayLike, optional): Orientation of the ISS module (XYZW quaternion). Defaults to
             [sqrt(2)/2, 0, 0, sqrt(2)/2] (a 90-degree rotation in x). This will orient the module so
             it lays flat in the simulator.
@@ -75,7 +88,7 @@ def load_iss_module(
         int: ID of the body corresponding to the VHACD collision object
     """
     # Locate the paths to all of the meshes for the module
-    vhacd_path, part_paths = _find_mesh_files(name)
+    vhacd_path, part_paths = _find_mesh_files(module)
 
     # Load the module:
     # Each part of the module will load the visual for the associated body
@@ -86,11 +99,12 @@ def load_iss_module(
     num_parts = len(part_paths)
     num_dummies = num_parts - 1  # Since the first part will load the VHACD geometry
     # Create a set of positions for the dummy objects that are not colliding with eachother
-    # This will look like a square grid of dummy objects (not fully filled out if the number of dummies is not square)
+    # This will look like grid of dummy objects for each module
+    # For the x values, add the Enum value to separate the dummies for each module, so they don't overlap
     n_along_edge = np.ceil(np.sqrt(num_dummies))
     spacings = 2.5 * dummy_radius * np.arange(n_along_edge)
     xgrid, ygrid = np.meshgrid(spacings, spacings)
-    xs = xgrid.flatten()[:num_dummies]
+    xs = module.value + xgrid.flatten()[:num_dummies]
     ys = ygrid.flatten()[:num_dummies]
     dummy_coords = np.column_stack((xs, ys))  # Stack for easy indexing
 
@@ -136,11 +150,11 @@ def load_iss_module(
     return ids[0]  # Just the ID for the VHACD object
 
 
-def _find_mesh_files(module: str) -> tuple[str, list[str]]:
+def _find_mesh_files(module: ISSModule) -> tuple[str, list[str]]:
     """Helper function to locate the paths to the ISS module meshes
 
     Args:
-        module (str): The module to load. One of {"cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"}
+        module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...
 
     Raises:
         ValueError: If an invalid ISS module name is provided
@@ -152,20 +166,12 @@ def _find_mesh_files(module: str) -> tuple[str, list[str]]:
             str: The path to the VHACD collision mesh for the module
             list[str]: Paths to all of the decomposed visual meshes for the module
     """
-    if module not in {
-        "cupola",
-        "eu_lab",
-        "jpm",
-        "node_1",
-        "node_2",
-        "node_3",
-        "us_lab",
-    }:
-        raise ValueError(f"Invalid module name: {module}")
+    # Extract the name from the enum
+    module_name = module.name.lower()
 
     # Get the paths for all files in the directory (visual and collision)
     cwd = os.getcwd()
-    directory = f"{cwd}/pyastrobee/meshes/iss/obj/{module}"
+    directory = f"{cwd}/pyastrobee/meshes/iss/obj/{module_name}"
     if not os.path.exists(directory):
         raise NotADirectoryError(
             f"{directory} is not valid.\nCheck on the input, {module}, or current working directory, {cwd}"
@@ -190,7 +196,7 @@ def _find_mesh_files(module: str) -> tuple[str, list[str]]:
 # If it was integrated, it would make a mess of the readability
 # Just make sure that if any logical updates were made in load_iss(), they are reflected here
 def _debug_iss_module(
-    name: str,
+    module: ISSModule,
     dummy_z_pos: float = -5,
     dummy_radius: float = 0.01,
     orn=[0, 0, 0, 1],
@@ -198,7 +204,7 @@ def _debug_iss_module(
     """Debugging version of load_iss_module(): Same functionality, but will visualize just the collision bodies
 
     Args:
-        name (str): The module to load. One of {"cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"}
+        module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...
         orn (npt.ArrayLike, optional): Orientation of the ISS module (XYZW quaternion). Defaults to
             [sqrt(2)/2, 0, 0, sqrt(2)/2] (a 90-degree rotation in x). This will orient the module so
             it lays flat in the simulator.
@@ -210,7 +216,7 @@ def _debug_iss_module(
         int: ID of the body corresponding to the VHACD collision object
     """
     # Locate the paths to all of the meshes for the module
-    vhacd_path, part_paths = _find_mesh_files(name)
+    vhacd_path, part_paths = _find_mesh_files(module)
 
     # Set up dummies (see the non-debugging function for more info)
     num_parts = len(part_paths)
@@ -218,7 +224,7 @@ def _debug_iss_module(
     n_along_edge = np.ceil(np.sqrt(num_dummies))
     spacings = 2.5 * dummy_radius * np.arange(n_along_edge)
     xgrid, ygrid = np.meshgrid(spacings, spacings)
-    xs = xgrid.flatten()[:num_dummies]
+    xs = module.value + xgrid.flatten()[:num_dummies]
     ys = ygrid.flatten()[:num_dummies]
     dummy_coords = np.column_stack((xs, ys))  # Stack for easy indexing
 
@@ -271,20 +277,19 @@ def _debug_iss(orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2]):
     Returns:
         list[int]: The pybullet IDs for each of the modules' collision body
     """
-    modules = ["cupola", "eu_lab", "jpm", "node_1", "node_2", "node_3", "us_lab"]
     dummy_radius = 0.01
     dummy_z_pos = -5
     # Load the floor above the "dummy" collision objects we needed to make to get the textures to load
     load_floor(z_pos=dummy_z_pos + 3 * dummy_radius)
     ids = []
-    for name in modules:
-        module_id = _debug_iss_module(name, orn=orn)
+    for module in ISSModule:
+        module_id = _debug_iss_module(module, orn=orn)
         ids.append(module_id)
     return ids
 
 
 if __name__ == "__main__":
     initialize_pybullet()
-    # load_iss()
-    _debug_iss()
+    load_iss()
+    # _debug_iss()
     run_sim()
