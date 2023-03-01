@@ -283,20 +283,46 @@ def pos_quat_to_pos_euler_xyz(pose: npt.ArrayLike) -> np.ndarray:
     return np.array([*pos, *orn])
 
 
-# TODO
-# This actually doesn't seem to make much sense
-# This should probably be some sort of a delta applied to a current pose
-def add_poses(pose1: Pose, pose2: Pose) -> np.ndarray:
-    raise NotImplementedError
+def add_global_pose_delta(pose: npt.ArrayLike, pose_delta: npt.ArrayLike) -> np.ndarray:
+    """Adds a world-frame "delta" to a pose
+
+    Args:
+        pose (npt.ArrayLike): Original reference pose (position + quaternion), shape (7,)
+        pose_delta (npt.ArrayLike): Delta to add to the pose (position + quaternion), shape (7,)
+
+    Returns:
+        np.ndarray: Position + quaternion pose with the delta applied, shape (7,)
+    """
+    if not check_pos_quat(pose) or not check_pos_quat(pose_delta):
+        raise ValueError(
+            f"Invalid inputs: Not position/quaternion form.\nGot: {pose}\nAnd: {pose_delta}"
+        )
+    new_pos = pose[:3] + pose_delta[:3]
+    new_orn = rts.combine_quaternions(pose[3:], pose_delta[3:])
+    return np.array([*new_pos, *new_orn])
+
+
+def add_local_pose_delta(pose: npt.ArrayLike, pose_delta: npt.ArrayLike) -> np.ndarray:
+    """Adds a local (robot)-frame "delta" to a pose
+
+    Args:
+        pose (npt.ArrayLike): Original reference pose (position + quaternion), shape (7,)
+        pose_delta (npt.ArrayLike): Delta to add to the pose (position + quaternion), shape (7,)
+
+    Returns:
+        np.ndarray: Position + quaternion pose with the delta applied, shape (7,)
+    """
+    if not check_pos_quat(pose) or not check_pos_quat(pose_delta):
+        raise ValueError(
+            f"Invalid inputs: Not position/quaternion form.\nGot: {pose}\nAnd: {pose_delta}"
+        )
+    T_R2W = pos_quat_to_tmat(pose)  # Robot to world
+    T_D2R = pos_quat_to_tmat(pose_delta)  # Delta to robot
+    T_D2W = T_R2W @ T_D2R  # Delta to world
+    return tmat_to_pos_quat(T_D2W)
 
 
 # TODO
-# This would probably return something like a rotational difference and a translational difference
-def subtract_poses(pose1: Pose, pose2: Pose) -> np.ndarray:
-    raise NotImplementedError
-
-
-# TODO
-# This might be the same thing as subtract poses ... delete?
+# Something like a rotational difference and a translational difference??? Idk
 def distance_between_poses(pose1: Pose, pose2: Pose) -> np.ndarray:
     raise NotImplementedError

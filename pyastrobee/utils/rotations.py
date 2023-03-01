@@ -459,6 +459,27 @@ def axis_angle_to_quat(axis: npt.ArrayLike, angle: float) -> np.ndarray:
     return q.xyzw
 
 
+def quat_to_axis_angle(
+    quat: Union[Quaternion, npt.ArrayLike]
+) -> tuple[np.ndarray, float]:
+    """Converts an XYZW quaternion to an axis/angle representation
+
+    Args:
+        quat (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,) if passing in an array
+
+    Returns:
+        Tuple of:
+            np.ndarray: Axis of rotation. Shape (3,)
+            float: Rotation angle, in radians
+    """
+    if not isinstance(quat, Quaternion):
+        quat = Quaternion(xyzw=quat)
+    axis_and_angle = rt.axis_angle_from_quaternion(quat.wxyz)
+    axis = axis_and_angle[:3]
+    angle = axis_and_angle[3]
+    return axis, angle
+
+
 def quaternion_between_two_vectors(v1: npt.ArrayLike, v2: npt.ArrayLike) -> np.ndarray:
     """Gives the quaternion rotation that would rotate vector v1 to align with v2 (magnitude-independent)
 
@@ -471,3 +492,24 @@ def quaternion_between_two_vectors(v1: npt.ArrayLike, v2: npt.ArrayLike) -> np.n
     """
     axis, angle = axis_angle_between_two_vectors(v1, v2)
     return axis_angle_to_quat(axis, angle)
+
+
+def combine_quaternions(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> np.ndarray:
+    """Combines the angular representation of two quaternions
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): First XYZW quaternion, shape (4,) if passing in an array
+        q2 (Union[Quaternion, npt.ArrayLike]): Second XYZW quaternion, shape (4,) if passing in an array
+
+    Returns:
+        np.ndarray: Combined XYZW quaternion, shape (4,)
+    """
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    q = Quaternion()
+    q.wxyz = rt.concatenate_quaternions(q1.wxyz, q2.wxyz)
+    return q.xyzw
