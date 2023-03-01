@@ -222,7 +222,8 @@ class Astrobee:
         # 7 corresponds to NUM_JOINTS
         # 4 corresponds to position, velocity, reaction forces, and applied torque
         states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][0] for i in range(Astrobee.NUM_JOINTS)]  # Index 0: position
+        # Index 0: position
+        return np.array([states[i][0] for i in range(Astrobee.NUM_JOINTS)])
 
     @property
     def joint_vels(self) -> np.ndarray:
@@ -232,7 +233,8 @@ class Astrobee:
             np.ndarray: Joint velocities, shape (NUM_JOINTS,)
         """
         states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][1] for i in range(Astrobee.NUM_JOINTS)]  # Index 1: velocity
+        # Index 1: velocity
+        return np.array([states[i][1] for i in range(Astrobee.NUM_JOINTS)])
 
     @property
     def joint_torques(self) -> np.ndarray:
@@ -242,7 +244,26 @@ class Astrobee:
             np.ndarray: Joint torques, shape (NUM_JOINTS,)
         """
         states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-        return [states[i][3] for i in range(Astrobee.NUM_JOINTS)]  # Index 3: torque
+        # Index 3: torque
+        return np.array([states[i][3] for i in range(Astrobee.NUM_JOINTS)])
+
+    @property
+    def arm_joint_angles(self) -> np.ndarray:
+        """Gives the two joint angles associated with the proximal + distal joints of the arm
+
+        Returns:
+            np.ndarray: Arm joint angles, shape (2,)
+        """
+        return self.joint_angles[Astrobee.ARM_JOINT_IDXS]
+
+    @property
+    def gripper_joint_angles(self) -> np.ndarray:
+        """Gives the four joint angles associated with the proximal + distal joints of the two gripper fingers
+
+        Returns:
+            np.ndarray: Gripper joint angles, shape (4,)
+        """
+        return self.joint_angles[Astrobee.GRIPPER_JOINT_IDXS]
 
     def get_link_transform(self, link_index: int) -> np.ndarray:
         """Calculates the transformation matrix (w.r.t the world) for a specified link
@@ -346,12 +367,12 @@ class Astrobee:
         """
         if indices is None:
             indices = list(range(Astrobee.NUM_JOINTS))
-        if len(indices) != len(angles):
+        angles = np.atleast_1d(angles)  # If scalar, ensure we don't have a 0-D array
+        indices = np.atleast_1d(indices)
+        if indices.shape != angles.shape:
             raise ValueError(
-                "Number of angles must match with the length of provided indices"
+                "Number of angles must match with the number of provided indices"
             )
-        angles = np.array(angles)
-        indices = np.array(indices)
         if np.any(angles < Astrobee.JOINT_POS_LIMITS[indices, 0]) or np.any(
             angles > Astrobee.JOINT_POS_LIMITS[indices, 1]
         ):
