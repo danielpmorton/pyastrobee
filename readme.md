@@ -14,6 +14,10 @@
 
 ## Status
 ### TODOs:
+- [ ] Add some notes about using the keyboard controller somewhere
+- [ ] Implement force control / velocity control 
+- [ ] Make the debug visualizer camera position an input in `initialize_pybullet` so we can start the visualization inside the ISS
+- [ ] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [ ] Finish cleanup of Astrobee() code
   - [ ] Figure out timesteps, tolerances, step parameters
   - [ ] Figure out if the while loops shuold be moved somewhere else
@@ -21,10 +25,8 @@
 - [ ] Delete the constraint_test file, but only after messing around with some of the other parameters they used
   - [ ] Additional parameters in createConstraint, changeConstraint (maxForce?)
   - [ ] setRealTimeSimulation()?
-- [ ] Quaternion test cases (functions + class)
 - [ ] Get a softbody anchor working between the astrobee gripper and the bag
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
-- [ ] Start with a simple trajectory and motion with the astrobee in pybullet
 - [ ] See if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
 - [ ] Add threading once commands get too complicated
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
@@ -36,12 +38,9 @@
 - [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
   - [ ] Check out the assimp library he mentioned in the commit message as well
   - [ ] Figure out what the deal is with some of the gripper links disappearing
-- [ ] Add test cases for quaternions
 - [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
-- [ ] Rotate the ISS so it's flat
 - [ ] Reorganize the `resources/` folder (obsolete?)
-- [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
 - [ ] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
@@ -53,7 +52,6 @@
 - [ ] Try flipping all of the face normals on the non-manifold mesh
 - [ ] Work on improving bag meshes
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
-- [ ] Figure out if it's possible to load arbitrary meshes into mujoco
 - [ ] Organize meshes
 - [ ] Send cargo bag properties to ROS
 - [ ] Get Astrobee ROS/simulation processes working in Pybullet
@@ -66,13 +64,17 @@
 - [ ] Get correct physical properties for cargo bag (check on weird inertia?)
 
 ### Backlog/Optional:
+- [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Add in debugging and exception handling
 - [ ] Consider using pathlib Path with str(Path(filename))?
 - [ ] See if it is possible to get URDFs working with multiple textures
+- [ ] Figure out if it's possible to load arbitrary meshes into mujoco
 
 ### Done:
+- [X] Quaternion test cases (functions + class)
+- [X] Rotate the ISS so it's flat
 - [X] Simple motion/trajectory planning
 - [X] Integrate new pose and transformation code into astrobee class
 - [X] Switch over to pytransform3d for rotations/transformations
@@ -108,14 +110,10 @@
 - [X] Set up virtual environment
 
 ### Ask NASA:
-- Does the version of Python matter for any of your Python code? e.g. 3.8 vs 3.10
+- What's the deal with their crazy positioning of the ISS in Gazebo? Why is world frame attached to a random handle in the middle of space?
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
 ### Bugs/Issues:
-- The dedo duffel bag cannot load as a soft body
-- The joint of the astrobee nearest to the body does not seem to be moving properly in simulation - check the URDF to see if there is an issue with how this joint is defined
 - Some softbodies have very strange inertia when moving them around in the Bullet gui (likely, some parameters need to be refined)
 
-## Thoughts
-- Mujoco is interesting because it models the deformables as composites - for instance, a soft box is a collection of spheres/capsules wrapped up in a skin. I wonder if we can change the properties of these smaller particles inside the composite?
-
+### Thoughts
