@@ -12,7 +12,7 @@ import numpy as np
 import pybullet
 
 from pyastrobee.control.astrobee import Astrobee
-from pyastrobee.utils.astrobee_utils import load_iss
+from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
     load_deformable_object,
