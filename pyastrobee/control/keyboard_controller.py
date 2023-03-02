@@ -55,6 +55,7 @@ from pyastrobee.utils.poses import (
     add_local_pose_delta,
     add_global_pose_delta,
 )
+from pyastrobee.utils.iss_utils import load_iss
 
 
 class KeyboardController:
@@ -263,11 +264,15 @@ class KeyboardController:
 
 if __name__ == "__main__":
     pybullet.connect(pybullet.GUI)
+    # Put camera inside node 1
+    pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
+    # Loading the ISS and then the astrobee at the origin is totally fine right now (collision free, inside node 1)
+    load_iss()
     bee = Astrobee()
     controller = KeyboardController(bee)
-    # This start_listening() command is blocking, so unless we kill the listener,
-    # nothing after this will run
+    # This start_listening() command is blocking, so unless we kill the listener, nothing after this will run
     controller.start_listening()
-    # while pybullet.isConnected():
-    #     pybullet.stepSimulation()
-    #     time.sleep(1 / 120)  # UPDATE THIS
+    # If we do kill the listener, just enter the standard sim loop with nothing happening
+    while True:
+        pybullet.stepSimulation()
+        time.sleep(1 / 120)  # UPDATE THIS

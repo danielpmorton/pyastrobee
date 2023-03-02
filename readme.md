@@ -14,6 +14,8 @@
 
 ## Status
 ### TODOs:
+- [ ] Improve waypoints in demo, clean up script
+- [ ] See if the quaternion rotations between motions needs to be debugged (seems like it rotates in odd ways sometimes?)
 - [ ] Add some notes about using the keyboard controller somewhere
 - [ ] Implement force control / velocity control 
 - [ ] Make the debug visualizer camera position an input in `initialize_pybullet` so we can start the visualization inside the ISS
@@ -42,7 +44,6 @@
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
 - [ ] Reorganize the `resources/` folder (obsolete?)
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
-- [ ] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
 - [ ] Set up camera (see dedo)
 - [ ] Set up pointcloud (see dedo)
@@ -73,6 +74,7 @@
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
 
 ### Done:
+- [X] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [X] Quaternion test cases (functions + class)
 - [X] Rotate the ISS so it's flat
 - [X] Simple motion/trajectory planning

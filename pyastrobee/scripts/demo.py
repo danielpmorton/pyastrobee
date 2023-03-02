@@ -5,8 +5,6 @@ TODO
   (This transform will dictate our offset between the last frame on the arm, and where we're holding the bag handle)
 - Find the orientation(s) to load the bag and astrobee together, initially connected
 - Attach an anchor to the bag handle
-- Load the ISS (I can do this, right now it's loading in the wrong orientation, so I've just got to rotate/position it
-  in a good way, and then figure out the right place to load the astrobee)
 """
 import numpy as np
 import pybullet
@@ -18,6 +16,42 @@ from pyastrobee.utils.bullet_utils import (
     load_deformable_object,
     run_sim,
 )
+
+
+def demo_2():
+    """A simple demo of loading the astrobee in the ISS and moving it around in various ways
+
+    TODO: the WPs might need to be refined, there seems to be a lot of weird rotating going on
+    Or it could be a quaternion issue? Quaternion ambiguity?
+
+    This could just in general be cleaned up and refined, but it works ok for now
+    """
+    # Hardcoded waypoints and positions found from keyboard-controlling the Astrobee
+    # fmt: off
+    wp0 = [0, 0, 0, 0, 0, 0, 1]
+    wp1 = [0.44631294, -1.33893871, 0.44631287, 0.08824572, 0.06790329, -0.78759863, 0.60604474]
+    wp2 = [0.05603137, -2.81145659, 0.10060672, -0.06176491, -0.0185934, -0.69867597, 0.71252457]
+    wp3 = [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166]
+    # fmt: on
+    new_arm_joints = [-1.34758381, 0.99330411]
+    pybullet.connect(pybullet.GUI)
+    # Bring the camera close to the action (another just random hardcoded position I found)
+    pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
+    load_iss()
+    robot = Astrobee()
+    # Go about a small set of actions to show what we can do so far
+    while True:
+        robot.go_to_pose(wp1)
+        robot.go_to_pose(wp2)
+        robot.go_to_pose(wp3)
+        robot.set_arm_joints(new_arm_joints)
+        robot.close_gripper()
+        input("Press enter to repeat")
+        robot.set_arm_joints([0, 0])
+        robot.open_gripper()
+        robot.go_to_pose(wp0)
+    # Keep the sim spinning
+    # run_sim()
 
 
 def main():
@@ -45,4 +79,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    demo_2()

@@ -22,6 +22,7 @@ from pyastrobee.utils.bullet_utils import (
     load_floor,
 )
 from pyastrobee.utils.errors import PybulletError
+from pyastrobee.utils.python_utils import print_green
 
 
 class ISSModule(Enum):
@@ -58,6 +59,7 @@ def load_iss(orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2]) -> lis
     for module in ISSModule:
         module_id = load_iss_module(module, orn=orn)
         ids.append(module_id)
+    print_green("ISS is ready")
     return ids
 
 
