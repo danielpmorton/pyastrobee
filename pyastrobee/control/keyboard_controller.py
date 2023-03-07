@@ -41,6 +41,8 @@ TODO
 - Add back sshkeyboard?
 - Velocity / force control
 - Angle snapping?
+- Make it possible to control the debug viz camera independently? (This may be unnecessary)
+- Allow for switching between certain fixed camera positions 
 """
 
 import time
@@ -56,6 +58,7 @@ from pyastrobee.utils.poses import (
     add_global_pose_delta,
 )
 from pyastrobee.utils.iss_utils import load_iss
+from pyastrobee.vision.debug_visualizer import get_viz_camera_params
 
 
 class KeyboardController:
@@ -196,11 +199,7 @@ class KeyboardController:
                 pybullet.changeConstraint(
                     self.robot.constraint_id, new_pose[:3], new_pose[3:]
                 )
-            # TODO CHANGE THE WAY THIS LOOP IS HANDLED
-            # (Will probably need some multiprocessing)
-            for _ in range(10):
-                pybullet.stepSimulation()
-                time.sleep(1 / 120)
+            self.run_sim()
         elif key == self.frame_switch_key:
             # Toggle the reference frame and update our knowledge of the state
             self.in_robot_frame = not self.in_robot_frame
@@ -255,17 +254,21 @@ class KeyboardController:
                     max(cur_dist - delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 0]),
                     dist_idx,
                 )
-            # TODO CHANGE THE WAY THIS LOOP IS HANDLED
-            # (Will probably need some multiprocessing)
-            for _ in range(10):
-                pybullet.stepSimulation()
-                time.sleep(1 / 120)
+            self.run_sim()
+
+    def run_sim(self):
+        # TODO CHANGE THE WAY THIS LOOP IS HANDLED
+        # (Will probably need some multiprocessing?)
+        for _ in range(10):
+            pybullet.stepSimulation()
+            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
+            time.sleep(1 / 120)
 
 
 if __name__ == "__main__":
     pybullet.connect(pybullet.GUI)
-    # Put camera inside node 1
-    pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
+    # # Put camera inside node 1
+    # pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
     # Loading the ISS and then the astrobee at the origin is totally fine right now (collision free, inside node 1)
     load_iss()
     bee = Astrobee()

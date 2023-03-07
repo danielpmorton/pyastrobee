@@ -27,7 +27,7 @@ from pyastrobee.utils.rotations import (
     quaternion_interp,
     quaternion_between_two_vectors,
 )
-from pyastrobee.utils.poses import tmat_to_pos_quat
+from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
 from pyastrobee.utils.quaternion import Quaternion
 from pyastrobee.utils.math_utils import normalize
@@ -163,6 +163,15 @@ class Astrobee:
         """
         pos, orn = pybullet.getBasePositionAndOrientation(self.id)
         return np.concatenate([pos, orn])
+
+    @property
+    def tmat(self) -> np.ndarray:
+        """The current robot pose in world frame, expressed as a transformation matrix
+
+        Returns:
+            np.ndarray: Transformation matrix, shape (4,4)
+        """
+        return pos_quat_to_tmat(self.pose)
 
     @property
     def position(self) -> np.ndarray:
