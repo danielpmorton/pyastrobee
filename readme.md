@@ -14,19 +14,16 @@
 
 ## Status
 ### TODOs:
+- [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
+- [ ] Create a unified sim loop in Astrobee?
+- [ ] Deal with random TODOs in Astrobee() code (and other files, but that one mostly)
+- [ ] Test out maxForce parameter in changeConstraint?
+- [ ] Test out setRealTimeSimulation?
 - [ ] Improve waypoints in demo, clean up script
 - [ ] See if the quaternion rotations between motions needs to be debugged (seems like it rotates in odd ways sometimes?)
 - [ ] Add some notes about using the keyboard controller somewhere
-- [ ] Implement force control / velocity control 
-- [ ] Make the debug visualizer camera position an input in `initialize_pybullet` so we can start the visualization inside the ISS
+- [ ] Implement force control / velocity control !!
 - [ ] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
-- [ ] Finish cleanup of Astrobee() code
-  - [ ] Figure out timesteps, tolerances, step parameters
-  - [ ] Figure out if the while loops shuold be moved somewhere else
-  - [ ] Clear out a bunch of the random TODOs
-- [ ] Delete the constraint_test file, but only after messing around with some of the other parameters they used
-  - [ ] Additional parameters in createConstraint, changeConstraint (maxForce?)
-  - [ ] setRealTimeSimulation()?
 - [ ] Get a softbody anchor working between the astrobee gripper and the bag
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
 - [ ] See if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
@@ -74,6 +71,7 @@
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
 
 ### Done:
+- [X] Make the debug visualizer camera position an input in `initialize_pybullet` so we can start the visualization inside the ISS
 - [X] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [X] Quaternion test cases (functions + class)
 - [X] Rotate the ISS so it's flat
