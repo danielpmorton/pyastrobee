@@ -35,10 +35,9 @@ NOTE
 
 TODO
 - Unify the coarse control toggling between the position and the arm control
-- Multiprocessing!!! Change the hacky way I'm currently stepping through the simulation
 - Add force control, velocity control, and a toggle between methods
 - Add back finer control of the gripper rather than just an open/close toggle?
-- Add back sshkeyboard?
+- Add back sshkeyboard? (This likely won't work with threading?)
 - Velocity / force control
 - Angle snapping?
 - Make it possible to control the debug viz camera independently? (This may be unnecessary)
@@ -59,6 +58,7 @@ from pyastrobee.utils.poses import (
 )
 from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.vision.debug_visualizer import get_viz_camera_params
+from pyastrobee.utils.python_utils import print_green, print_red
 
 
 class KeyboardController:
@@ -111,6 +111,9 @@ class KeyboardController:
         self.in_robot_frame = False
         self.in_coarse_mode = False
 
+        # Initialize listener, update when listener started
+        self.listener: keyboard.Listener = None
+
         # Having this in position/Euler can be more interpretable than position/quaternion
         # Also, it is easier to scale Euler angles than quaternions for coarse control
         # (multiplying a quaternion by a constant won't change the rotation it represents)
@@ -158,13 +161,18 @@ class KeyboardController:
         )
 
     def start_listening(self):
-        """Starts the keyboard listener"""
-        print("Now listening.")
+        """Starts the keyboard listener in a new thread"""
+        print_green("Now listening")
         self._print_commands()
-        with keyboard.Listener(
+        self.listener = keyboard.Listener(
             on_press=self.on_press, on_release=self.on_release
-        ) as listener:
-            listener.join()
+        )
+        self.listener.start()
+
+    @property
+    def is_listening(self) -> bool:
+        """Whether or not the pynput Listener has been initialized"""
+        return self.listener is not None
 
     def on_press(self, key: keyboard.Key):
         """Callback for a keypress
@@ -176,7 +184,9 @@ class KeyboardController:
             bool: False when the "stop listening" key (Esc) is pressed
         """
         if key == keyboard.Key.esc:
-            return False  # Stop the listener
+            print_red("\nLISTENER STOPPED")
+            print("Simulation will remain active until killed")
+            return False  # Returning false from a callback stops pynput
 
     def on_release(self, key: keyboard.Key):
         """Callback for when a key is released
@@ -199,7 +209,6 @@ class KeyboardController:
                 pybullet.changeConstraint(
                     self.robot.constraint_id, new_pose[:3], new_pose[3:]
                 )
-            self.run_sim()
         elif key == self.frame_switch_key:
             # Toggle the reference frame and update our knowledge of the state
             self.in_robot_frame = not self.in_robot_frame
@@ -254,28 +263,30 @@ class KeyboardController:
                     max(cur_dist - delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 0]),
                     dist_idx,
                 )
-            self.run_sim()
 
-    def run_sim(self):
-        # TODO CHANGE THE WAY THIS LOOP IS HANDLED
-        # (Will probably need some multiprocessing?)
-        for _ in range(10):
-            pybullet.stepSimulation()
-            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
-            time.sleep(1 / 120)
+    def step(self):
+        """Updates one step of the simulation"""
+        pybullet.stepSimulation()
+        # Update the camera view so we maintain our same perspective on the robot as it moves
+        pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
+        time.sleep(1 / 120)  # TODO make this a parameter?
+
+    def run(self):
+        """Runs the simulation loop with the keyboard listener active"""
+        if not self.is_listening:
+            self.start_listening()
+        try:
+            while True:
+                self.step()
+        finally:
+            self.listener.stop()
 
 
 if __name__ == "__main__":
     pybullet.connect(pybullet.GUI)
-    # # Put camera inside node 1
-    # pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
+    # pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0]) # Camera in node 1
     # Loading the ISS and then the astrobee at the origin is totally fine right now (collision free, inside node 1)
     load_iss()
     bee = Astrobee()
     controller = KeyboardController(bee)
-    # This start_listening() command is blocking, so unless we kill the listener, nothing after this will run
-    controller.start_listening()
-    # If we do kill the listener, just enter the standard sim loop with nothing happening
-    while True:
-        pybullet.stepSimulation()
-        time.sleep(1 / 120)  # UPDATE THIS
+    controller.run()
