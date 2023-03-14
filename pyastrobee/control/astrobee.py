@@ -425,13 +425,15 @@ class Astrobee:
         """
         self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS)
 
-    def align_to(self, orn: npt.ArrayLike) -> None:
+    def align_to(self, orn: npt.ArrayLike,
+                 max_force: Optional[float] = 500) -> None:
         """Rotates the Astrobee about its current position to align with a specified orientation
 
         TODO HACKY -- CLEAN UP!
 
         Args:
             goal_orn (npt.ArrayLike): Desired XYZW quaternion orientation
+            max_force (optional, float): maximum force for changeConstraint()
         """
         # TODO: use a check_quaternion function instead of this
         if len(orn) != 4:
@@ -451,16 +453,19 @@ class Astrobee:
         while quaternion_dist(self.orientation, orn) > tol:
             q = quaternion_interp(q1, q2, pct)
             # TODO decide if any other inputs to the change constraint function are needed
-            pybullet.changeConstraint(self.constraint_id, pos, q)
+            pybullet.changeConstraint(self.constraint_id, pos, q,
+                                      maxForce=max_force)
             pybullet.stepSimulation()
             time.sleep(1 / 120)
             pct = min(pct + dpct, 1)
 
-    def follow_line_to(self, position: npt.ArrayLike) -> None:
+    def follow_line_to(self, position: npt.ArrayLike,
+                       max_force: Optional[float] = 500) -> None:
         """Moves the Astrobee along a line (without rotating) to reach a new xyz position
 
         Args:
             position (npt.ArrayLike): New xyz position for the Astrobee. Shape = (3,)
+            max_force (optional, float): maximum force for changeConstraint()
         """
         if len(position) != 3:
             raise ValueError(f"Invalid position.\nGot: {position}")
@@ -470,7 +475,8 @@ class Astrobee:
         while np.linalg.norm(pos - position) > step:
             direction = normalize(position - pos)  # Unit vector
             new_pos = pos + step * direction
-            pybullet.changeConstraint(self.constraint_id, new_pos, orn)
+            pybullet.changeConstraint(self.constraint_id, new_pos, orn,
+                                      maxForce=max_force)
             pybullet.stepSimulation()
             time.sleep(1 / 120)
             pos = self.position  # Update after moving

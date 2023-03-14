@@ -6,6 +6,8 @@ TODO
 - Find the orientation(s) to load the bag and astrobee together, initially connected
 - Attach an anchor to the bag handle
 """
+import time
+
 import numpy as np
 import pybullet
 
@@ -18,7 +20,26 @@ from pyastrobee.utils.bullet_utils import (
 )
 
 
-def demo_2():
+def load_bag(robot_id):
+    # Load deformable bag and attach the middle of each side of the handle to
+    # the middle of each of the astrobee fingers.
+    bag_id = load_deformable_object(
+        "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
+        pos=[-0.05, -0.01, -0.52], orn=[-np.pi/2, 0, 0]
+    )
+    bag_texture_id = pybullet.loadTexture(
+        "pyastrobee/resources/meshes/textile_pixabay_red.jpg")
+    kwargs = {}
+    if hasattr(pybullet, 'VISUAL_SHAPE_DOUBLE_SIDED'):
+        kwargs['flags'] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+    pybullet.changeVisualShape(
+        bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id,
+        **kwargs)
+    pybullet.createSoftBodyAnchor(bag_id, 787, robot_id, 4)
+    pybullet.createSoftBodyAnchor(bag_id, 818, robot_id, 5)
+
+
+def demo_with_iss():
     """A simple demo of loading the astrobee in the ISS and moving it around in various ways
 
     TODO: the WPs might need to be refined, there seems to be a lot of weird rotating going on
@@ -34,11 +55,13 @@ def demo_2():
     wp3 = [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166]
     # fmt: on
     new_arm_joints = [-1.34758381, 0.99330411]
-    pybullet.connect(pybullet.GUI)
+    initialize_pybullet()
+    # pybullet.connect(pybullet.GUI)  # a simple version without deformables
     # Bring the camera close to the action (another just random hardcoded position I found)
     pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
     load_iss()
     robot = Astrobee()
+    load_bag(robot.id)
     # Go about a small set of actions to show what we can do so far
     while True:
         robot.go_to_pose(wp1)
@@ -54,8 +77,14 @@ def demo_2():
     # run_sim()
 
 
-def main():
+def demo_with_bag():
     initialize_pybullet()
+    cam_args = {
+        'cameraDistance': 1.6, # use 0.7 to look at anchor attachment closely
+        'cameraPitch': 160, 'cameraYaw': 80,
+        'cameraTargetPosition': np.array([0, 0, 0])
+    }
+    pybullet.resetDebugVisualizerCamera(**cam_args)
     # It seems at the moment, something weird is happening with the initial motion
     # The URDF loads it at the specified pose, but then it goes back to the origin
     # I think this has something to do with how the constraint is being set
@@ -63,15 +92,10 @@ def main():
     # robot = Astrobee(pose=[1, 1, 1, 0, 0, 0, 1])
     # Instead, we'll just keep the astrobee started off at the origin, and load the bag in a different spot
     robot = Astrobee()
-    # I haven't done much work with the meshes in about a month but I'm pretty sure this was the best one I made
-    # (I need to clean up my mesh files)
-    # Some of the physical parameters will likely need some tuning
-    bag_id = load_deformable_object(
-        "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj", pos=[1, -1, 1]
-    )
+    load_bag(robot.id)
     # As just an arbitrary example, have the astrobee move to a new position to show the motion
     # Right now this has no correlation with the bag other than it doesn't collide with the bag
-    target_pose = np.array([-1, -1, 1, 0, 0, 0, 1])
+    target_pose = np.array([-0.5, -0.4, 0.8, 0, 0, 0, 1])
     robot.go_to_pose(target_pose)
 
     # Loop the simulation until closed
@@ -79,5 +103,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
-    demo_2()
+    demo_with_iss()
