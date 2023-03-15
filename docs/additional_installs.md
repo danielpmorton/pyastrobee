@@ -129,6 +129,12 @@ sudo apt install libassimp-dev
 sudo apt install assimp-utils
 ```
 
+## GMSH
+
+This is needed for modifying/creating tetrahedral meshes
+1. Go to https://gmsh.info/ and click on the Linux download link
+2. Extract the contents to `$HOME/software`
+
 ## VSCode
 
 ```

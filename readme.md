@@ -14,6 +14,8 @@
 
 ## Status
 ### TODOs:
+- [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
+- [ ] Figure out how to export just the volume mesh from gmsh
 - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
 - [ ] Create a unified sim loop in Astrobee?
 - [ ] Deal with random TODOs in Astrobee() code (and other files, but that one mostly)
