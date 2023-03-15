@@ -1,5 +1,9 @@
 """Motion planning
 
+** This general concept is likely out of date with how the Controller class(es) are set up
+Figure out if all of the motion planning implementation should just go into the controller?
+Or generate a trajectory plan here and then pass it in to the controller
+
 TODO
 - Add support for multiple astrobees?
 

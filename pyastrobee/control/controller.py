@@ -1,7 +1,6 @@
 """Position, velocity, and force controllers for Astrobee motion
 
 TODO
-- Significant cleanup + docstrings
 - !! Check on the 1/5 scaling issue with velocities?
   https://github.com/bulletphysics/bullet3/issues/2237
 - Add ability to command deltas
@@ -13,7 +12,6 @@ TODO (Long-horizon)
 NOTE
 - Currently working with position control as "pose control", linking position + orientation
   IDK if it is valuable to control these two things separately, but we may want to include this
-
 """
 
 import time
@@ -45,10 +43,15 @@ from pyastrobee.utils.python_utils import print_red
 
 
 class Controller(ABC):
+    """Abstract class for controllers
+
+    Position/velocity/force controllers should inherit from this to share a common structure
+    """
+
     def __init__(self, robot: Astrobee):
         self.robot = robot
 
-        # Initialize variables for properties
+        # Initialize variables for properties (TODO decide if these should be in the inherited classes)
         # Note that the "default value" for force/torque should be 0,
         # but we don't want to set the pose or velocity to 0 accidentally, so we use None instead
         self._pose_command = None
@@ -60,25 +63,35 @@ class Controller(ABC):
         self.dt = 1 / 120  # Timestep (TODO should this be in a different place?)
         self.dv_max = LINEAR_ACCEL_LIMIT * self.dt  # TODO move this to controller
         self.dw_max = ANGULAR_ACCEL_LIMIT * self.dt
+        self.step_count = 0  # Initialization
 
     @abstractmethod
     def update(self):
-        # Implement this function in the position/velocity/force controllers
+        """Runs a single-timestep update on whatever parameter is being controlled (position, velocity, force)
+
+        This function should be implemented in the controllers inheriting from this abstract class
+        """
         pass
 
     def step(self):
+        """Updates the controller parameters and steps through the simulation"""
         self.update()
         pybullet.stepSimulation()
+        self.step_count += 1
         # time.sleep(self.dt) # DECIDE IF NEEDED HERE
 
-    def run(self, max_iter=None):
+    def run(self, max_iter: Optional[int] = None):
+        """Runs the simulation for the controller for a specified number of steps or indefinitely
+
+        Args:
+            max_iter (Optional[int]): Maximum number of iterations to run the simulation. Defaults to None,
+                in which case the simulation will run indefinitely
+        """
         if max_iter is None:
             max_iter = float("inf")
-        i = 0
-        while i < max_iter:
+        while self.step_count < max_iter:
             self.step()
-            time.sleep(self.dt)
-            i += 1
+            time.sleep(self.dt)  # Should this be in step?
 
     def _validate_cmds(
         self,
@@ -90,12 +103,15 @@ class Controller(ABC):
     ):
         """Confirms that inputs are the correct shape and within the Astrobee's force/speed limits
 
-        Args: TODO
-            pose (ArrayLike, optional): _description_. Defaults to None.
-            vel (ArrayLike, optional): _description_. Defaults to None.
-            ang_vel (ArrayLike, optional): _description_. Defaults to None.
-            force (ArrayLike, optional): _description_. Defaults to None.
-            torque (ArrayLike, optional): _description_. Defaults to None.
+        - All commands are defined in world frame
+        - TODO decide if this should be implemented in the inherited classes
+
+        Args:
+            pose (Optional[ArrayLike]): Pose command (position + XYZW quaternion). Defaults to None.
+            vel (Optional[ArrayLike]): Linear velocity command ([vx, vy, vz]). Defaults to None.
+            ang_vel (Optional[ArrayLike]): Angular velocity command ([wx, wy, wz]). Defaults to None.
+            force (Optional[ArrayLike]): Force command ([Fx, Fy, Fz]). Defaults to None.
+            torque (Optional[ArrayLike]): Torque command ([Tx, Ty, Tz]). Defaults to None.
 
         Raises:
             ValueError: If any of the inputs are invalid
@@ -127,6 +143,7 @@ class Controller(ABC):
             R_W2R = self.robot.rmat.T  # World to robot
             local_force_cmd = R_W2R @ force
             if np.any(local_force_cmd > MAX_FORCE):
+                # TODO decide if this should be a warning instead, and then clip the value?
                 raise ValueError(
                     "Commanded force exceeds the limit.\n"
                     + f"World frame command: {force}\n"
@@ -139,6 +156,7 @@ class Controller(ABC):
             R_W2R = self.robot.rmat.T  # World to robot
             local_torque_cmd = R_W2R @ torque
             if np.any(local_torque_cmd > MAX_TORQUE):
+                # TODO decide if this should be a warning instead, and then clip the value?
                 raise ValueError(
                     "Commanded torque exceeds the limit.\n"
                     + f"World frame command: {torque}\n"
@@ -148,11 +166,18 @@ class Controller(ABC):
 
 
 class PoseController:
-    # TODO structure this in the same way as the other controllers with a separate step() and update() function
-    # This way we can call the controllers in the same way no matter which method we use
-    # (See the ABC implementation for the force and velocity controllers)
-    # This will likely require us to define states such as IDLE, ALIGNING, FOLLOWING, and do different things in
-    # the update() function based on the state and transitions
+    """Position control for the Astrobee
+
+    Args:
+        robot (Astrobee): The Astrobee being controlled
+
+    TODO
+    - Currently, this just uses the same preliminary control method that was originally in Astrobee()
+    - This should be structured in the same way as the other controllers (Inherit from Controller(), and define the
+      update() function), so that we can call the controllers in the same way
+    - This will likely require us to define states such as IDLE, ALIGNING, FOLLOWING, and do different things in
+      the update() function based on the state and transitions
+    """
 
     def __init__(self, robot: Astrobee):
         self.robot = robot
@@ -178,15 +203,14 @@ class PoseController:
             raise ValueError(f"Invalid pose. Got: {cmd}")
         self._pose_command = cmd
 
-    # Copying the functions that were originally in Astrobee()
-    # TODO delete these from Astrobee()??
-    def align_to(self, orn: ArrayLike) -> None:
+    def align_to(self, orn: ArrayLike, max_force: float = 500) -> None:
         """Rotates the Astrobee about its current position to align with a specified orientation
 
         TODO HACKY -- CLEAN UP!
 
         Args:
             orn (npt.ArrayLike): Desired XYZW quaternion orientation
+            max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
         """
         # TODO: use a check_quaternion function instead of this
         if len(orn) != 4:
@@ -206,16 +230,17 @@ class PoseController:
         while quaternion_dist(self.robot.orientation, orn) > tol:
             q = quaternion_interp(q1, q2, pct)
             # TODO decide if any other inputs to the change constraint function are needed
-            pybullet.changeConstraint(self.constraint_id, pos, q)
+            pybullet.changeConstraint(self.constraint_id, pos, q, maxForce=max_force)
             pybullet.stepSimulation()
             time.sleep(1 / 120)
             pct = min(pct + dpct, 1)
 
-    def follow_line_to(self, position: ArrayLike) -> None:
+    def follow_line_to(self, position: ArrayLike, max_force: float = 500) -> None:
         """Moves the Astrobee along a line (without rotating) to reach a new xyz position
 
         Args:
             position (npt.ArrayLike): New xyz position for the Astrobee. Shape = (3,)
+            max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
         """
         if len(position) != 3:
             raise ValueError(f"Invalid position.\nGot: {position}")
@@ -225,7 +250,9 @@ class PoseController:
         while np.linalg.norm(pos - position) > step:
             direction = normalize(position - pos)  # Unit vector
             new_pos = pos + step * direction
-            pybullet.changeConstraint(self.constraint_id, new_pos, orn)
+            pybullet.changeConstraint(
+                self.constraint_id, new_pos, orn, maxForce=max_force
+            )
             pybullet.stepSimulation()
             time.sleep(1 / 120)
             pos = self.robot.position  # Update after moving
@@ -256,18 +283,25 @@ class PoseController:
         # Orient the astrobee to the desired ending orientation
         self.align_to(goal_orn)
 
-    def delete_constraint(self):
+    def delete_constraint(self) -> None:
+        """Deletes the constraint between the Astrobee and the world"""
         pybullet.removeConstraint(self.constraint_id)
 
 
 class VelocityController(Controller):
+    """Velocity control for the Astrobee
+
+    Args:
+        robot (Astrobee): The Astrobee being controlled
+    """
+
     def __init__(self, robot: Astrobee):
         super().__init__(robot)
         check_for_constraint(robot)
 
     @property
     def velocity_command(self) -> np.ndarray:
-        """Desired velocity ([vx, vy, vz]) of the Astrobee base
+        """Desired velocity ([vx, vy, vz], world frame) of the Astrobee base
 
         When setting this value, velocities must be within the operating mode's speed limits
         """
@@ -280,7 +314,7 @@ class VelocityController(Controller):
 
     @property
     def angular_velocity_command(self) -> np.ndarray:
-        """Desired angular velocity ([wx, wy, wz]) of the Astrobee base
+        """Desired angular velocity ([wx, wy, wz], world frame) of the Astrobee base
 
         When setting this value, velocities must be within the operating mode's speed limits
         """
@@ -292,6 +326,8 @@ class VelocityController(Controller):
         self._angular_velocity_command = np.array(cmd)
 
     def update(self):
+        """Updates the velocities on the robot for a single timestep"""
+
         # TODO see if any of the logic here can be simplified
         # Updates the current velocity of the robot for a single timestep
         cur_vel = self.robot.velocity
@@ -317,27 +353,42 @@ class VelocityController(Controller):
             # ang_vel_cmd = self.angular_velocity_command  # TODO remove
         else:
             ang_vel_cmd = cur_ang_vel
-        print("sending velocity", vel_cmd)
+        # print("sending velocity", vel_cmd)
         pybullet.resetBaseVelocity(self.robot.id, vel_cmd, ang_vel_cmd)
 
     def set_local_velocity_cmds(
         self,
         linear: Optional[ArrayLike] = None,
         angular: Optional[ArrayLike] = None,
-    ):
+    ) -> None:
+        """Sets a desired linear/angular velocity command in the local (robot) frame
+
+        Args:
+            linear (Optional[ArrayLike]): Desired linear velocity along the robot's reference frame axes.
+                Defaults to None, AKA "don't change the current command"
+            angular (Optional[ArrayLike]): Desired angular velocity about the robot's reference frame axes.
+                Defaults to None, AKA "don't change the current command"
+        """
+        # Transform the velocity vectors from robot frame to world frame, then set the command
         R_R2W = self.robot.rmat
         self.velocity_command = R_R2W @ linear
         self.angular_velocity_command = R_R2W @ angular
 
 
 class ForceController(Controller):
+    """Force control for the Astrobee
+
+    Args:
+        robot (Astrobee): The Astrobee being controlled
+    """
+
     def __init__(self, robot: Astrobee):
         super().__init__(robot)
         check_for_constraint(robot)
 
     @property
     def force_command(self) -> np.ndarray:
-        """Desired thrust force ([Fx, Fy, Fz]) to be applied to the Astrobee base
+        """Desired thrust force ([Fx, Fy, Fz], world frame) to be applied to the Astrobee base
 
         When setting this value, forces must be within the fans' maximum applied thrust limits
         """
@@ -350,7 +401,7 @@ class ForceController(Controller):
 
     @property
     def torque_command(self) -> np.ndarray:
-        """Desired torque ([Tx, Ty, Tz]) to be applied to the Astrobee base
+        """Desired torque ([Tx, Ty, Tz], world frame) to be applied to the Astrobee base
 
         When setting this value, torques must be within the fans' maximum applied torque limits
         """
@@ -362,11 +413,14 @@ class ForceController(Controller):
         self._torque_command = cmd
 
     def update(self):
-        # Updates the force on the robot for a single timestep
-        # TODO should make sure we don't exceed the speed limit
-        # TODO include torque effect of drag
-        # TODO include a more robust force model that includes more aspects of how the fans work
-        # We can assume that the maximum forces will not break the max accel constraint
+        """Updates the forces on the robot for a single timestep
+
+        TODO
+        - Make sure we don't exceed the speed limit
+          (For the accel limit, we can assume that adhering to the maximum force limits are enough)
+        - Include torque effect of drag?
+        - Include more robust force model for the fan thrust
+        """
 
         cur_vel = self.robot.velocity
         drag_force = drag_force_model(cur_vel)
@@ -387,14 +441,32 @@ class ForceController(Controller):
         self,
         force: Optional[ArrayLike] = None,
         torque: Optional[ArrayLike] = None,
-    ):
+    ) -> None:
+        """Sets a desired force/torque command in the local (robot) frame
+
+        Args:
+            force (Optional[ArrayLike]): Desired force along the robot's reference frame axes.
+                Defaults to None, AKA "don't change the current command"
+            torque (Optional[ArrayLike]): Desired torque about the robot's reference frame axes.
+                Defaults to None, AKA "don't change the current command"
+        """
+        # Transform the force/torque vectors from robot frame to world frame, then set the command
         R_R2W = self.robot.rmat
         self.force_command = R_R2W @ force
         self.torque_command = R_R2W @ torque
 
 
 def check_for_constraint(robot: Astrobee):
+    """Checks to see if a constraint between the robot/world is currently enabled, and prints a warning if so
+
+    (Constraints are used for position control, but if it is still active when we use a different method,
+    it will not allow the robot to respond to velocities/forces)
+
+    Args:
+        robot (Astrobee): The Astrobee being controlled
+    """
     n = pybullet.getNumConstraints()
+    # There may be other constraints in use (for instance, between robot/bag), so check explicitly between robot/world
     for constraint_id in range(1, n + 1):  # These seem to be 1-indexed
         info = pybullet.getConstraintInfo(constraint_id)
         parent_id = info[0]
@@ -408,6 +480,7 @@ def check_for_constraint(robot: Astrobee):
 
 
 if __name__ == "__main__":
+    # Some assorted commands just to see the behavior of each controller
     pybullet.connect(pybullet.GUI)
     bee = Astrobee()
     position_controller = PoseController(bee)
