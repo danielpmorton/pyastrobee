@@ -6,12 +6,12 @@ TODO
 - Find the orientation(s) to load the bag and astrobee together, initially connected
 - Attach an anchor to the bag handle
 """
-import time
 
 import numpy as np
 import pybullet
 
 from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.control.controller import PoseController
 from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
@@ -25,16 +25,18 @@ def load_bag(robot_id):
     # the middle of each of the astrobee fingers.
     bag_id = load_deformable_object(
         "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
-        pos=[-0.05, -0.01, -0.52], orn=[-np.pi/2, 0, 0]
+        pos=[-0.05, -0.01, -0.52],
+        orn=[-np.pi / 2, 0, 0],
     )
     bag_texture_id = pybullet.loadTexture(
-        "pyastrobee/resources/meshes/textile_pixabay_red.jpg")
+        "pyastrobee/resources/meshes/textile_pixabay_red.jpg"
+    )
     kwargs = {}
-    if hasattr(pybullet, 'VISUAL_SHAPE_DOUBLE_SIDED'):
-        kwargs['flags'] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+    if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):
+        kwargs["flags"] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
     pybullet.changeVisualShape(
-        bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id,
-        **kwargs)
+        bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id, **kwargs
+    )
     pybullet.createSoftBodyAnchor(bag_id, 787, robot_id, 4)
     pybullet.createSoftBodyAnchor(bag_id, 818, robot_id, 5)
 
@@ -62,17 +64,18 @@ def demo_with_iss():
     load_iss()
     robot = Astrobee()
     load_bag(robot.id)
+    controller = PoseController(robot)
     # Go about a small set of actions to show what we can do so far
     while True:
-        robot.go_to_pose(wp1)
-        robot.go_to_pose(wp2)
-        robot.go_to_pose(wp3)
+        controller.go_to_pose(wp1)
+        controller.go_to_pose(wp2)
+        controller.go_to_pose(wp3)
         robot.set_arm_joints(new_arm_joints)
         robot.close_gripper()
         input("Press enter to repeat")
         robot.set_arm_joints([0, 0])
         robot.open_gripper()
-        robot.go_to_pose(wp0)
+        controller.go_to_pose(wp0)
     # Keep the sim spinning
     # run_sim()
 
@@ -80,9 +83,10 @@ def demo_with_iss():
 def demo_with_bag():
     initialize_pybullet()
     cam_args = {
-        'cameraDistance': 1.6, # use 0.7 to look at anchor attachment closely
-        'cameraPitch': 160, 'cameraYaw': 80,
-        'cameraTargetPosition': np.array([0, 0, 0])
+        "cameraDistance": 1.6,  # use 0.7 to look at anchor attachment closely
+        "cameraPitch": 160,
+        "cameraYaw": 80,
+        "cameraTargetPosition": np.array([0, 0, 0]),
     }
     pybullet.resetDebugVisualizerCamera(**cam_args)
     # It seems at the moment, something weird is happening with the initial motion
@@ -93,10 +97,11 @@ def demo_with_bag():
     # Instead, we'll just keep the astrobee started off at the origin, and load the bag in a different spot
     robot = Astrobee()
     load_bag(robot.id)
+    controller = PoseController(robot)
     # As just an arbitrary example, have the astrobee move to a new position to show the motion
     # Right now this has no correlation with the bag other than it doesn't collide with the bag
     target_pose = np.array([-0.5, -0.4, 0.8, 0, 0, 0, 1])
-    robot.go_to_pose(target_pose)
+    controller.go_to_pose(target_pose)
 
     # Loop the simulation until closed
     run_sim()
