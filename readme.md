@@ -4,7 +4,11 @@
 ## Documentation Overview
 [Getting Started](docs/getting_started.md): Setting up the repository
 
+[Additional Installs](docs/additional_installs.md): Additional installs important for working with the project
+
 [Loading ISS Meshes](docs/loading_iss_meshes.md): Dealing with complex meshes and textures in Pybullet
+
+[Tetrahedral Meshing](docs/tet_meshing.md): How to generate and modify tetrahedral meshes for soft bodies
 
 [Assorted Notes](docs/assorted_notes.md): Things I thought seemed important
 
@@ -14,29 +18,13 @@
 
 ## Status
 ### TODOs:
-- [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
+- [ ] Add an overview of the repo structure to the docs
+- [ ] Decide if all arm/gripper control should remain in Astrobee or not
 - [ ] Figure out how to export just the volume mesh from gmsh
-- [ ] Ton of cleanup of the controller file
-- [ ] Update the demo script now that the control interface has moved out of Astrobee()
+- [ ] Get velocity control integrated into the keyboard controller
 - [ ] Decide if astrobee_geom should be merged with something else
-- [ ] Add drag (particularly when working with velocity or force control) 
-  - [ ] https://github.com/nasa/astrobee/blob/master/simulation/src/gazebo_model_plugin_drag/gazebo_model_plugin_drag.cc
-- [ ] Get the fans modeled for force control
-  - [ ] https://github.com/nasa/astrobee/blob/master/simulation/src/gazebo_model_plugin_pmc/gazebo_model_plugin_pmc.cc
-- [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
-- [ ] Create a unified sim loop in Astrobee?
-- [ ] Deal with random TODOs in Astrobee() code (and other files, but that one mostly)
-- [ ] Test out maxForce parameter in changeConstraint?
-- [ ] Test out setRealTimeSimulation?
-- [ ] Improve waypoints in demo, clean up script
 - [ ] See if the quaternion rotations between motions needs to be debugged (seems like it rotates in odd ways sometimes?)
-- [ ] Add some notes about using the keyboard controller somewhere
-- [ ] Implement force control / velocity control !!
 - [ ] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
-- [ ] Get a softbody anchor working between the astrobee gripper and the bag
-- [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
-- [ ] See if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
-- [ ] Add threading once commands get too complicated
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
 - [ ] Debug loading the texture for Astrobee
@@ -46,40 +34,56 @@
 - [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
   - [ ] Check out the assimp library he mentioned in the commit message as well
   - [ ] Figure out what the deal is with some of the gripper links disappearing
-- [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
-- [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
-- [ ] Reorganize the `resources/` folder (obsolete?)
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
-- [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
 - [ ] Set up camera (see dedo)
 - [ ] Set up pointcloud (see dedo)
-- [ ] Try a manifold mesh with the handle being solid
-- [ ] Try out FEM deformables?
-- [ ] Try out adding a small anchor object to the handle - see dedo anchor utils. Make it a small nonzero mass
-- [ ] Try flipping all of the face normals on the non-manifold mesh
-- [ ] Work on improving bag meshes
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
-- [ ] Organize meshes
-- [ ] Send cargo bag properties to ROS
-- [ ] Get Astrobee ROS/simulation processes working in Pybullet
-- [ ] Figure out how to send robot state from bullet to ROS
 - [ ] Add more tests
 
 ### In Progress:
-- [ ] Get demo script started for Rika
-- [ ] Move things over to workstation 7 - set up NASA resources on that too
-- [ ] Get correct physical properties for cargo bag (check on weird inertia?)
+- [ ] Implement force control / velocity control
+  - [ ] Improve physics models for blower, drag, ...
+  - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
+- [ ] Experiment with tetrahedral meshes
+  - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
+  - [ ] Try tet mesh with one side denser than the other?
+- [ ] Clean up all of the mesh/urdf/resources organization confusion
+  - [ ] make unified assets/ folder
+  - [ ] Delete unused/obsolete meshes (or just move to archive)
+- [ ] Improve the demo script
+  - [ ] Load the tet mesh instead of the tri mesh
+  - [ ] Improve waypoint positions
+  - [ ] Debug excessive intermediate rotations (position controller stuff)
 
-### Backlog/Optional:
+### Backlog:
+- [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
+- [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
+- [ ] Create a unified sim loop in Astrobee or Controller?
+- [ ] Test out setRealTimeSimulation?
+- [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
+- [ ] Decide if the *exact* positioning of the ISS needs to match Gazebo, and if so, update meshes and blender file
+- [ ] See if we can use the RPBI to plan the path in ROS, then communicate the constraint info back to pybullet
+- [ ] Add threading once commands get too complicated
+- [ ] Send cargo bag properties to ROS
+- [ ] Get Astrobee ROS/simulation processes working in Pybullet
+- [ ] Figure out how to send robot state from bullet to ROS
 - [ ] Make other environments loadable from astrobee_media (Granite lab, ...)
 - [ ] Figure out a better way of generating the astrobee/iss URDF with less manual modifications
-- [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Add in debugging and exception handling
-- [ ] Consider using pathlib Path with str(Path(filename))?
-- [ ] See if it is possible to get URDFs working with multiple textures
+
+### Optional
+- [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
+- [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Add some notes about using the keyboard controller somewhere
+- [X] Get a softbody anchor working between the astrobee gripper and the bag
+- [X] Try out tetrahedral deformables
+- [X] Test out maxForce parameter in changeConstraint?
+- [X] Update the demo script now that the control interface has moved out of Astrobee()
+- [X] Get demo script for Rika
+- [X] Try a manifold mesh with the handle being solid
 - [X] Make the debug visualizer camera position an input in `initialize_pybullet` so we can start the visualization inside the ISS
 - [X] Load the astrobee inside the new ISS model just to confirm it works ok collision-wise
 - [X] Quaternion test cases (functions + class)
@@ -123,6 +127,5 @@
 - What are the dimensions of the cargo bags / measurements for the handles? Do you have any CAD for these?
 
 ### Bugs/Issues:
-- Some softbodies have very strange inertia when moving them around in the Bullet gui (likely, some parameters need to be refined)
 
-### Thoughts
+### Reminders
