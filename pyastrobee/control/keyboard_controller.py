@@ -81,6 +81,12 @@ class KeyboardController:
         self.robot = robot
         self.gripper_is_open = robot.gripper_position >= 90
 
+        # Copying over the original constraint from the Astrobee class (and the position controller)
+        # TODO remove this when we switch over to velocity control for this controller
+        self.constraint_id = pybullet.createConstraint(
+            self.robot.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
+        )
+
         # self.linear_speed (todo?)
         # self.angular_speed
         self.dx = 0.05  # m
@@ -202,12 +208,12 @@ class KeyboardController:
             if self.in_robot_frame:
                 new_pose = add_local_pose_delta(init_pose, pose_delta)
                 pybullet.changeConstraint(
-                    self.robot.constraint_id, new_pose[:3], new_pose[3:]
+                    self.constraint_id, new_pose[:3], new_pose[3:]
                 )
             else:
                 new_pose = add_global_pose_delta(init_pose, pose_delta)
                 pybullet.changeConstraint(
-                    self.robot.constraint_id, new_pose[:3], new_pose[3:]
+                    self.constraint_id, new_pose[:3], new_pose[3:]
                 )
         elif key == self.frame_switch_key:
             # Toggle the reference frame and update our knowledge of the state
