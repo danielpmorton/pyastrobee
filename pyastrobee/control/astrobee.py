@@ -21,16 +21,9 @@ import numpy.typing as npt
 
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.utils.rotations import (
-    quat_to_rmat,
-    quaternion_dist,
-    quaternion_interp,
-    quaternion_between_two_vectors,
-)
+from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
-from pyastrobee.utils.quaternion import Quaternion
-from pyastrobee.utils.math_utils import normalize
 from pyastrobee.utils.python_utils import print_green
 
 
@@ -132,11 +125,6 @@ class Astrobee:
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
-        # Constraint is for position control
-        # TODO check on the input parameters here
-        self.constraint_id = pybullet.createConstraint(
-            self.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
-        )
         self.set_gripper_position(gripper_pos)
         self.set_arm_joints(arm_joints)  # Do this only if nonzero?
         print_green("Astrobee is ready")
@@ -169,7 +157,7 @@ class Astrobee:
         """The current robot pose in world frame, expressed as a transformation matrix
 
         Returns:
-            np.ndarray: Transformation matrix, shape (4,4)
+            np.ndarray: Transformation matrix (Robot to World), shape (4,4)
         """
         return pos_quat_to_tmat(self.pose)
 
@@ -192,6 +180,15 @@ class Astrobee:
         return self.pose[3:]
 
     @property
+    def rmat(self) -> np.ndarray:
+        """The orientation of the robot expressed as a rotation matrix
+
+        Returns:
+            np.ndarray: Rotation matrix (Robot to World), shape (3,3)
+        """
+        return quat_to_rmat(self.orientation)
+
+    @property
     def heading(self) -> np.ndarray:
         """A unit vector in the forward (x) component of the astrobee
 
@@ -205,6 +202,30 @@ class Astrobee:
         """
         R_R2W = quat_to_rmat(self.orientation)  # Robot to world
         return R_R2W[:, 0]  # Robot frame x vector expressed in world
+
+    @property
+    def velocity(self) -> np.ndarray:
+        """Linear velocity of the Astrobee, with respect to the world frame xyz axes
+
+        TODO check if this has a (1/5) scaling issue with the commanded velocity
+
+        Returns:
+            np.ndarray: [vx, vy, vz] linear velocities, shape (3,)
+        """
+        lin_vel, _ = pybullet.getBaseVelocity(self.id)
+        return np.array(lin_vel)
+
+    @property
+    def angular_velocity(self) -> np.ndarray:
+        """Angular velocity of the Astrobee, about the world frame xyz axes
+
+        TODO check if this has a (1/5) scaling issue with the commanded velocity
+
+        Returns:
+            np.ndarray: [wx, wy, wz] angular velocities, shape (3,)
+        """
+        _, ang_vel = pybullet.getBaseVelocity(self.id)
+        return np.array(ang_vel)
 
     @property
     def ee_pose(self) -> np.ndarray:
@@ -424,88 +445,6 @@ class Astrobee:
             angles (npt.ArrayLike): Gripper joint angles, length = 4
         """
         self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS)
-
-    def align_to(self, orn: npt.ArrayLike,
-                 max_force: Optional[float] = 500) -> None:
-        """Rotates the Astrobee about its current position to align with a specified orientation
-
-        TODO HACKY -- CLEAN UP!
-
-        Args:
-            goal_orn (npt.ArrayLike): Desired XYZW quaternion orientation
-            max_force (optional, float): maximum force for changeConstraint()
-        """
-        # TODO: use a check_quaternion function instead of this
-        if len(orn) != 4:
-            raise ValueError(f"Invalid quaternion.\nGot: {orn}")
-        # CLEAN THIS UP!!!
-        initial_pose = self.pose
-        pos = initial_pose[:3]
-        tol = 0.03  # placeholder
-        # These don't seem to need to be Quaternion objects?
-        q1 = Quaternion(xyzw=self.orientation)
-        q2 = Quaternion(xyzw=orn)
-        # This method of stepping through the interpolated values is not ideal
-        # It should use some sort of stepsize or enforce velocity constraints (TODO)
-        pct = 0.01
-        dpct = 0.01
-        # TODO decide if the quaternion slerping here is better than an axis angle thing?
-        while quaternion_dist(self.orientation, orn) > tol:
-            q = quaternion_interp(q1, q2, pct)
-            # TODO decide if any other inputs to the change constraint function are needed
-            pybullet.changeConstraint(self.constraint_id, pos, q,
-                                      maxForce=max_force)
-            pybullet.stepSimulation()
-            time.sleep(1 / 120)
-            pct = min(pct + dpct, 1)
-
-    def follow_line_to(self, position: npt.ArrayLike,
-                       max_force: Optional[float] = 500) -> None:
-        """Moves the Astrobee along a line (without rotating) to reach a new xyz position
-
-        Args:
-            position (npt.ArrayLike): New xyz position for the Astrobee. Shape = (3,)
-            max_force (optional, float): maximum force for changeConstraint()
-        """
-        if len(position) != 3:
-            raise ValueError(f"Invalid position.\nGot: {position}")
-        pos, orn = np.split(self.pose, [3])
-        step = 0.1  # Totally arbitrary for now
-        # Need to improve the stepping mechanic.. increase and decrease speed/stepsize as needed
-        while np.linalg.norm(pos - position) > step:
-            direction = normalize(position - pos)  # Unit vector
-            new_pos = pos + step * direction
-            pybullet.changeConstraint(self.constraint_id, new_pos, orn,
-                                      maxForce=max_force)
-            pybullet.stepSimulation()
-            time.sleep(1 / 120)
-            pos = self.position  # Update after moving
-
-    def go_to_pose(self, pose: npt.ArrayLike) -> None:
-        """Navigates to a new pose
-
-        Current method (nothing fancy at the moment):
-        - Orient towards the goal position
-        - Move along a straight line to the goal position
-        - Orient towards the goal orientation
-
-        Args:
-            pose (npt.ArrayLike): Desired new pose (position + quaternion) for the astrobee
-        """
-        # TODO improve this pose checking. Check if Pose() instance too?
-        if len(pose) != 7:
-            raise ValueError(f"Invalid pose.\nGot: {pose}")
-        goal_pos, goal_orn = np.split(pose, [3])
-        direction = goal_pos - self.position
-        # Move to the next position specified if we are far from it
-        # If we are within a stepsize, we should just orient ourselves to avoid unnecessary rotation
-        tol = 1e-3  # TODO UPDATE THIS ONCE YOU DECIDE ON A STEPSIZE
-        if np.linalg.norm(direction) > tol:
-            q = quaternion_between_two_vectors(self.heading, direction)
-            self.align_to(q)
-            self.follow_line_to(goal_pos)
-        # Orient the astrobee to the desired ending orientation
-        self.align_to(goal_orn)
 
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #

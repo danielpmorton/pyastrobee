@@ -16,6 +16,13 @@
 ### TODOs:
 - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
 - [ ] Figure out how to export just the volume mesh from gmsh
+- [ ] Ton of cleanup of the controller file
+- [ ] Update the demo script now that the control interface has moved out of Astrobee()
+- [ ] Decide if astrobee_geom should be merged with something else
+- [ ] Add drag (particularly when working with velocity or force control) 
+  - [ ] https://github.com/nasa/astrobee/blob/master/simulation/src/gazebo_model_plugin_drag/gazebo_model_plugin_drag.cc
+- [ ] Get the fans modeled for force control
+  - [ ] https://github.com/nasa/astrobee/blob/master/simulation/src/gazebo_model_plugin_pmc/gazebo_model_plugin_pmc.cc
 - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
 - [ ] Create a unified sim loop in Astrobee?
 - [ ] Deal with random TODOs in Astrobee() code (and other files, but that one mostly)
