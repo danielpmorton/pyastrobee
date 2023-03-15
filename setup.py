@@ -4,7 +4,6 @@ This is used in conjunction with "pip install -e ."
 
 TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
-TODO decide if we should add pytransform3d or not
 
 Dependencies notes (outside of the usual suspects):
 - pytransform3d: Manages rotations and transformation math
@@ -28,6 +27,7 @@ setup(
         "pytransform3d",
         "beautifulsoup4",
         "open3d",
+        "pynput",
     ],
     extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
     description="Code for the IPRL Astrobee project",
