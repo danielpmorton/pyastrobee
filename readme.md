@@ -22,6 +22,9 @@
 - [ ] Fix the Astrobee textures in Blender
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
 - [ ] Add a way to pause the sim when looping in interactive mode (ipython / debugger)
+- [ ] Idea: add a parameter on initialization of Astrobee() deciding on the control mode? 
+  - Then we could initialize the constraint if it's in position mode (and not otherwise)
+  - This would really only be useful if we did decide to eliminate Controller
 - [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
   - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
   - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
