@@ -22,6 +22,13 @@
 - [ ] Fix the Astrobee textures in Blender
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
 - [ ] Add a way to pause the sim when looping in interactive mode (ipython / debugger)
+- [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/planner.py
+- [ ] See if there are any useful transformations here:
+  - [ ] https://github.com/cgohlke/transformations/
+- [ ] Check out quaternions in numpy? https://github.com/moble/quaternion
 - [ ] Add an overview of the repo structure to the docs
 - [ ] Decide if all arm/gripper control should remain in Astrobee or not
 - [ ] Figure out how to export just the volume mesh from gmsh
