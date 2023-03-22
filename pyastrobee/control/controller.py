@@ -257,7 +257,7 @@ class PoseController:
             time.sleep(1 / 120)
             pos = self.robot.position  # Update after moving
 
-    def go_to_pose(self, pose: ArrayLike) -> None:
+    def go_to_pose(self, pose: ArrayLike, max_force) -> None:
         """Navigates to a new pose
 
         Current method (nothing fancy at the moment):
@@ -278,10 +278,10 @@ class PoseController:
         tol = 1e-3  # TODO UPDATE THIS ONCE YOU DECIDE ON A STEPSIZE
         if np.linalg.norm(direction) > tol:
             q = quaternion_between_two_vectors(self.robot.heading, direction)
-            self.align_to(q)
-            self.follow_line_to(goal_pos)
+            self.align_to(q, max_force)
+            self.follow_line_to(goal_pos, max_force)
         # Orient the astrobee to the desired ending orientation
-        self.align_to(goal_orn)
+        self.align_to(goal_orn, max_force)
 
     def delete_constraint(self) -> None:
         """Deletes the constraint between the Astrobee and the world"""
