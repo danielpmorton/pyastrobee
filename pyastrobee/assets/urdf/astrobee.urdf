@@ -24,7 +24,7 @@
         <box size="0.290513 0.151942 0.281129"/>
       </geometry>
     </collision>
-    <inertial> 
+    <inertial>
       <mass value="9.0877"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="0.1454" ixy="0.0" ixz="0.0" iyy="0.1366" iyz="0.0" izz="0.1594"/>
