@@ -12,6 +12,7 @@ import pybullet
 
 from pyastrobee.control.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
+from pyastrobee.control.plan_control_traj import plan_control_traj
 from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
@@ -25,13 +26,15 @@ from pyastrobee.utils.bullet_utils import (
 def load_bag(robot_id):
     # Load deformable bag and attach the middle of each side of the handle to
     # the middle of each of the astrobee fingers.
-    bag_pos = [-0.05, -0.01, -0.52]
+    bag_pos = [-0.05, 0.00, -0.53]
     bag_id = load_deformable_object(
         "pyastrobee/resources/meshes/tet_bag.vtk",
         # "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
         pos=bag_pos,
         orn=[-np.pi / 2, 0, 0],
-        bending_stiffness=10,
+        bending_stiffness=50,
+        elastic_stiffness=50,
+        mass=1.0,
     )
     bag_texture_id = pybullet.loadTexture(
         "pyastrobee/resources/meshes/textile_pixabay_red.jpg"
@@ -51,6 +54,22 @@ def load_bag(robot_id):
     pybullet.createSoftBodyAnchor(bag_id, v2_id, robot_id, 5)
 
 
+def glide_to_pose(target_pos, target_quat, robot_id, constraint_id,
+                  n_traj_steps=1000, max_force=1000, sim_freq=350):
+    curr_pos, curr_quat = pybullet.getBasePositionAndOrientation(robot_id)
+    target_pos_traj, target_quat_traj = plan_control_traj(
+        target_pos, target_quat,
+        num_steps=n_traj_steps, freq=sim_freq,
+        curr_pos=curr_pos, curr_quat=curr_quat, curr_vel=[0, 0, 0])
+    for t in range(n_traj_steps):
+        mult = max(0.1, (t+1.0)/n_traj_steps)
+        pybullet.changeConstraint(
+            constraint_id, target_pos_traj[t], target_quat_traj[t],
+            maxForce=mult*max_force)
+        # robot.set_gripper_position(100, do_step=False)
+        pybullet.stepSimulation()
+
+
 def demo_with_iss():
     """A simple demo of loading the astrobee in the ISS and moving it around in various ways
 
@@ -60,13 +79,12 @@ def demo_with_iss():
     This could just in general be cleaned up and refined, but it works ok for now
     """
     # Hardcoded waypoints and positions found from keyboard-controlling the Astrobee
-    # fmt: off
-    wp0 = [0, 0, 0, 0, 0, 0, 1]
-    wp1 = [0.44631294, -1.33893871, 0.44631287, 0.08824572, 0.06790329, -0.78759863, 0.60604474]
-    wp2 = [0.05603137, -2.81145659, 0.10060672, -0.06176491, -0.0185934, -0.69867597, 0.71252457]
-    wp3 = [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166]
-    # fmt: on
-    new_arm_joints = [-1.34758381, 0.99330411]
+    waypts = [
+        [0, 0, 0, 0, 0, 0, 1],
+        [0.44631294, -1.33893871, 0.44631287, 0.08824572, 0.06790329, -0.78759863, 0.60604474],
+        [0.05603137, -2.81145659, 0.10060672, -0.06176491, -0.0185934, -0.69867597, 0.71252457],
+        [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166],
+    ]
     initialize_pybullet()
     # pybullet.connect(pybullet.GUI)  # a simple version without deformables
     # Bring the camera close to the action (another just random hardcoded position I found)
@@ -75,47 +93,29 @@ def demo_with_iss():
     robot = Astrobee()
     load_bag(robot.id)
     controller = PoseController(robot)
-    # Go about a small set of actions to show what we can do so far
-    while True:
-        controller.go_to_pose(wp1)
-        controller.go_to_pose(wp2)
-        controller.go_to_pose(wp3)
-        robot.set_arm_joints(new_arm_joints)
-        robot.close_gripper()
-        input("Press enter to repeat")
-        robot.set_arm_joints([0, 0])
-        robot.open_gripper()
-        controller.go_to_pose(wp0)
-    # Keep the sim spinning
-    # run_sim()
+    for i in range(len(waypts)):
+        glide_to_pose(target_pos=waypts[i][:3], target_quat=waypts[i][3:],
+                      robot_id=robot.id, constraint_id=controller.constraint_id)
+    print('Gliding done. Keep sim running...')
+    run_sim()  # keep sim spinning
 
 
 def demo_with_bag():
     initialize_pybullet()
     cam_args = {
         "cameraDistance": 1.6,  # use 0.7 to look at anchor attachment closely
-        "cameraPitch": 160,
+        "cameraPitch": 200,
         "cameraYaw": 80,
         "cameraTargetPosition": np.array([0, 0, 0]),
     }
     pybullet.resetDebugVisualizerCamera(**cam_args)
-    # It seems at the moment, something weird is happening with the initial motion
-    # The URDF loads it at the specified pose, but then it goes back to the origin
-    # I think this has something to do with how the constraint is being set
-    # (need to debug this a little bit, )
-    # robot = Astrobee(pose=[1, 1, 1, 0, 0, 0, 1])
-    # Instead, we'll just keep the astrobee started off at the origin, and load the bag in a different spot
     robot = Astrobee()
     load_bag(robot.id)
     controller = PoseController(robot)
-    # As just an arbitrary example, have the astrobee move to a new position to show the motion
-    # Right now this has no correlation with the bag other than it doesn't collide with the bag
-    target_pose = np.array([-0.5, -0.4, 0.8, 0, 0, 0, 1])
-    controller.go_to_pose(target_pose)
-
-    # Loop the simulation until closed
-    run_sim()
+    glide_to_pose(target_pos=[-0.5, -0.4, 0.8], target_quat=[0, 0, 0, 1],
+                  robot_id=robot.id, constraint_id=controller.constraint_id)
+    run_sim()  # keep sim spinning
 
 
 if __name__ == "__main__":
-    demo_with_bag()
+    demo_with_iss()
