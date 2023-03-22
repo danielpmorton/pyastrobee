@@ -330,7 +330,7 @@ class Astrobee:
         r_pct = 100 * (r_angles - r_closed) / (r_open - r_closed)
         return np.round(np.average(np.concatenate([l_pct, r_pct]))).astype(int)
 
-    def set_gripper_position(self, position: float, do_step=True) -> None:
+    def set_gripper_position(self, position: float) -> None:
         """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
 
         TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
@@ -345,7 +345,7 @@ class Astrobee:
         left_pos = l_closed + (position / 100) * (l_open - l_closed)
         right_pos = r_closed + (position / 100) * (r_open - r_closed)
         angle_cmd = [*left_pos, *right_pos]
-        self.set_gripper_joints(angle_cmd, do_step)
+        self.set_gripper_joints(angle_cmd)
 
     def open_gripper(self) -> None:
         """Fully opens the gripper"""
@@ -382,8 +382,7 @@ class Astrobee:
         return left_closed, left_open, right_closed, right_open
 
     def set_joint_angles(
-        self, angles: npt.ArrayLike, indices: Optional[npt.ArrayLike] = None,
-        do_step = True
+        self, angles: npt.ArrayLike, indices: Optional[npt.ArrayLike] = None
     ):
         """Sets the joint angles for the Astrobee (either all joints, or a specified subset)
 
@@ -413,11 +412,10 @@ class Astrobee:
         pybullet.setJointMotorControlArray(
             self.id, indices, pybullet.POSITION_CONTROL, angles
         )
-        if do_step:
-            tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
-            while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
-                pybullet.stepSimulation()
-                time.sleep(1 / 120)  # TODO determine timestep
+        tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
+        while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
+            pybullet.stepSimulation()
+            time.sleep(1 / 120)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
         """Gives the current joint angles for the Astrobee
@@ -440,13 +438,13 @@ class Astrobee:
         """
         self.set_joint_angles(angles, Astrobee.ARM_JOINT_IDXS)
 
-    def set_gripper_joints(self, angles: npt.ArrayLike, do_step=True) -> None:
+    def set_gripper_joints(self, angles: npt.ArrayLike) -> None:
         """Sets the joint angles for the gripper (left + right, proximal + distal)
 
         Args:
             angles (npt.ArrayLike): Gripper joint angles, length = 4
         """
-        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS, do_step)
+        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS)
 
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #

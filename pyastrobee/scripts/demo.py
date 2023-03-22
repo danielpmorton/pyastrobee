@@ -6,6 +6,7 @@ TODO
 - Find the orientation(s) to load the bag and astrobee together, initially connected
 - Attach an anchor to the bag handle
 """
+import os
 
 import numpy as np
 import pybullet
@@ -16,25 +17,26 @@ from pyastrobee.control.plan_control_traj import plan_control_traj
 from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
-    initialize_pybullet,
+    create_anchor_geom,
     get_closest,
+    initialize_pybullet,
     load_deformable_object,
     run_sim,
 )
 
 
-def load_bag(robot_id):
+def load_bag(robot_id, side=0):
     # Load deformable bag and attach the middle of each side of the handle to
     # the middle of each of the astrobee fingers.
-    bag_pos = [-0.05, 0.00, -0.53]
+    pfx = "pyastrobee/resources/meshes/"
+    fnames = ["tet_bag.vtk", "tet_bag_side_handle.vtk"]
+    poss = np.array([[-0.05, 0.00, -0.53],   # z=-0.53  -0.48
+                     [-0.05, 0.00, -0.65]])
+    orns = np.array([[-np.pi / 2, 0, 0], [0, -np.pi/2, 0]])
+    print('poss[side]', poss[side], 'orns[side]', orns[side])
     bag_id = load_deformable_object(
-        "pyastrobee/resources/meshes/tet_bag.vtk",
-        # "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
-        pos=bag_pos,
-        orn=[-np.pi / 2, 0, 0],
-        bending_stiffness=50,
-        elastic_stiffness=50,
-        mass=1.0,
+        os.path.join(pfx, fnames[side]), pos=poss[side], orn=orns[side],
+        bending_stiffness=50, elastic_stiffness=50, mass=1.0,
     )
     bag_texture_id = pybullet.loadTexture(
         "pyastrobee/resources/meshes/textile_pixabay_red.jpg"
@@ -46,12 +48,20 @@ def load_bag(robot_id):
         bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id, **kwargs
     )
     n_vert, bag_mesh = get_mesh_data(pybullet, bag_id)
-    finger1_pos = pybullet.getLinkState(robot_id, 4)[0]
-    finger2_pos = pybullet.getLinkState(robot_id, 5)[0]
-    v1_id = get_closest(finger1_pos, bag_mesh)[1][0]
-    v2_id = get_closest(finger2_pos, bag_mesh)[1][0]
-    pybullet.createSoftBodyAnchor(bag_id, v1_id, robot_id, 4)
-    pybullet.createSoftBodyAnchor(bag_id, v2_id, robot_id, 5)
+    finger1_link_id = 4
+    finger2_link_id = 6
+    finger1_pos = pybullet.getLinkState(robot_id, finger1_link_id)[0]
+    finger2_pos = pybullet.getLinkState(robot_id, finger2_link_id)[0]
+    v1_pos, v1_ids = get_closest(finger1_pos, bag_mesh)
+    v2_pos, v2_ids = get_closest(finger2_pos, bag_mesh)
+    v1_id, v2_id = v1_ids[0], v2_ids[0]
+    pybullet.createSoftBodyAnchor(bag_id, v1_id, robot_id, finger1_link_id)
+    pybullet.createSoftBodyAnchor(bag_id, v2_id, robot_id, finger2_link_id)
+    anchor_kwargs = {"mass": 0.01, "radius": 0.01, "rgba": (0, 1, 0, 0.5)}
+    anchor1_id = create_anchor_geom(pybullet, v1_pos, **anchor_kwargs)
+    anchor2_id = create_anchor_geom(pybullet, v2_pos, **anchor_kwargs)
+    pybullet.createSoftBodyAnchor(bag_id, v1_id, anchor1_id, -1)
+    pybullet.createSoftBodyAnchor(bag_id, v2_id, anchor2_id, -1)
 
 
 def glide_to_pose(target_pos, target_quat, robot_id, constraint_id,
@@ -62,11 +72,10 @@ def glide_to_pose(target_pos, target_quat, robot_id, constraint_id,
         num_steps=n_traj_steps, freq=sim_freq,
         curr_pos=curr_pos, curr_quat=curr_quat, curr_vel=[0, 0, 0])
     for t in range(n_traj_steps):
-        mult = max(0.1, (t+1.0)/n_traj_steps)
+        # mult = max(0.1, (t+1.0)/n_traj_steps)
         pybullet.changeConstraint(
             constraint_id, target_pos_traj[t], target_quat_traj[t],
-            maxForce=mult*max_force)
-        # robot.set_gripper_position(100, do_step=False)
+            maxForce=1.0*max_force)
         pybullet.stepSimulation()
 
 

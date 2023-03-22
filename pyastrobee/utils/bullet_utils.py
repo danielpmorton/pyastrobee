@@ -384,3 +384,26 @@ def get_closest(pos: npt.ArrayLike,
         anchor_vertices = anchor_vertices[dists[anchor_vertices] <= max_dist]
     new_anc_pos = mesh[anchor_vertices].mean(axis=0)
     return new_anc_pos, anchor_vertices
+
+
+def create_anchor_geom(sim, pos, mass, radius, rgba, use_collision=False):
+    """Create a small visual object at the provided pos in world coordinates.
+    If mass==0: the anchor will be fixed (not moving)
+    If use_collision==False: this object does not collide with any other objects
+    and would only serve to show grip location.
+    input: sim (pybullet sim), pos (list of 3 coords for anchor in world frame)
+    output: anchorId (long) --> unique bullet ID to refer to the anchor object
+    """
+    anchor_visual_shape = sim.createVisualShape(
+        pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgba)
+    if mass > 0 and use_collision:
+        anchor_collision_shape = sim.createCollisionShape(
+            pybullet.GEOM_SPHERE, radius=radius)
+    else:
+        anchor_collision_shape = -1
+    anchor_id = sim.createMultiBody(
+        baseMass=mass, basePosition=pos,
+        baseCollisionShapeIndex=anchor_collision_shape,
+        baseVisualShapeIndex=anchor_visual_shape,
+        useMaximalCoordinates=True)
+    return anchor_id
