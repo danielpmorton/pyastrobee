@@ -9,7 +9,7 @@ TODO
 - Figure out the sleep time in the while loops. What value should we use?
 - Get step sizes worked out!!
 """
-
+import os
 import time
 from enum import Enum
 from typing import Optional
@@ -123,6 +123,10 @@ class Astrobee:
                 "Need to connect to pybullet before initializing an astrobee"
             )
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
+        for i in range(-1, 8):
+            pybullet.changeVisualShape(
+                objectUniqueId=self.id, linkIndex=i,
+                rgbaColor=[0.8, 0.9, 1, 1])
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
         self.set_gripper_position(gripper_pos)
