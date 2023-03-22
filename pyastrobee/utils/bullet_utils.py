@@ -250,7 +250,10 @@ def initialize_pybullet(
         )
     # Connect to pybullet
     if use_gui:
-        client_id = pybullet.connect(pybullet.GUI)
+        bkgrnd_args = ('--background_color_red=0.7 '+
+                       '--background_color_green=0.7 '+
+                       '--background_color_blue=0.7')
+        client_id = pybullet.connect(pybullet.GUI, options=bkgrnd_args)
     else:
         client_id = pybullet.connect(pybullet.DIRECT)
     # Configure physics
@@ -318,7 +321,7 @@ def load_floor(texture_filename: Optional[str] = None, z_pos: float = 0.0) -> No
         pybullet.changeVisualShape(
             floor_id,
             -1,
-            rgbaColor=[1, 1, 1, 1],
+            rgbaColor=[1, 1, 1, 0],
             textureUniqueId=texture_id,
         )
 
