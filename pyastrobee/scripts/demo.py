@@ -13,8 +13,10 @@ import pybullet
 from pyastrobee.control.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
 from pyastrobee.utils.iss_utils import load_iss
+from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
+    get_closest,
     load_deformable_object,
     run_sim,
 )
@@ -23,10 +25,13 @@ from pyastrobee.utils.bullet_utils import (
 def load_bag(robot_id):
     # Load deformable bag and attach the middle of each side of the handle to
     # the middle of each of the astrobee fingers.
+    bag_pos = [-0.05, -0.01, -0.52]
     bag_id = load_deformable_object(
-        "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
-        pos=[-0.05, -0.01, -0.52],
+        "pyastrobee/resources/meshes/tet_bag.vtk",
+        # "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
+        pos=bag_pos,
         orn=[-np.pi / 2, 0, 0],
+        bending_stiffness=10,
     )
     bag_texture_id = pybullet.loadTexture(
         "pyastrobee/resources/meshes/textile_pixabay_red.jpg"
@@ -37,8 +42,13 @@ def load_bag(robot_id):
     pybullet.changeVisualShape(
         bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id, **kwargs
     )
-    pybullet.createSoftBodyAnchor(bag_id, 787, robot_id, 4)
-    pybullet.createSoftBodyAnchor(bag_id, 818, robot_id, 5)
+    n_vert, bag_mesh = get_mesh_data(pybullet, bag_id)
+    finger1_pos = pybullet.getLinkState(robot_id, 4)[0]
+    finger2_pos = pybullet.getLinkState(robot_id, 5)[0]
+    v1_id = get_closest(finger1_pos, bag_mesh)[1][0]
+    v2_id = get_closest(finger2_pos, bag_mesh)[1][0]
+    pybullet.createSoftBodyAnchor(bag_id, v1_id, robot_id, 4)
+    pybullet.createSoftBodyAnchor(bag_id, v2_id, robot_id, 5)
 
 
 def demo_with_iss():
@@ -108,4 +118,4 @@ def demo_with_bag():
 
 
 if __name__ == "__main__":
-    demo_with_iss()
+    demo_with_bag()
