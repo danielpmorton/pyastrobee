@@ -27,7 +27,7 @@ def load_bag(robot_id):
     # the middle of each of the astrobee fingers.
     bag_pos = [-0.05, -0.01, -0.52]
     bag_id = load_deformable_object(
-        "pyastrobee/assets/meshes/bags/tet_bag.vtk",
+        "pyastrobee/assets/meshes/bags/front_handle_bag.vtk",
         # "pyastrobee/assets/meshes/bags/bag_thick_handle_sparse.obj",
         pos=bag_pos,
         orn=[-np.pi / 2, 0, 0],
