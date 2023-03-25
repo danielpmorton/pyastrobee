@@ -28,8 +28,8 @@ def animation_callback(step, n_frames, tm, graph, joint_names):
 #     data_dir = os.path.join(search_path, BASE_DIR)
 
 tm = UrdfTransformManager()
-# filename = "pyastrobee/urdf/astrobee.urdf"
-filename = "pyastrobee/resources/urdf/astrobee_collision.urdf"
+# filename = "pyastrobee/assets/urdf/astrobee.urdf"
+filename = "pyastrobee/assets/urdf/astrobee_collision.urdf"
 with open(filename, "r") as f:
     robot_urdf = f.read()
     tm.load_urdf(robot_urdf, mesh_path="pyastrobee/meshes/astrobee/obj")

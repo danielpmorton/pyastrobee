@@ -42,7 +42,7 @@ class Astrobee:
     """
 
     # TODO add these to a constants or config file? Probably fine here for now
-    URDF = "pyastrobee/urdf/astrobee.urdf"
+    URDF = "pyastrobee/assets/urdf/astrobee.urdf"
     LOADED_IDS = []  # Initialization
     NUM_ROBOTS = 0  # Initialization. TODO make this into a property?
     NUM_JOINTS = 7

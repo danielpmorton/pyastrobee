@@ -10,9 +10,10 @@ Dependencies notes (outside of the usual suspects):
 - beautifulsoup4: For XML/URDF parsing
 - Pylint/Black: For code formatting
 - Open3D: For visualizations with pytransform3d
+- pynput: Manages the keyboard listener
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="pyastrobee",
@@ -34,5 +35,4 @@ setup(
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
     url="https://github.com/danielpmorton/pyastrobee",
-    packages=find_packages(exclude=["imgs"]),
 )

@@ -27,14 +27,14 @@ def load_bag(robot_id):
     # the middle of each of the astrobee fingers.
     bag_pos = [-0.05, -0.01, -0.52]
     bag_id = load_deformable_object(
-        "pyastrobee/resources/meshes/tet_bag.vtk",
-        # "pyastrobee/resources/meshes/bag_thick_handle_sparse.obj",
+        "pyastrobee/assets/meshes/bags/tet_bag.vtk",
+        # "pyastrobee/assets/meshes/bags/bag_thick_handle_sparse.obj",
         pos=bag_pos,
         orn=[-np.pi / 2, 0, 0],
         bending_stiffness=10,
     )
     bag_texture_id = pybullet.loadTexture(
-        "pyastrobee/resources/meshes/textile_pixabay_red.jpg"
+        "pyastrobee/assets/imgs/textile_pixabay_red.jpg"
     )
     kwargs = {}
     if hasattr(pybullet, "VISUAL_SHAPE_DOUBLE_SIDED"):

@@ -88,10 +88,10 @@ If you use this script, and it runs without issue, you can safely skip steps 3 a
 
 (Ensure that the C++ version of Bullet is locally built first)
 
-- For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`, run `obj2sdf` as follows:
+- For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`), run `obj2sdf` as follows:
 - For example: 
     ```
-    cd ~/pyastrobee/pyastrobee/meshes/iss/obj/cupola
+    cd ~/pyastrobee/pyastrobee/assets/meshes/iss/obj/cupola
     ./../../../software/bullet3/build_cmake/Extras/obj2sdf/App_obj2sdf --fileName="cupola.obj"
     ```
 This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into the `obj/(module)` folder.
@@ -99,10 +99,10 @@ This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into
 
 ## 4. VHACD
 
-- For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`, run `VHACD` as follows:
+- For each module OBJ in its respective folder (i.e. `obj/(module)/(module).obj`), run `VHACD` as follows:
 - For example: 
     ```
-    cd ~/pyastrobee/pyastrobee/meshes/iss/obj/cupola
+    cd ~/pyastrobee/pyastrobee/assets/meshes/iss/obj/cupola
     ./../../../software/v-hacd-4.1.0/app/build/TestVHACD cupola.obj
     ```
 

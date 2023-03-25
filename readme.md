@@ -1,4 +1,4 @@
-![Pyastrobee](imgs/banner.png)
+![Pyastrobee](pyastrobee/assets/imgs/banner.png)
 # Pyastrobee: A space robotics simulation environment in Python
 
 ## Documentation Overview
@@ -30,7 +30,6 @@
 - [ ] Debug loading the texture for Astrobee
   - [ ] Did the DAE -> OBJ conversion go wrong? Things look like they might be in the wrong place
   - [ ] Is is just the texture image? If we're only applying one texture image, maybe the UVmap for some parts aren't realistic for that image
-  - [ ] Move the modified Honey skin file into the correct place (not `imgs/`)
 - [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
   - [ ] Check out the assimp library he mentioned in the commit message as well
   - [ ] Figure out what the deal is with some of the gripper links disappearing
@@ -47,9 +46,6 @@
 - [ ] Experiment with tetrahedral meshes
   - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
   - [ ] Try tet mesh with one side denser than the other?
-- [ ] Clean up all of the mesh/urdf/resources organization confusion
-  - [ ] make unified assets/ folder
-  - [ ] Delete unused/obsolete meshes (or just move to archive)
 - [ ] Improve the demo script
   - [ ] Load the tet mesh instead of the tri mesh
   - [ ] Improve waypoint positions
@@ -77,6 +73,8 @@
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Move the modified Honey skin file into the correct place (not `imgs/`)
+- [X] Clean up all of the mesh/urdf/resources organization confusion, make assets folder, delete old meshes
 - [X] Add some notes about using the keyboard controller somewhere
 - [X] Get a softbody anchor working between the astrobee gripper and the bag
 - [X] Try out tetrahedral deformables

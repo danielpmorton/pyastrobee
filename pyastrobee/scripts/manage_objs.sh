@@ -5,7 +5,7 @@
 # Should check and throw a warning if the file is not found
 
 # (Change the directory / locations of the compiled programs as needed)
-export OBJ_DIR=$HOME/pyastrobee/pyastrobee/meshes/iss/obj
+export OBJ_DIR=$HOME/pyastrobee/pyastrobee/assets/meshes/iss/obj
 export VHACD=$HOME/software/v-hacd-4.1.0/app/build/TestVHACD
 export OBJ2SDF=$HOME/software/bullet3/build_cmake/Extras/obj2sdf/App_obj2sdf
 

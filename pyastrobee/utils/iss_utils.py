@@ -173,7 +173,7 @@ def _find_mesh_files(module: ISSModule) -> tuple[str, list[str]]:
 
     # Get the paths for all files in the directory (visual and collision)
     cwd = os.getcwd()
-    directory = f"{cwd}/pyastrobee/meshes/iss/obj/{module_name}"
+    directory = f"{cwd}/pyastrobee/assets/meshes/iss/obj/{module_name}"
     if not os.path.exists(directory):
         raise NotADirectoryError(
             f"{directory} is not valid.\nCheck on the input, {module}, or current working directory, {cwd}"
