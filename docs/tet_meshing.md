@@ -12,8 +12,9 @@ So, instead we'll need to use a tetrahedral mesh in `.VTK` format
 4. When prompted with "Select volume boundary", click on the mesh
 5. If a popup mentions "A scripting command is going to be appended to a non-geo file", click on "Create new .geo file"
 6. When prompted with "Select hole boundaries", press 'e' since there are no holes in the cargo bag
-7. Save the file
-8. File -> Export -> Specify the filename with a .VTK extension. If a VTK options window shows up, keep it in ASCII format. The "save all elements" checkbox does not seem to make a difference
+7. Click on Mesh -> 3D to view and enable the tetrahedral mesh
+8. Save the file
+9. File -> Export -> Specify the filename with a .VTK extension. If a VTK options window shows up, keep it in ASCII format. The "save all elements" checkbox does not seem to make a difference
 
 This `.VTK` file will look something like:
 ```
