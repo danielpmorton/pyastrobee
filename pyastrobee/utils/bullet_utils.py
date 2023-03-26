@@ -228,7 +228,10 @@ def load_deformable_object(
 
 
 def initialize_pybullet(
-    use_gui: bool = True, physics_freq: float = 350, gravity: float = 0.0
+    use_gui: bool = True,
+    physics_freq: float = 350,
+    gravity: float = 0.0,
+    bg_color: list[float] = [0.0, 0.0, 0.0],
 ) -> int:
     """Starts a pybullet client with the required physics parameters we care about
 
@@ -237,6 +240,8 @@ def initialize_pybullet(
         physics_freq (float, optional): Physics simulation frequency, in Hz. Defaults to 350.
             Note: Pybullet defaults to 240 Hz, but this seemed to be unstable for soft bodies
         gravity (float, optional): Z component of gravitational acceleration vector. Defaults to 0.
+        bg_color (list[float], optional): RGB values for the GUI background, each in range [0, 1].
+            Defaults to [0.0, 0.0, 0.0] (black). Note: [1.0, 1.0, 1.0] is white
 
     Returns:
         int: A Physics Client ID
@@ -248,12 +253,18 @@ def initialize_pybullet(
         raise ConnectionRefusedError(
             f"You are running scripts from {cwd}.\nEnsure you're at $HOME/pyastrobee"
         )
+    # Ensure that the background color values are within the proper range
+    bg_color = np.array(bg_color)
+    if len(bg_color) != 3 or not (all(bg_color >= 0) and all(bg_color <= 1)):
+        raise ValueError(f"Invalid background color: {bg_color}")
     # Connect to pybullet
     if use_gui:
-        bkgrnd_args = ('--background_color_red=0.7 '+
-                       '--background_color_green=0.7 '+
-                       '--background_color_blue=0.7')
-        client_id = pybullet.connect(pybullet.GUI, options=bkgrnd_args)
+        bg_args = (
+            f"--background_color_red={bg_color[0]} "
+            + f"--background_color_green={bg_color[1]} "
+            + f"--background_color_blue={bg_color[2]}"
+        )
+        client_id = pybullet.connect(pybullet.GUI, options=bg_args)
     else:
         client_id = pybullet.connect(pybullet.DIRECT)
     # Configure physics
@@ -262,8 +273,7 @@ def initialize_pybullet(
     pybullet.setGravity(0, 0, gravity)
     # Configure search paths
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
-    # TODO: update the resources path(s) once the mesh locations are finalized
-    # pybullet.setAdditionalSearchPath(os.path.join(os.getcwd(), "pyastrobee/resources"))
+    # pybullet.setAdditionalSearchPath(os.path.join(os.getcwd(), "pyastrobee/assets"))
     pybullet.setAdditionalSearchPath(cwd)
     # Remove the extra windows in PyBullet GUI (until we use them for cameras).
     pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
