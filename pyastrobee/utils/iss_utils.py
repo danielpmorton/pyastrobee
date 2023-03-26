@@ -51,16 +51,6 @@ def load_iss(orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2]) -> lis
     Returns:
         list[int]: The pybullet IDs for each of the modules' collision body
     """
-    # Load the floor above the "dummy" collision objects to get textures to load
-    dummy_radius = 0.01
-    dummy_z_pos = -5
-    texture_filename = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "resources/meshes/none.png")
-    print('texture_filename', texture_filename)
-    assert(os.path.exists(texture_filename))
-    load_floor(z_pos=dummy_z_pos + 3 * dummy_radius,
-               texture_filename=texture_filename)
     ids = []
     for module in ISSModule:
         module_id = load_iss_module(module, orn=orn)
