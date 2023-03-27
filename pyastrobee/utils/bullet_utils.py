@@ -218,7 +218,7 @@ def load_deformable_object(
         add_texture_to_deformable(deform_id, texture_filename)
 
     # Validate the size of the mesh to assure stability
-    num_mesh_vertices = get_mesh_data(pybullet, deform_id)[0]
+    num_mesh_vertices = get_mesh_data(deform_id)[0]
     if num_mesh_vertices > 2**13:
         print_red(
             f"Warning: high number of mesh vertices: {num_mesh_vertices}. Consider a lower-res mesh"
@@ -375,48 +375,86 @@ def run_sim(viz_freq: float = 120, timeout: Optional[float] = None):
         pybullet.disconnect()
 
 
-def get_closest(pos: npt.ArrayLike,
-                mesh: npt.ArrayLike,
-                max_dist: Optional[float] = None):
-    """Finds mesh points closest to the given point.
-    Code from dedo/dedo/utils/anchor_utils.py
+def create_sphere(
+    pos: npt.ArrayLike,
+    mass: float,
+    radius: float,
+    use_collision: bool,
+    rgba: list[float] = [1, 1, 1, 1],
+) -> int:
+    """Creates a rigid sphere in the Pybullet simulation
 
     Args:
-        pos (npt.ArrayLike): the given 3D position
-        mesh (npt.ArrayLike): result of get_mesh_data()
-        max_dist (optional, float): maximum distance to consider
-    """
-    pos = np.array(pos).reshape(1, -1)
-    mesh = np.array(mesh)
-    # num_pins_per_pt = max(1, mesh.shape[0] // 50)
-    # num_to_pin = min(mesh.shape[0], num_pins_per_pt)
-    num_to_pin = 1  # new pybullet behaves well with 1 vertex per anchor
-    dists = np.linalg.norm(mesh - pos, axis=1)
-    anchor_vertices = np.argpartition(dists, num_to_pin)[0:num_to_pin]
-    if max_dist is not None:
-        anchor_vertices = anchor_vertices[dists[anchor_vertices] <= max_dist]
-    new_anc_pos = mesh[anchor_vertices].mean(axis=0)
-    return new_anc_pos, anchor_vertices
+        pos (npt.ArrayLike): Position of the sphere in world frame, shape (3)
+        mass (float): Mass of the sphere. If set to 0, the sphere is fixed in space
+        radius (float): Radius of the sphere
+        use_collision (bool): Whether or not collision is enabled for the sphere
+        rgba (list[float], optional): Color of the sphere, with each RGBA value being in [0, 1].
+            Defaults to [1, 1, 1, 1] (white)
 
-
-def create_anchor_geom(sim, pos, mass, radius, rgba, use_collision=False):
-    """Create a small visual object at the provided pos in world coordinates.
-    If mass==0: the anchor will be fixed (not moving)
-    If use_collision==False: this object does not collide with any other objects
-    and would only serve to show grip location.
-    input: sim (pybullet sim), pos (list of 3 coords for anchor in world frame)
-    output: anchorId (long) --> unique bullet ID to refer to the anchor object
+    Returns:
+        int: ID of the sphere in Pybullet
     """
-    anchor_visual_shape = sim.createVisualShape(
-        pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgba)
-    if mass > 0 and use_collision:
-        anchor_collision_shape = sim.createCollisionShape(
-            pybullet.GEOM_SPHERE, radius=radius)
+    visual_id = pybullet.createVisualShape(
+        pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgba
+    )
+    if use_collision:
+        collision_id = pybullet.createCollisionShape(
+            pybullet.GEOM_SPHERE, radius=radius
+        )
     else:
-        anchor_collision_shape = -1
-    anchor_id = sim.createMultiBody(
-        baseMass=mass, basePosition=pos,
-        baseCollisionShapeIndex=anchor_collision_shape,
-        baseVisualShapeIndex=anchor_visual_shape,
-        useMaximalCoordinates=True)
-    return anchor_id
+        collision_id = -1
+    sphere_id = pybullet.createMultiBody(
+        baseMass=mass,
+        basePosition=pos,
+        baseCollisionShapeIndex=collision_id,
+        baseVisualShapeIndex=visual_id,
+    )
+    return sphere_id
+
+
+def create_anchor(
+    soft_body_id: int,
+    vertex_id: int,
+    parent_id: int,
+    link_id: int,
+    parent_frame_pos: Optional[list[float]] = None,
+    add_geom: bool = False,
+    geom_pos: Optional[npt.ArrayLike] = None,
+) -> tuple[int, Optional[int]]:
+    """Creates an anchor between a softbody and another object (or the world)
+
+    Args:
+        soft_body_id (int): ID of the softbody in Pybullet
+        vertex_id (int): Index of the mesh vertex on the softbody we are anchoring to
+        parent_id (int): ID of the parent object in Pybullet. If anchoring to world, this will be -1
+        link_id (int): Index of the link on the parent object. If the parent does not have links, use -1
+        parent_frame_pos (Optional[list[float]]): If the anchor is being affixed to a specific point on the parent
+            object, pass in the location here. Defaults to None.
+        add_geom (bool, optional): Whether or not to add a small sphere to visualize the positioning on the anchor.
+            Defaults to False.
+        geom_pos (Optional[npt.ArrayLike]): Position of the sphere in world frame, shape (3,).
+            Defaults to None, (in which case add_geom must also be None)
+
+    Returns:
+        tuple of:
+            int: The Pybullet ID for the anchor
+            Optional[int]: The Pybullet ID for the geometry (if add_geom is False, this is None)
+    """
+    anchor_id = pybullet.createSoftBodyAnchor(
+        soft_body_id, vertex_id, parent_id, link_id, parent_frame_pos
+    )
+    if add_geom:
+        if geom_pos is None:
+            raise ValueError(
+                "If visualizing the anchor, the world-position of the anchor must be included"
+            )
+        # Create a collision-less sphere to visualize the anchor position
+        geom_id = create_sphere(geom_pos, 0.01, 0.01, False, [0, 1, 0, 0.5])
+        # Then create a secondary anchor to make sure this sphere stays in the right place
+        geom_anchor_id = pybullet.createSoftBodyAnchor(
+            soft_body_id, vertex_id, geom_id, -1
+        )
+    else:
+        geom_id = None
+    return anchor_id, geom_id
