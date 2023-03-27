@@ -701,7 +701,15 @@ def createMultiBody(
     """Create a multi body. Returns a non-negative (int) unique id, if successfull, negative otherwise."""
     pass
 
-def createSoftBodyAnchor(*args, **kwargs):  # real signature unknown
+def createSoftBodyAnchor(
+    softBodyUniqueId: int,
+    nodeIndex: int,
+    bodyUniqueId: int,
+    linkIndex: int,
+    bodyFramePosition: list[float],
+    *args,
+    **kwargs
+):  # real signature unknown
     """Create an anchor (attachment) between a soft body and a rigid or multi body."""
     pass
 
