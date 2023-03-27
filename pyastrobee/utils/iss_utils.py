@@ -1,4 +1,4 @@
-"""Functions related to loading Astrobee components
+"""Functions related to loading the ISS modules into pybullet
 
 Notes:
 - If any of the ISS meshes are updated (such as a reorientation or repositioning in Blender), the default orientation

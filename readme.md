@@ -18,6 +18,10 @@
 
 ## Status
 ### TODOs:
+- [ ] Add anything from the demo to the control section, if we want to keep it
+- [ ] Fix the Astrobee textures in Blender
+- [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
+- [ ] Add a way to pause the sim when looping in interactive mode (ipython / debugger)
 - [ ] Add an overview of the repo structure to the docs
 - [ ] Decide if all arm/gripper control should remain in Astrobee or not
 - [ ] Figure out how to export just the volume mesh from gmsh
