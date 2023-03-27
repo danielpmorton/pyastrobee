@@ -8,7 +8,7 @@ If you load an OBJ file through createVisualShape(), this will look for an MTL f
 
 For the collision side of things, if we just import an ISS module into pybullet, the collision body will not be the mesh itself, but rather the convex hull of the entire body (which is not useful for us, since we need to go inside the ISS). Running VHACD is the solution here - this will give us a decomposition of the module into multiple convex hulls and allow for it to be hollow. VHACD should be run on each module, not each part within a module, because each part is complex and oddly shaped (for instance, all of the handles in a module are it's own OBJ, since all handles have the same texture)
 
-Once we have the OBJs for each texture, and the VHACD OBJ for collision info, we can start loading these into pybullet. We now have some number n different obj files which represent the visual components of the ISS module, but we only have 1 VHACD file for the module. Pybullet needs 1 collision object for each visual object (if we want to get the textures to load properly), so we need to do some hacky stuff to get this to work. The solution to this is to create "dummy" invisible objects outside of the ISS workspace area - these objects will form the collision body requirement, but won't affect the simulation at all other than allowing the visuals to be seen properly.
+Once we have the OBJs for each texture, and the VHACD OBJ for collision info, we can start loading these into pybullet. We now have some number n different obj files which represent the visual components of the ISS module, but we only have 1 VHACD file for the module. So, we'll load the first visual component paired with the VHACD collision information, and for the remainder of the bodies, we'll load them strictly as visual elements by setting the collision ID in the multibody as -1. Note: it does not appear to be possible to create an "invisible" collision body, because if you set the visual ID in the multibody as -1, it will still visualize the collision mesh but in a bunch of random colors. 
 
 A full workflow of the steps required to go from the NASA-provided DAE meshes to a correct pybullet environment can be found below:
 
@@ -119,6 +119,6 @@ Update the paths
 
 For each module, 
 - For the first OBJ file, load it as a visual shape. Pybullet will see the associated MTL file in the same directory and apply the texture. For the collision body, load the full VHACD result for the entire module.
-- For each other OBJ file, load the visual shape as before, but set the collision body to a "dummy" object outside the bounds of the ISS workspace
+- For each other OBJ file, load the visual shape as before, but set the collision body to `-1`, so that it doesn't load any collision info
 
 The ISS should be fully loaded at this point! 😃
