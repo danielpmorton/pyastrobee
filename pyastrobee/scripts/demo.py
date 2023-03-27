@@ -104,36 +104,14 @@ def demo_with_iss():
     This could just in general be cleaned up and refined, but it works ok for now
     """
     # Hardcoded waypoints and positions found from keyboard-controlling the Astrobee
+    # fmt: off
     waypts = [
         [0, 0, 0, 0, 0, 0, 1],
-        [
-            0.44631294,
-            -1.33893871,
-            0.44631287,
-            0.08824572,
-            0.06790329,
-            -0.78759863,
-            0.60604474,
-        ],
-        [
-            0.05603137,
-            -2.81145659,
-            0.10060672,
-            -0.06176491,
-            -0.0185934,
-            -0.69867597,
-            0.71252457,
-        ],
-        [
-            -0.31709299,
-            0.31352898,
-            0.53193288,
-            -0.03191529,
-            0.0062923,
-            -0.83105266,
-            0.55524166,
-        ],
+        [0.44631294, -1.33893871, 0.44631287, 0.08824572, 0.06790329, -0.78759863, 0.60604474],
+        [0.05603137, -2.81145659, 0.10060672, -0.06176491, -0.0185934, -0.69867597, 0.71252457],
+        [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166],
     ]
+    # fmt: on
     initialize_pybullet()
     # pybullet.connect(pybullet.GUI)  # a simple version without deformables
     # Bring the camera close to the action (another just random hardcoded position I found)
