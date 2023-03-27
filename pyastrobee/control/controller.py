@@ -257,7 +257,7 @@ class PoseController:
             time.sleep(1 / 120)
             pos = self.robot.position  # Update after moving
 
-    def go_to_pose(self, pose: ArrayLike, max_force) -> None:
+    def go_to_pose(self, pose: ArrayLike, max_force: float = 500) -> None:
         """Navigates to a new pose
 
         Current method (nothing fancy at the moment):
@@ -267,6 +267,7 @@ class PoseController:
 
         Args:
             pose (ArrayLike): Desired new pose (position + quaternion) for the astrobee
+            max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
         """
         # TODO improve this pose checking. Check if Pose() instance too?
         if len(pose) != 7:
