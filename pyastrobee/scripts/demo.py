@@ -17,12 +17,12 @@ from pyastrobee.control.plan_control_traj import plan_control_traj
 from pyastrobee.utils.iss_utils import load_iss
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
-    create_anchor_geom,
-    get_closest,
     initialize_pybullet,
     load_deformable_object,
     run_sim,
 )
+from pyastrobee.utils.mesh_utils import get_closest_mesh_vertex
+from pyastrobee.utils.bullet_utils import create_anchor
 
 
 def load_bag(robot_id, side=0):
@@ -50,21 +50,19 @@ def load_bag(robot_id, side=0):
     pybullet.changeVisualShape(
         bag_id, -1, rgbaColor=[1, 1, 1, 1], textureUniqueId=bag_texture_id, **kwargs
     )
-    n_vert, bag_mesh = get_mesh_data(pybullet, bag_id)
+    n_vert, bag_mesh = get_mesh_data(bag_id)
     finger1_link_id = 4
     finger2_link_id = 6
     finger1_pos = pybullet.getLinkState(robot_id, finger1_link_id)[0]
     finger2_pos = pybullet.getLinkState(robot_id, finger2_link_id)[0]
-    v1_pos, v1_ids = get_closest(finger1_pos, bag_mesh)
-    v2_pos, v2_ids = get_closest(finger2_pos, bag_mesh)
-    v1_id, v2_id = v1_ids[0], v2_ids[0]
-    pybullet.createSoftBodyAnchor(bag_id, v1_id, robot_id, finger1_link_id)
-    pybullet.createSoftBodyAnchor(bag_id, v2_id, robot_id, finger2_link_id)
-    anchor_kwargs = {"mass": 0.01, "radius": 0.01, "rgba": (0, 1, 0, 0.5)}
-    anchor1_id = create_anchor_geom(pybullet, v1_pos, **anchor_kwargs)
-    anchor2_id = create_anchor_geom(pybullet, v2_pos, **anchor_kwargs)
-    pybullet.createSoftBodyAnchor(bag_id, v1_id, anchor1_id, -1)
-    pybullet.createSoftBodyAnchor(bag_id, v2_id, anchor2_id, -1)
+    v1_pos, v1_id = get_closest_mesh_vertex(finger1_pos, bag_mesh)
+    v2_pos, v2_id = get_closest_mesh_vertex(finger2_pos, bag_mesh)
+    anchor1_id, _ = create_anchor(
+        bag_id, v1_id, robot_id, finger1_link_id, add_geom=True, geom_pos=v1_pos
+    )
+    anchor2_id, _ = create_anchor(
+        bag_id, v2_id, robot_id, finger2_link_id, add_geom=True, geom_pos=v2_pos
+    )
 
 
 def glide_to_pose(
