@@ -2,6 +2,8 @@
 
 TODO update all docstrings
 TODO add test cases
+TODO decide if negative gains could actually be possible in the coupled case
+TODO determine how to handle coupled gains in the integral case
 
 Based on pid.cpp (c) 2008, Willow Garage, Inc. (BSD License)
 as well as Nathan Sprague's Python translation
@@ -15,6 +17,7 @@ import math
 import numpy as np
 import numpy.typing as npt
 
+from pyastrobee.utils.math_utils import is_diagonal
 
 class ExtendedPID:
     """A basic pid class.
@@ -49,17 +52,8 @@ class ExtendedPID:
         i_mins: Optional[npt.ArrayLike] = None,
         i_maxes: Optional[npt.ArrayLike] = None,
     ):
-        """Constructor, zeros out Pid values when created and
-        initialize Pid-gains and integral term limits.
-
-        Parameters:
-          p_gain     The proportional gain.
-          i_gain     The integral gain.
-          d_gain     The derivative gain.
-          i_min      The integral lower limit.
-          i_max      The integral upper limit.
-        """
-        self.n = len(np.atleast_1d(p_gains))
+        self.n = np.atleast_1d(p_gains).shape[0]
+        self.using_gain_matrices = np.atleast_1d(p_gains).ndim > 1
         self.set_gains(p_gains, i_gains, d_gains, i_mins, i_maxes)
         self.reset()
 
@@ -124,9 +118,9 @@ class ExtendedPID:
 
     def _validate_gains(self, gains: npt.ArrayLike) -> np.ndarray:
         gains = np.atleast_1d(gains)
-        if len(gains) != self.n:
+        if gains.shape[0] != self.n:
             raise ValueError(
-                f"Invalid gains.\nExpected an array of length {self.n}, got {gains}"
+                f"Invalid gains, expected a ({self.n},) array or ({self.n}, {self.n}) matrix.\nGot: {gains}"
             )
         if np.any(gains < 0):
             raise ValueError(f"Negative gains will cause instability.\nGot: {gains}")
@@ -148,6 +142,11 @@ class ExtendedPID:
     @i_gains.setter
     def i_gains(self, gains: npt.ArrayLike):
         gains = self._validate_gains(gains)
+        if self.using_gain_matrices:
+            if not is_diagonal(gains):
+                raise ValueError(
+                    "Coupling between the integral gains is not currently supported"
+                )
         self._i_gains = gains
 
     @d_gains.setter
@@ -238,16 +237,28 @@ class ExtendedPID:
         assert not math.isnan(dt) and not math.isinf(dt)
 
         # Proportional component
-        p_term = self._p_gains * self._p_errors
+        if self.using_gain_matrices:
+            p_term = self._p_gains @ self._p_errors
+        else:
+            p_term = self._p_gains * self._p_errors
 
         # Integral component
         self._i_errors += dt * self._p_errors
-        i_term = self._i_gains * self._i_errors
-        # Saturate the integral term to prevent it from getting too large
-        i_term = np.clip(i_term, self._i_mins, self._i_maxes)
-        self._i_errors = np.where(
-            self._i_gains != 0, i_term / self._i_gains, self._i_errors
-        )
+
+        if self.using_gain_matrices:
+            i_term = self._i_gains @ self._i_errors
+            i_term = np.clip(i_term, self._i_mins, self._i_maxes)
+            i_gains_diag = np.diag(self._i_gains)
+            self._i_errors = np.where(
+                i_gains_diag != 0, i_term / i_gains_diag, self._i_errors
+            )
+        else:
+            i_term = self._i_gains * self._i_errors
+            # Saturate the integral term to prevent it from getting too large
+            i_term = np.clip(i_term, self._i_mins, self._i_maxes)
+            self._i_errors = np.where(
+                self._i_gains != 0, i_term / self._i_gains, self._i_errors
+            )
 
         # Derivative component
         # If the timestep is 0, we can't calculate the derivative term, so set it to 0
@@ -255,7 +266,11 @@ class ExtendedPID:
             self._d_errors = np.zeros(self.n)
         else:
             self._d_errors = (self._p_errors - self._p_errors_last) / dt
-        d_term = self._d_gains * self._d_errors
+
+        if self.using_gain_matrices:
+            d_term = self._d_gains @ self._d_errors
+        else:
+            d_term = self._d_gains * self._d_errors
 
         # Store the proportional errors for calculating the derivative term in the next iteration
         self._p_errors_last = self._p_errors
