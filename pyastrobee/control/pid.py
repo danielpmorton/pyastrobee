@@ -1,69 +1,22 @@
+"""Extending PID to a decoupled MIMO system where we control n different parameters
+
+TODO update all docstrings
+TODO add test cases
+
+Based on pid.cpp (c) 2008, Willow Garage, Inc. (BSD License)
+as well as Nathan Sprague's Python translation
 """
-Currently this is directly copied from:
-https://github.com/JMU-ROBOTICS-VIVA/jmu_ros2_util/blob/master/jmu_ros2_util/pid.py
-I randomly found this code and liked it
-It's based on:
-https://github.com/ros-controls/control_toolbox/blob/ros2-master/src/pid.cpp
 
-TODO check on the implementation of antiwindup in the integral control
-
-Also, see:
-https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/pid.py
-(Basically the same code, but adds a parameter for arm joints)
-
-
-
-A simple PID controller class.
-
-This is a mostly literal C++ -> Python translation of the ROS
-control_toolbox Pid class: http://ros.org/wiki/control_toolbox.
-"""
+from typing import Optional, Union
 
 import time
 import math
 
-# *******************************************************************
-# Translated from pid.cpp by Nathan Sprague
-# Jan. 2013 (Modified Jan. 2014)
-# See below for original license information:
-# *******************************************************************
-
-# *******************************************************************
-# Software License Agreement (BSD License)
-#
-#  Copyright (c) 2008, Willow Garage, Inc.
-#  All rights reserved.
-#
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions
-#  are met:
-#
-#   * Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer.
-#   * Redistributions in binary form must reproduce the above
-#     copyright notice, this list of conditions and the following
-#     disclaimer in the documentation and/or other materials provided
-#     with the distribution.
-#   * Neither the name of the Willow Garage nor the names of its
-#     contributors may be used to endorse or promote products derived
-#     from this software without specific prior written permission.
-#
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-#  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-#  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-#  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-#  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-#  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-#  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-#  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-#  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-#  POSSIBILITY OF SUCH DAMAGE.
-# *******************************************************************
+import numpy as np
+import numpy.typing as npt
 
 
-class PID:
+class ExtendedPID:
     """A basic pid class.
 
     This class implements a generic structure that can be used to
@@ -88,7 +41,14 @@ class PID:
     $ p_{error} = p_{target} - p_{state} $.
     """
 
-    def __init__(self, p_gain, i_gain, d_gain, i_min=float("-inf"), i_max=float("inf")):
+    def __init__(
+        self,
+        p_gains: npt.ArrayLike,
+        i_gains: npt.ArrayLike,
+        d_gains: npt.ArrayLike,
+        i_mins: Optional[npt.ArrayLike] = None,
+        i_maxes: Optional[npt.ArrayLike] = None,
+    ):
         """Constructor, zeros out Pid values when created and
         initialize Pid-gains and integral term limits.
 
@@ -99,21 +59,27 @@ class PID:
           i_min      The integral lower limit.
           i_max      The integral upper limit.
         """
-        self.set_gains(p_gain, i_gain, d_gain, i_min, i_max)
+        self.n = len(np.atleast_1d(p_gains))
+        self.set_gains(p_gains, i_gains, d_gains, i_mins, i_maxes)
         self.reset()
 
     def reset(self):
         """Reset the state of this PID controller"""
-        self._p_error_last = 0.0  # Save position state for derivative
-        # state calculation.
-        self._p_error = 0.0  # Proportional error.
-        self._d_error = 0.0  # Derivative error.
-        self._i_error = 0.0  # Integator error.
-        self._cmd = 0.0  # Command to send.
+        # Save position state for derivative state calculation
+        self._p_errors_last = np.zeros(self.n)
+        self._p_errors = np.zeros(self.n)  # Proportional error.
+        self._d_errors = np.zeros(self.n)  # Derivative error.
+        self._i_errors = np.zeros(self.n)  # Integator error.
+        self._cmd = 0 if self.n == 1 else np.zeros(self.n)  # Command to send.
         self._last_time = None  # Used for automatic calculation of dt.
 
     def set_gains(
-        self, p_gain, i_gain, d_gain, i_min=float("-inf"), i_max=float("inf")
+        self,
+        p_gains: npt.ArrayLike,
+        i_gains: npt.ArrayLike,
+        d_gains: npt.ArrayLike,
+        i_mins: Optional[npt.ArrayLike] = None,
+        i_maxes: Optional[npt.ArrayLike] = None,
     ):
         """Set PID gains for the controller.
 
@@ -124,72 +90,124 @@ class PID:
          i_min      The integral lower limit.
          i_max      The integral upper limit.
         """
-        self._p_gain = p_gain
-        self._i_gain = i_gain
-        self._d_gain = d_gain
-        self._i_min = i_min
-        self._i_max = i_max
+        # Call the setter functions, which will auto-validate the inputs
+        self.p_gains = p_gains
+        self.i_gains = i_gains
+        self.d_gains = d_gains
+        self.i_mins = i_mins
+        self.i_maxes = i_maxes
 
     @property
-    def p_gain(self):
-        """Read-only access to p_gain."""
-        return self._p_gain
+    def p_gains(self) -> np.ndarray:
+        """Proportional gains"""
+        return self._p_gains
 
     @property
-    def i_gain(self):
-        """Read-only access to i_gain."""
-        return self._i_gain
+    def i_gains(self) -> np.ndarray:
+        """Integral gains"""
+        return self._i_gains
 
     @property
-    def d_gain(self):
-        """Read-only access to d_gain."""
-        return self._d_gain
+    def d_gains(self) -> np.ndarray:
+        """Derivative gains"""
+        return self._d_gains
 
     @property
-    def i_max(self):
-        """Read-only access to i_max."""
-        return self._i_max
+    def i_maxes(self) -> np.ndarray:
+        """Maximum value(s) of the integral term(s)"""
+        return self._i_maxes
 
     @property
-    def i_min(self):
-        """Read-only access to i_min."""
-        return self._i_min
+    def i_mins(self) -> np.ndarray:
+        """Minimum value(s) of the integral term(s)"""
+        return self._i_mins
+
+    def _validate_gains(self, gains: npt.ArrayLike) -> np.ndarray:
+        gains = np.atleast_1d(gains)
+        if len(gains) != self.n:
+            raise ValueError(
+                f"Invalid gains.\nExpected an array of length {self.n}, got {gains}"
+            )
+        if np.any(gains < 0):
+            raise ValueError(f"Negative gains will cause instability.\nGot: {gains}")
+        return gains
+
+    def _validate_integral_limits(self, lims: npt.ArrayLike) -> np.ndarray:
+        lims = np.atleast_1d(lims)
+        if len(lims) != self.n:
+            raise ValueError(
+                f"Invalid integral limits.\nExpected an array of length {self.n}, got {lims}"
+            )
+        return lims
+
+    @p_gains.setter
+    def p_gains(self, gains: npt.ArrayLike):
+        gains = self._validate_gains(gains)
+        self._p_gains = gains
+
+    @i_gains.setter
+    def i_gains(self, gains: npt.ArrayLike):
+        gains = self._validate_gains(gains)
+        self._i_gains = gains
+
+    @d_gains.setter
+    def d_gains(self, gains: npt.ArrayLike):
+        gains = self._validate_gains(gains)
+        self._d_gains = gains
+
+    @i_maxes.setter
+    def i_maxes(self, lims: Optional[npt.ArrayLike]):
+        if lims is None:
+            lims = float("inf") * np.ones(self.n)
+        else:
+            lims = self._validate_integral_limits(lims)
+        self._i_maxes = lims
+
+    @i_mins.setter
+    def i_mins(self, lims: Optional[npt.ArrayLike]):
+        if lims is None:
+            lims = float("-inf") * np.ones(self.n)
+        else:
+            lims = self._validate_integral_limits(lims)
+        self._i_mins = lims
 
     @property
-    def p_error(self):
-        """Read-only access to p_error."""
-        return self._p_error
+    def p_errors(self) -> np.ndarray:
+        """Proportional errors (Read-only)"""
+        return self._p_errors
 
     @property
-    def i_error(self):
-        """Read-only access to i_error."""
-        return self._i_error
+    def i_errors(self) -> np.ndarray:
+        """Integral errors (Read-only)"""
+        return self._i_errors
 
     @property
-    def d_error(self):
-        """Read-only access to d_error."""
-        return self._d_error
+    def d_errors(self) -> np.ndarray:
+        """Derivative errors (Read-only)"""
+        return self._d_errors
 
     @property
-    def cmd(self):
+    def cmd(self) -> np.ndarray:
         """Read-only access to the latest command."""
         return self._cmd
 
     def __str__(self):
         """String representation of the current state of the controller."""
         result = ""
-        result += "p_gain:  " + str(self.p_gain) + "\n"
-        result += "i_gain:  " + str(self.i_gain) + "\n"
-        result += "d_gain:  " + str(self.d_gain) + "\n"
-        result += "i_min:   " + str(self.i_min) + "\n"
-        result += "i_max:   " + str(self.i_max) + "\n"
-        result += "p_error: " + str(self.p_error) + "\n"
-        result += "i_error: " + str(self.i_error) + "\n"
-        result += "d_error: " + str(self.d_error) + "\n"
+        result += "p_gain:  " + str(self.p_gains) + "\n"
+        result += "i_gain:  " + str(self.i_gains) + "\n"
+        result += "d_gain:  " + str(self.d_gains) + "\n"
+        result += "i_min:   " + str(self.i_mins) + "\n"
+        result += "i_max:   " + str(self.i_maxes) + "\n"
+        result += "p_error: " + str(self.p_errors) + "\n"
+        result += "i_error: " + str(self.i_errors) + "\n"
+        result += "d_error: " + str(self.d_errors) + "\n"
         result += "cmd:     " + str(self.cmd) + "\n"
         return result
 
-    def update_PID(self, p_error, dt=None):
+    def update_PID(
+        self, p_errors: np.ndarray, dt: Optional[float] = None
+    ) -> Union[np.ndarray, float]:
         """Update the Pid loop with nonuniform time step size.
 
         Parameters:
@@ -200,56 +218,69 @@ class PID:
         Returns:
           pid controller output
         """
+        # Validate error input
+        p_errors = np.atleast_1d(p_errors)
+        if len(p_errors) != self.n:
+            raise ValueError(
+                f"Invalid error term.\nExpected an array of length {self.n}, got {p_errors}"
+            )
+        self._p_errors = p_errors
+
+        # Validate dt input
         if dt is None:
             cur_time = time.time()
             if self._last_time is None:
                 self._last_time = cur_time
-                self._p_error_last = p_error
+                # TODO decide why they put this line here (below)
+                self._p_errors_last = p_errors
             dt = cur_time - self._last_time
             self._last_time = cur_time
+        assert not math.isnan(dt) and not math.isinf(dt)
 
-        self._p_error = p_error
-        if dt == 0 or math.isnan(dt) or math.isinf(dt):
-            return 0.0
+        # Proportional component
+        p_term = self._p_gains * self._p_errors
 
-        # Calculate proportional contribution to command
-        p_term = self._p_gain * self._p_error
+        # Integral component
+        self._i_errors += dt * self._p_errors
+        i_term = self._i_gains * self._i_errors
+        # Saturate the integral term to prevent it from getting too large
+        i_term = np.clip(i_term, self._i_mins, self._i_maxes)
+        self._i_errors = np.where(
+            self._i_gains != 0, i_term / self._i_gains, self._i_errors
+        )
 
-        # Calculate the integral error
-        self._i_error += dt * self._p_error
+        # Derivative component
+        # If the timestep is 0, we can't calculate the derivative term, so set it to 0
+        if abs(dt) < 1e-8:
+            self._d_errors = np.zeros(self.n)
+        else:
+            self._d_errors = (self._p_errors - self._p_errors_last) / dt
+        d_term = self._d_gains * self._d_errors
 
-        # Calculate integral contribution to command
-        i_term = self._i_gain * self._i_error
+        # Store the proportional errors for calculating the derivative term in the next iteration
+        self._p_errors_last = self._p_errors
 
-        # Limit i_term so that the limit is meaningful in the output
-        if i_term > self._i_max and self._i_gain != 0:
-            i_term = self._i_max
-            self._i_error = i_term / self._i_gain
-        elif i_term < self._i_min and self._i_gain != 0:
-            i_term = self._i_min
-            self._i_error = i_term / self._i_gain
-
-        # Calculate the derivative error
-        self._d_error = (self._p_error - self._p_error_last) / dt
-        self._p_error_last = self._p_error
-
-        # Calculate derivative contribution to command
-        d_term = self._d_gain * self._d_error
-
+        # Calculate the PID control command
         self._cmd = p_term + i_term + d_term
 
+        # Unpack the np array if we are dealing with a singleton dimension
+        # TODO decide if this is the right choice here
+        if self.n == 1:
+            self._cmd = self._cmd[0]
         return self._cmd
 
 
-def quick_test():
-    """Sanity checks."""
-    controller = PID(1.0, 2.0, 3.0, -1.0, 1.0)
+if __name__ == "__main__":
+    # Quick check that it's working
+    controller = ExtendedPID(1.0, 2.0, 3.0, -1.0, 1.0)
     print(controller)
     controller.update_PID(-1)
     print(controller)
     controller.update_PID(-0.5)
     print(controller)
-
-
-if __name__ == "__main__":
-    quick_test()
+    controller = ExtendedPID([1, 2], [0.3, 0.4], [0.5, 0.6], [-10, -20], [10, 20])
+    print(controller)
+    controller.update_PID([1, -2])
+    print(controller)
+    controller.update_PID([0.5, -1])
+    print(controller)
