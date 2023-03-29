@@ -1,7 +1,5 @@
-"""Extending PID to a decoupled MIMO system where we control n different parameters
+"""An extended version of a PID controller compatible with multivariate systems
 
-TODO update all docstrings
-TODO add test cases
 TODO decide if negative gains could actually be possible in the coupled case
 TODO determine how to handle coupled gains in the integral case
 
@@ -19,15 +17,11 @@ import numpy.typing as npt
 
 from pyastrobee.utils.math_utils import is_diagonal
 
-class ExtendedPID:
-    """A basic pid class.
 
-    This class implements a generic structure that can be used to
-    create a wide range of pid controllers. It can function
-    independently or be subclassed to provide more specific controls
-    based on a particular control loop.
+class PID:
+    """An extended version of a PID controller compatible with multivariate systems
 
-    In particular, this class implements the standard pid equation:
+    This class implements the standard pid equation:
 
     $command = p_{term} + i_{term} + d_{term} $
 
@@ -42,23 +36,41 @@ class ExtendedPID:
     given:
 
     $ p_{error} = p_{target} - p_{state} $.
+
+    - For a SISO system, pass in the gains as scalars
+    - For a decoupled MIMO system, pass in the gains as lists, 1d arrays, or diagonal matrices
+    - For a general MIMO system, pass in the gains as matrices
+    - Integral limits are scalar for SISO, 1d array for MIMO.
+
+    Args:
+        p_gains (Union[npt.ArrayLike, float]): Proportional gain(s).
+        i_gains (Union[npt.ArrayLike, float]): Integral gain(s).
+        d_gains (Union[npt.ArrayLike, float]): Derivative gain(s).
+        i_mins (Union[npt.ArrayLike, float, None]): Minimum value(s) for the integral term(s).
+            Defaults to None, in which case the integral term(s) will be unbounded below
+        i_maxes (Union[npt.ArrayLike, float, None]): Maximum value(s) for the integral term(s).
+            Defaults to None, in which case the integral term(s) will be unbounded above
     """
 
     def __init__(
         self,
-        p_gains: npt.ArrayLike,
-        i_gains: npt.ArrayLike,
-        d_gains: npt.ArrayLike,
-        i_mins: Optional[npt.ArrayLike] = None,
-        i_maxes: Optional[npt.ArrayLike] = None,
+        p_gains: Union[npt.ArrayLike, float],
+        i_gains: Union[npt.ArrayLike, float],
+        d_gains: Union[npt.ArrayLike, float],
+        i_mins: Union[npt.ArrayLike, float, None] = None,
+        i_maxes: Union[npt.ArrayLike, float, None] = None,
     ):
-        self.n = np.atleast_1d(p_gains).shape[0]
-        self.using_gain_matrices = np.atleast_1d(p_gains).ndim > 1
+        # Use the proportional gains as our baseline for comparison
+        # Calculate some shapes/sizes to help distinguish between scalar/array/matrix methods
+        reference_gains = np.atleast_1d(p_gains)
+        self._gain_shape = reference_gains.shape
+        self.n = self._gain_shape[0]
+        self.using_gain_matrices = reference_gains.ndim > 1
         self.set_gains(p_gains, i_gains, d_gains, i_mins, i_maxes)
         self.reset()
 
     def reset(self):
-        """Reset the state of this PID controller"""
+        """Reset the state of the PID controller"""
         # Save position state for derivative state calculation
         self._p_errors_last = np.zeros(self.n)
         self._p_errors = np.zeros(self.n)  # Proportional error.
@@ -69,20 +81,25 @@ class ExtendedPID:
 
     def set_gains(
         self,
-        p_gains: npt.ArrayLike,
-        i_gains: npt.ArrayLike,
-        d_gains: npt.ArrayLike,
-        i_mins: Optional[npt.ArrayLike] = None,
-        i_maxes: Optional[npt.ArrayLike] = None,
+        p_gains: Union[npt.ArrayLike, float],
+        i_gains: Union[npt.ArrayLike, float],
+        d_gains: Union[npt.ArrayLike, float],
+        i_mins: Union[npt.ArrayLike, float, None] = None,
+        i_maxes: Union[npt.ArrayLike, float, None] = None,
     ):
-        """Set PID gains for the controller.
+        """Sets the PID gains for the controller.
 
-        Parameters:
-         p_gain     The proportional gain.
-         i_gain     The integral gain.
-         d_gain     The derivative gain.
-         i_min      The integral lower limit.
-         i_max      The integral upper limit.
+        Gains are scalar for SISO, 1d array for decoupled MIMO, matrix for general MIMO
+        Integral limits are scalar for SISO, 1d array for MIMO.
+
+        Args:
+            p_gains (Union[npt.ArrayLike, float]): Proportional gain(s).
+            i_gains (Union[npt.ArrayLike, float]): Integral gain(s).
+            d_gains (Union[npt.ArrayLike, float]): Derivative gain(s).
+            i_mins (Union[npt.ArrayLike, float, None]): Minimum value(s) for the integral term(s).
+                Defaults to None, in which case the integral term(s) will be unbounded below
+            i_maxes (Union[npt.ArrayLike, float, None]): Maximum value(s) for the integral term(s).
+                Defaults to None, in which case the integral term(s) will be unbounded above
         """
         # Call the setter functions, which will auto-validate the inputs
         self.p_gains = p_gains
@@ -116,17 +133,35 @@ class ExtendedPID:
         """Minimum value(s) of the integral term(s)"""
         return self._i_mins
 
-    def _validate_gains(self, gains: npt.ArrayLike) -> np.ndarray:
+    def _validate_gains(self, gains: Union[npt.ArrayLike, float]) -> np.ndarray:
+        """Ensures that the gains are the correct shape and are nonnegative (raises an error otherwise)
+
+        Args:
+            gains (Union[npt.ArrayLike, float]): P, I, or D gain(s)
+
+        Returns:
+            np.ndarray: Validated gains
+        """
         gains = np.atleast_1d(gains)
-        if gains.shape[0] != self.n:
+        if gains.shape != self._gain_shape:
             raise ValueError(
-                f"Invalid gains, expected a ({self.n},) array or ({self.n}, {self.n}) matrix.\nGot: {gains}"
+                f"Shape mismatch: Expected gains to have shape {self._gain_shape}, got {gains.shape}"
             )
         if np.any(gains < 0):
             raise ValueError(f"Negative gains will cause instability.\nGot: {gains}")
         return gains
 
-    def _validate_integral_limits(self, lims: npt.ArrayLike) -> np.ndarray:
+    def _validate_integral_limits(
+        self, lims: Union[npt.ArrayLike, float]
+    ) -> np.ndarray:
+        """Ensures that the integral term limits are the correct shape (raises an error otherwise)
+
+        Args:
+            lims (Union[npt.ArrayLike, float]): Limits (minimum or maximum) on the integral term(s)
+
+        Returns:
+            np.ndarray: Validated limits
+        """
         lims = np.atleast_1d(lims)
         if len(lims) != self.n:
             raise ValueError(
@@ -135,14 +170,16 @@ class ExtendedPID:
         return lims
 
     @p_gains.setter
-    def p_gains(self, gains: npt.ArrayLike):
+    def p_gains(self, gains: Union[npt.ArrayLike, float]):
         gains = self._validate_gains(gains)
         self._p_gains = gains
 
     @i_gains.setter
-    def i_gains(self, gains: npt.ArrayLike):
+    def i_gains(self, gains: Union[npt.ArrayLike, float]):
         gains = self._validate_gains(gains)
         if self.using_gain_matrices:
+            # Extra logic to ensure that the gain matrix is diagonal (decoupled) because
+            # determining the integral saturation for this case requires some more work
             if not is_diagonal(gains):
                 raise ValueError(
                     "Coupling between the integral gains is not currently supported"
@@ -150,12 +187,12 @@ class ExtendedPID:
         self._i_gains = gains
 
     @d_gains.setter
-    def d_gains(self, gains: npt.ArrayLike):
+    def d_gains(self, gains: Union[npt.ArrayLike, float]):
         gains = self._validate_gains(gains)
         self._d_gains = gains
 
     @i_maxes.setter
-    def i_maxes(self, lims: Optional[npt.ArrayLike]):
+    def i_maxes(self, lims: Union[npt.ArrayLike, float, None]):
         if lims is None:
             lims = float("inf") * np.ones(self.n)
         else:
@@ -163,7 +200,7 @@ class ExtendedPID:
         self._i_maxes = lims
 
     @i_mins.setter
-    def i_mins(self, lims: Optional[npt.ArrayLike]):
+    def i_mins(self, lims: Union[npt.ArrayLike, float, None]):
         if lims is None:
             lims = float("-inf") * np.ones(self.n)
         else:
@@ -204,18 +241,18 @@ class ExtendedPID:
         result += "cmd:     " + str(self.cmd) + "\n"
         return result
 
-    def update_PID(
-        self, p_errors: np.ndarray, dt: Optional[float] = None
+    def update(
+        self, p_errors: Union[npt.ArrayLike, float], dt: Optional[float] = None
     ) -> Union[np.ndarray, float]:
-        """Update the Pid loop with nonuniform time step size.
+        """Update the PID controller state
 
-        Parameters:
-          p_error  Error since last call (target - state)
-          dt       Change in time since last call, in seconds, or None.
-                   If dt is None, then the system clock will be used to
-                   calculate the time since the last update.
+        Args:
+            p_errors (Union[npt.ArrayLike, float]): Error since last iteration (target - state)
+            dt (Optional[float]): Change in time since the last iteration, in seconds. Defaults to None,
+                in which case the system clock will be used to determine the delta
+
         Returns:
-          pid controller output
+            Union[np.ndarray, float]: PID controller output. Array if we have a MIMO system, float if SISO
         """
         # Validate error input
         p_errors = np.atleast_1d(p_errors)
@@ -287,15 +324,18 @@ class ExtendedPID:
 
 if __name__ == "__main__":
     # Quick check that it's working
-    controller = ExtendedPID(1.0, 2.0, 3.0, -1.0, 1.0)
+    # See test/test_pid for proper test cases
+    print("Scalar example with auto-timestep")
+    controller = PID(1.0, 2.0, 3.0, -1.0, 1.0)
     print(controller)
-    controller.update_PID(-1)
+    controller.update(-1)
     print(controller)
-    controller.update_PID(-0.5)
+    controller.update(-0.5)
     print(controller)
-    controller = ExtendedPID([1, 2], [0.3, 0.4], [0.5, 0.6], [-10, -20], [10, 20])
+    print("Array example with fixed timestep")
+    controller = PID([1, 2], [0.3, 0.4], [0.5, 0.6], [-10, -20], [10, 20])
     print(controller)
-    controller.update_PID([1, -2])
+    controller.update([1, -2], 1)
     print(controller)
-    controller.update_PID([0.5, -1])
+    controller.update([0.5, -1], 1)
     print(controller)
