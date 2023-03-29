@@ -1,5 +1,6 @@
+"""Simple example script for using a PID controller for either a SISO or MIMO system"""
+
 import numpy as np
-import matplotlib.pyplot as plt
 
 from pyastrobee.control.pid import PID
 from pyastrobee.utils.plotting import plot_controller_history
@@ -19,9 +20,7 @@ def SISO_example():
         x += controller.cmd
         history.append(x)
 
-    plt.plot(range(len(history)), [target] * len(history), "k--")
-    plt.plot(range(len(history)), history, "b")
-    plt.show()
+    plot_controller_history(history, target, kp, ki, kd)
 
 
 def MIMO_example():
@@ -37,16 +36,16 @@ def MIMO_example():
     target = 10 * np.random.rand(n)
     x = np.zeros(n)
     n_timesteps = 20
-    history = np.zeros((n_timesteps + 1, n))
-    history[0, :] = x
+    history = np.zeros((n, n_timesteps + 1))
+    history[:, 0] = x
     for i in range(1, n_timesteps + 1):
         controller.update(target - x, dt)
         x += controller.cmd
-        history[i, :] = x
+        history[:, i] = x
 
     plot_controller_history(history, target, kp, ki, kd)
 
 
 if __name__ == "__main__":
-    # SISO_example()
+    SISO_example()
     MIMO_example()

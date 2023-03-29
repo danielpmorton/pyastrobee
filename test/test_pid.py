@@ -17,17 +17,17 @@ class PIDTest(unittest.TestCase):
         i_min = -1
         i_max = 1
         controller = PID(kp, ki, kd, i_min, i_max)
-        self.assertTrue(controller.p_gains == kp)
-        self.assertTrue(controller.i_gains == ki)
-        self.assertTrue(controller.d_gains == kd)
-        self.assertTrue(controller.i_mins == i_min)
-        self.assertTrue(controller.i_maxes == i_max)
+        self.assertTrue(controller.p_gain == kp)
+        self.assertTrue(controller.i_gain == ki)
+        self.assertTrue(controller.d_gain == kd)
+        self.assertTrue(controller.i_min == i_min)
+        self.assertTrue(controller.i_max == i_max)
         # We have only initialized this, so there should be no command
         self.assertTrue(controller.cmd == 0)
         dt = 1
         err = 1
         controller.update(err, dt)
-        self.assertTrue(controller.p_errors == err)
+        self.assertTrue(controller.p_error == err)
         self.assertTrue(controller.cmd != 0)
 
     def test_array_inputs(self):
@@ -37,17 +37,17 @@ class PIDTest(unittest.TestCase):
         i_min = [-1, -2]
         i_max = [1, 2]
         controller = PID(kp, ki, kd, i_min, i_max)
-        np.testing.assert_array_equal(controller.p_gains, kp)
-        np.testing.assert_array_equal(controller.i_gains, ki)
-        np.testing.assert_array_equal(controller.d_gains, kd)
-        np.testing.assert_array_equal(controller.i_mins, i_min)
-        np.testing.assert_array_equal(controller.i_maxes, i_max)
+        np.testing.assert_array_equal(controller.p_gain, kp)
+        np.testing.assert_array_equal(controller.i_gain, ki)
+        np.testing.assert_array_equal(controller.d_gain, kd)
+        np.testing.assert_array_equal(controller.i_min, i_min)
+        np.testing.assert_array_equal(controller.i_max, i_max)
         # We have only initialized this, so there should be no command
         np.testing.assert_array_equal(controller.cmd, [0, 0])
         dt = 1
         err = [1, 2]
         controller.update(err, dt)
-        np.testing.assert_array_equal(controller.p_errors, err)
+        np.testing.assert_array_equal(controller.p_error, err)
         self.assertTrue(controller.cmd[0] != 0)
         self.assertTrue(controller.cmd[1] != 0)
 
@@ -58,17 +58,17 @@ class PIDTest(unittest.TestCase):
         i_min = [-1, -2]
         i_max = [1, 2]
         controller = PID(kp, ki, kd, i_min, i_max)
-        np.testing.assert_array_equal(controller.p_gains, kp)
-        np.testing.assert_array_equal(controller.i_gains, ki)
-        np.testing.assert_array_equal(controller.d_gains, kd)
-        np.testing.assert_array_equal(controller.i_mins, i_min)
-        np.testing.assert_array_equal(controller.i_maxes, i_max)
+        np.testing.assert_array_equal(controller.p_gain, kp)
+        np.testing.assert_array_equal(controller.i_gain, ki)
+        np.testing.assert_array_equal(controller.d_gain, kd)
+        np.testing.assert_array_equal(controller.i_min, i_min)
+        np.testing.assert_array_equal(controller.i_max, i_max)
         # We have only initialized this, so there should be no command
         np.testing.assert_array_equal(controller.cmd, [0, 0])
         dt = 1
         err = [1, 2]
         controller.update(err, dt)
-        np.testing.assert_array_equal(controller.p_errors, err)
+        np.testing.assert_array_equal(controller.p_error, err)
         self.assertTrue(controller.cmd[0] != 0)
         self.assertTrue(controller.cmd[1] != 0)
 
@@ -79,17 +79,17 @@ class PIDTest(unittest.TestCase):
         i_min = [-1, -2]
         i_max = [1, 2]
         controller = PID(kp, ki, kd, i_min, i_max)
-        np.testing.assert_array_equal(controller.p_gains, kp)
-        np.testing.assert_array_equal(controller.i_gains, ki)
-        np.testing.assert_array_equal(controller.d_gains, kd)
-        np.testing.assert_array_equal(controller.i_mins, i_min)
-        np.testing.assert_array_equal(controller.i_maxes, i_max)
+        np.testing.assert_array_equal(controller.p_gain, kp)
+        np.testing.assert_array_equal(controller.i_gain, ki)
+        np.testing.assert_array_equal(controller.d_gain, kd)
+        np.testing.assert_array_equal(controller.i_min, i_min)
+        np.testing.assert_array_equal(controller.i_max, i_max)
         # We have only initialized this, so there should be no command
         np.testing.assert_array_equal(controller.cmd, [0, 0])
         dt = 1
         err = [1, 2]
         controller.update(err, dt)
-        np.testing.assert_array_equal(controller.p_errors, err)
+        np.testing.assert_array_equal(controller.p_error, err)
         self.assertTrue(controller.cmd[0] != 0)
         self.assertTrue(controller.cmd[1] != 0)
 
@@ -121,11 +121,11 @@ class PIDTest(unittest.TestCase):
     def test_gain_reset(self):
         controller = PID(1, 2, 3, 4, 5)
         controller.set_gains(0, 0, 0, 0, 0)
-        self.assertTrue(controller.p_gains == 0)
-        self.assertTrue(controller.i_gains == 0)
-        self.assertTrue(controller.d_gains == 0)
-        self.assertTrue(controller.i_mins == 0)
-        self.assertTrue(controller.i_maxes == 0)
+        self.assertTrue(controller.p_gain == 0)
+        self.assertTrue(controller.i_gain == 0)
+        self.assertTrue(controller.d_gain == 0)
+        self.assertTrue(controller.i_min == 0)
+        self.assertTrue(controller.i_max == 0)
 
     def test_array_vs_decoupled_matrix(self):
         # These should have precisely the same command values

@@ -7,7 +7,7 @@ Based on pid.cpp (c) 2008, Willow Garage, Inc. (BSD License)
 as well as Nathan Sprague's Python translation
 """
 
-from typing import Optional, Union
+from typing import Optional
 
 import time
 import math
@@ -15,7 +15,7 @@ import math
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.utils.math_utils import is_diagonal
+from pyastrobee.utils.math_utils import is_diagonal, safe_divide
 
 
 class PID:
@@ -43,49 +43,49 @@ class PID:
     - Integral limits are scalar for SISO, 1d array for MIMO.
 
     Args:
-        p_gains (Union[npt.ArrayLike, float]): Proportional gain(s).
-        i_gains (Union[npt.ArrayLike, float]): Integral gain(s).
-        d_gains (Union[npt.ArrayLike, float]): Derivative gain(s).
-        i_mins (Union[npt.ArrayLike, float, None]): Minimum value(s) for the integral term(s).
+        p_gain (npt.ArrayLike): Proportional gain(s).
+        i_gain (npt.ArrayLike): Integral gain(s).
+        d_gain (npt.ArrayLike): Derivative gain(s).
+        i_min (Optional[npt.ArrayLike]): Minimum value(s) for the integral term(s).
             Defaults to None, in which case the integral term(s) will be unbounded below
-        i_maxes (Union[npt.ArrayLike, float, None]): Maximum value(s) for the integral term(s).
+        i_max (Optional[npt.ArrayLike]): Maximum value(s) for the integral term(s).
             Defaults to None, in which case the integral term(s) will be unbounded above
     """
 
     def __init__(
         self,
-        p_gains: Union[npt.ArrayLike, float],
-        i_gains: Union[npt.ArrayLike, float],
-        d_gains: Union[npt.ArrayLike, float],
-        i_mins: Union[npt.ArrayLike, float, None] = None,
-        i_maxes: Union[npt.ArrayLike, float, None] = None,
+        p_gain: npt.ArrayLike,
+        i_gain: npt.ArrayLike,
+        d_gain: npt.ArrayLike,
+        i_min: Optional[npt.ArrayLike] = None,
+        i_max: Optional[npt.ArrayLike] = None,
     ):
-        # Use the proportional gains as our baseline for comparison
+        # Use the proportional gain as our baseline for comparison
         # Calculate some shapes/sizes to help distinguish between scalar/array/matrix methods
-        reference_gains = np.atleast_1d(p_gains)
-        self._gain_shape = reference_gains.shape
+        reference_gain = np.atleast_1d(p_gain)
+        self._gain_shape = reference_gain.shape
         self.n = self._gain_shape[0]
-        self.using_gain_matrices = reference_gains.ndim > 1
-        self.set_gains(p_gains, i_gains, d_gains, i_mins, i_maxes)
+        self.using_gain_matrices = reference_gain.ndim > 1
+        self.set_gains(p_gain, i_gain, d_gain, i_min, i_max)
         self.reset()
 
     def reset(self):
         """Reset the state of the PID controller"""
         # Save position state for derivative state calculation
-        self._p_errors_last = np.zeros(self.n)
-        self._p_errors = np.zeros(self.n)  # Proportional error.
-        self._d_errors = np.zeros(self.n)  # Derivative error.
-        self._i_errors = np.zeros(self.n)  # Integator error.
+        self._p_error_last = np.zeros(self.n)
+        self._p_error = np.zeros(self.n)  # Proportional error.
+        self._d_error = np.zeros(self.n)  # Derivative error.
+        self._i_error = np.zeros(self.n)  # Integator error.
         self._cmd = 0 if self.n == 1 else np.zeros(self.n)  # Command to send.
         self._last_time = None  # Used for automatic calculation of dt.
 
     def set_gains(
         self,
-        p_gains: Union[npt.ArrayLike, float],
-        i_gains: Union[npt.ArrayLike, float],
-        d_gains: Union[npt.ArrayLike, float],
-        i_mins: Union[npt.ArrayLike, float, None] = None,
-        i_maxes: Union[npt.ArrayLike, float, None] = None,
+        p_gain: npt.ArrayLike,
+        i_gain: npt.ArrayLike,
+        d_gain: npt.ArrayLike,
+        i_min: Optional[npt.ArrayLike] = None,
+        i_max: Optional[npt.ArrayLike] = None,
     ):
         """Sets the PID gains for the controller.
 
@@ -93,134 +93,132 @@ class PID:
         Integral limits are scalar for SISO, 1d array for MIMO.
 
         Args:
-            p_gains (Union[npt.ArrayLike, float]): Proportional gain(s).
-            i_gains (Union[npt.ArrayLike, float]): Integral gain(s).
-            d_gains (Union[npt.ArrayLike, float]): Derivative gain(s).
-            i_mins (Union[npt.ArrayLike, float, None]): Minimum value(s) for the integral term(s).
+            p_gain (npt.ArrayLike): Proportional gain(s).
+            i_gain (npt.ArrayLike): Integral gain(s).
+            d_gain (npt.ArrayLike): Derivative gain(s).
+            i_min (Optional[npt.ArrayLike]): Minimum value(s) for the integral term(s).
                 Defaults to None, in which case the integral term(s) will be unbounded below
-            i_maxes (Union[npt.ArrayLike, float, None]): Maximum value(s) for the integral term(s).
+            i_max (Optional[npt.ArrayLike]): Maximum value(s) for the integral term(s).
                 Defaults to None, in which case the integral term(s) will be unbounded above
         """
         # Call the setter functions, which will auto-validate the inputs
-        self.p_gains = p_gains
-        self.i_gains = i_gains
-        self.d_gains = d_gains
-        self.i_mins = i_mins
-        self.i_maxes = i_maxes
+        self.p_gain = p_gain
+        self.i_gain = i_gain
+        self.d_gain = d_gain
+        self.i_min = i_min
+        self.i_max = i_max
 
     @property
-    def p_gains(self) -> np.ndarray:
-        """Proportional gains"""
-        return self._p_gains
+    def p_gain(self) -> np.ndarray:
+        """Proportional gain(s)"""
+        return self._p_gain
 
     @property
-    def i_gains(self) -> np.ndarray:
-        """Integral gains"""
-        return self._i_gains
+    def i_gain(self) -> np.ndarray:
+        """Integral gain(s)"""
+        return self._i_gain
 
     @property
-    def d_gains(self) -> np.ndarray:
-        """Derivative gains"""
-        return self._d_gains
+    def d_gain(self) -> np.ndarray:
+        """Derivative gain(s)"""
+        return self._d_gain
 
     @property
-    def i_maxes(self) -> np.ndarray:
+    def i_max(self) -> np.ndarray:
         """Maximum value(s) of the integral term(s)"""
-        return self._i_maxes
+        return self._i_max
 
     @property
-    def i_mins(self) -> np.ndarray:
+    def i_min(self) -> np.ndarray:
         """Minimum value(s) of the integral term(s)"""
-        return self._i_mins
+        return self._i_min
 
-    def _validate_gains(self, gains: Union[npt.ArrayLike, float]) -> np.ndarray:
-        """Ensures that the gains are the correct shape and are nonnegative (raises an error otherwise)
-
-        Args:
-            gains (Union[npt.ArrayLike, float]): P, I, or D gain(s)
-
-        Returns:
-            np.ndarray: Validated gains
-        """
-        gains = np.atleast_1d(gains)
-        if gains.shape != self._gain_shape:
-            raise ValueError(
-                f"Shape mismatch: Expected gains to have shape {self._gain_shape}, got {gains.shape}"
-            )
-        if np.any(gains < 0):
-            raise ValueError(f"Negative gains will cause instability.\nGot: {gains}")
-        return gains
-
-    def _validate_integral_limits(
-        self, lims: Union[npt.ArrayLike, float]
-    ) -> np.ndarray:
-        """Ensures that the integral term limits are the correct shape (raises an error otherwise)
+    def _validate_gain(self, gain: npt.ArrayLike) -> np.ndarray:
+        """Ensures that the gain(s) are the correct shape and are nonnegative (raises an error otherwise)
 
         Args:
-            lims (Union[npt.ArrayLike, float]): Limits (minimum or maximum) on the integral term(s)
+            gain (npt.ArrayLike): P, I, or D gain(s)
 
         Returns:
-            np.ndarray: Validated limits
+            np.ndarray: Validated gain(s)
         """
-        lims = np.atleast_1d(lims)
-        if len(lims) != self.n:
+        gain = np.atleast_1d(gain)
+        if gain.shape != self._gain_shape:
             raise ValueError(
-                f"Invalid integral limits.\nExpected an array of length {self.n}, got {lims}"
+                f"Shape mismatch: Expected gain to have shape {self._gain_shape}, got {gain.shape}"
             )
-        return lims
+        if np.any(gain < 0):
+            raise ValueError(f"Negative gains will cause instability.\nGot: {gain}")
+        return gain
 
-    @p_gains.setter
-    def p_gains(self, gains: Union[npt.ArrayLike, float]):
-        gains = self._validate_gains(gains)
-        self._p_gains = gains
+    def _validate_integral_limits(self, lim: npt.ArrayLike) -> np.ndarray:
+        """Ensures that the integral term limit(s) are the correct shape (raises an error otherwise)
 
-    @i_gains.setter
-    def i_gains(self, gains: Union[npt.ArrayLike, float]):
-        gains = self._validate_gains(gains)
+        Args:
+            lim (npt.ArrayLike): Limit(s) (minimum or maximum) on the integral term(s)
+
+        Returns:
+            np.ndarray: Validated limit(s)
+        """
+        lim = np.atleast_1d(lim)
+        if len(lim) != self.n:
+            raise ValueError(
+                f"Invalid integral limit.\nExpected an array of length {self.n}, got {lim}"
+            )
+        return lim
+
+    @p_gain.setter
+    def p_gain(self, gain: npt.ArrayLike):
+        gain = self._validate_gain(gain)
+        self._p_gain = gain
+
+    @i_gain.setter
+    def i_gain(self, gain: npt.ArrayLike):
+        gain = self._validate_gain(gain)
         if self.using_gain_matrices:
             # Extra logic to ensure that the gain matrix is diagonal (decoupled) because
             # determining the integral saturation for this case requires some more work
-            if not is_diagonal(gains):
+            if not is_diagonal(gain):
                 raise ValueError(
                     "Coupling between the integral gains is not currently supported"
                 )
-        self._i_gains = gains
+        self._i_gain = gain
 
-    @d_gains.setter
-    def d_gains(self, gains: Union[npt.ArrayLike, float]):
-        gains = self._validate_gains(gains)
-        self._d_gains = gains
+    @d_gain.setter
+    def d_gain(self, gain: npt.ArrayLike):
+        gain = self._validate_gain(gain)
+        self._d_gain = gain
 
-    @i_maxes.setter
-    def i_maxes(self, lims: Union[npt.ArrayLike, float, None]):
-        if lims is None:
-            lims = float("inf") * np.ones(self.n)
+    @i_max.setter
+    def i_max(self, lim: Optional[npt.ArrayLike]):
+        if lim is None:
+            lim = float("inf") * np.ones(self.n)
         else:
-            lims = self._validate_integral_limits(lims)
-        self._i_maxes = lims
+            lim = self._validate_integral_limits(lim)
+        self._i_max = lim
 
-    @i_mins.setter
-    def i_mins(self, lims: Union[npt.ArrayLike, float, None]):
-        if lims is None:
-            lims = float("-inf") * np.ones(self.n)
+    @i_min.setter
+    def i_min(self, lim: Optional[npt.ArrayLike]):
+        if lim is None:
+            lim = float("-inf") * np.ones(self.n)
         else:
-            lims = self._validate_integral_limits(lims)
-        self._i_mins = lims
+            lim = self._validate_integral_limits(lim)
+        self._i_min = lim
 
     @property
-    def p_errors(self) -> np.ndarray:
-        """Proportional errors (Read-only)"""
-        return self._p_errors
+    def p_error(self) -> np.ndarray:
+        """Proportional error(s) (Read-only)"""
+        return self._p_error
 
     @property
-    def i_errors(self) -> np.ndarray:
-        """Integral errors (Read-only)"""
-        return self._i_errors
+    def i_error(self) -> np.ndarray:
+        """Integral error(s) (Read-only)"""
+        return self._i_error
 
     @property
-    def d_errors(self) -> np.ndarray:
-        """Derivative errors (Read-only)"""
-        return self._d_errors
+    def d_error(self) -> np.ndarray:
+        """Derivative error(s) (Read-only)"""
+        return self._d_error
 
     @property
     def cmd(self) -> np.ndarray:
@@ -230,37 +228,37 @@ class PID:
     def __str__(self):
         """String representation of the current state of the controller."""
         result = ""
-        result += "p_gain:  " + str(self.p_gains) + "\n"
-        result += "i_gain:  " + str(self.i_gains) + "\n"
-        result += "d_gain:  " + str(self.d_gains) + "\n"
-        result += "i_min:   " + str(self.i_mins) + "\n"
-        result += "i_max:   " + str(self.i_maxes) + "\n"
-        result += "p_error: " + str(self.p_errors) + "\n"
-        result += "i_error: " + str(self.i_errors) + "\n"
-        result += "d_error: " + str(self.d_errors) + "\n"
+        result += "p_gain:  " + str(self.p_gain) + "\n"
+        result += "i_gain:  " + str(self.i_gain) + "\n"
+        result += "d_gain:  " + str(self.d_gain) + "\n"
+        result += "i_min:   " + str(self.i_min) + "\n"
+        result += "i_max:   " + str(self.i_max) + "\n"
+        result += "p_error: " + str(self.p_error) + "\n"
+        result += "i_error: " + str(self.i_error) + "\n"
+        result += "d_error: " + str(self.d_error) + "\n"
         result += "cmd:     " + str(self.cmd) + "\n"
         return result
 
     def update(
-        self, p_errors: Union[npt.ArrayLike, float], dt: Optional[float] = None
-    ) -> Union[np.ndarray, float]:
+        self, p_error: npt.ArrayLike, dt: Optional[float] = None
+    ) -> npt.ArrayLike:
         """Update the PID controller state
 
         Args:
-            p_errors (Union[npt.ArrayLike, float]): Error since last iteration (target - state)
+            p_error (npt.ArrayLike): Error since last iteration (target - state)
             dt (Optional[float]): Change in time since the last iteration, in seconds. Defaults to None,
                 in which case the system clock will be used to determine the delta
 
         Returns:
-            Union[np.ndarray, float]: PID controller output. Array if we have a MIMO system, float if SISO
+            npt.ArrayLike: PID controller output. Array if we have a MIMO system, float if SISO
         """
         # Validate error input
-        p_errors = np.atleast_1d(p_errors)
-        if len(p_errors) != self.n:
+        p_error = np.atleast_1d(p_error)
+        if len(p_error) != self.n:
             raise ValueError(
-                f"Invalid error term.\nExpected an array of length {self.n}, got {p_errors}"
+                f"Invalid error term.\nExpected an array of length {self.n}, got {p_error}"
             )
-        self._p_errors = p_errors
+        self._p_error = p_error
 
         # Validate dt input
         if dt is None:
@@ -268,49 +266,46 @@ class PID:
             if self._last_time is None:
                 self._last_time = cur_time
                 # TODO decide why they put this line here (below)
-                self._p_errors_last = p_errors
+                self._p_error_last = p_error
             dt = cur_time - self._last_time
             self._last_time = cur_time
         assert not math.isnan(dt) and not math.isinf(dt)
 
         # Proportional component
         if self.using_gain_matrices:
-            p_term = self._p_gains @ self._p_errors
+            p_term = self._p_gain @ self._p_error
         else:
-            p_term = self._p_gains * self._p_errors
+            p_term = self._p_gain * self._p_error
 
         # Integral component
-        self._i_errors += dt * self._p_errors
+        self._i_error += dt * self._p_error
 
         if self.using_gain_matrices:
-            i_term = self._i_gains @ self._i_errors
-            i_term = np.clip(i_term, self._i_mins, self._i_maxes)
-            i_gains_diag = np.diag(self._i_gains)
-            self._i_errors = np.where(
-                i_gains_diag != 0, i_term / i_gains_diag, self._i_errors
-            )
+            i_term = self._i_gain @ self._i_error
+            i_term = np.clip(i_term, self._i_min, self._i_max)
+            i_gain_diag = np.diag(self._i_gain)
+            self._i_error = safe_divide(i_term, i_gain_diag, fill="original")
         else:
-            i_term = self._i_gains * self._i_errors
+            i_term = self._i_gain * self._i_error
             # Saturate the integral term to prevent it from getting too large
-            i_term = np.clip(i_term, self._i_mins, self._i_maxes)
-            self._i_errors = np.where(
-                self._i_gains != 0, i_term / self._i_gains, self._i_errors
-            )
+            i_term = np.clip(i_term, self._i_min, self._i_max)
+            # Update the integral error based on the saturated value, using safe division where gain is nonzero
+            self._i_error = safe_divide(i_term, self._i_gain, fill="original")
 
         # Derivative component
         # If the timestep is 0, we can't calculate the derivative term, so set it to 0
         if abs(dt) < 1e-8:
-            self._d_errors = np.zeros(self.n)
+            self._d_error = np.zeros(self.n)
         else:
-            self._d_errors = (self._p_errors - self._p_errors_last) / dt
+            self._d_error = (self._p_error - self._p_error_last) / dt
 
         if self.using_gain_matrices:
-            d_term = self._d_gains @ self._d_errors
+            d_term = self._d_gain @ self._d_error
         else:
-            d_term = self._d_gains * self._d_errors
+            d_term = self._d_gain * self._d_error
 
         # Store the proportional errors for calculating the derivative term in the next iteration
-        self._p_errors_last = self._p_errors
+        self._p_error_last = self._p_error
 
         # Calculate the PID control command
         self._cmd = p_term + i_term + d_term

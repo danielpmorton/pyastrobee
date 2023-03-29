@@ -34,7 +34,7 @@ def plot_controller_history(
 
     Args:
         history (np.ndarray): History of the variables through the duration of the control process,
-            in an array of shape (num_timesteps, num_variables)
+            in an array of shape (num_variables, num_timesteps)
         target (Union[npt.ArrayLike, float]): Desired value(s) for the controlled variables
         p_gain (Union[npt.ArrayLike, float, None], optional): Proportional gain(s).
             Include this to print the gain value(s) onto the subplots. Defaults to None.
@@ -43,8 +43,7 @@ def plot_controller_history(
         d_gain (Union[npt.ArrayLike, float, None], optional): Derivative gain(s). Defaults to None.
             Include this to print the gain value(s) onto the subplots. Defaults to None.
     """
-    # Assume history is of shape (num_timesteps x num_variables)
-    # Also ensure the dimensions of the arrays so that indexing works properly
+    # Ensure the dimensions of the arrays so that indexing works properly
     history = np.atleast_2d(history)
     target = np.atleast_1d(target)
     if p_gain is not None:
@@ -53,7 +52,7 @@ def plot_controller_history(
         i_gain = np.atleast_1d(i_gain)
     if d_gain is not None:
         d_gain = np.atleast_1d(d_gain)
-    nt, n = history.shape
+    n, nt = history.shape
     fig_shape = num_subplots_to_shape(n)
     plt.figure()
     # Plot the history of each variable on its own subplot
@@ -61,7 +60,7 @@ def plot_controller_history(
         ax = plt.subplot(*fig_shape, i + 1)
         timesteps = range(nt)
         plt.plot(timesteps, target[i] * np.ones(nt), "k--")
-        plt.plot(timesteps, history[:, i], "b")
+        plt.plot(timesteps, history[i, :], "b")
         title = f"Var. {i+1}"
         # If the P/I/D gains are provided, include info about the gains for that
         # control variable in the bottom right corner of the respective subplot
