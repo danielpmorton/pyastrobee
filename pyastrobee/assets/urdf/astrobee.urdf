@@ -6,6 +6,7 @@
 <!-- 1) Remove all references to gazebo -->
 <!-- 2) Remove the KDL inertia workaround with the inertial link/joint -->
 <!-- (^ This workaround is not needed for pybullet, and if left in, pybullet adds in a "default" inertia) -->
+<!-- 3) Change meshes to OBJ files with the correct texture mapping -->
 
 <robot name="astrobee">
   <!-- BASE GEOMETRY -->
@@ -15,7 +16,7 @@
     <visual name="body_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/body.dae"/>
+        <mesh filename="../meshes/astrobee/body.obj"/>
       </geometry>
     </visual>
     <collision name="body_collision">
@@ -33,19 +34,19 @@
     <visual name="pmc_port_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc.dae"/>
+        <mesh filename="../meshes/astrobee/pmc.obj"/>
       </geometry>
     </visual>
     <visual name="pmc_port_bumper_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc_bumper.dae"/>
+        <mesh filename="../meshes/astrobee/pmc_bumper.obj"/>
       </geometry>
     </visual>
     <visual name="pmc_port_skin_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc_skin_honey.dae"/>
+        <mesh filename="../meshes/astrobee/pmc_skin_honey.obj"/>
       </geometry>
     </visual>
     <collision name="pmc_port_collision">
@@ -58,19 +59,19 @@
     <visual name="pmc_stbd_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc.dae"/>
+        <mesh filename="../meshes/astrobee/pmc.obj"/>
       </geometry>
     </visual>
     <visual name="pmc_stbd_bumper_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc_bumper.dae"/>
+        <mesh filename="../meshes/astrobee/pmc_bumper.obj"/>
       </geometry>
     </visual>
     <visual name="pmc_stbd_skin_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/pmc_skin_honey.dae"/>
+        <mesh filename="../meshes/astrobee/pmc_skin_honey.obj"/>
       </geometry>
     </visual>
     <collision name="pmc_stbd_collision">
@@ -90,7 +91,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/base_link.dae"/>
+        <mesh filename="../meshes/astrobee/base_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -115,7 +116,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/arm_proximal_link.dae"/>
+        <mesh filename="../meshes/astrobee/arm_proximal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -142,7 +143,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/arm_distal_link.dae"/>
+        <mesh filename="../meshes/astrobee/arm_distal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -169,7 +170,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/gripper_left_proximal_link.dae"/>
+        <mesh filename="../meshes/astrobee/gripper_left_proximal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -196,7 +197,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/gripper_left_distal_link.dae"/>
+        <mesh filename="../meshes/astrobee/gripper_left_distal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -223,7 +224,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/gripper_right_proximal_link.dae"/>
+        <mesh filename="../meshes/astrobee/gripper_right_proximal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -250,7 +251,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/astrobee/dae/gripper_right_distal_link.dae"/>
+        <mesh filename="../meshes/astrobee/gripper_right_distal_link.obj"/>
       </geometry>
     </visual>
     <collision>
@@ -268,4 +269,3 @@
     <limit effort="0.1" lower="0.69813" upper="1.22173" velocity="0.12"/>
   </joint>
 </robot>
-
