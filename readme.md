@@ -8,6 +8,8 @@
 
 [Loading ISS Meshes](docs/loading_iss_meshes.md): Dealing with complex meshes and textures in Pybullet
 
+[Re-texturing](docs/retexturing.md): How to modify Astrobee meshes to load the URDF with a single texture file
+
 [Tetrahedral Meshing](docs/tet_meshing.md): How to generate and modify tetrahedral meshes for soft bodies
 
 [Assorted Notes](docs/assorted_notes.md): Things I thought seemed important
@@ -18,8 +20,8 @@
 
 ## Status
 ### TODOs:
+- [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
 - [ ] Add anything from the demo to the control section, if we want to keep it
-- [ ] Fix the Astrobee textures in Blender
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
 - [ ] Add a way to pause the sim when looping in interactive mode (ipython / debugger)
 - [ ] Idea: add a parameter on initialization of Astrobee() deciding on the control mode? 
@@ -41,12 +43,6 @@
 - [ ] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
-- [ ] Debug loading the texture for Astrobee
-  - [ ] Did the DAE -> OBJ conversion go wrong? Things look like they might be in the wrong place
-  - [ ] Is is just the texture image? If we're only applying one texture image, maybe the UVmap for some parts aren't realistic for that image
-- [ ] See if I can load the astrobee like Erwin did with atlas: https://github.com/erwincoumans/pybullet_robots/tree/master/data/atlas
-  - [ ] Check out the assimp library he mentioned in the commit message as well
-  - [ ] Figure out what the deal is with some of the gripper links disappearing
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
 - [ ] Set up camera (see dedo)
 - [ ] Set up pointcloud (see dedo)
@@ -82,12 +78,14 @@
 - [ ] Add in debugging and exception handling
 
 ### Optional
+- [ ] Decide if we need to reduce the size of the Astrobee meshes at all (they're quite complex for their simple geometry). This will require a remesh of all of the parts and then another retexturing process, which might take a little while
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 - [ ] Figure out if it's possible to load arbitrary meshes into mujoco
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
-- [X] Move the modified Honey skin file into the correct place (not `imgs/`)
+- [X] Fix the Astrobee textures in Blender
+- [X] Move the modified Honey skin file into the correct place
 - [X] Clean up all of the mesh/urdf/resources organization confusion, make assets folder, delete old meshes
 - [X] Add some notes about using the keyboard controller somewhere
 - [X] Get a softbody anchor working between the astrobee gripper and the bag
