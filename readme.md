@@ -20,6 +20,9 @@
 
 ## Status
 ### TODOs:
+- [ ] Add additional setup info to the docs about NASA code and ROS?
+- [ ] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
+- [ ] Calibrate that gripper / arm distal joint transformation
 - [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
 - [ ] Add anything from the demo to the control section, if we want to keep it
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
@@ -50,12 +53,27 @@
 - [ ] Add more tests
 
 ### In Progress:
+- [ ] Create trajectories
+  - [ ] Make a class
+  - [ ] Make a way to visualize these (see pytransform trajectories)
+  - [ ] Visualize trajectory inside pybullet (see `addUserDebugLine` / `addUserDebugPoints`)
+  - [ ] Follow trajectory using PID controller
+  - [ ] Visualize tracking error
 - [ ] Implement force control / velocity control
   - [ ] Improve physics models for blower, drag, ...
   - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
+  - [ ] Check out the GNC/CTL section of nasa/astrobee, try to replicate their control method? And see Keenan's papers
+  - [ ] Check out `calculateMassMatrix`
+  - [ ] Try making a Jacobian mapping between desired forces and torques on the robot to the generalized forces we need to apply in Pybullet (t = J.T @ F)
 - [ ] Experiment with tetrahedral meshes
   - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
-  - [ ] Try tet mesh with one side denser than the other?
+  - [ ] Try out different mesh parameters:
+    - [ ] Number of mesh elements in the handle
+    - [ ] Handle geometry and size
+    - [ ] Main compartment geometry
+    - [ ] Number of mesh elements in the main compartment
+    - [ ] One side of the main compartment having a denser mesh than the other
+    - [ ] Figure out relationship between number of mesh elements / size of mesh elements to stiffness
 - [ ] Improve the demo script
   - [ ] Load the tet mesh instead of the tri mesh
   - [ ] Improve waypoint positions
