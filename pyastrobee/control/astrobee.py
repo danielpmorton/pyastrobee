@@ -36,7 +36,6 @@ class Astrobee:
         arm_joints (npt.ArrayLike, optional): Initial position of the arm's joints. Defaults to
             [0.0, 0.0] (Hanging straight down)
         gripper_pos (float, optional): Initial gripper position, in [0, 100]. Defaults to 100 (fully open)
-        color (list[float], optional). RGB color of the Astrobee. Defaults to [1, 1, 1] (white)
 
     Raises:
         ConnectionError: If a pybullet server is not connected before initialization
@@ -118,16 +117,17 @@ class Astrobee:
         pose: npt.ArrayLike = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
         arm_joints: npt.ArrayLike = [0.0, 0.0],
         gripper_pos: float = 100,
-        color: list[float] = [1.0, 1.0, 1.0],
     ):
         if not pybullet.isConnected():
             raise ConnectionError(
                 "Need to connect to pybullet before initializing an astrobee"
             )
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
+        # Even though we're loading the textured version of the Astrobee, we still need to change the color
+        # or else the texture will show up all black (seems to just be a pybullet quirk)
         for i in range(-1, self.NUM_LINKS):
             pybullet.changeVisualShape(
-                objectUniqueId=self.id, linkIndex=i, rgbaColor=[*color, 1]
+                objectUniqueId=self.id, linkIndex=i, rgbaColor=[1, 1, 1, 1]
             )
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
@@ -517,6 +517,6 @@ class Astrobee:
 
 
 if __name__ == "__main__":
-    initialize_pybullet()
+    initialize_pybullet(bg_color=[1, 1, 1])
     robot = Astrobee()
     run_sim()
