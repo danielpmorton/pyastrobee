@@ -1,15 +1,17 @@
 """Functions associated with the Pybullet Debug Visualizer GUI
 
 NOTE
-- Since the debug visualizer only specifies yaw and pitch (no roll), this is an incomplete definition of rotation,
-  so we can never actually fully change the rotation of the debug viz camera to match the robot's position
+- For the GUI camera parameters, since the debug visualizer only specifies yaw and pitch (no roll),
+  this is an incomplete definition of rotation, so we can never actually fully change the rotation
+  of the debug viz camera to match the robot's position
     - This is not a huge deal, it will just mean we will have at best a "video game perspective" of the robot
 """
 
 import time
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
+import numpy.typing as npt
 import pybullet
 
 from pyastrobee.control.astrobee import Astrobee
@@ -17,11 +19,113 @@ from pyastrobee.utils.rotations import (
     quat_to_fixed_xyz,
     fixed_xyz_to_quat,
     fixed_xyz_to_rmat,
+    quat_to_rmat,
 )
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.coordinates import cartesian_to_spherical
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
+from pyastrobee.control.controller import PoseController
+
+
+def visualize_frame(
+    tmat: np.ndarray, length: float = 1, width: float = 3, lifetime: float = 0
+) -> tuple[int, int, int]:
+    """Adds RGB XYZ axes to the Pybullet GUI for a speficied transformation/frame/pose
+
+    Args:
+        tmat (np.ndarray): Transformation matrix specifying a pose w.r.t world frame, shape (4, 4)
+        length (float, optional): Length of the axis lines. Defaults to 1.
+        width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
+        lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
+            Defaults to 0 (keep them on-screen permanently until deleted)
+
+    Returns:
+        tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
+    """
+    x_color = [1, 0, 0]  # R
+    y_color = [0, 1, 0]  # G
+    z_color = [0, 0, 1]  # B
+    origin = tmat[:3, 3]
+    x_endpt = origin + tmat[:3, 0] * length
+    y_endpt = origin + tmat[:3, 1] * length
+    z_endpt = origin + tmat[:3, 2] * length
+    x_ax_id = pybullet.addUserDebugLine(origin, x_endpt, x_color, width, lifetime)
+    y_ax_id = pybullet.addUserDebugLine(origin, y_endpt, y_color, width, lifetime)
+    z_ax_id = pybullet.addUserDebugLine(origin, z_endpt, z_color, width, lifetime)
+    return x_ax_id, y_ax_id, z_ax_id
+
+
+def visualize_link_frame(
+    robot_id: int,
+    link_id: int,
+    length: float = 1,
+    width: float = 3,
+    lifetime: float = 0,
+) -> tuple[int, int, int]:
+    """Adds RGB XYZ axes to the Pybullet GUI for a specific link on the Astrobee
+
+    Args:
+        robot_id (int): Pybullet ID of the Astrobee
+        link_id (int): ID of the link we want to look at
+        length (float, optional): Length of the axis lines. Defaults to 1.
+        width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
+        lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
+            Defaults to 0 (keep them on-screen permanently until deleted)
+
+    Returns:
+        tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
+    """
+    x_color = [1, 0, 0]  # R
+    y_color = [0, 1, 0]  # G
+    z_color = [0, 0, 1]  # B
+    origin = [0, 0, 0]
+    x_endpt = np.array([1, 0, 0]) * length
+    y_endpt = np.array([0, 1, 0]) * length
+    z_endpt = np.array([0, 0, 1]) * length
+    x_ax_id = pybullet.addUserDebugLine(
+        origin, x_endpt, x_color, width, lifetime, robot_id, link_id
+    )
+    y_ax_id = pybullet.addUserDebugLine(
+        origin, y_endpt, y_color, width, lifetime, robot_id, link_id
+    )
+    z_ax_id = pybullet.addUserDebugLine(
+        origin, z_endpt, z_color, width, lifetime, robot_id, link_id
+    )
+    return x_ax_id, y_ax_id, z_ax_id
+
+
+def visualize_quaternion(
+    quat: npt.ArrayLike, length: float = 1, width: float = 3, lifetime: float = 0
+) -> tuple[int, int, int]:
+    """Wrapper around visualize_frame specifically for debugging quaternions. Shows the rotated frame at the origin
+
+    Args:
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
+        length (float, optional): Length of the axis lines. Defaults to 1.
+        width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
+        lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
+            Defaults to 0 (keep them on-screen permanently until deleted)
+
+    Returns:
+        tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
+    """
+    rmat = quat_to_rmat(quat)
+    tmat = make_transform_mat(rmat, [0, 0, 0])
+    return visualize_frame(tmat, length, width, lifetime)
+
+
+def remove_debug_objects(ids: Union[int, list[int], np.ndarray[int]]) -> None:
+    """Removes user-created line(s)/point(s)/etc. from the Pybullet GUI
+
+    Args:
+        ids (int or list/array of ints): ID(s) of the objects loaded into Pybullet
+    """
+    if np.ndim(ids) == 0:  # Scalar, not iterable
+        pybullet.removeUserDebugItem(ids)
+        return
+    for i in ids:
+        pybullet.removeUserDebugItem(i)
 
 
 def get_viz_camera_params(
@@ -61,8 +165,10 @@ def get_viz_camera_params(
 
 
 if __name__ == "__main__":
+    # Quick test if the debug visualizer camera parameters are able to track the robot motion
     pybullet.connect(pybullet.GUI)
     robot = Astrobee()
+    controller = PoseController(robot)
     R = fixed_xyz_to_rmat([0, -np.pi / 4, 0])
     C2R = make_transform_mat(R, [-0.7, 0, 0.5])
     pos = np.array([0.0, 0.0, 0.0])
@@ -81,6 +187,6 @@ if __name__ == "__main__":
         # orn += 0.1 * np.random.rand(4) + orn
         # orn = orn / np.linalg.norm(orn)
         pybullet.resetDebugVisualizerCamera(d, y, p, t)
-        pybullet.changeConstraint(robot.constraint_id, pos, orn)
+        pybullet.changeConstraint(controller.constraint_id, pos, orn)
         pybullet.stepSimulation()
         time.sleep(1 / 20)
