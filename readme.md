@@ -22,7 +22,6 @@
 ### TODOs:
 - [ ] Add additional setup info to the docs about NASA code and ROS?
 - [ ] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
-- [ ] Calibrate that gripper / arm distal joint transformation
 - [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
 - [ ] Add anything from the demo to the control section, if we want to keep it
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
@@ -102,6 +101,7 @@
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Calibrate that gripper / arm distal joint transformation
 - [X] Fix the Astrobee textures in Blender
 - [X] Move the modified Honey skin file into the correct place
 - [X] Clean up all of the mesh/urdf/resources organization confusion, make assets folder, delete old meshes

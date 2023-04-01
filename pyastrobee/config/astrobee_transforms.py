@@ -19,10 +19,8 @@ from pyastrobee.utils.transformations import make_transform_mat, invert_transfor
 from pyastrobee.utils.rotations import quat_to_rmat, fixed_xyz_to_rmat
 
 # Transformation between the arm's distal link frame and the center of the grasp point
-# NASA did not calibrate this, in geometry.config there's a simple value that assumes
-# a set configuration of the astrobee, so it won't work if the joints move at all
-# THIS IS JUST A PLACEHOLDER - FIXME
-GRIPPER_TO_ARM_DISTAL = make_transform_mat(np.eye(3), [0, 0, 0])  # FIXME !!!!!
+# See the calibration script for more info
+GRIPPER_TO_ARM_DISTAL = make_transform_mat(np.eye(3), [-0.08240211, 0, -0.04971851])
 ARM_DISTAL_TO_GRIPPER = invert_transform_mat(GRIPPER_TO_ARM_DISTAL)
 
 # Camera to robot for 3rd person view of the robot as it moves
