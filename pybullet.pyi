@@ -339,6 +339,19 @@ def addUserDebugParameter(
     """Add a user debug parameter, such as a slider, that can be controlled using a GUI."""
     pass
 
+def addUserDebugPoints(
+    pointPositions: list[list[float]],
+    pointColorsRGB: list[list[float]],
+    pointSize: float,
+    lifeTime: float,
+    parentObjectUniqueId: int,
+    parentLinkIndex: int,
+    replaceItemUniqueId: int,
+    physicsClientId: int,
+):  # real signature unknown
+    """Add user debug points on the GUI at specified 3D positions"""
+    pass
+
 def addUserDebugText(
     text: str,
     textPosition: list[float],

@@ -21,11 +21,67 @@ from pyastrobee.utils.rotations import (
     fixed_xyz_to_rmat,
     quat_to_rmat,
 )
-from pyastrobee.utils.poses import pos_quat_to_tmat
+from pyastrobee.utils.poses import pos_quat_to_tmat, batched_pos_quats_to_tmats
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.coordinates import cartesian_to_spherical
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
 from pyastrobee.control.controller import PoseController
+
+
+def visualize_traj(traj: npt.ArrayLike) -> list[int]:
+    """Visualizes a trajectory's sequence of poses on the Pybullet GUI
+
+    TODO make it possible to take in a Trajectory class object and extract the relevant info
+
+    Args:
+        traj (npt.ArrayLike): Sequence of position + quaternion poses, shape (n, 7)
+
+    Returns:
+        list[int]: Pybullet IDs for the lines drawn onto the GUI
+    """
+    tmats = batched_pos_quats_to_tmats(traj)  # This will validate the input as well
+    ids = []
+    for i in range(tmats.shape[0]):
+        ids += visualize_frame(tmats[i, :, :])
+    return ids
+
+
+def visualize_points(
+    position: npt.ArrayLike, color: npt.ArrayLike, size: float = 20, lifetime: float = 0
+) -> int:
+    """Adds square points to the GUI to visualize positions in the sim
+
+    Args:
+        position (npt.ArrayLike): 3D point(s) in the simulation to visualize. Shape (n, 3)
+        color (npt.ArrayLike): RGB values, each in range [0, 1]. Shape (n, 3)
+        size (float): Size of the points on the GUI, in pixels. Defaults to 20
+        lifetime (float, optional): Amount of time to keep the points on the GUI, in seconds.
+            Defaults to 0 (keep them on-screen permanently until deleted)
+
+    Returns:
+        int: Pybullet object ID for the point / point cloud
+    """
+    # Pybullet will crash if you try to visualize one point without packing it into a 2D array
+    position = np.atleast_2d(position)
+    color = np.atleast_2d(color)
+    if position.shape[-1] != 3:
+        raise ValueError(
+            f"Invalid shape of the point positions. Expected (n, 3), got: {position.shape}"
+        )
+    if color.shape[-1] != 3:
+        raise ValueError(
+            f"Invalid shape of the colors. Expected (n, 3), got: {color.shape}"
+        )
+    n = position.shape[0]
+    if color.shape[0] != n:
+        if color.shape[0] == 1:
+            # Map the same color to all of the points
+            color = color * np.ones_like(position)
+        else:
+            raise ValueError(
+                f"Number of colors ({color.shape[0]}) does not match the number of points ({n})."
+            )
+    return pybullet.addUserDebugPoints(position, color, size, lifetime)
 
 
 def visualize_frame(

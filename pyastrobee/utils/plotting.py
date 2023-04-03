@@ -9,17 +9,6 @@ import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
 
-# from pytransform3d.transformations import plot_transform
-# from pytransform3d.plot_utils import make_3d_axis
-
-
-def plot_astrobee_frames():
-    raise NotImplementedError
-
-
-def plot_trajectory():
-    raise NotImplementedError
-
 
 def plot_controller_history(
     history: np.ndarray,
