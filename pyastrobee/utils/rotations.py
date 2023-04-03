@@ -526,3 +526,23 @@ def combine_quaternions(
     q = Quaternion()
     q.wxyz = rt.concatenate_quaternions(q1.wxyz, q2.wxyz)
     return q.xyzw
+
+
+def get_closest_heading_quat(q0: npt.ArrayLike, heading: npt.ArrayLike) -> np.ndarray:
+    """Gives the quaternion closest to q0 that has its x-axis aligned with the heading
+
+    Args:
+        q0 (npt.ArrayLike): Initial (reference) XYZW quaternion, shape (4,)
+        heading (npt.ArrayLike): Desired XYZ vector parallel to the new frame's x-axis, shape (3,)
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    # We want the x axis to point along the heading axis
+    # So, a rotation between these two axes can be defined by an axis-angle rotation
+    rmat1 = quat_to_rmat(q0)
+    orig_x_axis = rmat1[:, 0]
+    axis, angle = axis_angle_between_two_vectors(orig_x_axis, heading)
+    # Apply this rotation transformation via quaternion concatenation
+    # (Similarly, we could do this by multiplying by the equivalent rotation matrices)
+    return combine_quaternions(axis_angle_to_quat(axis, angle), q0)
