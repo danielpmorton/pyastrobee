@@ -12,6 +12,7 @@ from enum import Enum
 
 import numpy as np
 import numpy.typing as npt
+import pytransform3d.trajectories as pt
 
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils import transformations as tfs
@@ -264,6 +265,34 @@ def pos_quat_to_tmat(pose: npt.ArrayLike) -> np.ndarray:
     quat = pose[3:]
     rmat = rts.quat_to_rmat(quat)
     return tfs.make_transform_mat(rmat, pos)
+
+
+def batched_pos_quats_to_tmats(poses: npt.ArrayLike) -> np.ndarray:
+    """Converts a array of position + quaternion poses to an array of transformation matrices
+
+    Args:
+        poses (npt.ArrayLike): Position + quaternion poses, shape (n, 7)
+
+    Returns:
+        np.ndarray: Transformation matrices, shape (n, 4, 4)
+    """
+    # Assume poses is of shape (n, 7). If not, see if we can fix it, or raise an error
+    poses = np.atleast_2d(poses)
+    n_rows, n_cols = poses.shape
+    if n_cols != 7 and n_rows == 7:
+        print("Warning: you might have passed in the transpose of the pose array")
+        poses = poses.T
+    elif n_cols != 7 and n_rows != 7:
+        raise ValueError(
+            f"Invalid input shape: {poses.shape} Must be an array of position/quaternion poses"
+        )
+    # Convert XYZW poses to WXYZ for pytransform3d's quaternion convention
+    wxyz_pqs = np.zeros_like(poses)
+    wxyz_pqs[:, :3] = poses[:, :3]  # x, y, z
+    wxyz_pqs[:, 3] = poses[:, -1]  # qw
+    wxyz_pqs[:, 4:] = poses[:, 3:-1]  # qx, qy, qz
+    # Use the batched conversion from pytransform3d since this is more efficient than a loop
+    return pt.transforms_from_pqs(wxyz_pqs)
 
 
 def pos_quat_to_pos_euler_xyz(pose: npt.ArrayLike) -> np.ndarray:

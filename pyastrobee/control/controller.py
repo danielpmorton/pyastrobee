@@ -35,7 +35,7 @@ from pyastrobee.control.physics_models import drag_force_model
 from pyastrobee.utils.quaternion import Quaternion
 from pyastrobee.utils.rotations import (
     quaternion_dist,
-    quaternion_interp,
+    quaternion_slerp,
     quaternion_between_two_vectors,
 )
 from pyastrobee.utils.math_utils import normalize
@@ -228,7 +228,7 @@ class PoseController:
         dpct = 0.01
         # TODO decide if the quaternion slerping here is better than an axis angle thing?
         while quaternion_dist(self.robot.orientation, orn) > tol:
-            q = quaternion_interp(q1, q2, pct)
+            q = quaternion_slerp(q1, q2, pct)
             # TODO decide if any other inputs to the change constraint function are needed
             pybullet.changeConstraint(self.constraint_id, pos, q, maxForce=max_force)
             pybullet.stepSimulation()

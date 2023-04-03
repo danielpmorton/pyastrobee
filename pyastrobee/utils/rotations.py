@@ -55,6 +55,7 @@ from typing import Union
 import numpy as np
 import numpy.typing as npt
 import pytransform3d.rotations as rt
+import pytransform3d.batch_rotations as brt
 
 from pyastrobee.utils.quaternion import Quaternion
 
@@ -393,26 +394,30 @@ def quaternion_dist(
     return rt.quaternion_dist(q1.wxyz, q2.wxyz)
 
 
-def quaternion_interp(
+def quaternion_slerp(
     q1: Union[Quaternion, npt.ArrayLike],
     q2: Union[Quaternion, npt.ArrayLike],
-    pct: float,
+    pct: Union[float, npt.ArrayLike],
 ) -> np.ndarray:
     """Interpolates between two quaternions via SLERP (spherical linear interpolation)
+
+    To interpolate at multiple points, pass in pcts as an array of interpolation percentages
 
     Args:
         q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
             must be in XYZW order (length = 4)
         q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
             must be in XYZW order (length = 4)
-        pct (float): Percent between start -> end, expressed as a float in [0, 1]
+        pct (Union[float, npt.ArrayLike]): Percent(s) between start -> end, expressed as float(s) in [0, 1]
 
     Returns:
-        np.ndarray: The interpolated XYZW quaternion, shape = (4,)
+        np.ndarray: The interpolated XYZW quaternion(s), shape = (4,) or (n, 4) if interpolating at multiple points
     """
-    if not 0 <= pct <= 1:
+    pct = np.atleast_1d(pct)
+    n = len(pct)  # Number of interpolation points
+    if not (np.all(pct >= 0) and np.all(pct <= 1)):
         raise ValueError(
-            f"Interpolation percentage must be between 0 and 1.\nGot: {pct}"
+            f"Interpolation percentage(s) must be between 0 and 1.\nGot: {pct}"
         )
     if not isinstance(q1, Quaternion):
         q1 = Quaternion(xyzw=q1)
@@ -420,10 +425,18 @@ def quaternion_interp(
         q2 = Quaternion(xyzw=q2)
     # The shortest path parameter does not add too much extra computation and should handle quaternion ambiguity well
     shortest_path = True
-    q_interp = Quaternion(
-        wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct, shortest_path)
-    )
-    return q_interp.xyzw
+    # Simple conversion for one interpolation point, otherwise use batched process
+    if n == 1:
+        q_interp = Quaternion(
+            wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct[0], shortest_path)
+        )
+        return q_interp.xyzw
+    else:
+        wxyz_quats = brt.quaternion_slerp_batch(q1.wxyz, q2.wxyz, pct, shortest_path)
+        xyzw_quats = np.zeros_like(wxyz_quats)
+        xyzw_quats[:, :3] = wxyz_quats[:, 1:]  # qx, qy, qz
+        xyzw_quats[:, -1] = wxyz_quats[:, 0]  # qw
+        return xyzw_quats  # (n, 4)
 
 
 def axis_angle_between_two_vectors(
