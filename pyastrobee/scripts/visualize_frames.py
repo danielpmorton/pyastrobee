@@ -3,7 +3,7 @@
 import numpy as np
 import pybullet
 
-from pyastrobee.vision.debug_visualizer import (
+from pyastrobee.utils.debug_visualizer import (
     visualize_frame,
     visualize_quaternion,
     remove_debug_objects,

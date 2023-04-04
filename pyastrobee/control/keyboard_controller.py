@@ -57,7 +57,7 @@ from pyastrobee.utils.poses import (
     add_global_pose_delta,
 )
 from pyastrobee.utils.iss_utils import load_iss
-from pyastrobee.vision.debug_visualizer import get_viz_camera_params
+from pyastrobee.utils.debug_visualizer import get_viz_camera_params
 from pyastrobee.utils.python_utils import print_green, print_red
 
 

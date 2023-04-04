@@ -5,7 +5,7 @@ import time
 import numpy as np
 import pybullet
 
-from pyastrobee.vision.debug_visualizer import visualize_traj
+from pyastrobee.utils.debug_visualizer import visualize_traj
 from pyastrobee.control.planner import interpolation_pose_traj, point_and_move_pose_traj
 
 

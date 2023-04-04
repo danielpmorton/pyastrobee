@@ -1,7 +1,7 @@
 """Quick script to view the frames of each link on the Astrobee"""
 
 from pyastrobee.control.astrobee import Astrobee
-from pyastrobee.vision.debug_visualizer import (
+from pyastrobee.utils.debug_visualizer import (
     visualize_link_frame,
     remove_debug_objects,
 )
