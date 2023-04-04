@@ -26,12 +26,19 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.control.astrobee import Astrobee
-from pyastrobee.utils.rotations import quaternion_slerp, get_closest_heading_quat
+from pyastrobee.utils.rotations import (
+    quaternion_slerp,
+    get_closest_heading_quat,
+    quaternion_dist,
+)
 from pyastrobee.utils.math_utils import normalize
 
 
 def point_and_move_pose_traj(
-    start_pose: npt.ArrayLike, end_pose: npt.ArrayLike, n1: int, n2: int, n3: int
+    start_pose: npt.ArrayLike,
+    end_pose: npt.ArrayLike,
+    pos_step: float,
+    orn_step: float,
 ) -> np.ndarray:
     """Simple pose-only trajectory where the robot points at the goal, moves along a straight line,
     then aligns with the goal
@@ -39,9 +46,8 @@ def point_and_move_pose_traj(
     Args:
         start_pose (npt.ArrayLike): Starting position + xyzw quaternion pose, shape (7,)
         end_pose (npt.ArrayLike): Ending position + xyzw quaternion pose, shape (7,)
-        n1 (int): Number of timesteps for the "point towards goal" motion
-        n2 (int): Number of timesteps for the "move along line" motion
-        n3 (int): Number of timesteps for the "align with goal" motion
+        pos_step (float): Position stepsize (meters)
+        orn_step (float): Orientation stepsize (quaternion distance)
 
     Returns:
         np.ndarray: Trajectory, shape (n1 + n2 + n3, 7)
@@ -55,10 +61,14 @@ def point_and_move_pose_traj(
     # First, need to find the quaternion to point in the right direction
     heading = normalize(end_position - start_position)
     heading_quat = get_closest_heading_quat(start_quat, heading)
+    # Also determine the discretization based on this intermediate orientation
+    n1 = int(np.ceil(quaternion_dist(start_quat, heading_quat) / orn_step))
     traj_1 = fixed_pos_pose_traj(start_position, start_quat, heading_quat, n1)
     # Trajectory part 2: Maintain the same orientation, move to final position
+    n2 = int(np.ceil(np.linalg.norm(end_position - start_position) / pos_step))
     traj_2 = fixed_orn_pose_traj(start_position, end_position, heading_quat, n2)
     # Trajectory part 3: Maintain the same final position, turn to goal orientation
+    n3 = int(np.ceil(quaternion_dist(heading_quat, end_quat) / orn_step))
     traj_3 = fixed_pos_pose_traj(end_position, heading_quat, end_quat, n3)
     # Merge the trajectory components together
     return np.vstack((traj_1, traj_2, traj_3))

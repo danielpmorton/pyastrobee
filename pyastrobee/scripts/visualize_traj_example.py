@@ -26,7 +26,7 @@ end_pose = np.concatenate((end_pos, end_orn))
 # Make trajectories with different methods, with position offset for easier visualization
 dp = np.array([0, -2, 0, 0, 0, 0, 0])
 traj_1 = interpolation_pose_traj(start_pose, end_pose, 30)
-traj_2 = point_and_move_pose_traj(start_pose + dp, end_pose + dp, 10, 10, 10)
+traj_2 = point_and_move_pose_traj(start_pose + dp, end_pose + dp, 0.2, 0.2)
 
 # Visualize the trajectories in Pybullet
 pybullet.connect(pybullet.GUI)
