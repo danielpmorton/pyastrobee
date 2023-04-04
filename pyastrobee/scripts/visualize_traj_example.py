@@ -1,34 +1,39 @@
-"""Simple script to give an example of visualizing a trajectory in Pybullet"""
+"""Simple script to give an example of creating and visualziing trajectories in Pybullet"""
 
 import time
 
 import numpy as np
 import pybullet
 
-from pyastrobee.utils.rotations import rmat_to_quat, Rz
 from pyastrobee.vision.debug_visualizer import visualize_traj
-from pyastrobee.utils.rotations import quaternion_slerp
+from pyastrobee.control.planner import interpolation_pose_traj, point_and_move_pose_traj
 
-# Make an arbitrary trajectory just as an example:
 
-# Spherical linear interpolation for orientation component
-q1 = np.array([0, 0, 0, 1])
-q2 = rmat_to_quat(Rz(np.pi / 2))
-n_steps = 50
-t = np.linspace(0, 1, n_steps)
-xyzw_quats = quaternion_slerp(q1, q2, t)
+def random_quat():
+    a = np.random.rand(4)
+    return a / np.linalg.norm(a)
 
-# Linear interpolation for position component
-p1 = np.array([0, 0, 0])
-p2 = np.array([10, 0, 0])
-positions = p1 + p2 * t.reshape(-1, 1)
 
-# Form the (n, 7) position + quaternion trajectory
-traj = np.hstack((positions, xyzw_quats))
+# Create start/end poses
+np.random.seed(0)
+start_pos = np.array([-3, 0, 1])
+end_pos = np.array([3, 0, 1])
+start_orn = random_quat()
+end_orn = random_quat()
+start_pose = np.concatenate((start_pos, start_orn))
+end_pose = np.concatenate((end_pos, end_orn))
 
-# Visualize the trajectory in Pybullet
+# Make trajectories with different methods, with position offset for easier visualization
+dp = np.array([0, -2, 0, 0, 0, 0, 0])
+traj_1 = interpolation_pose_traj(start_pose, end_pose, 30)
+traj_2 = point_and_move_pose_traj(start_pose + dp, end_pose + dp, 10, 10, 10)
+
+# Visualize the trajectories in Pybullet
 pybullet.connect(pybullet.GUI)
-ids = visualize_traj(traj)
+ids_1 = visualize_traj(traj_1)
+pybullet.addUserDebugText("Pose interpolation", start_pos + [0, 0, 1])
+ids_2 = visualize_traj(traj_2)
+pybullet.addUserDebugText("Point-and-move", start_pos + [0, -2, 1])
 
 # Leave the sim running
 while True:
