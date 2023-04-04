@@ -540,9 +540,8 @@ def get_closest_heading_quat(q0: npt.ArrayLike, heading: npt.ArrayLike) -> np.nd
     """
     # We want the x axis to point along the heading axis
     # So, a rotation between these two axes can be defined by an axis-angle rotation
+    # We can then apply this rotation transformation via quaternion concatenation
     rmat1 = quat_to_rmat(q0)
     orig_x_axis = rmat1[:, 0]
-    axis, angle = axis_angle_between_two_vectors(orig_x_axis, heading)
-    # Apply this rotation transformation via quaternion concatenation
-    # (Similarly, we could do this by multiplying by the equivalent rotation matrices)
-    return combine_quaternions(axis_angle_to_quat(axis, angle), q0)
+    rotation_quat = quaternion_between_two_vectors(orig_x_axis, heading)
+    return combine_quaternions(rotation_quat, q0)
