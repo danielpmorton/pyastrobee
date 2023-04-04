@@ -4,12 +4,12 @@ This is used in conjunction with "pip install -e ."
 
 TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
+TODO add beautifulsoup4 back in if parsing XML/URDFs
+TODO add open3d back in if visualizing anything 3D outside of pybullet
 
 Dependencies notes (outside of the usual suspects):
 - pytransform3d: Manages rotations and transformation math
-- beautifulsoup4: For XML/URDF parsing
 - Pylint/Black: For code formatting
-- Open3D: For visualizations with pytransform3d
 - pynput: Manages the keyboard listener
 """
 
@@ -26,8 +26,6 @@ setup(
         "opencv-python",
         "matplotlib",
         "pytransform3d",
-        "beautifulsoup4",
-        "open3d",
         "pynput",
     ],
     extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
