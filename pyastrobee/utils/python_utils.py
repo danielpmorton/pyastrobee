@@ -4,9 +4,23 @@ TODO determine if this should be separated into more specific files - e.g. debug
 """
 
 from typing import Any
+from enum import Enum
 
 import numpy as np
 import numpy.typing as npt
+
+
+class ExtendedEnum(Enum):
+    """Add the ability to easily extract values of an Enum
+
+    TODO add @property wrapping as well
+    (possibly buggy, see https://github.com/python/cpython/issues/89519)
+    """
+
+    @classmethod
+    def get_values(cls):
+        """Values of members in the Enum"""
+        return list(map(lambda c: c.value, cls))
 
 
 def print_red(message: Any):

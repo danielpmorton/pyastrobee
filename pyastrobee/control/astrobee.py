@@ -4,14 +4,11 @@ In general, we assume that we're working with Honey. Multiple astrobees can be l
 we assume that they all have the exact same configuration
 
 TODO
-- Can we rename the joints and the links in the urdf? e.g. remove "honey", "top_aft"
-- What's the deal with the "top_aft" fixed joint? Is that part of the KDL workaround?
 - Figure out the sleep time in the while loops. What value should we use?
 - Get step sizes worked out!!
 """
 
 import time
-from enum import Enum
 from typing import Optional
 
 import pybullet
@@ -24,7 +21,7 @@ from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
-from pyastrobee.utils.python_utils import print_green
+from pyastrobee.utils.python_utils import print_green, ExtendedEnum
 
 
 class Astrobee:
@@ -46,7 +43,7 @@ class Astrobee:
     LOADED_IDS = []  # Initialization
     NUM_ROBOTS = 0  # Initialization. TODO make this into a property?
     NUM_JOINTS = 7
-    NUM_LINKS = 7
+    NUM_LINKS = 8
     TRANSFORMS = astrobee_transforms  # TODO figure out if this is the best way to store this info
     GRIPPER_JOINT_IDXS = [3, 4, 5, 6]
     ARM_JOINT_IDXS = [1, 2]
@@ -84,11 +81,11 @@ class Astrobee:
 
     # Should these actually be enums, or would a dict be better? The names can be tricky,
     # so typing those out as strings every time could be not ideal
-    class Joints(Enum):
+    class Joints(ExtendedEnum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""
 
         # Comments indicate the name of the joint in the URDF
-        TOP_AFT = 0  # top_aft
+        ARM_BASE = 0  # top_aft (fixed joint)
         ARM_PROXIMAL = 1  # top_aft_arm_proximal_joint
         ARM_DISTAL = 2  # top_aft_arm_distal_joint
         GRIPPER_LEFT_PROXIMAL = 3  # top_aft_gripper_left_proximal_joint
@@ -96,7 +93,7 @@ class Astrobee:
         GRIPPER_RIGHT_PROXIMAL = 5  # top_aft_gripper_right_proximal_joint
         GRIPPER_RIGHT_DISTAL = 6  # top_aft_gripper_right_distal_joint
 
-    class Links(Enum):
+    class Links(ExtendedEnum):
         """Enumerates the different links on the astrobee via their Pybullet index
 
         Note: the URDF technically has 8 links, but it appears that pybullet considers
@@ -104,7 +101,8 @@ class Astrobee:
         """
 
         # Comments indicate the name of the link in the URDF
-        TOP_AFT = 0  # honey_top_aft
+        BODY = -1  # honey_body
+        ARM_BASE = 0  # honey_top_aft
         ARM_PROXIMAL = 1  # honey_top_aft_arm_proximal_link
         ARM_DISTAL = 2  # honey_top_aft_arm_distal_link
         GRIPPER_LEFT_PROXIMAL = 3  # honey_top_aft_gripper_left_proximal_link
@@ -125,9 +123,9 @@ class Astrobee:
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
         # Even though we're loading the textured version of the Astrobee, we still need to change the color
         # or else the texture will show up all black (seems to just be a pybullet quirk)
-        for i in range(-1, self.NUM_LINKS):
+        for link_id in Astrobee.Links.get_values():
             pybullet.changeVisualShape(
-                objectUniqueId=self.id, linkIndex=i, rgbaColor=[1, 1, 1, 1]
+                objectUniqueId=self.id, linkIndex=link_id, rgbaColor=[1, 1, 1, 1]
             )
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
@@ -310,7 +308,10 @@ class Astrobee:
         Returns:
             np.ndarray: Transformation matrix (link to world). Shape = (4,4)
         """
-        if link_index >= Astrobee.NUM_LINKS or link_index < 0:
+        # We have 8 links, indexed from -1 to 6
+        # Pybullet does not allow access to the base link (-1) through getLinkState
+        # So, use this only for non-base links
+        if link_index > 6 or link_index < 0:
             raise ValueError(f"Invalid link index: {link_index}")
         link_state = pybullet.getLinkState(
             self.id, link_index, computeForwardKinematics=True
