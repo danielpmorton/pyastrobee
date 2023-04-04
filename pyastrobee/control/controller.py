@@ -5,6 +5,7 @@ TODO
   https://github.com/bulletphysics/bullet3/issues/2237
 - Add ability to command deltas
 - Add logic/planning/PID to control more than just velocity with velocity, force with force, ...
+- Unify function between controllers with a follow_trajectory() function?
 
 TODO (Long-horizon)
 - Add support for multiple robots (maybe this is already viable if we just initialize another controller for robot #2)
@@ -32,14 +33,8 @@ from pyastrobee.config.astrobee_motion import (
     MAX_TORQUE,
 )  # Change this import handling?
 from pyastrobee.control.physics_models import drag_force_model
-from pyastrobee.utils.quaternion import Quaternion
-from pyastrobee.utils.rotations import (
-    quaternion_dist,
-    quaternion_slerp,
-    quaternion_between_two_vectors,
-)
-from pyastrobee.utils.math_utils import normalize
 from pyastrobee.utils.python_utils import print_red
+from pyastrobee.control.planner import point_and_move_pose_traj
 
 
 class Controller(ABC):
@@ -172,11 +167,11 @@ class PoseController:
         robot (Astrobee): The Astrobee being controlled
 
     TODO
-    - Currently, this just uses the same preliminary control method that was originally in Astrobee()
     - This should be structured in the same way as the other controllers (Inherit from Controller(), and define the
       update() function), so that we can call the controllers in the same way
     - This will likely require us to define states such as IDLE, ALIGNING, FOLLOWING, and do different things in
       the update() function based on the state and transitions
+    - Rename to ConstraintController?
     """
 
     def __init__(self, robot: Astrobee):
@@ -203,60 +198,6 @@ class PoseController:
             raise ValueError(f"Invalid pose. Got: {cmd}")
         self._pose_command = cmd
 
-    def align_to(self, orn: ArrayLike, max_force: float = 500) -> None:
-        """Rotates the Astrobee about its current position to align with a specified orientation
-
-        TODO HACKY -- CLEAN UP!
-
-        Args:
-            orn (npt.ArrayLike): Desired XYZW quaternion orientation
-            max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
-        """
-        # TODO: use a check_quaternion function instead of this
-        if len(orn) != 4:
-            raise ValueError(f"Invalid quaternion.\nGot: {orn}")
-        # CLEAN THIS UP!!!
-        initial_pose = self.robot.pose
-        pos = initial_pose[:3]
-        tol = 0.03  # placeholder
-        # These don't seem to need to be Quaternion objects?
-        q1 = Quaternion(xyzw=self.robot.orientation)
-        q2 = Quaternion(xyzw=orn)
-        # This method of stepping through the interpolated values is not ideal
-        # It should use some sort of stepsize or enforce velocity constraints (TODO)
-        pct = 0.01
-        dpct = 0.01
-        # TODO decide if the quaternion slerping here is better than an axis angle thing?
-        while quaternion_dist(self.robot.orientation, orn) > tol:
-            q = quaternion_slerp(q1, q2, pct)
-            # TODO decide if any other inputs to the change constraint function are needed
-            pybullet.changeConstraint(self.constraint_id, pos, q, maxForce=max_force)
-            pybullet.stepSimulation()
-            time.sleep(1 / 120)
-            pct = min(pct + dpct, 1)
-
-    def follow_line_to(self, position: ArrayLike, max_force: float = 500) -> None:
-        """Moves the Astrobee along a line (without rotating) to reach a new xyz position
-
-        Args:
-            position (npt.ArrayLike): New xyz position for the Astrobee. Shape = (3,)
-            max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
-        """
-        if len(position) != 3:
-            raise ValueError(f"Invalid position.\nGot: {position}")
-        pos, orn = np.split(self.robot.pose, [3])
-        step = 0.1  # Totally arbitrary for now
-        # Need to improve the stepping mechanic.. increase and decrease speed/stepsize as needed
-        while np.linalg.norm(pos - position) > step:
-            direction = normalize(position - pos)  # Unit vector
-            new_pos = pos + step * direction
-            pybullet.changeConstraint(
-                self.constraint_id, new_pos, orn, maxForce=max_force
-            )
-            pybullet.stepSimulation()
-            time.sleep(1 / 120)
-            pos = self.robot.position  # Update after moving
-
     def go_to_pose(self, pose: ArrayLike, max_force: float = 500) -> None:
         """Navigates to a new pose
 
@@ -269,20 +210,17 @@ class PoseController:
             pose (ArrayLike): Desired new pose (position + quaternion) for the astrobee
             max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
         """
-        # TODO improve this pose checking. Check if Pose() instance too?
-        if len(pose) != 7:
-            raise ValueError(f"Invalid pose.\nGot: {pose}")
-        goal_pos, goal_orn = np.split(pose, [3])
-        direction = goal_pos - self.robot.position
-        # Move to the next position specified if we are far from it
-        # If we are within a stepsize, we should just orient ourselves to avoid unnecessary rotation
-        tol = 1e-3  # TODO UPDATE THIS ONCE YOU DECIDE ON A STEPSIZE
-        if np.linalg.norm(direction) > tol:
-            q = quaternion_between_two_vectors(self.robot.heading, direction)
-            self.align_to(q, max_force)
-            self.follow_line_to(goal_pos, max_force)
-        # Orient the astrobee to the desired ending orientation
-        self.align_to(goal_orn, max_force)
+        pos_stepsize = 0.01  # TODO move this
+        orn_stepsize = 0.01
+        traj = point_and_move_pose_traj(
+            self.robot.pose, pose, pos_stepsize, orn_stepsize
+        )
+        for i in range(traj.shape[0]):
+            pybullet.changeConstraint(
+                self.constraint_id, traj[i, :3], traj[i, 3:], maxForce=max_force
+            )
+            pybullet.stepSimulation()
+            time.sleep(1 / 120)
 
     def delete_constraint(self) -> None:
         """Deletes the constraint between the Astrobee and the world"""
