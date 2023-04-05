@@ -12,6 +12,8 @@
 
 [Tetrahedral Meshing](docs/tet_meshing.md): How to generate and modify tetrahedral meshes for soft bodies
 
+[Bag Dynamics](docs/bag_dynamics.md): Some notes on defining mass/inertia values of the cargo bag
+
 [Assorted Notes](docs/assorted_notes.md): Things I thought seemed important
 
 [Testing](docs/testing.md): Information about running test cases
@@ -21,7 +23,6 @@
 ## Status
 ### TODOs:
 - [ ] Add additional setup info to the docs about NASA code and ROS?
-- [ ] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
 - [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
 - [ ] Add anything from the demo to the control section, if we want to keep it
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
@@ -101,6 +102,7 @@
 - [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
 - [X] Calibrate that gripper / arm distal joint transformation
 - [X] Fix the Astrobee textures in Blender
 - [X] Move the modified Honey skin file into the correct place
