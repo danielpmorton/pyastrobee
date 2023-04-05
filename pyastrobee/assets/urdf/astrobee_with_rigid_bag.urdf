@@ -14,6 +14,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/body.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision name="body_collision">
       <origin rpy="0 0 0" xyz="-0.000794 0.000229 -0.003907"/>
@@ -32,18 +35,27 @@
       <geometry>
         <mesh filename="../meshes/astrobee/pmc.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <visual name="pmc_port_bumper_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="../meshes/astrobee/pmc_bumper.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <visual name="pmc_port_skin_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="../meshes/astrobee/pmc_skin_honey.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision name="pmc_port_collision">
       <origin rpy="0 0 0" xyz="0 -0.117546 0"/>
@@ -57,18 +69,27 @@
       <geometry>
         <mesh filename="../meshes/astrobee/pmc.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <visual name="pmc_stbd_bumper_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
         <mesh filename="../meshes/astrobee/pmc_bumper.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <visual name="pmc_stbd_skin_visual">
       <origin rpy="0 3.14 3.14" xyz="0 0 0"/>
       <geometry>
         <mesh filename="../meshes/astrobee/pmc_skin_honey.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision name="pmc_stbd_collision">
       <origin rpy="0 0 0" xyz="0 0.117546 0"/>
@@ -89,6 +110,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/base_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 -0.038125 0"/>
@@ -114,6 +138,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/arm_proximal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.049625 -0.0022 0"/>
@@ -141,6 +168,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/arm_distal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.02"/>
@@ -168,6 +198,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/gripper_left_proximal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.025547 0 -0.000875"/>
@@ -195,6 +228,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/gripper_left_distal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.021524 0 -0.000875"/>
@@ -222,6 +258,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/gripper_right_proximal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.025547 0 0.000875"/>
@@ -249,6 +288,9 @@
       <geometry>
         <mesh filename="../meshes/astrobee/gripper_right_distal_link.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.021512 0 0.000875"/>
@@ -280,6 +322,9 @@
       <geometry>
         <mesh filename="../meshes/bags/obj/top_handle_bag.obj"/>
       </geometry>
+      <material name="default_material">
+        <color rgba="1 1 1 1"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.25"/>

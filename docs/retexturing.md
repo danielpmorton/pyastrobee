@@ -59,4 +59,9 @@ If this is a Blender file with multiple URDF links loaded, you'll need to select
 
 If you just call `loadURDF()`, the Astrobee may show up totally black. It seems that this isn't actually a problem with the texture, it's moreso that there is a unset alpha channel. So, loop through all of the link indices and set the `rgbaColor` to be `[1, 1, 1, 1]` using `changeVisualShape()`, and this should fix the problem
 
-(This might be an incorrect assumption, but it seems to work. Note that I don't think the RGB values matter much here, so I chose white arbitrarily)
+Another way of fixing this issue is that you can add a default material into the URDF with this alpha channel set. For instance, add the following block inside the `<visual>` block, after `<geometry>`: 
+```
+<material name="default_material">
+    <color rgba="1 1 1 1"/>
+</material>
+```

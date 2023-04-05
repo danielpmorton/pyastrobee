@@ -121,12 +121,6 @@ class Astrobee:
                 "Need to connect to pybullet before initializing an astrobee"
             )
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
-        # Even though we're loading the textured version of the Astrobee, we still need to change the color
-        # or else the texture will show up all black (seems to just be a pybullet quirk)
-        for link_id in Astrobee.Links.get_values():
-            pybullet.changeVisualShape(
-                objectUniqueId=self.id, linkIndex=link_id, rgbaColor=[1, 1, 1, 1]
-            )
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
         self.set_gripper_position(gripper_pos)
