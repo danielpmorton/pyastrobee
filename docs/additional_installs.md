@@ -58,22 +58,7 @@ cd bullet3
 
 ## Astrobee
 
-Follow the instructions at 
-https://nasa.github.io/astrobee/v/develop/install-nonNASA.html
-
-The locally-built version of the code is preferable to the Docker option. 
-
-Possible errors that might show up, and how to fix these:
-- ... more info to come (TODO)
-
-To test if this install worked, run the following:
-```
-cd $HOME/astrobee # Or ASTROBEE_WS, if installed in a different location
-source devel/setup.bash
-roslaunch astrobee sim.launch dds:=false robot:=sim_pub rviz:=true sviz:=true
-```
-This should bring up both a Gazebo and an RVIZ window displaying the astrobee inside the ISS
-
+This can be an extensive process with a lot of potential issues that may come up. There is a lot more info in a separate page [here](../docs/nasa_sim.md).
 
 ## Blender
 

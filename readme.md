@@ -10,13 +10,15 @@
 
 [Re-texturing](docs/retexturing.md): How to modify Astrobee meshes to load the URDF with a single texture file
 
+[Meshing](docs/meshing.md): Tips on creating new (triangular) meshes to load into Pybullet
+
 [Tetrahedral Meshing](docs/tet_meshing.md): How to generate and modify tetrahedral meshes for soft bodies
 
 [Bag Dynamics](docs/bag_dynamics.md): Some notes on defining mass/inertia values of the cargo bag
 
-[Assorted Notes](docs/assorted_notes.md): Things I thought seemed important
-
 [Testing](docs/testing.md): Information about running test cases
+
+[Using NASA's simulator](docs/nasa_sim.md): Helpful commands and installation debugging
 
 [References](docs/references.md): Links to hepful resources
 
