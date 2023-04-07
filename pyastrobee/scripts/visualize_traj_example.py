@@ -7,19 +7,14 @@ import pybullet
 
 from pyastrobee.utils.debug_visualizer import visualize_traj
 from pyastrobee.control.planner import interpolation_pose_traj, point_and_move_pose_traj
-
-
-def random_quat():
-    a = np.random.rand(4)
-    return a / np.linalg.norm(a)
-
+from pyastrobee.utils.quaternion import random_quaternion
 
 # Create start/end poses
 np.random.seed(0)
 start_pos = np.array([-3, 0, 1])
 end_pos = np.array([3, 0, 1])
-start_orn = random_quat()
-end_orn = random_quat()
+start_orn = random_quaternion()
+end_orn = random_quaternion()
 start_pose = np.concatenate((start_pos, start_orn))
 end_pose = np.concatenate((end_pos, end_orn))
 

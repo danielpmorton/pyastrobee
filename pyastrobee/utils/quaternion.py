@@ -96,3 +96,13 @@ class Quaternion:
 # Should we just automatically normalize things?
 def check_quaternion(quat: npt.ArrayLike) -> bool:
     raise NotImplementedError
+
+
+def random_quaternion() -> np.ndarray:
+    """Generate a random, normalized quaternion
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    q = np.random.rand(4)
+    return q / np.linalg.norm(q)

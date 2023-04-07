@@ -9,16 +9,12 @@ from pyastrobee.control.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
 from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 from pyastrobee.utils.poses import pos_quat_to_tmat
-
-
-def random_quat():
-    a = np.random.rand(4)
-    return a / np.linalg.norm(a)
+from pyastrobee.utils.quaternion import random_quaternion
 
 
 def random_pose(max_dist=2):
     p = max_dist * np.random.rand(3)
-    q = random_quat()
+    q = random_quaternion()
     return np.concatenate((p, q))
 
 
