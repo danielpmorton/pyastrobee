@@ -22,7 +22,7 @@ def load_rigid_object(
     texture_filename: Optional[str] = None,
     scale: float = 1.0,
     pos: list[float] = [0.0, 0.0, 0.0],
-    orn: list[float] = [0.0, 0.0, 0.0],
+    orn: list[float] = [0.0, 0.0, 0.0, 1.0],
     mass: float = 1.0,
     fixed: bool = False,
     rgba: list[float] = [1.0, 1.0, 1.0, 1.0],
@@ -38,7 +38,7 @@ def load_rigid_object(
             texture will be applied
         scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
         pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
-        orn (list[float], optional): Initial (euler) orientation for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        orn (list[float], optional): Initial XYZW quaternion orientation. Defaults to [0, 0, 0, 1].
         mass (float, optional): Mass of the loaded object. Defaults to 1.0.
         fixed (bool, optional): Whether or not to fix the object in space. Defaults to False.
         rgba (list[float], optional): Color of the object, expressed as RGBA, each within range [0, 1].
@@ -75,13 +75,13 @@ def load_rigid_object(
             basePosition=pos,
             baseCollisionShapeIndex=collision_id,
             baseVisualShapeIndex=visual_id,
-            baseOrientation=pybullet.getQuaternionFromEuler(orn),
+            baseOrientation=orn,
         )
     elif filename.endswith(".urdf"):  # URDF file
         rigid_id = pybullet.loadURDF(
             filename,
             pos,
-            pybullet.getQuaternionFromEuler(orn),
+            orn,
             useFixedBase=fixed,
             globalScaling=scale,
         )
@@ -152,7 +152,7 @@ def load_deformable_object(
     texture_filename: Optional[str] = None,
     scale: float = 1.0,
     pos: list[float] = [0.0, 0.0, 0.0],
-    orn: list[float] = [0.0, 0.0, 0.0],
+    orn: list[float] = [0.0, 0.0, 0.0, 1.0],
     mass: float = 1.0,
     bending_stiffness: float = 50.0,
     damping_stiffness: float = 0.1,
@@ -173,7 +173,7 @@ def load_deformable_object(
             texture will be applied
         scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
         pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
-        orn (list[float], optional): Initial (euler) orientation for the loaded object. Defaults to [0.0, 0.0, 0.0].
+        orn (list[float], optional): Initial XYZW quaternion orientation. Defaults to [0, 0, 0, 1].
         mass (float, optional): Mass of the loaded object. Defaults to 1.0 (Keeping at 1.0 is the most stable option).
         bending_stiffness (float, optional): Bending stiffness of the loaded object. Defaults to 1.0.
         damping_stiffness (float, optional): Damping stiffness of the loaded object. Defaults to 0.1.
@@ -196,7 +196,7 @@ def load_deformable_object(
         fileName=filename,
         scale=scale,
         basePosition=pos,
-        baseOrientation=pybullet.getQuaternionFromEuler(orn),
+        baseOrientation=orn,
         springElasticStiffness=elastic_stiffness,
         springDampingStiffness=damping_stiffness,
         springBendingStiffness=bending_stiffness,

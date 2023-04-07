@@ -23,6 +23,7 @@ from pyastrobee.utils.bullet_utils import (
 )
 from pyastrobee.utils.mesh_utils import get_closest_mesh_vertex
 from pyastrobee.utils.bullet_utils import create_anchor
+from pyastrobee.utils.rotations import fixed_xyz_to_quat
 
 
 def load_bag(robot_id, side=0):
@@ -32,6 +33,7 @@ def load_bag(robot_id, side=0):
     fnames = ["front_handle_bag.vtk", "side_handle_bag.vtk"]  # TODO add top_handle_bag
     poss = np.array([[-0.05, 0.00, -0.53], [-0.05, 0.00, -0.65]])  # z=-0.53  -0.48
     orns = np.array([[-np.pi / 2, 0, 0], [0, -np.pi / 2, 0]])
+    orns = [fixed_xyz_to_quat(orn) for orn in orns]  # Quick fix for convention update
     print("poss[side]", poss[side], "orns[side]", orns[side])
     bag_id = load_deformable_object(
         os.path.join(pfx, fnames[side]),
