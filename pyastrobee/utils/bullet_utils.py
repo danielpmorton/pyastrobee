@@ -159,6 +159,7 @@ def load_deformable_object(
     elastic_stiffness: float = 50.0,
     friction_coeff: float = 0.1,
     self_collision: bool = False,
+    sim_file_name="",
 ) -> int:
     """Loads a deformable object from an OBJ file
 
@@ -181,6 +182,9 @@ def load_deformable_object(
         friction_coeff (float, optional): Friction coefficient of the loaded object. Defaults to 0.1.
         self_collision (bool, optional): Whether or not to allow self-collisions for the object. Defaults to False.
             Note: setting this as True seemed to lead to mesh collapse
+        sim_file_name (str, optional): This is an undocumented input to loadSoftBody, but it appears to allow you
+            to load an OBJ in the filename (for texture purposes) and a corresponding VTK in the simFileName for
+            volumetric softbody physics
 
     Returns:
         int: ID number for the object
@@ -209,6 +213,7 @@ def load_deformable_object(
         useMassSpring=True,
         useBendingSprings=True,
         # repulsionStiffness=10000000,
+        simFileName=sim_file_name,
     )
 
     # TODO figure out what this sparseSdfVoxelSize parameter actually does (it's not documented)
