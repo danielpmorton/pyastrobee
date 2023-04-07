@@ -23,9 +23,9 @@ from pyastrobee.utils.debug_visualizer import visualize_frame
 from pyastrobee.utils.quaternion import random_quaternion
 import pyastrobee.config.bag_properties as bag_props
 
-front_file = "pyastrobee/assets/meshes/bags/obj/front_handle_bag.obj"
-side_file = "pyastrobee/assets/meshes/bags/obj/side_handle_bag.obj"
-top_file = "pyastrobee/assets/meshes/bags/obj/top_handle_bag.obj"
+front_file = "pyastrobee/assets/meshes/bags/front_handle_bag.obj"
+side_file = "pyastrobee/assets/meshes/bags/side_handle_bag.obj"
+top_file = "pyastrobee/assets/meshes/bags/top_handle_bag.obj"
 
 pybullet.connect(pybullet.GUI)
 np.random.seed(0)
