@@ -24,7 +24,31 @@
 
 ## Status
 ### TODOs:
-- [ ] Add additional setup info to the docs about NASA code and ROS?
+- [ ] Update the VTK meshes so that we can just apply `astrobee_texture` directly? Might need to regenerate them based on the OBJ file that has the correct UV map
+- [ ] FIX THE ORIENTATION ISSUE IN `load_rigid_object` and `load_deformable_object`
+  - [ ] They seem to use fixed angles rather than euler angles in their own converters
+  - [ ] Just make the input to the functions a quaternion
+  - [ ] Might need some refactoring of the demo script
+- [ ] When the Astrobee is loaded it steps the sim (since it opens the gripper), which may be unwanted behavior
+- [ ] Collision information for the rigid bag looks pretty weird. (in wireframe mode). Will this be an issue? Should we vhacd this? Or make something out of simple geometry
+- [ ] Try out determining inertia matrices in MeshLab
+- [ ] See if it's possible to import the VTKs into Blender and adjust their texture maps
+- [ ] Load the Astrobee with the anchored soft bag with NO CONSTRAINT, click + drag to see if the physics seems ok
+- [ ] Turn the load_bag function from the demo into something a bit more robust
+- [ ] Add min-jerk and screw path trajectory
+  - [ ] See the NU Modern Robotics videos
+    - [ ] https://modernrobotics.northwestern.edu/nu-gm-book-resource/9-1-and-9-2-point-to-point-trajectories-part-1-of-2/
+- [ ] Check on quaternion normalization meaning
+- [ ] Check out `humanoidMotionCapture` in pybullet examples!!
+  - [ ] Especially how they use `pdControllerStable` and `pdControllerExplicit`
+- [ ] Update the pose controller to use the new quaternion heading function
+- [ ] Add test cases for batched quaternion operations
+- [ ] Deal with stuff from demo
+  - [ ] Delete the unnecessary code
+  - [ ] Make the file self-contained with Rika's code
+  - [ ] Rename the file with the demo date
+- [ ] Figure out how to get textures to apply properly to VTK files
+- [ ] Look into changeDynamics()
 - [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
 - [ ] Add anything from the demo to the control section, if we want to keep it
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
@@ -32,20 +56,11 @@
 - [ ] Idea: add a parameter on initialization of Astrobee() deciding on the control mode? 
   - Then we could initialize the constraint if it's in position mode (and not otherwise)
   - This would really only be useful if we did decide to eliminate Controller
-- [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/planner.py
-- [ ] See if there are any useful transformations here:
-  - [ ] https://github.com/cgohlke/transformations/
-- [ ] Check out quaternions in numpy? https://github.com/moble/quaternion
 - [ ] Add an overview of the repo structure to the docs
 - [ ] Decide if all arm/gripper control should remain in Astrobee or not
 - [ ] Figure out how to export just the volume mesh from gmsh
 - [ ] Get velocity control integrated into the keyboard controller
 - [ ] Decide if astrobee_geom should be merged with something else
-- [ ] See if the quaternion rotations between motions needs to be debugged (seems like it rotates in odd ways sometimes?)
-- [ ] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
 - [ ] Decide if we need to modify/refine the VHACD results based on what's important to us
@@ -54,11 +69,21 @@
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
 - [ ] Add more tests
 
+### References to look into
+- [ ] https://github.com/rock-learning/bolero
+- [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
+  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/planner.py
+- [ ] See if there are any useful transformations here:
+  - [ ] https://github.com/cgohlke/transformations/
+- [ ] Check out quaternions in numpy? https://github.com/moble/quaternion
+
 ### In Progress:
 - [ ] Create trajectories
   - [ ] Make a class
-  - [ ] Make a way to visualize these (see pytransform trajectories)
-  - [ ] Visualize trajectory inside pybullet (see `addUserDebugLine` / `addUserDebugPoints`)
+  - [X] Make a way to visualize these (see pytransform trajectories)
+  - [X] Visualize trajectory inside pybullet (see `addUserDebugLine` / `addUserDebugPoints`)
   - [ ] Follow trajectory using PID controller
   - [ ] Visualize tracking error
 - [ ] Implement force control / velocity control
@@ -83,7 +108,6 @@
 
 ### Backlog:
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
-- [ ] Check if pyenv messes with the nasa ROS commands like the conda env did
 - [ ] Create a unified sim loop in Astrobee or Controller?
 - [ ] Test out setRealTimeSimulation?
 - [ ] Fix the `setup.py` so that it actually installs pybullet after numpy/wheel
@@ -100,11 +124,11 @@
 ### Optional
 - [ ] Decide if we need to reduce the size of the Astrobee meshes at all (they're quite complex for their simple geometry). This will require a remesh of all of the parts and then another retexturing process, which might take a little while
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
-- [ ] Figure out if it's possible to load arbitrary meshes into mujoco
-- [ ] Consider using pathlib Path with str(Path(filename))?
 
 ### Done:
+- [X] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [X] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
+- [X] Fix incorrect rotation motions in position controller
 - [X] Calibrate that gripper / arm distal joint transformation
 - [X] Fix the Astrobee textures in Blender
 - [X] Move the modified Honey skin file into the correct place

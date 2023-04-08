@@ -30,7 +30,7 @@ FRICTION_COEFF = 0.1
 # File locations
 # (TODO) Should these even be here, or shoud this file only include the bag properties?
 # (TODO) Should the OBJs also be specified?
-MESH_DIRECTORY = "pyastrobee/assets/meshes/bags/"
-FRONT_BAG_FILEPATH = MESH_DIRECTORY + "front_handle_bag.vtk"
-SIDE_BAG_FILEPATH = MESH_DIRECTORY + "side_handle_bag.vtk"
-TOP_BAG_FILEPATH = MESH_DIRECTORY + "top_handle_bag.vtk"
+# MESH_DIRECTORY = "pyastrobee/assets/meshes/bags/"
+# FRONT_BAG_FILEPATH = MESH_DIRECTORY + "front_handle_bag.vtk"
+# SIDE_BAG_FILEPATH = MESH_DIRECTORY + "side_handle_bag.vtk"
+# TOP_BAG_FILEPATH = MESH_DIRECTORY + "top_handle_bag.vtk"

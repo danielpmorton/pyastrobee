@@ -9,7 +9,7 @@ TODO
 """
 
 import time
-from typing import Optional
+from typing import Optional, Union
 
 import pybullet
 import numpy as np
@@ -293,7 +293,7 @@ class Astrobee:
         """
         return self.joint_angles[Astrobee.GRIPPER_JOINT_IDXS]
 
-    def get_link_transform(self, link_index: int) -> np.ndarray:
+    def get_link_transform(self, link_index: Union[Links, int]) -> np.ndarray:
         """Calculates the transformation matrix (w.r.t the world) for a specified link
 
         Args:
@@ -302,6 +302,8 @@ class Astrobee:
         Returns:
             np.ndarray: Transformation matrix (link to world). Shape = (4,4)
         """
+        if isinstance(link_index, Astrobee.Links):
+            link_index = link_index.value
         # We have 8 links, indexed from -1 to 6
         # Pybullet does not allow access to the base link (-1) through getLinkState
         # So, use this only for non-base links
