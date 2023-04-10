@@ -74,5 +74,13 @@ After these modifications, Pybullet should be able to successfully import the me
 
 ## Texturing
 
+To texture a tetrahedral mesh, there are two options:
+1. Generate the tetrahedral mesh from an OBJ which already has the correct UV mapping for a specified texture file, then apply the texture with `loadTexture` / `changeVisualShape`
+  -  This *should* work given some preliminary tests with a VTK with a random UV mapping. But, this hasn't been fully tested yet (as of 4/10/23)
+2. Use the texture from an OBJ by loading both the OBJ and VTK together
+  -  The OBJ and the VTK should have the exact same geometry
+  -  Load the OBJ file through the main `filename` parameter, but pass the VTK file in through `simFileName`. The resulting softbody will have the physical properties you'd expect from a tetrahedral mesh, but the same texture as the OBJ
+  -  This has been tested and works. Note: if you `removeBody` using the ID returned from `loadSoftBody`, it will leave a "ghost" visual of the OBJ. There may be a separate ID attached to the visual, but it is unclear what it is right now
+
 ## Future TODOs
 Apparently, there is a way to export just the tetrahedral mesh elements via Physical groups -- see [this thread](http://onelab.info/pipermail/gmsh/2012/007253.html) for info. For now though, this manual modification process works.
