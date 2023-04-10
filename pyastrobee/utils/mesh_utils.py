@@ -19,7 +19,7 @@ def get_mesh_data(object_id: int) -> tuple[int, np.ndarray]:
     Returns:
         tuple of:
             int: Number of vertices in the mesh
-            tuple[tuple[float, float, float], ...]: Mesh vertex positions, shape (num_verts, 3)
+            np.ndarray: Mesh vertex positions, shape (num_verts, 3)
     """
     kwargs = {}
     if hasattr(pybullet, "MESH_DATA_SIMULATION_MESH"):

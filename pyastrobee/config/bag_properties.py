@@ -21,9 +21,9 @@ TOP_BAG_GRASP_TRANSFORM = make_transform_mat(Ry(np.pi / 2), [-0.245, 0, 0])
 
 # Softbody parameters (TODO: these may need to be refined)
 MASS = 1.0
-BENDING_STIFFNESS = 50
+BENDING_STIFFNESS = 50.0
 DAMPING_STIFFNESS = 0.1
-ELASTIC_STIFFNESS = 50
+ELASTIC_STIFFNESS = 50.0
 FRICTION_COEFF = 0.1
 
 
