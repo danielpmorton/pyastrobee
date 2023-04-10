@@ -23,7 +23,7 @@ import pybullet
 import numpy as np
 from numpy.typing import ArrayLike
 
-from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.config.astrobee_motion import (
     LINEAR_ACCEL_LIMIT,
     LINEAR_SPEED_LIMIT,

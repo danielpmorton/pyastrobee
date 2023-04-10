@@ -14,7 +14,7 @@ import numpy as np
 import numpy.typing as npt
 import pybullet
 
-from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.utils.rotations import (
     quat_to_fixed_xyz,
     fixed_xyz_to_quat,
