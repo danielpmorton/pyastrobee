@@ -15,7 +15,7 @@ TODO
 import time
 import pybullet
 import numpy as np
-from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.utils.bullet_utils import load_rigid_object
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat

@@ -5,7 +5,7 @@ import time
 import numpy as np
 import pybullet
 
-from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
 from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 from pyastrobee.utils.poses import pos_quat_to_tmat

@@ -15,7 +15,7 @@ import numpy as np
 import numpy.typing as npt
 
 import pyastrobee.config.bag_properties as bag_props
-from pyastrobee.control.astrobee import Astrobee
+from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.utils.bullet_utils import (
     load_deformable_object,
     create_anchor,
