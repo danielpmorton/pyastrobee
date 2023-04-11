@@ -24,11 +24,12 @@
 
 ## Status
 ### TODOs:
+- [ ] Try out anchoring not to the handle but to the part of the main compartment right below the handle
+  - [ ] Experiment with number of anchor points... see what is most like what we'd expect from holding the handle of hte real bag
+- [ ] Add a way to get the position/velocity state info of the cargo bag
+  - [ ] If there isn't a way to query this directly, try adding a visual body anchored to the center of the bag
+  - [ ] Or maybe try to see if we can query the OBJ texture body?
 - [ ] Update the VTK meshes so that we can just apply `astrobee_texture` directly? Might need to regenerate them based on the OBJ file that has the correct UV map
-- [ ] FIX THE ORIENTATION ISSUE IN `load_rigid_object` and `load_deformable_object`
-  - [ ] They seem to use fixed angles rather than euler angles in their own converters
-  - [ ] Just make the input to the functions a quaternion
-  - [ ] Might need some refactoring of the demo script
 - [ ] When the Astrobee is loaded it steps the sim (since it opens the gripper), which may be unwanted behavior
 - [ ] Collision information for the rigid bag looks pretty weird. (in wireframe mode). Will this be an issue? Should we vhacd this? Or make something out of simple geometry
 - [ ] Try out determining inertia matrices in MeshLab
@@ -126,6 +127,7 @@
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 
 ### Done:
+- [X] Fix the orientation issue in `load_rigid_object` and `load_deformable_object`
 - [X] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [X] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
 - [X] Fix incorrect rotation motions in position controller
