@@ -26,11 +26,21 @@ DAMPING_STIFFNESS = 0.1
 ELASTIC_STIFFNESS = 50.0
 FRICTION_COEFF = 0.1
 
+# Indices of the mesh vertices closest to the corners of the bags
+# These vertices are ordered as follows:
+# 0. Right back top
+# 1. Right back bottom
+# 2. Right front top
+# 3. Right front bottom
+# 4. Left back top
+# 5. Left back bottom
+# 6. Left front top
+# 7. Left front bottom
+FRONT_BAG_CORNER_VERTS = [228, 331, 138, 372, 279, 223, 166, 201]
+SIDE_BAG_CORNER_VERTS = [299, 221, 111, 151, 332, 312, 186, 89]
+TOP_BAG_CORNER_VERTS = [296, 243, 281, 99, 237, 151, 171, 262]
 
-# File locations
-# (TODO) Should these even be here, or shoud this file only include the bag properties?
-# (TODO) Should the OBJs also be specified?
-# MESH_DIRECTORY = "pyastrobee/assets/meshes/bags/"
-# FRONT_BAG_FILEPATH = MESH_DIRECTORY + "front_handle_bag.vtk"
-# SIDE_BAG_FILEPATH = MESH_DIRECTORY + "side_handle_bag.vtk"
-# TOP_BAG_FILEPATH = MESH_DIRECTORY + "top_handle_bag.vtk"
+# Dimensions of the bounding box around the main compartment of the bag (meters)
+BOX_LENGTH = 0.50  # X dimension
+BOX_WIDTH = 0.25  # Y dimension
+BOX_HEIGHT = 0.42  # Z dimension
