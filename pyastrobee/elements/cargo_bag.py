@@ -1,11 +1,15 @@
 """Class for handling loading the cargo bag and managing attributes such as physical properties
 
+TODO the unloading mechanic is currently broken since it only removes the softbody and not the visual
 TODO decide if the bag_props import can be handled better
 TODO decide if the constants should be moved to class attributes
 TODO decide if there is a better way to handle the "attached vs freefloating" initialization
 TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
 TODO decide if we should set up the class attributes to handle multiple bags loaded in sim
     (Like the Astrobee class)
+
+TODO !!! The bag dynamics info is totally messed up. I think it might be the way that we loaded it with
+    the simFileName that is causing some issues, because it's better with a non-textured bag
 """
 import time
 from typing import Optional
@@ -25,6 +29,7 @@ from pyastrobee.utils.mesh_utils import get_mesh_data, get_closest_mesh_vertex
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat
 from pyastrobee.utils.python_utils import print_green
+from pyastrobee.utils.bag_frame import get_bag_frame
 
 # Constants. TODO Move these to class attributes?
 MESH_DIR = "pyastrobee/assets/meshes/bags/"
@@ -40,6 +45,16 @@ GRASP_TRANSFORMS = dict(
             bag_props.FRONT_BAG_GRASP_TRANSFORM,
             bag_props.SIDE_BAG_GRASP_TRANSFORM,
             bag_props.TOP_BAG_GRASP_TRANSFORM,
+        ],
+    )
+)
+BAG_CORNERS = dict(
+    zip(
+        BAG_NAMES,
+        [
+            bag_props.FRONT_BAG_CORNER_VERTS,
+            bag_props.SIDE_BAG_CORNER_VERTS,
+            bag_props.TOP_BAG_CORNER_VERTS,
         ],
     )
 )
@@ -84,6 +99,8 @@ class CargoBag:
         self._anchor_objects = []
         self._mesh_vertices = None
         self._num_mesh_vertices = None
+        self._attached_robot = None
+        self._id = None
         # Load the bag depending on the specified method
         if attached_robot is not None:
             self._load_attached(attached_robot)
@@ -94,6 +111,7 @@ class CargoBag:
     # Read-only physical properties defined at initialization of the bag
     @property
     def num_mesh_vertices(self) -> int:
+        """Number of vertices in the bag's mesh"""
         if self.id is None:
             raise AttributeError("Mesh has not been loaded")
         if self._num_mesh_vertices is None:
@@ -102,6 +120,7 @@ class CargoBag:
 
     @property
     def mesh_vertices(self) -> np.ndarray:
+        """Positions of the mesh vertices, shape (n, 3)"""
         if self.id is None:
             raise AttributeError("Mesh has not been loaded")
         if self._mesh_vertices is None:
@@ -110,47 +129,98 @@ class CargoBag:
 
     @property
     def mass(self) -> float:
+        """Softbody mass"""
         return bag_props.MASS
 
     @property
     def bending_stiffness(self) -> float:
+        """Softbody bending stiffness parameter"""
         return bag_props.BENDING_STIFFNESS
 
     @property
     def damping_stiffness(self) -> float:
+        """Softbody damping stiffness parameter"""
         return bag_props.DAMPING_STIFFNESS
 
     @property
     def elastic_stiffness(self) -> float:
+        """Softbody elastic stiffness parameter"""
         return bag_props.ELASTIC_STIFFNESS
 
     @property
     def friction_coeff(self) -> float:
+        """Softbody friction coefficient"""
         return bag_props.FRICTION_COEFF
 
     @property
     def anchors(self) -> tuple[list[int], list[int]]:
+        """Anchor IDs and IDs of their associated visual geometries"""
         return (self._anchors, self._anchor_objects)
 
     @property
     def attached_robot(self) -> int:
+        """ID of the robot grasping the bag"""
         return self._attached_robot
 
     @property
     def name(self) -> str:
+        """Type of cargo bag"""
         return self._name
 
     @property
     def obj_file(self) -> str:
+        """Path to the .OBJ triangular mesh file"""
         return OBJS[self._name]
 
     @property
     def vtk_file(self) -> str:
+        """Path to the .VTK tetrahedral mesh file"""
         return VTKS[self._name]
 
     @property
     def grasp_transform(self) -> np.ndarray:
+        """Transformation matrix between the bag origin to grasp frame at the handle"""
         return GRASP_TRANSFORMS[self._name]
+
+    @property
+    def position(self) -> np.ndarray:
+        """Current XYZ position of the origin (COM frame) of the cargo bag"""
+        # TODO THIS MAY BE BROKEN
+        return np.array(pybullet.getBasePositionAndOrientation(self.id)[0])
+
+    @property
+    def orientation(self) -> np.ndarray:
+        """Current XYZW quaternion orientation of the cargo bag's COM frame"""
+        # TODO THIS MAY BE BROKEN
+        return np.array(pybullet.getBasePositionAndOrientation(self.id)[1])
+
+    @property
+    def velocity(self) -> np.ndarray:
+        """Current [vx, vy, vz] velocity of the cargo bag's COM frame"""
+        # TODO THIS MAY BE BROKEN
+        return np.array(pybullet.getBaseVelocity(self.id)[0])
+
+    @property
+    def angular_velocity(self) -> np.ndarray:
+        """Current [wx, wy, wz] angular velocity of the cargo bag's COM frame"""
+        # TODO THIS MAY BE BROKEN
+        return np.array(pybullet.getBaseVelocity(self.id)[1])
+
+    @property
+    def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Current state of the bag dynamics: Position, orientation, linear vel, and angular vel"""
+        # Querying this information for the bag itself is unreliable!
+        # Best way to do it is by querying a softbody anchor
+        # TODO update the position/orientation to use the new bag_frame utils
+        # TODO test to see if the base velocity is reliable or not. Try adding sphere + anchor to center
+        # TODO decide if angular velocity needs to be removed. Or, see if we can calculate it from a second sim step
+
+        # bag_frame = get_bag_frame(self.mesh_vertices, BAG_CORNERS[self.name])
+        # ^ Do something with this
+
+        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = pybullet.getBaseVelocity(self.id)
+        return np.array(pos), np.array(orn), np.array(lin_vel), np.array(ang_vel)
 
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> None:
         """Loads a cargo bag at the specified position/orientation
@@ -176,7 +246,8 @@ class CargoBag:
             self_collision,
             self.vtk_file,
         )
-        self._attached_robot = None
+        # Add an anchor to the center of the bag to help determine the dynamics
+        # TODO
 
     def _load_attached(self, robot: Astrobee) -> None:
         """Load the cargo bag attached to the gripper of an Astrobee
@@ -224,8 +295,13 @@ class CargoBag:
         self._attached_robot = None
 
     def unload(self) -> None:
-        """Removes the cargo bag from the simulation"""
+        """Removes the cargo bag from the simulation
+
+        TODO this is kinda broken since it only removes the simulated body rather than the visual
+        (if we update how we load the texture for the softbody this might be fixed)
+        """
         pybullet.removeBody(self.id)
+        self.id = None
 
 
 if __name__ == "__main__":
@@ -233,12 +309,19 @@ if __name__ == "__main__":
     robo = Astrobee()
     bag = CargoBag("top_handle_bag", robo)
     init_time = time.time()
-    time_lim = 10
-    print(f"Provide a disturbance force. Detaching bag in {time_lim} seconds")
-    while time.time() - init_time < 10:
+    detach_time_lim = 10
+    print(f"Provide a disturbance force. Detaching bag in {detach_time_lim} seconds")
+    while time.time() - init_time < detach_time_lim:
         pybullet.stepSimulation()
         time.sleep(1 / 120)
     bag.detach()
+    detach_time = time.time()
+    unload_time_lim = 10
+    print(f"Detached. Unloading the bag in {unload_time_lim} seconds")
+    while time.time() - detach_time < unload_time_lim:
+        pybullet.stepSimulation()
+        time.sleep(1 / 120)
+    bag.unload()  # Currently kinda weird
     while True:
         pybullet.stepSimulation()
         time.sleep(1 / 120)
