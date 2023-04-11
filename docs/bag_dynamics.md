@@ -58,6 +58,12 @@ $$
 
 ## Pybullet notes
 
+### Rigid body dynamics and origin location
+
 I originally wondered if it would be easier to make the URDF if we had the bag mesh defined with the origin centered at the handle. However, after loading this mesh into Pybullet, I noticed it had very odd dynamics. It seemed that the center of mass was way off - near the handle. Originally, I was wondering if this was because the mesh was denser in this area, but the same mesh with a different origin didn't have this issue. 
 
 So, it seems that Pybullet defines the center of mass for an imported mesh by its origin! This is quite important to remember - especially when we are loading a mesh outside of a URDF (which may specifically define the inertial frame and the moments of inertia). I suppose with the changeDynamics function we might be able to get around this, but for now, we can just remember to create all of the CAD with this in mind. 
+
+### Softbody dynamics
+
+Position and orientation of the softbody are relatively accurate with Pybullet's `getBasePositionAndOrientation` function, but `getBaseVelocity` does not seem to provide an accurate measurement. I've written a function `get_bag_frame` to determine a local reference frame for the bag based on the corners of the main compartment, which may be useful because `getBasePositionAndOrientation` is slightly unclear in how this is actually calculated. From preliminary tests, it looks like both frames (from my method and pybullet's) are roughly the same. However, this does not solve the velocity issue (a future TODO). We may be able to track the position/orientation across multiple timesteps and calculate the velocity that way, if it comes down to it and we need that info.
