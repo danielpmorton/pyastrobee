@@ -463,3 +463,50 @@ def create_anchor(
     else:
         geom_id = None
     return anchor_id, geom_id
+
+
+def create_box(
+    pos: npt.ArrayLike,
+    orn: npt.ArrayLike,
+    mass: float,
+    sidelengths: npt.ArrayLike,
+    use_collision: bool,
+    rgba: list[float] = [1, 1, 1, 1],
+) -> int:
+    """Creates a rigid box in the Pybullet simulation
+
+    Args:
+        pos (npt.ArrayLike): Position of the box in world frame, shape (3)
+        orn (npt.ArrayLike): Orientation (XYZW quaternion) of the box in world frame, shape (4,)
+        mass (float): Mass of the box. If set to 0, the box is fixed in space
+        sidelengths (npt.ArrayLike): Sidelengths of the box along the local XYZ axes, shape (3,)
+        use_collision (bool): Whether or not collision is enabled for the box
+        rgba (list[float], optional): Color of the box, with each RGBA value being in [0, 1].
+            Defaults to [1, 1, 1, 1] (white)
+
+    Returns:
+        int: ID of the box in Pybullet
+    """
+    if len(sidelengths) != 3:
+        raise ValueError("Must provide the dimensions of the three sides of the box")
+    half_extents = np.asarray(sidelengths) / 2
+    visual_id = pybullet.createVisualShape(
+        pybullet.GEOM_BOX,
+        halfExtents=half_extents,
+        rgbaColor=rgba,
+    )
+    if use_collision:
+        collision_id = pybullet.createCollisionShape(
+            pybullet.GEOM_BOX,
+            halfExtents=half_extents,
+        )
+    else:
+        collision_id = -1
+    box_id = pybullet.createMultiBody(
+        baseMass=mass,
+        basePosition=pos,
+        baseOrientation=orn,
+        baseCollisionShapeIndex=collision_id,
+        baseVisualShapeIndex=visual_id,
+    )
+    return box_id
