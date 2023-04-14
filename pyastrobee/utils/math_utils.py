@@ -61,3 +61,18 @@ def safe_divide(
     else:
         raise ValueError(f"Invalid fill type: {fill}")
     return np.divide(a, b, out=out, where=np.abs(b) >= tol)
+
+
+def skew(v: npt.ArrayLike) -> np.ndarray:
+    """Skew-symmetric matrix form of a vector in R3
+
+    Args:
+        v (npt.ArrayLike): Vector to convert, shape (3,)
+
+    Returns:
+        np.ndarray: (3, 3) skew-symmetric matrix
+    """
+    v = np.asarray(v)
+    if len(v) != 3:
+        raise ValueError(f"Vector needs to be of length 3.\nGot: {v}")
+    return np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
