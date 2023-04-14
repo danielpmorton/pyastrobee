@@ -72,7 +72,7 @@ def skew(v: npt.ArrayLike) -> np.ndarray:
     Returns:
         np.ndarray: (3, 3) skew-symmetric matrix
     """
-    v = np.asarray(v)
+    v = np.ravel(v)
     if len(v) != 3:
         raise ValueError(f"Vector needs to be of length 3.\nGot: {v}")
     return np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
