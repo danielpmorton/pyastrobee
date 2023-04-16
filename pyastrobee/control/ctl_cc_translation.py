@@ -10,6 +10,7 @@ from scipy import linalg
 
 from pyastrobee.utils.math_utils import normalize, safe_divide
 from pyastrobee.utils.rotations import rotate_point, quat_to_rmat, quaternion_dist
+from pyastrobee.utils.quaternion import conjugate
 
 
 class ControlOutput:
@@ -69,6 +70,8 @@ class Control:
         # See Control::Initialize and Control::ReadParams
 
         self.out = ControlOutput()
+        self.mode = ""
+        self.prev_att = None
 
     def step(self, dt, state, cmd):
         self.forward_trajectory(dt, state, cmd)
@@ -122,11 +125,53 @@ class Control:
             self.out.traj_quat, state.est_quat_ISS2B
         )
 
-    def find_att_error(self, state):
-        pass
+    def find_att_error(self, state: ControlState):
+        q_cmd = self.out.traj_quat
+        if self.mode == "stopped":
+            q_cmd = self.prev_att
+        q_out = conjugate(state.est_quat_ISS2B) * q_cmd
+        q_out = normalize(q_out)
+        self.out.att_err_mag = 2 * np.arccos(q_out[3])  # qw
+        self.out.att_err = q_out[:3]  # qx, qy, qz
+        Ki_rot = safe_divide(state.att_ki, state.omega_kd)
+        in_ = self.out.att_err * Ki_rot
+        self.out.att_err_int = self.discrete_time_integrator(
+            in_,
+            self.rotational_integrator,
+            self.out.ctl_status,
+            tun_ctl_att_sat_upper,
+            tun_ctl_att_sat_lower,
+        )
 
-    def find_body_alpha_torque_cmd(self, state):
-        pass
+    def find_body_alpha_torque_cmd(self, state: ControlState):
+        cmd_omega = self.out.traj_omega
+        cmd_alpha = self.out.traj_alpha
+        if self.mode == "stopped":
+            cmd_omega = np.zeros(3)
+            cmd_alpha = np.zeros(3)
+        rate_error = -1 * state.est_omega_B_ISS_B
+        if self.out.ctl_status > 1:
+            Kp_rot = safe_divide(state.att_kp, state.omega_kd)
+            rate_error = (
+                cmd_omega
+                + self.out.att_err_int
+                + (Kp_rot * self.out.att_err)
+                - state.est_omega_B_ISS_B
+            )
+        Kd_rot = state.omega_kd * np.diag(state.inertia)
+        rate_error = rate_error * Kd_rot
+        self.out.body_alpha_cmd = np.linalg.inverse(state.inertia) * rate_error
+        if self.out.ctl_status == 0:
+            self.out.body_torque_cmd = np.zeros(3)
+        else:
+            cmd_alpha = turn_alpha_gain * cmd_alpha
+            self.out.body_torque_cmd = (
+                state.inertia * cmd_alpha
+                + rate_error
+                - np.cross(
+                    state.inertia * state.est_omega_B_ISS_B, state.est_omega_B_ISS_B
+                )
+            )
 
     def find_body_force_cmd(self, state):
         pass
