@@ -49,17 +49,6 @@ class Quaternion:
                 f"Quaternion has been initialized, but not set (value is {vals})"
             )
 
-    def _validate(self, quat):
-        if len(quat) != 4:
-            raise ValueError(f"Invalid quaternion ({quat}):\nNot of length 4!")
-        # TODO
-        # pytransform3d just semems to check the shape of the input
-        # But, the entries should be within -1 and 1 as well??? Check on this
-        # try:
-        #     rt.check_quaternion(self.wxyz)
-        # except ValueError as exc:
-        #     raise ValueError(f"Not a valid quaternion!\n(XYZW is {self.xyzw})") from exc
-
     def _initialize_as_empty(self):
         self.x, self.y, self.z, self.w = [None, None, None, None]
 
@@ -82,20 +71,37 @@ class Quaternion:
     @xyzw.setter
     def xyzw(self, xyzw: npt.ArrayLike):
         """Sets the quaternion based on an array in XYZW form"""
-        self._validate(xyzw)
+        xyzw = check_quaternion(xyzw)
         self.x, self.y, self.z, self.w = xyzw
 
     @wxyz.setter
     def wxyz(self, wxyz: npt.ArrayLike):
         """Sets the quaternion based on an array in WXYZ form"""
-        self._validate(wxyz)
+        wxyz = check_quaternion(wxyz)
         self.w, self.x, self.y, self.z = wxyz
 
+    @property
+    def conjugate(self) -> np.ndarray:
+        """Conjugate of the XYZW quaternion"""
+        return conjugate(self.xyzw)
 
-# TODO: should we check that a quaternion is normalized?
-# Should we just automatically normalize things?
-def check_quaternion(quat: npt.ArrayLike) -> bool:
-    raise NotImplementedError
+
+def check_quaternion(quat: npt.ArrayLike) -> np.ndarray:
+    """Checks that a quaternion is of the correct shape and returns a normalized quat
+
+    Args:
+        quat (npt.ArrayLike): Quaternion (XYZW or WXYZ), shape (4,)
+
+    Raises:
+        ValueError: If the input is not a valid quaternion
+
+    Returns:
+        np.ndarray: Normalized quaternion, shape (4,)
+    """
+    quat = np.ravel(quat)
+    if len(quat) != 4:
+        raise ValueError(f"Invalid quaternion ({quat}):\nNot of length 4!")
+    return normalize(quat)
 
 
 def random_quaternion() -> np.ndarray:
@@ -106,3 +112,16 @@ def random_quaternion() -> np.ndarray:
     """
     q = np.random.rand(4)
     return q / np.linalg.norm(q)
+
+
+def conjugate(quat: npt.ArrayLike) -> np.ndarray:
+    """Conjugate of an XYZW quaternion (same scalar part but flipped imaginary components)
+
+    Args:
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
+
+    Returns:
+        np.ndarray: Conjugate XYZW quaternion, shape (4,)
+    """
+    x, y, z, w = quat
+    return np.array([-x, -y, -z, w])
