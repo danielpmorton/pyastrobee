@@ -1,6 +1,20 @@
-# TODO add a binary search to figure out what duration will lead to satisfying the max vel/accel constraints?
+# This file is a bit of a mess because I started off trying this and then realized it would be
+# easier to just work with polynomial basis functions for the trajectory components
+
+# However, this might be of use for the future if we decide to use convex optimization for trajectory generation
+# (the constraints and overall setup will be different, but the structure will be similar)
+
+# Ideas
+# Add a binary search to figure out what duration will lead to satisfying the max vel/accel constraints?
 # Or, there should actually be an analytical solution for the maximums of the associated functions for velocity/accel
 # so we can just choose the duration such that this is satisfied
+
+# BUG
+# The interpolation used here doesn't really make sense with Euler angles due to the wraparound at 2*pi
+# Polynomial SLERP will be a better option but IDK if we can form that in a convex manner
+
+# Also note that right now, this might be a fully constrained linear system, so there should just be a simple
+# analytical solution via a linear matrix system
 
 import cvxpy as cp
 import numpy as np
