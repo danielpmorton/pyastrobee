@@ -21,29 +21,11 @@ from pyastrobee.utils.rotations import (
     fixed_xyz_to_rmat,
     quat_to_rmat,
 )
-from pyastrobee.utils.poses import pos_quat_to_tmat, batched_pos_quats_to_tmats
+from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.coordinates import cartesian_to_spherical
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
 from pyastrobee.control.controller import PoseController
-
-
-def visualize_traj(traj: npt.ArrayLike) -> list[int]:
-    """Visualizes a trajectory's sequence of poses on the Pybullet GUI
-
-    TODO make it possible to take in a Trajectory class object and extract the relevant info
-
-    Args:
-        traj (npt.ArrayLike): Sequence of position + quaternion poses, shape (n, 7)
-
-    Returns:
-        list[int]: Pybullet IDs for the lines drawn onto the GUI
-    """
-    tmats = batched_pos_quats_to_tmats(traj)  # This will validate the input as well
-    ids = []
-    for i in range(tmats.shape[0]):
-        ids += visualize_frame(tmats[i, :, :])
-    return ids
 
 
 def visualize_points(
