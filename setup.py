@@ -6,11 +6,7 @@ TODO add specific versions to the package requirements
 TODO add obj2mjcf to the dev requirements?
 TODO add beautifulsoup4 back in if parsing XML/URDFs
 TODO add open3d back in if visualizing anything 3D outside of pybullet
-
-Dependencies notes (outside of the usual suspects):
-- pytransform3d: Manages rotations and transformation math
-- Pylint/Black: For code formatting
-- pynput: Manages the keyboard listener
+TODO add mujoco back if needed
 """
 
 from setuptools import setup
@@ -18,17 +14,19 @@ from setuptools import setup
 setup(
     name="pyastrobee",
     version="0.0.1",
-    # Note on install_requires: order matters! Keep wheel and numpy before pybullet
     install_requires=[
-        "numpy",
-        "wheel",
-        "pybullet",
-        "opencv-python",
-        "matplotlib",
-        "pytransform3d",
-        "pynput",
+        "numpy",  # Needs to be installed before Pybullet to enable speedup for matrix ops
+        "wheel",  # For helping build Pybullet
+        "pybullet",  # Simulation
+        "opencv-python",  # Vision
+        "matplotlib",  # Plotting
+        "pytransform3d",  # Manages rotations and transformations
+        "pynput",  # For keyboard event listeners
+        "ahrs",  # For some quaternion math and test cases
+        "pylint",  # Linting
+        "black",  # Formatting
+        "ipython",  # Interactive sessions
     ],
-    extras_require={"dev": ["pylint", "black", "ipython", "mujoco"]},
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
