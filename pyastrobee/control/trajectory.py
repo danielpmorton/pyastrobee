@@ -1,6 +1,6 @@
 """Trajectory class for Astrobee control, and trajectory-associated helpers"""
 
-from typing import Optional
+from typing import Optional, Union
 
 import pybullet
 import numpy as np
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
-from pyastrobee.utils.debug_visualizer import visualize_traj
+from pyastrobee.utils.debug_visualizer import visualize_frame
 
 
 class Trajectory:
@@ -76,7 +76,7 @@ class Trajectory:
         # Bring up the Pybullet GUI if needed
         if not connection_status:
             pybullet.connect(pybullet.GUI)
-        visualize_traj(self.poses)
+        visualize_traj(self)
         input("Press Enter to continue")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
@@ -173,3 +173,25 @@ def plot_traj(traj: Trajectory, show: bool = True) -> Figure:
     if show:
         plt.show()
     return fig
+
+
+def visualize_traj(traj: Union[Trajectory, npt.ArrayLike]) -> list[int]:
+    """Visualizes a trajectory's sequence of poses on the Pybullet GUI
+
+    Args:
+        traj (Union[Trajectory, npt.ArrayLike]): Trajectory to visualize (must contain at least
+            position + orientation info), or an array of position + quaternion poses, shape (n, 7)
+
+    Returns:
+        list[int]: Pybullet IDs for the lines drawn onto the GUI
+    """
+    if isinstance(traj, Trajectory):
+        traj = traj.poses
+    else:
+        # If there is more information (velocity, time) in our array, only use the pose info
+        traj = np.atleast_2d(traj)[:, :7]
+    tmats = batched_pos_quats_to_tmats(traj)
+    ids = []
+    for i in range(tmats.shape[0]):
+        ids += visualize_frame(tmats[i, :, :])
+    return ids
