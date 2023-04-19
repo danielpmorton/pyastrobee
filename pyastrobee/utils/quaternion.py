@@ -1,4 +1,4 @@
-"""Class for managing quaternion conventions
+"""Class for managing quaternion conventions, and quaternion helper functions
 
 Usage examples:
 q = Quaternion() # This will initialize it as empty
@@ -11,6 +11,7 @@ from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+import pytransform3d.rotations as pr
 
 from pyastrobee.utils.math_utils import normalize
 
@@ -132,37 +133,53 @@ def quats_to_angular_velocities(
 ) -> np.ndarray:
     """Determines the angular velocities of a sequence of quaternions, for a given sampling time
 
-    Based on AHRS (Attitude and Heading Reference Systems): See ahrs/common/quaternion.py
-
     Args:
         quats (np.ndarray): Sequence of XYZW quaternions, shape (n, 4)
         dt (Union[float, np.ndarray]): Sampling time(s). If passing in an array of sampling times,
-            this must be of length (n-1)
+            this must be of length n
 
     Returns:
-        np.ndarray: Angular velocities (wx, wy, wz), shape (n-1, 3)
+        np.ndarray: Angular velocities (wx, wy, wz), shape (n, 3)
     """
-    xs = quats[:, 0]
-    ys = quats[:, 1]
-    zs = quats[:, 2]
-    ws = quats[:, 3]
-    dw = np.column_stack(
-        [
-            ws[:-1] * xs[1:] - xs[:-1] * ws[1:] - ys[:-1] * zs[1:] + zs[:-1] * ys[1:],
-            ws[:-1] * ys[1:] + xs[:-1] * zs[1:] - ys[:-1] * ws[1:] - zs[:-1] * xs[1:],
-            ws[:-1] * zs[1:] - xs[:-1] * ys[1:] + ys[:-1] * xs[1:] - zs[:-1] * ws[1:],
-        ]
-    )
-    # If dt is scalar, broadcasting is simple. If dt is an array of time deltas,
-    # need to adjust the shape for broadcasting
+    # Convert XYZW to WXYZ for pytransform3d compatibility
+    wxyz_quats = xyzw_to_wxyz(quats)
+    # Determine gradients based on timestep format (fixed timestep vs variable array)
     if np.ndim(dt) == 0:
-        return 2.0 * dw / dt
+        grads = pr.quaternion_gradient(wxyz_quats, dt)
     else:
-        if len(dt) != dw.shape[0]:
-            raise ValueError(
-                "Invalid dt array size. This needs to be of length (n-1), if we are working with n quaternions"
-            )
-        return 2.0 / np.reshape(dt, (-1, 1)) * dw
+        grads = pr.quaternion_gradient(wxyz_quats, 1)
+        grads = grads / np.reshape(dt, (-1, 1))
+    return grads
+
+
+def xyzw_to_wxyz(quats: npt.ArrayLike) -> np.ndarray:
+    """Converts an array of XYZW quaternions to WXYZ
+
+    Args:
+        quats (npt.ArrayLike): XYZW quaternions, shape (n, 4)
+
+    Returns:
+        np.ndarray: WXYZ quaternions, shape (n, 4)
+    """
+    quats = np.atleast_2d(quats)
+    if quats.shape[1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (n, 4)")
+    return quats[:, [3, 0, 1, 2]]
+
+
+def wxyz_to_xyzw(quats: npt.ArrayLike) -> np.ndarray:
+    """Converts an array of WXYZ quaternions to XYZW
+
+    Args:
+        quats (npt.ArrayLike): WXYZ quaternions, shape (n, 4)
+
+    Returns:
+        np.ndarray: XYZW quaternions, shape (n, 4)
+    """
+    quats = np.atleast_2d(quats)
+    if quats.shape[1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (n, 4)")
+    return quats[:, [1, 2, 3, 0]]
 
 
 def quaternion_derivative(
