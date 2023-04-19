@@ -134,7 +134,6 @@ def quats_to_angular_velocities(
 
     Based on AHRS (Attitude and Heading Reference Systems): See ahrs/common/quaternion.py
 
-
     Args:
         quats (np.ndarray): Sequence of XYZW quaternions, shape (n, 4)
         dt (Union[float, np.ndarray]): Sampling time(s). If passing in an array of sampling times,
@@ -164,3 +163,46 @@ def quats_to_angular_velocities(
                 "Invalid dt array size. This needs to be of length (n-1), if we are working with n quaternions"
             )
         return 2.0 / np.reshape(dt, (-1, 1)) * dw
+
+
+def quaternion_derivative(
+    q: Union[Quaternion, npt.ArrayLike], w: npt.ArrayLike
+) -> np.ndarray:
+    """Quaternion derivative for a given angular velocity
+
+    Based on "A Survey of Attitude Representations", Shuster, eqn. 306
+
+    Args:
+        q (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,)
+        w (npt.ArrayLike): Angular velocity (wx, wy, wz), shape (3,)
+
+    Returns:
+        np.ndarray: Quaternion derivative, shape (4,)
+    """
+    if isinstance(q, Quaternion):
+        q = q.xyzw
+    else:
+        q = check_quaternion(q)
+    qx, qy, qz, qw = q
+    Z = np.array([[qw, -qz, qy], [qz, qw, -qx], [-qy, qx, qw], [-qx, -qy, -qz]])
+    return (1 / 2) * Z @ w
+
+
+def quaternion_integration(
+    q: Union[Quaternion, npt.ArrayLike], w: npt.ArrayLike, dt: float
+) -> np.ndarray:
+    """Propagate a quaternion forward one timestep based on the current angular velocity
+
+    Args:
+        q (Union[Quaternion, npt.ArrayLike]): Initial XYZW quaternion, shape (4,)
+        w (npt.ArrayLike): Angular velocity (wx, wy, wz), shape (3,)
+        dt (float): Timestep duration (seconds)
+
+    Returns:
+        np.ndarray: Next XYZW quaternion, q(t + dt), shape (4,)
+    """
+    if isinstance(q, Quaternion):
+        q = q.xyzw
+    else:
+        q = check_quaternion(q)
+    return normalize(q + dt * quaternion_derivative(q, w))
