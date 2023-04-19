@@ -120,10 +120,7 @@ def polynomial_trajectory(
     y, vy, ay, _ = third_order_poly(t0, tf, y0, yf, v0, vf, n)
     z, vz, az, _ = third_order_poly(t0, tf, z0, zf, v0, vf, n)
     q = polynomial_slerp(q0, qf, n)
-    # Find the derivatives between the commanded quaternions, and assume that the last
-    # commanded angular velocity is set to 0
-    omega = np.zeros((n, 3))
-    omega[:-1, :] = quats_to_angular_velocities(q, dt)
+    omega = quats_to_angular_velocities(q, dt)
     return Trajectory(
         positions=np.column_stack([x, y, z]),
         quats=q,
