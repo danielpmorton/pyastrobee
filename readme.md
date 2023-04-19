@@ -71,6 +71,12 @@
 - [ ] Add more tests
 
 ### References to look into
+- [ ] (NOTE): Improve how you're keeping track of these refs (and include the random citations inside some of the attitude dynamics / quaternion code)
+- [ ] Dissertation used for quadratic planning methods
+  - [ ] https://repository.upenn.edu/dissertations/AAI10934473/
+- [ ] `LinearQuadraticRegulator` from `pydrake.all`
+  - [ ] See http://underactuated.mit.edu/lqr.html
+  - [ ] https://github.com/RobotLocomotion/drake/blob/master/systems/controllers/linear_quadratic_regulator.cc
 - [ ] https://github.com/rock-learning/bolero
 - [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
   - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
