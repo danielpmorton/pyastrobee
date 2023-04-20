@@ -20,7 +20,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
-from pyastrobee.config import astrobee_transforms
+from pyastrobee.config import astrobee_transforms, astrobee_inertial
 from pyastrobee.utils.python_utils import print_green, ExtendedEnum
 
 
@@ -292,6 +292,54 @@ class Astrobee:
             np.ndarray: Gripper joint angles, shape (4,)
         """
         return self.joint_angles[Astrobee.GRIPPER_JOINT_IDXS]
+
+    @property
+    def inertia(self) -> np.ndarray:
+        """(3, 3) inertia tensor for the Astrobee"""
+        # Using the values from the Astrobee documentation
+        # (TODO) This does not account for the position of the arm (Does it account for the arm at all?)
+        return astrobee_inertial.INERTIA
+
+    @property
+    def mass(self) -> float:
+        """Mass of the Astrobee"""
+        # TODO check if this accounts for the arm or if it is base-only
+        return astrobee_inertial.MASS
+
+    @property
+    def mass_matrix(self):
+        # ADDITIONAL TESTING REQUIRED
+        raise NotImplementedError
+        # Inputs must be a lists (no numpy) or else pybullet will seg fault
+        mmat = pybullet.calculateMassMatrix(self.id, list(self.joint_angles))
+        # This appears to be of size (12, 12) which is a bit odd
+        # Need to dig into this a little more and figure out how to use this
+        return np.array(mmat)
+
+    @property
+    def jacobians(self) -> np.ndarray:
+        # ADDITIONAL TESTING REQUIRED
+        raise NotImplementedError
+        ndof = 6  # 7 joints, but 1 fixed
+        # make the link id / local pos something more useful... the grasp point based on the distal link?
+        link_id = -1
+        local_pos = [0.0, 0.0, 0.0]
+        desired_accels = 6 * [0.0]
+        # All inputs must be lists (no numpy) or else pybullet will seg fault
+        Jv, Jw = pybullet.calculateJacobian(
+            self.id,
+            link_id,
+            local_pos,
+            list(self.joint_angles)[1:],  # Don't include the first fixed joint
+            list(self.joint_vels)[1:],  # Don't include the first fixed joint
+            desired_accels,
+        )
+        Jv = np.array(Jv)
+        Jw = np.array(Jw)
+        # Jv and Jw will each be of shape (3, 12)
+        # I suppose 12 refers to 6dof (floating base) and 6 non-fixed joints
+        # It appears that the first 6 cols refer to the floating base
+        return Jv, Jw
 
     def get_link_transform(self, link_index: Union[Links, int]) -> np.ndarray:
         """Calculates the transformation matrix (w.r.t the world) for a specified link
