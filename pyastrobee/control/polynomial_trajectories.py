@@ -104,7 +104,7 @@ def polynomial_trajectory(
         dt (float): Sampling period (seconds)
 
     Returns:
-        Trajectory: The desired trajectory with position, orientation, and linear/angular velocity info
+        Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
     """
     times = np.arange(0, duration + dt, dt)
     n = len(times)
@@ -121,11 +121,14 @@ def polynomial_trajectory(
     z, vz, az, _ = third_order_poly(t0, tf, z0, zf, v0, vf, n)
     q = polynomial_slerp(q0, qf, n)
     omega = quats_to_angular_velocities(q, dt)
+    alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
         positions=np.column_stack([x, y, z]),
         quats=q,
         lin_vels=np.column_stack([vx, vy, vz]),
         ang_vels=omega,
+        lin_accels=np.column_stack([ax, ay, az]),
+        ang_accels=alpha,
         times=times,
     )
 
