@@ -9,12 +9,13 @@ import time
 
 import numpy as np
 import pybullet
+import pytransform3d.rotations as pr
 
-from pyastrobee.control.trajectory import Trajectory
+from pyastrobee.control.trajectory import visualize_traj
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
-from pyastrobee.utils.quaternion import random_quaternion
-from pyastrobee.utils.debug_visualizer import visualize_frame
+from pyastrobee.utils.quaternion import random_quaternion, xyzw_to_wxyz
+from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 from pyastrobee.utils.poses import pos_quat_to_tmat
 
 
@@ -31,24 +32,37 @@ def get_force(m, kv, kp, x, dx, x_des, dx_des, d2x_des):
     return m * d2x_des - kv * (dx - dx_des) - kp * (x - x_des)
 
 
+def get_torque(I, kw, kq, q, w, q_des, w_des, a_des):
+    Q = xyzw_to_wxyz(np.row_stack([q_des, q]))
+    ang_err = pr.compact_axis_angle_from_quaternion(
+        pr.concatenate_quaternions(Q[1], pr.q_conj(Q[0]))
+    )
+    return I @ a_des - kw * (w - w_des) - kq * ang_err
+
+
 def main():
     pybullet.connect(pybullet.GUI)
     np.random.seed(0)
     pose_1 = [0, 0, 0, 0, 0, 0, 1]
     pose_2 = [1, 1, 1, *random_quaternion()]
-    visualize_frame(pos_quat_to_tmat(pose_2))
     mass = 10
     sidelengths = [0.25, 0.25, 0.25]
     box = create_box(pose_1[:3], pose_1[3:], mass, sidelengths, True)
     max_time = 10
     dt = 0.01
     traj = polynomial_trajectory(pose_1, pose_2, max_time, dt)
-    kp = 10 * mass
-    kv = 1 * mass
+    visualize_traj(traj, 20)
+    # mass * dt seems to give a general trend of how the required gains change depending on mass/time
+    # However, it seems like this shouldn't depend on dt? Perhaps it's an artifact of doing discrete simulation steps
+    kp = 1000 * mass * dt
+    kv = 100 * mass * dt
+    kq = 10 * mass * dt
+    kw = 1 * mass * dt
     base_idx = -1  # Base link index of the robot
     point = np.array([0.0, 0.0, 0.0])  # Point in base frame where force is applied
     inertia = box_inertia(mass, *sidelengths)
     for i, t in enumerate(traj.times):
+        # fid = visualize_frame(pos_quat_to_tmat(traj_poses[i]))
         pos, q = pybullet.getBasePositionAndOrientation(box)
         x, y, z = pos
         lin_vel, ang_vel = pybullet.getBaseVelocity(box)
@@ -63,18 +77,21 @@ def main():
         Fx = get_force(mass, kv, kp, x, vx, x_des, vx_des, ax_des)
         Fy = get_force(mass, kv, kp, y, vy, y_des, vy_des, ay_des)
         Fz = get_force(mass, kv, kp, z, vz, z_des, vz_des, az_des)
-        # TODO add get_torque
+        tau = get_torque(inertia, kw, kq, q, ang_vel, q_des, omega_des, alpha_des)
         force = np.array([Fx, Fy, Fz])
-        # TODO add torque
         pybullet.applyExternalForce(
-            box, -1, list(force), list(point), pybullet.WORLD_FRAME
+            box, base_idx, list(force), list(pos), pybullet.WORLD_FRAME
         )
+        pybullet.applyExternalTorque(box, base_idx, list(tau), pybullet.WORLD_FRAME)
         pybullet.stepSimulation()
         time.sleep(dt)
     print("Trajectory complete. Stopping...")
     x_des, y_des, z_des = traj.positions[-1, :]
+    q_des = traj.quaternions[-1, :]
     vx_des, vy_des, vz_des = [0.0, 0.0, 0.0]
     ax_des, ay_des, az_des = [0.0, 0.0, 0.0]
+    omega_des = np.array([0.0, 0.0, 0.0])
+    alpha_des = np.array([0.0, 0.0, 0.0])
     while True:
         pos, q = pybullet.getBasePositionAndOrientation(box)
         x, y, z = pos
@@ -85,7 +102,11 @@ def main():
         Fy = get_force(mass, kv, kp, y, vy, y_des, vy_des, ay_des)
         Fz = get_force(mass, kv, kp, z, vz, z_des, vz_des, az_des)
         force = np.array([Fx, Fy, Fz])
-        pybullet.applyExternalForce(box, base_idx, force, point, pybullet.WORLD_FRAME)
+        pybullet.applyExternalForce(
+            box, base_idx, force, list(pos), pybullet.WORLD_FRAME
+        )
+        tau = get_torque(inertia, kw, kq, q, ang_vel, q_des, omega_des, alpha_des)
+        pybullet.applyExternalTorque(box, base_idx, list(tau), pybullet.WORLD_FRAME)
         pybullet.stepSimulation()
         time.sleep(dt)
 
