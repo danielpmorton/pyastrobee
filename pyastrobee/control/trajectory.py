@@ -288,3 +288,40 @@ def visualize_traj(
     for i in range(tmats.shape[0]):
         ids += visualize_frame(tmats[i, :, :])
     return ids
+
+
+def stopping_criteria(
+    pos: npt.ArrayLike,
+    quat: npt.ArrayLike,
+    lin_vel: npt.ArrayLike,
+    ang_vel: npt.ArrayLike,
+    pos_des: npt.ArrayLike,
+    quat_des: npt.ArrayLike,
+    dp: float = 1e-2,
+    dq: float = 1e-2,
+    dv: float = 1e-2,
+    dw: float = 5e-3,
+) -> bool:
+    """Determine if the Astrobee has fully stopped, based on its current dynamics state
+
+    Args:
+        pos (npt.ArrayLike): Current position, shape (3,)
+        quat (npt.ArrayLike): Current XYZW quaternion orientation, shape (4,)
+        lin_vel (npt.ArrayLike): Current linear velocity, shape (3,)
+        ang_vel (npt.ArrayLike): Current angular velocity, shape (3,)
+        pos_des (npt.ArrayLike): Desired position, shape (3,)
+        quat_des (npt.ArrayLike): Desired XYZW quaternion orientation, shape (4,)
+        dp (float, optional): Tolerance on position error magnitude. Defaults to 1e-2.
+        dq (float, optional): Tolerance on quaternion distance between cur/des. Defaults to 1e-2.
+        dv (float, optional): Tolerance on linear velocity error magnitude. Defaults to 1e-2.
+        dw (float, optional): Tolerance on angular velocity error magnitude. Defaults to 5e-3.
+
+    Returns:
+        bool: If the Astrobee have successfully stopped at its desired goal pose
+    """
+    p_check = np.linalg.norm(pos - pos_des) <= dp
+    q_check = quaternion_dist(quat, quat_des) <= dq
+    v_check = np.linalg.norm(lin_vel) <= dv
+    w_check = np.linalg.norm(ang_vel) <= dw
+    checks = [p_check, q_check, v_check, w_check]
+    return np.all(checks)
