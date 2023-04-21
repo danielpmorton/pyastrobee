@@ -42,33 +42,67 @@ class Trajectory:
         ang_accels: Optional[npt.ArrayLike] = None,
         times: Optional[npt.ArrayLike] = None,
     ):
-        # TODO decide if there is ever a use-case for not passing in the positions
-        self.positions = np.atleast_2d(positions) if positions is not None else None
-        self.quaternions = np.atleast_2d(quats) if quats is not None else None
-        self.linear_velocities = (
-            np.atleast_2d(lin_vels) if lin_vels is not None else None
-        )
-        self.angular_velocities = (
-            np.atleast_2d(ang_vels) if ang_vels is not None else None
-        )
-        self.linear_accels = lin_accels if lin_accels is not None else None
-        self.angular_accels = ang_accels if ang_accels is not None else None
-        self.times = np.atleast_1d(times) if times is not None else None
-        self.num_timesteps = self.positions.shape[0]
+        self._positions = positions if positions is not None else []
+        self._quats = quats if quats is not None else []
+        self._lin_vels = lin_vels if lin_vels is not None else []
+        self._ang_vels = ang_vels if ang_vels is not None else []
+        self._lin_accels = lin_accels if lin_accels is not None else []
+        self._ang_accels = ang_accels if ang_accels is not None else []
+        self._times = times if times is not None else []
+        self._poses = None  # Init
+        self._tmats = None  # Init
+
+    @property
+    def positions(self):
+        return np.atleast_2d(self._positions)
+
+    @property
+    def quaternions(self):
+        return np.atleast_2d(self._quats)
+
+    @property
+    def linear_velocities(self):
+        return np.atleast_2d(self._lin_vels)
+
+    @property
+    def angular_velocities(self):
+        return np.atleast_2d(self._ang_vels)
+
+    @property
+    def linear_accels(self):
+        return np.atleast_2d(self._lin_accels)
+
+    @property
+    def angular_accels(self):
+        return np.atleast_2d(self._ang_accels)
+
+    @property
+    def times(self):
+        return np.asarray(self._times)
+
+    @property
+    def num_timesteps(self):
+        return self.positions.shape[0]
 
     @property
     def poses(self) -> np.ndarray:
         """Pose array (position + xyzw quaternion), shape (n, 7)"""
-        if self.positions is None:
+        # if self._poses is not None:
+        #     return self._poses  # Only calculate this once
+        if self._positions is None:
             raise ValueError("No position information available")
-        if self.quaternions is None:
+        if self._quats is None:
             raise ValueError("No orientation information available")
-        return np.column_stack([self.positions, self.quaternions])
+        self._poses = np.column_stack([self.positions, self.quaternions])
+        return self._poses
 
     @property
     def tmats(self) -> np.ndarray:
         """Poses expressed as transformation matrices, shape (n, 4, 4)"""
-        return batched_pos_quats_to_tmats(self.poses)
+        # if self._tmats is not None:
+        #     return self._tmats  # Only calculate this once
+        self._tmats = batched_pos_quats_to_tmats(self.poses)
+        return self._tmats
 
     def visualize(self) -> None:
         """View the trajectory in Pybullet"""
@@ -91,13 +125,36 @@ class Trajectory:
         Returns:
             Figure: Matplotlib figure containing the plots
         """
-        return plot_traj(self, show)
+        return plot_traj(self, show=show)
+
+    def log_state(
+        self,
+        pos: npt.ArrayLike,
+        quat: npt.ArrayLike = None,
+        lin_vel: Optional[npt.ArrayLike] = None,
+        ang_vel: Optional[npt.ArrayLike] = None,
+        dt: Optional[float] = None,
+    ):
+        # TODO refine this functionality
+        # Can log position/orientation info without velocity if needed
+        # These values can be None because matplotlib will just not plot them
+        # Most importantly, we want to make sure that things correspond in time
+        # (There shouldn't be an instance where we have histories of different lengths)
+        self._positions.append(pos)
+        self._quats.append(quat)
+        self._lin_vels.append(lin_vel)
+        self._ang_vels.append(ang_vel)
+        if dt is not None and len(self._times) == 0:
+            self._times.append(0.0)
+        elif dt is not None:
+            self._times.append(self._times[-1] + dt)
 
 
 def plot_traj(traj: Trajectory, show: bool = True) -> Figure:
     """Plot the trajectory components over time
 
     Args:
+        traj (Trajectory): The Trajectory object to plot
         show (bool, optional): Whether or not to display the plot. Defaults to True.
 
     Returns:
@@ -142,7 +199,7 @@ def plot_traj(traj: Trajectory, show: bool = True) -> Figure:
         data = traj_data[component]
         labels = traj_labels[component]
         # If the trajectory doesn't contain the info, don't plot it
-        if data is None:
+        if data == [] or data is None:
             return
         # Set the x axis based on if we have time information in the trajectory
         if traj.times is not None:
