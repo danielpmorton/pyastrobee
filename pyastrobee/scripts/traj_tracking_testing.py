@@ -11,7 +11,12 @@ import numpy as np
 import pybullet
 import pytransform3d.rotations as pr
 
-from pyastrobee.control.trajectory import visualize_traj
+from pyastrobee.control.trajectory import (
+    visualize_traj,
+    Trajectory,
+    compare_trajs,
+    stopping_criteria,
+)
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.quaternion import random_quaternion, xyzw_to_wxyz
@@ -86,7 +91,8 @@ def main():
         pybullet.stepSimulation()
         time.sleep(dt)
     print("Trajectory complete. Stopping...")
-    x_des, y_des, z_des = traj.positions[-1, :]
+    pos_des = traj.positions[-1, :]
+    x_des, y_des, z_des = pos_des
     q_des = traj.quaternions[-1, :]
     vx_des, vy_des, vz_des = [0.0, 0.0, 0.0]
     ax_des, ay_des, az_des = [0.0, 0.0, 0.0]
@@ -97,7 +103,9 @@ def main():
         x, y, z = pos
         lin_vel, ang_vel = pybullet.getBaseVelocity(box)
         vx, vy, vz = lin_vel
-        # wx, wy, wz = ang_vel
+        wx, wy, wz = ang_vel
+        if stopping_criteria(pos, q, lin_vel, ang_vel, pos_des, q_des):
+            break
         Fx = get_force(mass, kv, kp, x, vx, x_des, vx_des, ax_des)
         Fy = get_force(mass, kv, kp, y, vy, y_des, vy_des, ay_des)
         Fz = get_force(mass, kv, kp, z, vz, z_des, vz_des, az_des)
