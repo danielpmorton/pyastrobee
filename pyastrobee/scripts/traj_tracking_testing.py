@@ -2,7 +2,8 @@
 
 TODO
 - Merge polynomial_trajectory file with something else -- planner?
-- Add ability to save the true state information and plot it against the traj
+- Add ability to save the true state information and plot it against the traj !!!! PLOT !!!
+- Move quaternion dist to the quaternion file
 """
 
 import time
@@ -20,8 +21,6 @@ from pyastrobee.control.trajectory import (
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.quaternion import random_quaternion, xyzw_to_wxyz
-from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
-from pyastrobee.utils.poses import pos_quat_to_tmat
 
 
 def box_inertia(m, l, w, h):
@@ -46,10 +45,11 @@ def get_torque(I, kw, kq, q, w, q_des, w_des, a_des):
 
 
 def main():
+    tracker = Trajectory()
     pybullet.connect(pybullet.GUI)
     np.random.seed(0)
     pose_1 = [0, 0, 0, 0, 0, 0, 1]
-    pose_2 = [1, 1, 1, *random_quaternion()]
+    pose_2 = [1, 2, 3, *random_quaternion()]
     mass = 10
     sidelengths = [0.25, 0.25, 0.25]
     box = create_box(pose_1[:3], pose_1[3:], mass, sidelengths, True)
@@ -71,6 +71,7 @@ def main():
         pos, q = pybullet.getBasePositionAndOrientation(box)
         x, y, z = pos
         lin_vel, ang_vel = pybullet.getBaseVelocity(box)
+        tracker.log_state(pos, q, lin_vel, ang_vel, dt)
         vx, vy, vz = lin_vel
         wx, wy, wz = ang_vel
         x_des, y_des, z_des = traj.positions[i, :]
@@ -117,6 +118,9 @@ def main():
         pybullet.applyExternalTorque(box, base_idx, list(tau), pybullet.WORLD_FRAME)
         pybullet.stepSimulation()
         time.sleep(dt)
+
+    pybullet.disconnect()
+    compare_trajs(traj, tracker)
 
 
 if __name__ == "__main__":
