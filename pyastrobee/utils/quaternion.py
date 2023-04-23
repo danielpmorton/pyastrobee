@@ -1,90 +1,22 @@
-"""Class for managing quaternion conventions, and quaternion helper functions
+"""Quaternion utilities
 
-Usage examples:
-q = Quaternion() # This will initialize it as empty
-q.xyzw = [0.1, 0.2, 0.3, 0.4] # This will assign the values after initialization
-q = Quaternion(xyzw=[0.1, 0.2, 0.3, 0.4]) # This will assign values at initialization
-some_pytransform3d_function(q.wxyz) # Pass the wxyz data into modules that use this convention
+We will always default to using XYZW convention
 """
 
-from typing import Optional, Union
+from typing import Union
 
 import numpy as np
 import numpy.typing as npt
-import pytransform3d.rotations as pr
+import pytransform3d.rotations as rt
+import pytransform3d.batch_rotations as brt
 
 from pyastrobee.utils.math_utils import normalize
-
-
-class Quaternion:
-    """Quaternion class to handle the XYZW/WXYZ conventions with less confusion
-
-    We will always default to using XYZW convention
-
-    Args:
-        xyzw (npt.ArrayLike, optional): Quaternions, in XYZW order. Defaults to None, in which
-            case wxyz should be provided, or else the quaternion will be empty
-        wxyz (npt.ArrayLike, optional): Quaternions, in WXYZ order. Defaults to None, in which
-            case xyzw should be provided, or else the quaternion will be empty
-
-    Raises:
-        ValueError: if both XYZW and WXYZ inputs are provided at instantiation
-    """
-
-    def __init__(
-        self, xyzw: Optional[npt.ArrayLike] = None, wxyz: Optional[npt.ArrayLike] = None
-    ):
-        if xyzw is not None and wxyz is not None:
-            raise ValueError("Specify one of XYZW/WXYZ, not both")
-        elif xyzw is not None:
-            self.xyzw = xyzw
-        elif wxyz is not None:
-            self.wxyz = wxyz
-        else:
-            self._initialize_as_empty()
-
-    def _check_if_loaded(self):
-        vals = [self.x, self.y, self.z, self.w]
-        if any(val is None for val in vals):
-            raise ValueError(
-                f"Quaternion has been initialized, but not set (value is {vals})"
-            )
-
-    def _initialize_as_empty(self):
-        self.x, self.y, self.z, self.w = [None, None, None, None]
-
-    # TODO need to decide if this is needed
-    def normalize(self):
-        self.xyzw = normalize(self.xyzw)
-
-    @property
-    def xyzw(self):
-        """Quaternion expressed in XYZW format. Shape = (4,)"""
-        self._check_if_loaded()
-        return np.array([self.x, self.y, self.z, self.w])
-
-    @property
-    def wxyz(self):
-        """Quaternion expressed in WXYZ format. Shape = (4,)"""
-        self._check_if_loaded()
-        return np.array([self.w, self.x, self.y, self.z])
-
-    @xyzw.setter
-    def xyzw(self, xyzw: npt.ArrayLike):
-        """Sets the quaternion based on an array in XYZW form"""
-        xyzw = check_quaternion(xyzw)
-        self.x, self.y, self.z, self.w = xyzw
-
-    @wxyz.setter
-    def wxyz(self, wxyz: npt.ArrayLike):
-        """Sets the quaternion based on an array in WXYZ form"""
-        wxyz = check_quaternion(wxyz)
-        self.w, self.x, self.y, self.z = wxyz
-
-    @property
-    def conjugate(self) -> np.ndarray:
-        """Conjugate of the XYZW quaternion"""
-        return conjugate(self.xyzw)
+from pyastrobee.utils.quaternion_class import Quaternion
+from pyastrobee.utils.rotations import (
+    axis_angle_between_two_vectors,
+    axis_angle_to_quat,
+    quat_to_rmat,
+)
 
 
 def check_quaternion(quat: npt.ArrayLike) -> np.ndarray:
@@ -145,9 +77,9 @@ def quats_to_angular_velocities(
     wxyz_quats = xyzw_to_wxyz(quats)
     # Determine gradients based on timestep format (fixed timestep vs variable array)
     if np.ndim(dt) == 0:
-        grads = pr.quaternion_gradient(wxyz_quats, dt)
+        grads = rt.quaternion_gradient(wxyz_quats, dt)
     else:
-        grads = pr.quaternion_gradient(wxyz_quats, 1)
+        grads = rt.quaternion_gradient(wxyz_quats, 1)
         grads = grads / np.reshape(dt, (-1, 1))
     return grads
 
@@ -223,3 +155,122 @@ def quaternion_integration(
     else:
         q = check_quaternion(q)
     return normalize(q + dt * quaternion_derivative(q, w))
+
+
+def combine_quaternions(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> np.ndarray:
+    """Combines the angular representation of two quaternions
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): First XYZW quaternion, shape (4,) if passing in an array
+        q2 (Union[Quaternion, npt.ArrayLike]): Second XYZW quaternion, shape (4,) if passing in an array
+
+    Returns:
+        np.ndarray: Combined XYZW quaternion, shape (4,)
+    """
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    q = Quaternion()
+    q.wxyz = rt.concatenate_quaternions(q1.wxyz, q2.wxyz)
+    return q.xyzw
+
+
+def quaternion_between_two_vectors(v1: npt.ArrayLike, v2: npt.ArrayLike) -> np.ndarray:
+    """Gives the quaternion rotation that would rotate vector v1 to align with v2 (magnitude-independent)
+
+    Args:
+        v1 (npt.ArrayLike): (3,) Starting vector/direction
+        v2 (npt.ArrayLike): (3,) Ending vector/direction
+
+    Returns:
+        np.ndarray: (4,) XYZW quaternion
+    """
+    axis, angle = axis_angle_between_two_vectors(v1, v2)
+    return axis_angle_to_quat(axis, angle)
+
+
+def get_closest_heading_quat(q0: npt.ArrayLike, heading: npt.ArrayLike) -> np.ndarray:
+    """Gives the quaternion closest to q0 that has its x-axis aligned with the heading
+
+    Args:
+        q0 (npt.ArrayLike): Initial (reference) XYZW quaternion, shape (4,)
+        heading (npt.ArrayLike): Desired XYZ vector parallel to the new frame's x-axis, shape (3,)
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    # We want the x axis to point along the heading axis
+    # So, a rotation between these two axes can be defined by an axis-angle rotation
+    # We can then apply this rotation transformation via quaternion concatenation
+    rmat1 = quat_to_rmat(q0)
+    orig_x_axis = rmat1[:, 0]
+    rotation_quat = quaternion_between_two_vectors(orig_x_axis, heading)
+    return combine_quaternions(rotation_quat, q0)
+
+
+def quaternion_slerp(
+    q1: Union[Quaternion, npt.ArrayLike],
+    q2: Union[Quaternion, npt.ArrayLike],
+    pct: Union[float, npt.ArrayLike],
+) -> np.ndarray:
+    """Interpolates between two quaternions via SLERP (spherical linear interpolation)
+
+    To interpolate at multiple points, pass in pcts as an array of interpolation percentages
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
+            must be in XYZW order (length = 4)
+        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
+            must be in XYZW order (length = 4)
+        pct (Union[float, npt.ArrayLike]): Percent(s) between start -> end, expressed as float(s) in [0, 1]
+
+    Returns:
+        np.ndarray: The interpolated XYZW quaternion(s), shape = (4,) or (n, 4) if interpolating at multiple points
+    """
+    pct = np.atleast_1d(pct)
+    n = len(pct)  # Number of interpolation points
+    if not (np.all(pct >= 0) and np.all(pct <= 1)):
+        raise ValueError(
+            f"Interpolation percentage(s) must be between 0 and 1.\nGot: {pct}"
+        )
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    # The shortest path parameter does not add too much extra computation and should handle quaternion ambiguity well
+    shortest_path = True
+    # Simple conversion for one interpolation point, otherwise use batched process
+    if n == 1:
+        q_interp = Quaternion(
+            wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct[0], shortest_path)
+        )
+        return q_interp.xyzw
+    else:
+        wxyz_quats = brt.quaternion_slerp_batch(q1.wxyz, q2.wxyz, pct, shortest_path)
+        xyzw_quats = np.zeros_like(wxyz_quats)
+        xyzw_quats[:, :3] = wxyz_quats[:, 1:]  # qx, qy, qz
+        xyzw_quats[:, -1] = wxyz_quats[:, 0]  # qw
+        return xyzw_quats  # (n, 4)
+
+
+def quaternion_dist(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> float:
+    """Computes the distance between two quaternions
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
+            an array of the XYZW quaternions (length = 4)
+        q2 (Union[Quaternion, npt.ArrayLike]): A second quaterion to compare against
+
+    Returns:
+        float: Distance between the two quaternions
+    """
+    if not isinstance(q1, Quaternion):
+        q1 = Quaternion(xyzw=q1)
+    if not isinstance(q2, Quaternion):
+        q2 = Quaternion(xyzw=q2)
+    return rt.quaternion_dist(q1.wxyz, q2.wxyz)

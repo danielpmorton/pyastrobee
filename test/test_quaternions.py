@@ -10,10 +10,11 @@ import numpy as np
 
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils.math_utils import normalize
+from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternion import (
-    Quaternion,
     quaternion_derivative,
     quats_to_angular_velocities,
+    combine_quaternions,
 )
 
 
@@ -42,7 +43,7 @@ class QuaternionTest(unittest.TestCase):
         euler_2 = np.array([0.1, 0.2, 0.3])
         q1 = rts.euler_xyz_to_quat(euler_1)
         q2 = rts.euler_xyz_to_quat(euler_2)
-        q3 = rts.combine_quaternions(q1, q2)
+        q3 = combine_quaternions(q1, q2)
         euler_3 = rts.quat_to_euler_xyz(q3)
         np.testing.assert_array_almost_equal(euler_3, euler_1 + euler_2)
 

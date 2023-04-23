@@ -7,6 +7,7 @@ TODO
 """
 
 import time
+from typing import Union
 
 import numpy as np
 import numpy.typing as npt
@@ -21,11 +22,13 @@ from pyastrobee.control.trajectory import (
 )
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
-from pyastrobee.utils.quaternion_operations import (
+from pyastrobee.utils.quaternion_class import Quaternion
+from pyastrobee.utils.quaternion import (
     random_quaternion,
     xyzw_to_wxyz,
     conjugate,
     combine_quaternions,
+    check_quaternion,
 )
 from pyastrobee.utils.rotations import quat_to_fixed_xyz
 
@@ -157,6 +160,7 @@ def main():
 
 
 # THIS NEEDS UPDATING
+# AND MOVE THIS TO QUATERNIONS FILE
 def quaternion_angular_difference(
     q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
 ):
