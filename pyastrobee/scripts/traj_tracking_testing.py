@@ -9,6 +9,7 @@ TODO
 import time
 
 import numpy as np
+import numpy.typing as npt
 import pybullet
 import pytransform3d.rotations as pr
 
@@ -20,7 +21,13 @@ from pyastrobee.control.trajectory import (
 )
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
-from pyastrobee.utils.quaternion import random_quaternion, xyzw_to_wxyz
+from pyastrobee.utils.quaternion_operations import (
+    random_quaternion,
+    xyzw_to_wxyz,
+    conjugate,
+    combine_quaternions,
+)
+from pyastrobee.utils.rotations import quat_to_fixed_xyz
 
 
 def box_inertia(m, l, w, h):
@@ -36,12 +43,38 @@ def get_force(m, kv, kp, x, dx, x_des, dx_des, d2x_des):
     return m * d2x_des - kv * (dx - dx_des) - kp * (x - x_des)
 
 
+def get_force_new(
+    mass: float,
+    kv: float,
+    kp: float,
+    cur_pos: npt.ArrayLike,
+    cur_vel: npt.ArrayLike,
+    des_pos: npt.ArrayLike,
+    des_vel: npt.ArrayLike,
+    des_accel: npt.ArrayLike,
+) -> np.ndarray:
+    M = mass * np.eye(3)
+    pos_err = np.subtract(cur_pos, des_pos)
+    vel_err = np.subtract(cur_vel, des_vel)
+    return M @ np.asarray(des_accel) - kv * vel_err - kp * pos_err
+
+
 def get_torque(I, kw, kq, q, w, q_des, w_des, a_des):
     Q = xyzw_to_wxyz(np.row_stack([q_des, q]))
-    ang_err = pr.compact_axis_angle_from_quaternion(
+    ang_err_old = pr.compact_axis_angle_from_quaternion(
         pr.concatenate_quaternions(Q[1], pr.q_conj(Q[0]))
     )
+    # NEW TESTING - NOT DONE
+    q_diff = combine_quaternions(q, conjugate(q_des))
+    ang_err = quat_to_fixed_xyz(q_diff)
+    print("Old: ", ang_err_old)
+    print("New: ", ang_err)
     return I @ a_des - kw * (w - w_des) - kq * ang_err
+
+
+# NOT DONE
+def get_torque_new(inertia, kw, kq, cur_q, cur_w, des_q, des_w, des_a):
+    pass
 
 
 def main():
@@ -121,6 +154,46 @@ def main():
 
     pybullet.disconnect()
     compare_trajs(traj, tracker)
+
+
+# THIS NEEDS UPDATING
+def quaternion_angular_difference(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+):
+    """Gives a world-frame compact-axis-angle form of the angular error between two quaternions (q1 -> q2)
+
+    - This is similar (but not the same) as a difference between fixed-XYZ conventions. Differences between Euler/Fixed
+        angle sets do not often represent true rotations
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): _description_
+        q2 (Union[Quaternion, npt.ArrayLike]): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    # Need to work with quaterions in WXYZ for for pytransform3d
+    if isinstance(q1, Quaternion):
+        q1 = q1.wxyz
+    else:
+        q1 = check_quaternion(q1)
+        q1 = np.ravel(xyzw_to_wxyz(q1))
+    if isinstance(q2, Quaternion):
+        q2 = q2.wxyz
+    else:
+        q2 = check_quaternion(q2)
+        q2 = np.ravel(xyzw_to_wxyz(q2))
+    # This line is based on the math from pytransform3d's quaternion_gradient(),
+    # but simplified to work with just 2 quats and no time info
+    return pr.compact_axis_angle_from_quaternion(
+        pr.concatenate_quaternions(q2, pr.q_conj(q1))
+    )
+
+
+# NEEDS WORK AND TESTING
+def quaternion_diff(q1, q2):
+    # Gives the quaternion representing the rotation from q1 -> q2
+    return combine_quaternions(q1, conjugate(q2))
 
 
 if __name__ == "__main__":
