@@ -15,6 +15,8 @@ from pyastrobee.utils.quaternions import (
     quaternion_derivative,
     quats_to_angular_velocities,
     combine_quaternions,
+    xyzw_to_wxyz,
+    wxyz_to_xyzw,
 )
 
 
@@ -61,6 +63,22 @@ class QuaternionTest(unittest.TestCase):
         # of this method that we're using
         # Test against the first timestep (2 in total)
         np.testing.assert_almost_equal(ang_vel[0], w, decimal=3)
+
+    def test_wxyz_xyzw_conversion(self):
+        # Test 1-dimensional input (single quaternion)
+        wxyz_1d = np.arange(4)
+        xyzw_1d = wxyz_to_xyzw(wxyz_1d)
+        np.testing.assert_array_equal(xyzw_to_wxyz(xyzw_1d), wxyz_1d)
+        # Test 2-dimensional input (multiple quaternions)
+        wxyz_2d = np.row_stack([wxyz_1d, wxyz_1d])
+        xyzw_2d = wxyz_to_xyzw(wxyz_2d)
+        np.testing.assert_array_equal(xyzw_to_wxyz(xyzw_2d), wxyz_2d)
+        # Test invalid input
+        invalid_quat = np.arange(5)
+        with self.assertRaises(ValueError):
+            wxyz_to_xyzw(invalid_quat)
+        with self.assertRaises(ValueError):
+            xyzw_to_wxyz(invalid_quat)
 
     def test_quaternion_interpolation(self):
         # TODO. Need to think of a good way to evaluate this test case
