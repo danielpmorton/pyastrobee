@@ -16,6 +16,7 @@ import pytransform3d.trajectories as pt
 
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils import transformations as tfs
+from pyastrobee.utils import quaternion as qts
 
 
 class Pose:
@@ -327,7 +328,7 @@ def add_global_pose_delta(pose: npt.ArrayLike, pose_delta: npt.ArrayLike) -> np.
             f"Invalid inputs: Not position/quaternion form.\nGot: {pose}\nAnd: {pose_delta}"
         )
     new_pos = pose[:3] + pose_delta[:3]
-    new_orn = rts.combine_quaternions(pose[3:], pose_delta[3:])
+    new_orn = qts.combine_quaternions(pose[3:], pose_delta[3:])
     return np.array([*new_pos, *new_orn])
 
 

@@ -12,10 +12,10 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.control.trajectory import Trajectory
-from pyastrobee.utils.rotations import quaternion_slerp
+from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternion import (
     random_quaternion,
-    Quaternion,
+    quaternion_slerp,
     quats_to_angular_velocities,
 )
 
