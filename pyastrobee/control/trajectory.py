@@ -13,7 +13,7 @@ from matplotlib.figure import Figure
 
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
 from pyastrobee.utils.debug_visualizer import visualize_frame
-from pyastrobee.utils.quaternion import quaternion_dist
+from pyastrobee.utils.quaternions import quaternion_dist
 
 
 class Trajectory:
