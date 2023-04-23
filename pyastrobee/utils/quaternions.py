@@ -85,33 +85,41 @@ def quats_to_angular_velocities(
 
 
 def xyzw_to_wxyz(quats: npt.ArrayLike) -> np.ndarray:
-    """Converts an array of XYZW quaternions to WXYZ
+    """Converts a XYZW quaternion or array of quaternions to WXYZ
 
     Args:
-        quats (npt.ArrayLike): XYZW quaternions, shape (n, 4)
+        quats (npt.ArrayLike): XYZW quaternion(s), shape (4,) or (n, 4)
 
     Returns:
-        np.ndarray: WXYZ quaternions, shape (n, 4)
+        np.ndarray: WXYZ quaternions, shape (4,) or (n, 4) (same shape as input)
     """
-    quats = np.atleast_2d(quats)
-    if quats.shape[1] != 4:
-        raise ValueError("Invalid quaternion array: Must be of shape (n, 4)")
-    return quats[:, [3, 0, 1, 2]]
+    quats = np.asarray(quats)
+    if quats.shape[-1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (4,) or (n, 4)")
+    idx = np.array([3, 0, 1, 2])
+    if np.ndim(quats) == 1:
+        return quats[idx]
+    else:
+        return quats[:, idx]
 
 
 def wxyz_to_xyzw(quats: npt.ArrayLike) -> np.ndarray:
-    """Converts an array of WXYZ quaternions to XYZW
+    """Converts a WXYZ quaternion or array of quaternions to XYZW
 
     Args:
-        quats (npt.ArrayLike): WXYZ quaternions, shape (n, 4)
+        quats (npt.ArrayLike): WXYZ quaternion(s), shape (4,) or (n, 4)
 
     Returns:
-        np.ndarray: XYZW quaternions, shape (n, 4)
+        np.ndarray: XYZW quaternions, shape (4,) or (n, 4) (same shape as input)
     """
-    quats = np.atleast_2d(quats)
-    if quats.shape[1] != 4:
-        raise ValueError("Invalid quaternion array: Must be of shape (n, 4)")
-    return quats[:, [1, 2, 3, 0]]
+    quats = np.asarray(quats)
+    if quats.shape[-1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (4,) or (n, 4)")
+    idx = np.array([1, 2, 3, 0])
+    if np.ndim(quats) == 1:
+        return quats[idx]
+    else:
+        return quats[:, idx]
 
 
 def quaternion_derivative(
