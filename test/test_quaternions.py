@@ -11,7 +11,7 @@ import numpy as np
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils.math_utils import normalize
 from pyastrobee.utils.quaternion_class import Quaternion
-from pyastrobee.utils.quaternion import (
+from pyastrobee.utils.quaternions import (
     quaternion_derivative,
     quats_to_angular_velocities,
     combine_quaternions,

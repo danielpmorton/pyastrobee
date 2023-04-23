@@ -15,7 +15,7 @@ from scipy import linalg
 
 from pyastrobee.utils.math_utils import normalize, safe_divide
 from pyastrobee.utils.rotations import rotate_point, quat_to_rmat
-from pyastrobee.utils.quaternion import conjugate, quaternion_dist
+from pyastrobee.utils.quaternions import conjugate, quaternion_dist
 
 
 # Stores:

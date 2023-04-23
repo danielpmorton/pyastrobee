@@ -8,7 +8,7 @@ import pybullet
 from pyastrobee.control.trajectory import visualize_traj
 from pyastrobee.control.planner import interpolation_pose_traj, point_and_move_pose_traj
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
-from pyastrobee.utils.quaternion import random_quaternion
+from pyastrobee.utils.quaternions import random_quaternion
 
 # Create start/end poses
 np.random.seed(0)

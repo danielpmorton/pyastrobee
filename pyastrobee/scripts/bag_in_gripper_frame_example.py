@@ -20,7 +20,7 @@ from pyastrobee.utils.bullet_utils import load_rigid_object
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat
 from pyastrobee.utils.debug_visualizer import visualize_frame
-from pyastrobee.utils.quaternion import random_quaternion
+from pyastrobee.utils.quaternions import random_quaternion
 import pyastrobee.config.bag_properties as bag_props
 
 front_file = "pyastrobee/assets/meshes/bags/front_handle_bag.obj"

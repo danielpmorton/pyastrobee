@@ -23,7 +23,7 @@ from pyastrobee.control.trajectory import (
 from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.quaternion_class import Quaternion
-from pyastrobee.utils.quaternion import (
+from pyastrobee.utils.quaternions import (
     random_quaternion,
     xyzw_to_wxyz,
     conjugate,

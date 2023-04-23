@@ -16,7 +16,7 @@ import pytransform3d.trajectories as pt
 
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils import transformations as tfs
-from pyastrobee.utils import quaternion as qts
+from pyastrobee.utils import quaternions as qts
 
 
 class Pose:

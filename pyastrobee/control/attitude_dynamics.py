@@ -12,7 +12,7 @@ rather than the angular velocity) but it gives the same result. See page 59, eqn
 """
 import numpy as np
 import numpy.typing as npt
-from pyastrobee.utils.quaternion import random_quaternion
+from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.math_utils import skew
 from pyastrobee.utils.transformations import transform_point, invert_transform_mat
 
