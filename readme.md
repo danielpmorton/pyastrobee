@@ -24,6 +24,26 @@
 
 ## Status
 ### TODOs:
+- [ ] Improve PID? IDK if https://github.com/m-lundberg/simple-pid will be of use
+- [ ] Look more into NASA's trapezoidal planner?? See `mobility/planner_trapezoidal/src/planner_trapezoidal.cc`
+- [ ] LQR
+  - [ ] http://underactuated.mit.edu/lqr.html
+  - [ ] https://github.com/python-control/python-control/blob/main/control/statefbk.py
+  - [ ] https://github.com/ssloy/tutorials/blob/master/tutorials/pendulum/lqr.py
+- [ ] Compare quaternion representations against Euler-Rodrigues
+  - [ ] https://rotations.berkeley.edu/other-representations-of-a-rotation/
+- [ ] Define equations of motion
+  - [ ] https://www.frontiersin.org/articles/10.3389/frobt.2018.00041/full
+  - [ ] https://physics.stackexchange.com/questions/424249/kinematic-equation-for-spacecraft-using-quaternion
+  - [ ] https://physics.stackexchange.com/questions/567442/equation-of-motion-for-rigid-body-dynamics-with-quaternions
+- [ ] Visualize the path of a trajectory (alternate option to showing all of the frames?)
+- [ ] Visualize the traj's acceleration vector at each timestep?
+- [ ] Make a script with just moving a simple mass under force and record the velocity (with getBaseVelocity)
+  - [ ] Compare against what should be expected based on a derivative of the position information
+- [ ] Experiment with `flags=1` in some of the pybullet dynamics functions for a floating base (see Issues #3188/3345)
+- [ ] Try adding virtual links for better jacobian info?
+  - [ ] https://github.com/bulletphysics/bullet3/issues/3345
+  - [ ] https://github.com/erwincoumans/tiny-differentiable-simulator/blob/master/data/humanoid_partial_xyz_xyz_fixed.urdf
 - [ ] Try out anchoring not to the handle but to the part of the main compartment right below the handle
   - [ ] Experiment with number of anchor points... see what is most like what we'd expect from holding the handle of hte real bag
 - [ ] Add a way to get the position/velocity state info of the cargo bag
@@ -42,7 +62,6 @@
 - [ ] Check on quaternion normalization meaning
 - [ ] Check out `humanoidMotionCapture` in pybullet examples!!
   - [ ] Especially how they use `pdControllerStable` and `pdControllerExplicit`
-- [ ] Update the pose controller to use the new quaternion heading function
 - [ ] Add test cases for batched quaternion operations
 - [ ] Deal with stuff from demo
   - [ ] Delete the unnecessary code
@@ -85,6 +104,23 @@
 - [ ] See if there are any useful transformations here:
   - [ ] https://github.com/cgohlke/transformations/
 - [ ] Check out quaternions in numpy? https://github.com/moble/quaternion
+- [ ] Global positioning of robot manipulators via PD control plus a class of nonlinear integral actions https://ieeexplore.ieee.org/document/701091
+- [ ] Spacecraft robust attitude tracking design: PID control approach https://ieeexplore.ieee.org/document/1023210
+- [ ] Spacecraft attitude dynamics https://www.amazon.com/Spacecraft-Attitude-Dynamics-Aeronautical-Engineering/dp/0486439259
+- [ ] NNGusto https://stanfordasl.github.io/wp-content/papercite-data/pdf/Banerjee.Lew.Bonalli.ea.AeroConf20.pdf
+  - [ ] Github: https://github.com/StanfordASL/nnGuSTO
+- [ ] Two-Stage Path Planning Approach for Designing Multiple Spacecraft Reconfiguration Maneuvers and Application to SPHERES onboard ISS http://dspace.mit.edu/bitstream/handle/1721.1/42050/230816006-MIT.pdf
+- [ ] Controlling Ocean One http://www.fsr.ethz.ch/papers/FSR_2017_paper_71.pdf
+- [ ] A Survey of Attitude Representations http://malcolmdshuster.com/Pub_1993h_J_Repsurv_scan.pdf
+- [ ] ??? Quaternion kinematics for the error-state Kalman filter http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf
+- [ ] Smooth Trajectory Generation on SE(3) for a Free Flying Space Robot https://longhorizon.org/trey/papers/watterson16_smooth_trajectory_se3.pdf
+- [ ] ???? A tuning method of multi variable PID gains using Jacobian https://ieeexplore.ieee.org/document/1223127
+- [ ] Full quaternion based attitude control for a quadrotor https://ieeexplore.ieee.org/document/6669617
+- [ ] Quaternion-Based Control Architecture for Determining Controllability/Maneuverability Limits https://arc.aiaa.org/doi/pdf/10.2514/6.2012-5028
+  - [ ] There's a nice "Simple PID Quaternion Control Example" section here
+- [ ] ReSWARM: https://arxiv.org/pdf/2301.01319.pdf
+  - [ ] Has some Astrobee dynamics equations *and talks about cargo maneuvering*
+  - [ ] LOTS of astrobee stuff actually - and flight-test tracking data which we can use as a comparison for our own tracking info
 
 ### In Progress:
 - [ ] Create trajectories
@@ -133,6 +169,7 @@
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 
 ### Done:
+- [X] Update the pose controller to use the new quaternion heading function
 - [X] Fix the orientation issue in `load_rigid_object` and `load_deformable_object`
 - [X] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
 - [X] Make a URDF with a rigid cargo bag attached to the Astrobee gripper
