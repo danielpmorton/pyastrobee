@@ -4,6 +4,7 @@ TODO
 - Add a "glide" section to the trajectory? e.g. reach the max velocity and then glide until we need to decelerate
 - Enforce actuator limits - make sure that the trajectory doesn't exceed the max velocity values.
   If so, increase the duration
+- Merge this file with planner.py?
 """
 
 from typing import Union
