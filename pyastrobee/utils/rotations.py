@@ -425,3 +425,19 @@ def quat_to_axis_angle(
     axis = axis_and_angle[:3]
     angle = axis_and_angle[3]
     return axis, angle
+
+
+def compact_axis_angle(axis: npt.ArrayLike, angle: float) -> np.ndarray:
+    """Converts an axis/angle rotation into compact form (axis vector with a norm of the angle)
+
+    Args:
+        axis (npt.ArrayLike): Axis of rotation. Shape (3,)
+        angle (float): Rotation angle, in radians
+
+    Returns:
+        np.ndarray: Compact axis/angle representation, shape (3,)
+    """
+    axis = np.asarray(axis)
+    if np.size(axis) != 3 or np.ndim(angle) != 0:
+        raise ValueError(f"Invalid axis/angle representation: {axis}, {angle}")
+    return (angle / np.linalg.norm(axis)) * axis
