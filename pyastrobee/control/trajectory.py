@@ -1,6 +1,8 @@
 """Trajectory class for Astrobee control, and trajectory-associated helpers
 
 TODO decide if trajectory attributes should be read-only? (properties)
+TODO simplify the plotting code (a lot of repeated code between single-traj plotting and 2-traj plotting)
+TODO make a subclass of Trajectory with the log() method
 """
 
 from typing import Optional, Union
@@ -151,127 +153,104 @@ class Trajectory:
             self._times.append(self._times[-1] + dt)
 
 
-def plot_traj(traj: Trajectory, show: bool = True) -> Figure:
+def plot_traj(traj: Trajectory, show: bool = True, fmt: str = "k-") -> Figure:
     """Plot the trajectory components over time
 
     Args:
         traj (Trajectory): The Trajectory object to plot
         show (bool, optional): Whether or not to display the plot. Defaults to True.
+        fmt (str, optional): Matplotlib line specification. Defaults to "k-"
 
     Returns:
         Figure: Matplotlib figure containing the plots
     """
 
     # Indexing helper variables
-    POSITION = 0
-    ORIENTATION = 1
-    VELOCITY = 2
-    ANGULAR_VELOCITY = 3
-    ACCELERATION = 4
-    ANGULAR_ACCEL = 5
+    POS = 0
+    ORN = 1
+    LIN_VEL = 2
+    ANG_VEL = 3
+    LIN_ACCEL = 4
+    ANG_ACCEL = 5
 
-    traj_data = {
-        POSITION: traj.positions,
-        ORIENTATION: traj.quaternions,
-        VELOCITY: traj.linear_velocities,
-        ANGULAR_VELOCITY: traj.angular_velocities,
-        ACCELERATION: traj.linear_accels,
-        ANGULAR_ACCEL: traj.angular_accels,
+    labels = {
+        POS: ["x", "y", "z"],
+        ORN: ["qx", "qy", "qz", "qw"],
+        LIN_VEL: ["vx", "vy", "vz"],
+        ANG_VEL: ["wx", "wy", "wz"],
+        LIN_ACCEL: ["ax", "ay", "az"],
+        ANG_ACCEL: ["al_x", "al_y", "al_z"],
     }
-
-    traj_labels = {
-        POSITION: ["x", "y", "z"],
-        ORIENTATION: ["qx", "qy", "qz", "qw"],
-        VELOCITY: ["vx", "vy", "vz"],
-        ANGULAR_VELOCITY: ["wx", "wy", "wz"],
-        ACCELERATION: ["ax", "ay", "az"],
-        ANGULAR_ACCEL: ["al_x", "al_y", "al_z"],
-    }
-
-    def _plot(axes: np.ndarray[plt.Axes], component: int):
-        """Helper sub-function for plotting trajectory components
-
-        Args:
-            axes (np.ndarray[plt.Axes]): Matplotlib axes for subplots within a subfigure
-            component (int): Type of trajectory information to plot. One of POSITION, ORIENTATION, VELOCITY, ...
-                (see the indexing helper variables)
-        """
-        # Extract trajectory info and the relevant labels for plotting
-        data = traj_data[component]
-        labels = traj_labels[component]
-        # If the trajectory doesn't contain the info, don't plot it
-        if data == [] or data is None:
-            return
-        # Set the x axis based on if we have time information in the trajectory
-        if traj.times is not None:
-            x_axis = traj.times
-            x_label = "Time, s"
-        else:
-            x_axis = range(traj.num_timesteps)
-            x_label = "Timesteps"
-        # Number of components to plot (for instance, position: n = 3: x, y, z)
-        n = data.shape[1]
-        assert n == len(labels)
-        assert n == len(axes)
-        # Plot each component of the trajectory information on a separate axis
-        for i, ax in enumerate(axes):
-            ax.plot(x_axis, data[:, i])
-            ax.set_title(labels[i])
-            ax.set_xlabel(x_label)
 
     fig = plt.figure()
+    if traj.times is not None:
+        x_axis = traj.times
+        x_label = "Time, s"
+    else:
+        x_axis = range(traj.num_timesteps)
+        x_label = "Timesteps"
+    # fmt: off
     # Large plot if we have up second-derivative information
     if traj.linear_accels is not None or traj.angular_accels is not None:
         subfigs = fig.subfigures(2, 3)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot(top_left, POSITION)
+        _plot(top_left, traj.positions, labels[POS], x_axis, x_label, fmt)
         top_middle = subfigs[0, 1].subplots(1, 3)
-        _plot(top_middle, VELOCITY)
+        _plot(top_middle, traj.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt)
         top_right = subfigs[0, 2].subplots(1, 3)
-        _plot(top_right, ACCELERATION)
+        _plot(top_right, traj.linear_accels, labels[LIN_ACCEL], x_axis, x_label, fmt)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot(bot_left, ORIENTATION)
+        _plot(bot_left, traj.quaternions, labels[ORN], x_axis, x_label, fmt)
         bot_middle = subfigs[1, 1].subplots(1, 3)
-        _plot(bot_middle, ANGULAR_VELOCITY)
+        _plot(bot_middle, traj.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt)
         bot_right = subfigs[1, 2].subplots(1, 3)
-        _plot(bot_right, ANGULAR_ACCEL)
+        _plot(bot_right, traj.angular_accels, labels[ANG_ACCEL], x_axis, x_label, fmt)
     # Medium size plot if we only have first-derivative info
     elif traj.linear_velocities is not None or traj.angular_velocities is not None:
         subfigs = fig.subfigures(2, 2)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot(top_left, POSITION)
+        _plot(top_left, traj.positions, labels[POS], x_axis, x_label, fmt)
         top_right = subfigs[0, 1].subplots(1, 3)
-        _plot(top_right, VELOCITY)
+        _plot(top_right, traj.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot(bot_left, ORIENTATION)
+        _plot(bot_left, traj.quaternions, labels[ORN], x_axis, x_label, fmt)
         bot_right = subfigs[1, 1].subplots(1, 3)
-        _plot(bot_right, ANGULAR_VELOCITY)
+        _plot(bot_right, traj.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt)
     # Small plot for just plotting position + orientation
     else:
         subfigs = fig.subfigures(2, 1)
         top = subfigs[0].subplots(1, 3)
-        _plot(top, POSITION)
+        _plot(top, traj.positions, labels[POS], x_axis, x_label, fmt)
         bot = subfigs[1].subplots(1, 4)
-        _plot(bot, ORIENTATION)
-
+        _plot(bot, traj.quaternions, labels[ORN], x_axis, x_label, fmt)
+    # fmt: on
     if show:
         plt.show()
     return fig
 
 
-# NEEDS CLEANUP - integrate into main plotting function
-def _plot_data(
-    axes: np.ndarray[plt.Axes], data, labels, x_axis, x_label, *args, **kwargs
+def _plot(
+    axes: np.ndarray[plt.Axes],
+    data: np.ndarray,
+    labels: list[str],
+    x_axis: np.ndarray,
+    x_label: str,
+    *args,
+    **kwargs
 ):
     """Helper function for plotting trajectory components
 
     Args:
-        axes (np.ndarray[plt.Axes]): Matplotlib axes for subplots within a subfigure
-        component (int): Type of trajectory information to plot. One of POSITION, ORIENTATION, VELOCITY, ...
-            (see the indexing helper variables)
+        axes (np.ndarray[plt.Axes]): Matplotlib axes for subplots within a subfigure, length = n
+        data (np.ndarray): Trajectory information to plot, shape (m, n) where m is the number of timesteps
+            and n refers to the number of components of that trajectory info (for instance, position has
+            data for x, y, and z, so n = 3)
+        labels (list[str]): Labels for each of the components of the trajectory data, length = n
+        x_axis (np.ndarray): X-axis data to plot the trajectory against, length = m
+        x_label (str): Label for the x-axis (for instance, "Time" or "Steps")
     """
     # If the trajectory doesn't contain the info, don't plot it
-    if data == [] or data is None:
+    if np.size(data) == 0 or data is None:
         return
     # Number of components to plot (for instance, position: n = 3: x, y, z)
     n = data.shape[1]
@@ -284,9 +263,27 @@ def _plot_data(
         ax.set_xlabel(x_label)
 
 
-# NEEDS SIGNIFICANT CLEANUP - should be totally eliminated or dramatically simplified
-# Merge this with the main trajectory plotting function
-def compare_trajs(traj_1: Trajectory, traj_2: Trajectory, show: bool = True):
+# TODO all of the plotting logic here is extremely similar to the single-plot method
+# Figure out a way to simplify the code
+def compare_trajs(
+    traj_1: Trajectory,
+    traj_2: Trajectory,
+    show: bool = True,
+    fmt_1: str = "k-",
+    fmt_2: str = "b-",
+) -> Figure:
+    """Compares two trajectories by plotting them on the same axes
+
+    Args:
+        traj_1 (Trajectory): First trajectory to plot
+        traj_2 (Trajectory): Second trajectory to plot
+        show (bool, optional): . Defaults to True.
+        fmt_1 (str, optional): Matplotlib line specification for the first traj. Defaults to "k-".
+        fmt_2 (str, optional): Matplotlib line specification for the second traj. Defaults to "b-".
+
+    Returns:
+        Figure: Matplotlib figure containing the plots
+    """
     # Indexing helper variables
     POS = 0
     ORN = 1
@@ -312,77 +309,52 @@ def compare_trajs(traj_1: Trajectory, traj_2: Trajectory, show: bool = True):
         x_axis = range(traj_1.num_timesteps)
         x_label = "Timesteps"
     # Large plot if we have up second-derivative information
+    # fmt: off
     if traj_1.linear_accels is not None or traj_1.angular_accels is not None:
         subfigs = fig.subfigures(2, 3)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot_data(top_left, traj_1.positions, labels[POS], x_axis, x_label, "k-")
-        _plot_data(top_left, traj_2.positions, labels[POS], x_axis, x_label, "b-")
+        _plot(top_left, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
+        _plot(top_left, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
         top_middle = subfigs[0, 1].subplots(1, 3)
-        _plot_data(
-            top_middle, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, "k-"
-        )
-        _plot_data(
-            top_middle, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, "b-"
-        )
+        _plot(top_middle, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_1)
+        _plot(top_middle, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_2)
         top_right = subfigs[0, 2].subplots(1, 3)
-        _plot_data(
-            top_right, traj_1.linear_accels, labels[LIN_ACCEL], x_axis, x_label, "k-"
-        )
-        # TODO ADD A BETTER CHECK
-        # _plot_data(
-        #     top_right, traj_2.linear_accels, labels[LIN_ACCEL], x_axis, x_label, "b-"
-        # )
+        _plot(top_right, traj_1.linear_accels, labels[LIN_ACCEL], x_axis, x_label, fmt_1)
+        _plot(top_right, traj_2.linear_accels, labels[LIN_ACCEL], x_axis, x_label, fmt_2)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot_data(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, "k-")
-        _plot_data(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, "b-")
+        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
+        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
         bot_mid = subfigs[1, 1].subplots(1, 3)
-        _plot_data(
-            bot_mid, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, "k-"
-        )
-        _plot_data(
-            bot_mid, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, "b-"
-        )
+        _plot(bot_mid, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_1)
+        _plot(bot_mid, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_2)
         bot_right = subfigs[1, 2].subplots(1, 3)
-        _plot_data(
-            bot_right, traj_1.angular_accels, labels[ANG_ACCEL], x_axis, x_label, "k-"
-        )
-        # TODO ADD A BETTER CHECK
-        # _plot_data(
-        #     bot_right, traj_2.angular_accels, labels[ANG_ACCEL], x_axis, x_label, "b-"
-        # )
+        _plot(bot_right, traj_1.angular_accels, labels[ANG_ACCEL], x_axis, x_label, fmt_1)
+        _plot(bot_right, traj_2.angular_accels, labels[ANG_ACCEL], x_axis, x_label, fmt_2)
     # Medium size plot if we only have first-derivative info
     elif traj_1.linear_velocities is not None or traj_1.angular_velocities is not None:
         subfigs = fig.subfigures(2, 2)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot_data(top_left, traj_1.positions, labels[POS], x_axis, x_label, "k-")
-        _plot_data(top_left, traj_2.positions, labels[POS], x_axis, x_label, "b-")
+        _plot(top_left, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
+        _plot(top_left, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
         top_right = subfigs[0, 1].subplots(1, 3)
-        _plot_data(
-            top_right, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, "k-"
-        )
-        _plot_data(
-            top_right, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, "b-"
-        )
+        _plot(top_right, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_1)
+        _plot(top_right, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_2)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot_data(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, "k-")
-        _plot_data(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, "b-")
+        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
+        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
         bot_right = subfigs[1, 1].subplots(1, 3)
-        _plot_data(
-            bot_right, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, "k-"
-        )
-        _plot_data(
-            bot_right, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, "b-"
-        )
+        _plot(bot_right, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_1)
+        _plot(bot_right, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_2)
     # Small plot for just plotting position + orientation
     else:
         subfigs = fig.subfigures(2, 1)
         top = subfigs[0].subplots(1, 3)
-        _plot_data(top, traj_1.positions, labels[POS], x_axis, x_label, "k-")
-        _plot_data(top, traj_2.positions, labels[POS], x_axis, x_label, "b-")
+        _plot(top, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
+        _plot(top, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
         bot = subfigs[1].subplots(1, 4)
-        _plot_data(bot, traj_1.quaternions, labels[ORN], x_axis, x_label, "k-")
-        _plot_data(bot, traj_2.quaternions, labels[ORN], x_axis, x_label, "b-")
-
+        _plot(bot, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
+        _plot(bot, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
+    # fmt: on
     if show:
         plt.show()
     return fig
@@ -420,6 +392,7 @@ def visualize_traj(
     return ids
 
 
+# TODO Move this to a more dynamics-relevant location?
 def stopping_criteria(
     pos: npt.ArrayLike,
     quat: npt.ArrayLike,
