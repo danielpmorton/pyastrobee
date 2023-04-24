@@ -302,58 +302,64 @@ def compare_trajs(
     }
 
     fig = plt.figure()
+    # TODO this check is kinda weird right now
+    # what happens if one has time info and the other doesn't??
     if traj_1.times is not None:
-        x_axis = traj_1.times
+        x_axis_1 = traj_1.times
         x_label = "Time, s"
     else:
-        x_axis = range(traj_1.num_timesteps)
+        x_axis_1 = range(traj_1.num_timesteps)
         x_label = "Timesteps"
+    if traj_2.times is not None:
+        x_axis_2 = traj_2.times
+    else:
+        x_axis_2 = range(traj_2.num_timesteps)
     # Large plot if we have up second-derivative information
     # fmt: off
     if traj_1.linear_accels is not None or traj_1.angular_accels is not None:
         subfigs = fig.subfigures(2, 3)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot(top_left, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
-        _plot(top_left, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
+        _plot(top_left, traj_1.positions, labels[POS], x_axis_1, x_label, fmt_1)
+        _plot(top_left, traj_2.positions, labels[POS], x_axis_2, x_label, fmt_2)
         top_middle = subfigs[0, 1].subplots(1, 3)
-        _plot(top_middle, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_1)
-        _plot(top_middle, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_2)
+        _plot(top_middle, traj_1.linear_velocities, labels[LIN_VEL], x_axis_1, x_label, fmt_1)
+        _plot(top_middle, traj_2.linear_velocities, labels[LIN_VEL], x_axis_2, x_label, fmt_2)
         top_right = subfigs[0, 2].subplots(1, 3)
-        _plot(top_right, traj_1.linear_accels, labels[LIN_ACCEL], x_axis, x_label, fmt_1)
-        _plot(top_right, traj_2.linear_accels, labels[LIN_ACCEL], x_axis, x_label, fmt_2)
+        _plot(top_right, traj_1.linear_accels, labels[LIN_ACCEL], x_axis_1, x_label, fmt_1)
+        _plot(top_right, traj_2.linear_accels, labels[LIN_ACCEL], x_axis_2, x_label, fmt_2)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
-        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
+        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis_1, x_label, fmt_1)
+        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis_2, x_label, fmt_2)
         bot_mid = subfigs[1, 1].subplots(1, 3)
-        _plot(bot_mid, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_1)
-        _plot(bot_mid, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_2)
+        _plot(bot_mid, traj_1.angular_velocities, labels[ANG_VEL], x_axis_1, x_label, fmt_1)
+        _plot(bot_mid, traj_2.angular_velocities, labels[ANG_VEL], x_axis_2, x_label, fmt_2)
         bot_right = subfigs[1, 2].subplots(1, 3)
-        _plot(bot_right, traj_1.angular_accels, labels[ANG_ACCEL], x_axis, x_label, fmt_1)
-        _plot(bot_right, traj_2.angular_accels, labels[ANG_ACCEL], x_axis, x_label, fmt_2)
+        _plot(bot_right, traj_1.angular_accels, labels[ANG_ACCEL], x_axis_1, x_label, fmt_1)
+        _plot(bot_right, traj_2.angular_accels, labels[ANG_ACCEL], x_axis_2, x_label, fmt_2)
     # Medium size plot if we only have first-derivative info
     elif traj_1.linear_velocities is not None or traj_1.angular_velocities is not None:
         subfigs = fig.subfigures(2, 2)
         top_left = subfigs[0, 0].subplots(1, 3)
-        _plot(top_left, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
-        _plot(top_left, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
+        _plot(top_left, traj_1.positions, labels[POS], x_axis_1, x_label, fmt_1)
+        _plot(top_left, traj_2.positions, labels[POS], x_axis_2, x_label, fmt_2)
         top_right = subfigs[0, 1].subplots(1, 3)
-        _plot(top_right, traj_1.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_1)
-        _plot(top_right, traj_2.linear_velocities, labels[LIN_VEL], x_axis, x_label, fmt_2)
+        _plot(top_right, traj_1.linear_velocities, labels[LIN_VEL], x_axis_1, x_label, fmt_1)
+        _plot(top_right, traj_2.linear_velocities, labels[LIN_VEL], x_axis_2, x_label, fmt_2)
         bot_left = subfigs[1, 0].subplots(1, 4)
-        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
-        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
+        _plot(bot_left, traj_1.quaternions, labels[ORN], x_axis_1, x_label, fmt_1)
+        _plot(bot_left, traj_2.quaternions, labels[ORN], x_axis_2, x_label, fmt_2)
         bot_right = subfigs[1, 1].subplots(1, 3)
-        _plot(bot_right, traj_1.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_1)
-        _plot(bot_right, traj_2.angular_velocities, labels[ANG_VEL], x_axis, x_label, fmt_2)
+        _plot(bot_right, traj_1.angular_velocities, labels[ANG_VEL], x_axis_1, x_label, fmt_1)
+        _plot(bot_right, traj_2.angular_velocities, labels[ANG_VEL], x_axis_2, x_label, fmt_2)
     # Small plot for just plotting position + orientation
     else:
         subfigs = fig.subfigures(2, 1)
         top = subfigs[0].subplots(1, 3)
-        _plot(top, traj_1.positions, labels[POS], x_axis, x_label, fmt_1)
-        _plot(top, traj_2.positions, labels[POS], x_axis, x_label, fmt_2)
+        _plot(top, traj_1.positions, labels[POS], x_axis_1, x_label, fmt_1)
+        _plot(top, traj_2.positions, labels[POS], x_axis_2, x_label, fmt_2)
         bot = subfigs[1].subplots(1, 4)
-        _plot(bot, traj_1.quaternions, labels[ORN], x_axis, x_label, fmt_1)
-        _plot(bot, traj_2.quaternions, labels[ORN], x_axis, x_label, fmt_2)
+        _plot(bot, traj_1.quaternions, labels[ORN], x_axis_1, x_label, fmt_1)
+        _plot(bot, traj_2.quaternions, labels[ORN], x_axis_2, x_label, fmt_2)
     # fmt: on
     if show:
         plt.show()
