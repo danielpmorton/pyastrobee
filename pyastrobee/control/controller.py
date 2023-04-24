@@ -21,7 +21,9 @@ from typing import Optional
 
 import pybullet
 import numpy as np
-from numpy.typing import ArrayLike
+import numpy.typing as npt
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.config.astrobee_motion import (
@@ -90,11 +92,11 @@ class Controller(ABC):
 
     def _validate_cmds(
         self,
-        pose: Optional[ArrayLike] = None,
-        vel: Optional[ArrayLike] = None,
-        ang_vel: Optional[ArrayLike] = None,
-        force: Optional[ArrayLike] = None,
-        torque: Optional[ArrayLike] = None,
+        pose: Optional[npt.ArrayLike] = None,
+        vel: Optional[npt.ArrayLike] = None,
+        ang_vel: Optional[npt.ArrayLike] = None,
+        force: Optional[npt.ArrayLike] = None,
+        torque: Optional[npt.ArrayLike] = None,
     ):
         """Confirms that inputs are the correct shape and within the Astrobee's force/speed limits
 
@@ -102,11 +104,11 @@ class Controller(ABC):
         - TODO decide if this should be implemented in the inherited classes
 
         Args:
-            pose (Optional[ArrayLike]): Pose command (position + XYZW quaternion). Defaults to None.
-            vel (Optional[ArrayLike]): Linear velocity command ([vx, vy, vz]). Defaults to None.
-            ang_vel (Optional[ArrayLike]): Angular velocity command ([wx, wy, wz]). Defaults to None.
-            force (Optional[ArrayLike]): Force command ([Fx, Fy, Fz]). Defaults to None.
-            torque (Optional[ArrayLike]): Torque command ([Tx, Ty, Tz]). Defaults to None.
+            pose (Optional[npt.ArrayLike]): Pose command (position + XYZW quaternion). Defaults to None.
+            vel (Optional[npt.ArrayLike]): Linear velocity command ([vx, vy, vz]). Defaults to None.
+            ang_vel (Optional[npt.ArrayLike]): Angular velocity command ([wx, wy, wz]). Defaults to None.
+            force (Optional[npt.ArrayLike]): Force command ([Fx, Fy, Fz]). Defaults to None.
+            torque (Optional[npt.ArrayLike]): Torque command ([Tx, Ty, Tz]). Defaults to None.
 
         Raises:
             ValueError: If any of the inputs are invalid
@@ -192,13 +194,13 @@ class PoseController:
         return self._pose_command
 
     @pose_command.setter
-    def pose_command(self, cmd: ArrayLike) -> np.ndarray:
+    def pose_command(self, cmd: npt.ArrayLike) -> np.ndarray:
         # TODO inherit the validation function from Controller!!
         if not len(cmd) == 7:
             raise ValueError(f"Invalid pose. Got: {cmd}")
         self._pose_command = cmd
 
-    def go_to_pose(self, pose: ArrayLike, max_force: float = 500) -> None:
+    def go_to_pose(self, pose: npt.ArrayLike, max_force: float = 500) -> None:
         """Navigates to a new pose
 
         Current method (nothing fancy at the moment):
@@ -207,7 +209,7 @@ class PoseController:
         - Orient towards the goal orientation
 
         Args:
-            pose (ArrayLike): Desired new pose (position + quaternion) for the astrobee
+            pose (npt.ArrayLike): Desired new pose (position + quaternion) for the astrobee
             max_force (float, optional): Maximum force to apply to the constraint. Defaults to 500
         """
         pos_stepsize = 0.01  # TODO move this
@@ -247,7 +249,7 @@ class VelocityController(Controller):
         return self._velocity_command
 
     @velocity_command.setter
-    def velocity_command(self, cmd: ArrayLike):
+    def velocity_command(self, cmd: npt.ArrayLike):
         self._validate_cmds(vel=cmd)
         self._velocity_command = np.array(cmd)
 
@@ -260,7 +262,7 @@ class VelocityController(Controller):
         return self._angular_velocity_command
 
     @angular_velocity_command.setter
-    def angular_velocity_command(self, cmd: ArrayLike):
+    def angular_velocity_command(self, cmd: npt.ArrayLike):
         self._validate_cmds(ang_vel=cmd)
         self._angular_velocity_command = np.array(cmd)
 
@@ -297,15 +299,15 @@ class VelocityController(Controller):
 
     def set_local_velocity_cmds(
         self,
-        linear: Optional[ArrayLike] = None,
-        angular: Optional[ArrayLike] = None,
+        linear: Optional[npt.ArrayLike] = None,
+        angular: Optional[npt.ArrayLike] = None,
     ) -> None:
         """Sets a desired linear/angular velocity command in the local (robot) frame
 
         Args:
-            linear (Optional[ArrayLike]): Desired linear velocity along the robot's reference frame axes.
+            linear (Optional[npt.ArrayLike]): Desired linear velocity along the robot's reference frame axes.
                 Defaults to None, AKA "don't change the current command"
-            angular (Optional[ArrayLike]): Desired angular velocity about the robot's reference frame axes.
+            angular (Optional[npt.ArrayLike]): Desired angular velocity about the robot's reference frame axes.
                 Defaults to None, AKA "don't change the current command"
         """
         # Transform the velocity vectors from robot frame to world frame, then set the command
@@ -334,7 +336,7 @@ class ForceController(Controller):
         return self._force_command
 
     @force_command.setter
-    def force_command(self, cmd: ArrayLike):
+    def force_command(self, cmd: npt.ArrayLike):
         self._validate_cmds(force=cmd)
         self._force_command = np.array(cmd)
 
@@ -347,7 +349,7 @@ class ForceController(Controller):
         return self._torque_command
 
     @torque_command.setter
-    def torque_command(self, cmd: ArrayLike):
+    def torque_command(self, cmd: npt.ArrayLike):
         self._validate_cmds(torque=cmd)
         self._torque_command = cmd
 
@@ -378,15 +380,15 @@ class ForceController(Controller):
 
     def set_local_force_cmds(
         self,
-        force: Optional[ArrayLike] = None,
-        torque: Optional[ArrayLike] = None,
+        force: Optional[npt.ArrayLike] = None,
+        torque: Optional[npt.ArrayLike] = None,
     ) -> None:
         """Sets a desired force/torque command in the local (robot) frame
 
         Args:
-            force (Optional[ArrayLike]): Desired force along the robot's reference frame axes.
+            force (Optional[npt.ArrayLike]): Desired force along the robot's reference frame axes.
                 Defaults to None, AKA "don't change the current command"
-            torque (Optional[ArrayLike]): Desired torque about the robot's reference frame axes.
+            torque (Optional[npt.ArrayLike]): Desired torque about the robot's reference frame axes.
                 Defaults to None, AKA "don't change the current command"
         """
         # Transform the force/torque vectors from robot frame to world frame, then set the command
@@ -395,6 +397,7 @@ class ForceController(Controller):
         self.torque_command = R_R2W @ torque
 
 
+# TODO Move this to pybullet utils?
 def check_for_constraint(robot: Astrobee):
     """Checks to see if a constraint between the robot/world is currently enabled, and prints a warning if so
 
@@ -416,6 +419,125 @@ def check_for_constraint(robot: Astrobee):
                 + "This might be left-over from a previous control method\n"
                 + "Confirm that this should still be active!"
             )
+
+
+class ControlLogger:
+    """Class for maintaining a history of control inputs for plottting or further analysis
+
+    Any conversions between world frame / robot frame should be done before storing the force/torque
+    data, depending on what is of interest
+    """
+
+    def __init__(self):
+        self._forces = []
+        self._torques = []
+        self._times = []
+
+    @property
+    def forces(self) -> np.ndarray:
+        return np.atleast_2d(self._forces)
+
+    @property
+    def torques(self) -> np.ndarray:
+        return np.atleast_2d(self._torques)
+
+    @property
+    def times(self) -> np.ndarray:
+        return np.array(self._times)
+
+    def log_control(
+        self, force: npt.ArrayLike, torque: npt.ArrayLike, dt: Optional[float] = None
+    ) -> None:
+        """Logs the forces and torques applied in a simulation step
+
+        Args:
+            force (npt.ArrayLike): Applied force (Fx, Fy, Fz), shape (3,)
+            torque (npt.ArrayLike): Applied torque (Tx, Ty, Tz), shape (3,)
+            dt (Optional[float]): Time elapsed since the previous step. Defaults to None.
+        """
+        self._forces.append(force)
+        self._torques.append(torque)
+        if dt is not None and len(self._times) == 0:
+            self._times.append(0.0)
+        elif dt is not None:
+            self._times.append(self._times[-1] + dt)
+
+    def plot(
+        self,
+        max_force: Optional[npt.ArrayLike] = None,
+        max_torque: Optional[npt.ArrayLike] = None,
+    ) -> Figure:
+        """Plot the stored history of control inputs
+
+        Args:
+            max_force (Optional[npt.ArrayLike]): Applied force limits (Fx_max, Fy_max, Fz_max), shape (3,)
+                Defaults to None (Don't indicate the limit on the plots)
+            max_torque (Optional[npt.ArrayLike]): Applied torque limits (Tx_max, Ty_max, Tz_max), shape (3,)
+                Defaults to None (Don't indicate the limit on the plots)
+
+        Returns:
+            Figure: Matplotlib figure containing the plots
+        """
+        return plot_control(
+            self.forces, self.torques, self.times, max_force, max_torque
+        )
+
+
+def plot_control(
+    forces: np.ndarray,
+    torques: np.ndarray,
+    times: Optional[np.ndarray] = None,
+    max_force: Optional[npt.ArrayLike] = None,
+    max_torque: Optional[npt.ArrayLike] = None,
+    show: bool = True,
+    fmt: str = "k-",
+) -> Figure:
+    """Plots a recorded history of force/torque control inputs
+
+    Args:
+        forces (np.ndarray): Sequence of force inputs (Fx, Fy, Fz), shape (n, 3)
+        torques (np.ndarray): Sequence of torque inputs (Tx, Ty, Tz), shape (n, 3)
+        times (Optional[np.ndarray], optional): Times corresponding to control inputs, shape (n,).
+            Defaults to None, in which case control inputs will be plotted against timesteps
+        max_force (Optional[npt.ArrayLike]): Applied force limits (Fx_max, Fy_max, Fz_max), shape (3,)
+            Defaults to None (Don't indicate the limit on the plots)
+        max_torque (Optional[npt.ArrayLike]): Applied torque limits (Tx_max, Ty_max, Tz_max), shape (3,)
+            Defaults to None (Don't indicate the limit on the plots)
+        show (bool, optional): Whether or not to display the plot. Defaults to True.
+        fmt (str, optional): Matplotlib line specification. Defaults to "k-"
+
+    Returns:
+        Figure: Matplotlib figure containing the plots
+    """
+    fig = plt.figure()
+    if times is not None:
+        x_axis = times
+        x_label = "Time, s"
+    else:
+        x_axis = np.arange(forces.shape[0])
+        x_label = "Timesteps"
+    subfigs = fig.subfigures(2, 1)
+    top_axes = subfigs[0].subplots(1, 3)
+    bot_axes = subfigs[1].subplots(1, 3)
+    force_labels = ["Fx", "Fy", "Fz"]
+    torque_labels = ["Tx", "Ty", "Tz"]
+    # Plot force info on the top axes
+    for i, ax in enumerate(top_axes):
+        ax.plot(x_axis, forces[:, i], fmt)
+        if max_force is not None:
+            ax.plot(x_axis, max_force[i] * np.ones_like(x_axis), "--")
+        ax.set_title(force_labels[i])
+        ax.set_xlabel(x_label)
+    # Plot torque info on the bottom axes
+    for i, ax in enumerate(bot_axes):
+        ax.plot(x_axis, torques[:, i], fmt)
+        if max_torque is not None:
+            ax.plot(x_axis, max_torque[i] * np.ones_like(x_axis), "--")
+        ax.set_title(torque_labels[i])
+        ax.set_xlabel(x_label)
+    if show:
+        plt.show()
+    return fig
 
 
 if __name__ == "__main__":
