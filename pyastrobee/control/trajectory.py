@@ -3,6 +3,9 @@
 TODO decide if trajectory attributes should be read-only? (properties)
 TODO simplify the plotting code (a lot of repeated code between single-traj plotting and 2-traj plotting)
 TODO make a subclass of Trajectory with the log() method
+TODO make it clearer what happens if some of the traj components are None
+     (Numerically calculate the gradient? Remove the option to set these as None?)
+TODO add max vel/accel lines into the plots?
 """
 
 from typing import Optional, Union
@@ -56,35 +59,35 @@ class Trajectory:
         self._tmats = None  # Init
 
     @property
-    def positions(self):
+    def positions(self) -> np.ndarray:
         return np.atleast_2d(self._positions)
 
     @property
-    def quaternions(self):
+    def quaternions(self) -> np.ndarray:
         return np.atleast_2d(self._quats)
 
     @property
-    def linear_velocities(self):
+    def linear_velocities(self) -> np.ndarray:
         return np.atleast_2d(self._lin_vels)
 
     @property
-    def angular_velocities(self):
+    def angular_velocities(self) -> np.ndarray:
         return np.atleast_2d(self._ang_vels)
 
     @property
-    def linear_accels(self):
+    def linear_accels(self) -> np.ndarray:
         return np.atleast_2d(self._lin_accels)
 
     @property
-    def angular_accels(self):
+    def angular_accels(self) -> np.ndarray:
         return np.atleast_2d(self._ang_accels)
 
     @property
-    def times(self):
+    def times(self) -> np.ndarray:
         return np.asarray(self._times)
 
     @property
-    def num_timesteps(self):
+    def num_timesteps(self) -> int:
         return self.positions.shape[0]
 
     @property
@@ -130,14 +133,34 @@ class Trajectory:
         """
         return plot_traj(self, show=show)
 
+
+class TrajectoryLogger(Trajectory):
+    """Class for maintaining a history of a robot's state over time"""
+
+    def __init__(self):
+        # Create an empty Trajectory which we will iteratively append to
+        super().__init__(None, None, None, None, None, None, None)
+
     def log_state(
         self,
         pos: npt.ArrayLike,
-        quat: npt.ArrayLike = None,
+        quat: npt.ArrayLike,
         lin_vel: Optional[npt.ArrayLike] = None,
         ang_vel: Optional[npt.ArrayLike] = None,
         dt: Optional[float] = None,
     ):
+        """Record the robot state at a given timestep
+
+        If velocity information is not available (for instance, with a softbody),
+        we can log just the position + orientation information
+
+        Args:
+            pos (npt.ArrayLike): Current position, shape (3,)
+            quat (npt.ArrayLike): Current orientation (XYZW quaternion), shape (4,)
+            lin_vel (Optional[npt.ArrayLike]): Current linear velocity, shape (3,). Defaults to None.
+            ang_vel (Optional[npt.ArrayLike]): Current angular velocity, shape (3,). Defaults to None.
+            dt (Optional[float]): Time elapsed since the previous step. Defaults to None.
+        """
         # TODO refine this functionality
         # Can log position/orientation info without velocity if needed
         # These values can be None because matplotlib will just not plot them
@@ -183,12 +206,12 @@ def plot_traj(traj: Trajectory, show: bool = True, fmt: str = "k-") -> Figure:
     }
 
     fig = plt.figure()
-    if traj.times is not None:
-        x_axis = traj.times
-        x_label = "Time, s"
-    else:
+    if traj.times is None or np.size(traj.times) == 0:
         x_axis = range(traj.num_timesteps)
         x_label = "Timesteps"
+    else:
+        x_axis = traj.times
+        x_label = "Time, s"
     # fmt: off
     # Large plot if we have up second-derivative information
     if traj.linear_accels is not None or traj.angular_accels is not None:
@@ -304,16 +327,16 @@ def compare_trajs(
     fig = plt.figure()
     # TODO this check is kinda weird right now
     # what happens if one has time info and the other doesn't??
-    if traj_1.times is not None:
-        x_axis_1 = traj_1.times
-        x_label = "Time, s"
-    else:
+    if traj_1.times is None or np.size(traj_1.times) == 0:
         x_axis_1 = range(traj_1.num_timesteps)
         x_label = "Timesteps"
-    if traj_2.times is not None:
-        x_axis_2 = traj_2.times
     else:
+        x_axis_1 = traj_1.times
+        x_label = "Time, s"
+    if traj_2.times is None or np.size(traj_2.times) == 0:
         x_axis_2 = range(traj_2.num_timesteps)
+    else:
+        x_axis_2 = traj_2.times
     # Large plot if we have up second-derivative information
     # fmt: off
     if traj_1.linear_accels is not None or traj_1.angular_accels is not None:
