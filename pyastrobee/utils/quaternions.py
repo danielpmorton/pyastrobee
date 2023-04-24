@@ -16,6 +16,8 @@ from pyastrobee.utils.rotations import (
     axis_angle_between_two_vectors,
     axis_angle_to_quat,
     quat_to_rmat,
+    quat_to_axis_angle,
+    compact_axis_angle,
 )
 
 
@@ -282,3 +284,49 @@ def quaternion_dist(
     if not isinstance(q2, Quaternion):
         q2 = Quaternion(xyzw=q2)
     return rt.quaternion_dist(q1.wxyz, q2.wxyz)
+
+
+def quaternion_diff(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> np.ndarray:
+    """Gives the quaternion representing the rotation from q1 -> q2
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Starting XYZW quaternion, shape (4,)
+        q2 (Union[Quaternion, npt.ArrayLike]): Ending XYZW quaternion, shape (4,)
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    return combine_quaternions(q2, conjugate(q1))
+
+
+def quaternion_angular_diff(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> np.ndarray:
+    """Gives a world-frame compact-axis-angle form of the angular error between two quaternions (q1 -> q2)
+
+    - This is similar (but not the same) as a difference between fixed-XYZ conventions
+      (for small angles, these are very close).
+    - Differences between Euler/Fixed angle sets often do not represent true rotations
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): Starting XYZW quaternion, shape (4,)
+        q2 (Union[Quaternion, npt.ArrayLike]): Ending XYZW quaternion, shape (4,)
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    if isinstance(q1, Quaternion):
+        q1 = q1.xyzw
+    else:
+        q1 = check_quaternion(q1)
+    if isinstance(q2, Quaternion):
+        q2 = q2.xyzw
+    else:
+        q2 = check_quaternion(q2)
+    # These lines are based on the math from pytransform3d's quaternion_gradient(),
+    # but simplified to work with just 2 quats and no time info
+    q3 = quaternion_diff(q1, q2)
+    axis, angle = quat_to_axis_angle(q3)
+    return compact_axis_angle(axis, angle)
