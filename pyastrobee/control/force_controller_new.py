@@ -107,7 +107,10 @@ class ForcePIDController:
         """
         ang_err = quaternion_angular_diff(des_q, cur_q)
         ang_vel_err = cur_w - des_w
-        return self.inertia @ des_a - self.kw * ang_vel_err - self.kq * ang_err
+        # Standard 3D free-body torque equation based on desired ang. accel and current ang. vel
+        torque = self.inertia @ des_a + np.cross(cur_w, self.inertia @ cur_w)
+        # Add in the proportional and derivative terms
+        return torque - self.kw * ang_vel_err - self.kq * ang_err
 
     def follow_traj(self, traj: Trajectory) -> None:
         """Use PID force/torque control to follow a trajectory
