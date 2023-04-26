@@ -356,3 +356,32 @@ def add_local_pose_delta(pose: npt.ArrayLike, pose_delta: npt.ArrayLike) -> np.n
 # Something like a rotational difference and a translational difference??? Idk
 def distance_between_poses(pose1: Pose, pose2: Pose) -> np.ndarray:
     raise NotImplementedError
+
+
+def pose_derivatives(
+    poses: np.ndarray, dt: float
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Calculates the linear/angular first and second derivatives of a sequence of poses
+
+    Args:
+        poses (np.ndarray): Sequence of position + XYZW quaternion poses, shape (n, 7)
+        dt (float): Timestep between poses, in seconds
+
+    Returns:
+        Tuple of:
+            np.ndarray: Linear velocities, shape (n, 3)
+            np.ndarray: Angular velocities, shape (n, 3)
+            np.ndarray: Linear accelerations, shape (n, 3)
+            np.ndarray: Angular accelerations, shape (n, 3)
+    """
+    if poses.shape[-1] != 7:
+        raise ValueError(
+            f"Invalid pose array: must be shape (n, 7). Got: {poses.shape}"
+        )
+    positions = poses[:, :3]
+    quaternions = poses[:, 3:]
+    velocities = np.gradient(positions, dt, axis=0)
+    accels = np.gradient(velocities, dt, axis=0)
+    omegas = qts.quats_to_angular_velocities(quaternions, dt)
+    alphas = np.gradient(omegas, dt, axis=0)
+    return velocities, omegas, accels, alphas
