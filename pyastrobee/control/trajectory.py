@@ -110,13 +110,18 @@ class Trajectory:
         self._tmats = batched_pos_quats_to_tmats(self.poses)
         return self._tmats
 
-    def visualize(self) -> None:
-        """View the trajectory in Pybullet"""
+    def visualize(self, n: Optional[int] = None) -> None:
+        """View the trajectory in Pybullet
+
+        Args:
+            n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
+                Defaults to None (plot all frames)
+        """
         connection_status = pybullet.isConnected()
         # Bring up the Pybullet GUI if needed
         if not connection_status:
             pybullet.connect(pybullet.GUI)
-        visualize_traj(self)
+        visualize_traj(self, n)
         input("Press Enter to continue")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
