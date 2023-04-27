@@ -26,6 +26,8 @@ setup(
         "pylint",  # Linting
         "black",  # Formatting
         "ipython",  # Interactive sessions
+        "control",  # Control systems reference code
+        "slycot",  # Used in conjunction with the control package
     ],
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
