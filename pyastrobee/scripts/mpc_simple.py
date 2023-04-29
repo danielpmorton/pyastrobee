@@ -19,8 +19,8 @@ A default demo with a small T-Shirt:
 python -m pyastrobee.scripts.mpc_simple
 
 A demo with a generated piece of cloth:
-python -m rl_top_euc.mpc_simple \
-    --cloth_obj generated_cloth/generated_cloth.obj \
+python -m pyastrobee.scripts.mpc_simple \
+    --cloth_obj generated_cloth.obj \
     --cloth_scale 1.5 --cloth_init_ori 0 0 1.57 \
     --cloth_init_hole_pos_offset 0.03 0.0 -0.10
 
@@ -29,8 +29,8 @@ The MPC uses the perfect rollout to calculate the forward dynamics and plan for 
 STPS_PER_WPT ahead in the future. The controller executes the first MPC_STPS steps of
 the optimal action and then re-plans.
 
-python -m rl_top_euc.mpc_simple \
-    --cloth_obj generated_cloth/generated_cloth.obj \
+python -m pyastrobee.scripts.mpc_simple \
+    --cloth_obj generated_cloth.obj \
     --cloth_scale 1.5 \
     --cloth_init_ori 0 0 1.57 \
     --cloth_init_hole_pos_offset 0.03 0.0 -0.10 \
@@ -39,7 +39,7 @@ python -m rl_top_euc.mpc_simple \
 ~~~~~ Configs that kinda work for different items
 - Purse bag
 
-python -m rl_top_euc.mpc_simple \
+python -m pyastrobee.scripts.mpc_simple \
     --cloth_obj bags/ts_purse_bag_resampled.obj \
     --cloth_init_ori  0  0  1.57 \
     --cloth_init_hole_pos_offset 0.0  0.0 -0.065 \
@@ -49,7 +49,7 @@ python -m rl_top_euc.mpc_simple \
 
 - Small bag
 
- python -m rl_top_euc.mpc_simple \
+ python -m pyastrobee.scripts.mpc_simple \
     --cloth_obj bags/ts_small_bag_resampled.obj \
     --cloth_init_ori 0 0 1.57 \
     --do_perfect_model_rollouts \
@@ -61,7 +61,7 @@ python -m rl_top_euc.mpc_simple \
 
 - Backpack (it technically needs to have the hook a bit higher up)
 
- python -m rl_top_euc.mpc_simple \
+ python -m pyastrobee.scripts.mpc_simple \
     --cloth_obj bags/ts_backpack_resampled.obj \
     --do_perfect_model_rollouts \
     --cloth_init_pos_offset -0.12 0.08 -0.22 \
@@ -72,7 +72,7 @@ python -m rl_top_euc.mpc_simple \
 
 - Apron
 
- python -m rl_top_euc.mpc_simple \
+ python -m pyastrobee.scripts.mpc_simple \
     --cloth_obj cloth/ts_apron_oneloop.obj \
     --cloth_init_ori 0 0 1.57 \
     --cloth_scale 0.75 \
@@ -141,7 +141,7 @@ def get_args():
     parser.add_argument('--cloth_friction_coeff', type=float, default=0.4,
                         help='Cloth friction coefficient')
     parser.add_argument('--cloth_texture', type=str,
-                        default='textures/blue_bright.png',
+                        default='blue_bright.png',
                         help='Texture png for cloth item')
     parser.add_argument('--anchor_init_pos', type=float, nargs=3,
                         default=[-0.04, 0.45, 0.70],
@@ -410,13 +410,13 @@ def simple_init(sim, args, anchor_init_pos, other_anchor_init_pos):
         collisionMargin=0.05, useSelfCollision=1,
         springDampingAllDirections=1, useFaceContact=1,
         useNeoHookean=0, useMassSpring=1, useBendingSprings=1)
-    #texture_file_name = os.path.join(args.data_path, args.cloth_texture)
-    #texture_id = sim.loadTexture(texture_file_name)
-    #kwargs = {}
-    #if hasattr(pybullet, 'VISUAL_SHAPE_DOUBLE_SIDED'):
-    #    kwargs['flags'] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
-    #sim.changeVisualShape(
-    #    cloth_id, -1, textureUniqueId=texture_id, **kwargs)
+    texture_file_name = os.path.join(args.data_path, args.cloth_texture)
+    texture_id = sim.loadTexture(texture_file_name)
+    kwargs = {}
+    if hasattr(pybullet, 'VISUAL_SHAPE_DOUBLE_SIDED'):
+        kwargs['flags'] = pybullet.VISUAL_SHAPE_DOUBLE_SIDED
+    sim.changeVisualShape(
+        cloth_id, -1, textureUniqueId=texture_id, **kwargs)
 
     # Loading done, turn on visualizer
     sim.configureDebugVisualizer(pybullet.COV_ENABLE_RENDERING, 1)
