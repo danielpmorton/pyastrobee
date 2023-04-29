@@ -5,6 +5,10 @@ q = Quaternion() # This will initialize it as empty
 q.xyzw = [0.1, 0.2, 0.3, 0.4] # This will assign the values after initialization
 q = Quaternion(xyzw=[0.1, 0.2, 0.3, 0.4]) # This will assign values at initialization
 some_pytransform3d_function(q.wxyz) # Pass the wxyz data into modules that use this convention
+
+NOTE
+- This class has been separated from the quaternion and rotation files to prevent circular imports
+  (Do not import either into this file, or else this issue will pop up again)
 """
 
 from typing import Optional
@@ -49,16 +53,11 @@ class Quaternion:
                 f"Quaternion has been initialized, but not set (value is {vals})"
             )
 
-    def _validate(self, quat):
+    def _check_quat(self, quat):
+        quat = np.ravel(quat)
         if len(quat) != 4:
             raise ValueError(f"Invalid quaternion ({quat}):\nNot of length 4!")
-        # TODO
-        # pytransform3d just semems to check the shape of the input
-        # But, the entries should be within -1 and 1 as well??? Check on this
-        # try:
-        #     rt.check_quaternion(self.wxyz)
-        # except ValueError as exc:
-        #     raise ValueError(f"Not a valid quaternion!\n(XYZW is {self.xyzw})") from exc
+        return normalize(quat)
 
     def _initialize_as_empty(self):
         self.x, self.y, self.z, self.w = [None, None, None, None]
@@ -82,27 +81,17 @@ class Quaternion:
     @xyzw.setter
     def xyzw(self, xyzw: npt.ArrayLike):
         """Sets the quaternion based on an array in XYZW form"""
-        self._validate(xyzw)
+        xyzw = self._check_quat(xyzw)
         self.x, self.y, self.z, self.w = xyzw
 
     @wxyz.setter
     def wxyz(self, wxyz: npt.ArrayLike):
         """Sets the quaternion based on an array in WXYZ form"""
-        self._validate(wxyz)
+        wxyz = self._check_quat(wxyz)
         self.w, self.x, self.y, self.z = wxyz
 
-
-# TODO: should we check that a quaternion is normalized?
-# Should we just automatically normalize things?
-def check_quaternion(quat: npt.ArrayLike) -> bool:
-    raise NotImplementedError
-
-
-def random_quaternion() -> np.ndarray:
-    """Generate a random, normalized quaternion
-
-    Returns:
-        np.ndarray: XYZW quaternion, shape (4,)
-    """
-    q = np.random.rand(4)
-    return q / np.linalg.norm(q)
+    @property
+    def conjugate(self) -> np.ndarray:
+        """Conjugate of the XYZW quaternion"""
+        self._check_if_loaded()
+        return np.array([-self.x, -self.y, -self.z, self.w])

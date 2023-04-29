@@ -9,7 +9,7 @@ from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
 from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 from pyastrobee.utils.poses import pos_quat_to_tmat
-from pyastrobee.utils.quaternion import random_quaternion
+from pyastrobee.utils.quaternions import random_quaternion
 
 
 def random_pose(max_dist=2):

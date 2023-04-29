@@ -26,7 +26,7 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.elements.astrobee import Astrobee
-from pyastrobee.utils.rotations import (
+from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     get_closest_heading_quat,
     quaternion_dist,

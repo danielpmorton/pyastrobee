@@ -26,10 +26,9 @@ pyenv shell astrobee
 ```
 ## Install dependencies
 
-The `[dev]` option will install additional packages for helping with developement. If you only want the minimal requirements, just run `pip install -e .`
 ```
 cd $HOME/pyastrobee
-pip install -e .[dev]
+pip install -e .
 ```
 
 After doing this, open a python interpreter and run the following commands:
