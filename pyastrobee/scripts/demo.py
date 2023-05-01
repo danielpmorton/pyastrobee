@@ -13,7 +13,7 @@ import pybullet
 
 from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
-from pyastrobee.control.plan_control_traj import plan_control_traj
+from pyastrobee.archive.plan_control_traj import plan_control_traj
 from pyastrobee.elements.iss import load_iss
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
