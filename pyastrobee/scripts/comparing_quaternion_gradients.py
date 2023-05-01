@@ -8,6 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytransform3d.rotations as rt
 
+from pyastrobee.utils.quaternions import wxyz_to_xyzw, quats_to_angular_velocities
+
 
 # Method from the cited website
 # I also tested this against AHRS and it seems to match up
@@ -24,12 +26,13 @@ def angular_velocities(q1, q2, dt):
 # This data file seemed to have a nice set of values with good variation and signal/noise ratio
 # This path will need to be modified if this script is replicated on another machine
 data_file = "/home/dan/software/RepoIMU/TStick/TStick_Test07_Trial1.csv"
-
-# This is the method from the cited page
+# Load the data from the file
 array = np.loadtxt(data_file, dtype=float, delimiter=";", skiprows=2)
 times = array[:, 0]
 quaternions = array[:, 1:5]
 gyroscopes = array[:, 8:11]
+
+# This is the method from the cited page
 angvel = np.zeros_like(gyroscopes)
 for i in range(1, len(angvel)):
     dt = times[i] - times[i - 1]
@@ -38,6 +41,9 @@ for i in range(1, len(angvel)):
 # Testing with pytransforms
 dt = 0.01  # Constant, observed based on the reference data
 angvel_2 = rt.quaternion_gradient(quaternions, 0.01)
+
+# Testing my method
+angvel_3 = quats_to_angular_velocities(wxyz_to_xyzw(quaternions), dt)
 
 # Plotting each method against the ground truth info from the dataset
 colors = ["red", "green", "blue"]
@@ -62,6 +68,14 @@ for i in range(3):
         label=f"{components[i]}: Pytransform",
         color=colors[i],
         linestyle="dotted",
+    )
+    plt.plot(
+        times,
+        angvel_3[:, i],
+        label=f"{components[i]}: Mine",
+        color=colors[i],
+        linestyle="dashdot",
+        marker="x",
     )
 # These limits made it easier to compare the data in a "good" area of the plot
 # Can always zoom out and view more areas

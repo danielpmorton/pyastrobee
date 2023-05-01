@@ -67,6 +67,8 @@ def quats_to_angular_velocities(
 ) -> np.ndarray:
     """Determines the angular velocities of a sequence of quaternions, for a given sampling time
 
+    Based on AHRS (Attitude and Heading Reference Systems): See ahrs/common/quaternion.py
+
     Args:
         quats (np.ndarray): Sequence of XYZW quaternions, shape (n, 4)
         dt (Union[float, np.ndarray]): Sampling time(s). If passing in an array of sampling times,
@@ -75,15 +77,48 @@ def quats_to_angular_velocities(
     Returns:
         np.ndarray: Angular velocities (wx, wy, wz), shape (n, 3)
     """
-    # Convert XYZW to WXYZ for pytransform3d compatibility
-    wxyz_quats = xyzw_to_wxyz(quats)
-    # Determine gradients based on timestep format (fixed timestep vs variable array)
+    xs = quats[:, 0]
+    ys = quats[:, 1]
+    zs = quats[:, 2]
+    ws = quats[:, 3]
+    n = quats.shape[0]  # Number of quaternions
+
+    # This uses a new central differencing method to improve handling at start/end points
+    dw = np.zeros((n, 3))
+    # Handle the start
+    dw[0, :] = np.array(
+        [
+            ws[0] * xs[1] - xs[0] * ws[1] - ys[0] * zs[1] + zs[0] * ys[1],
+            ws[0] * ys[1] + xs[0] * zs[1] - ys[0] * ws[1] - zs[0] * xs[1],
+            ws[0] * zs[1] - xs[0] * ys[1] + ys[0] * xs[1] - zs[0] * ws[1],
+        ]
+    )
+    # Handle the end
+    dw[-1, :] = np.array(
+        [
+            ws[-2] * xs[-1] - xs[-2] * ws[-1] - ys[-2] * zs[-1] + zs[-2] * ys[-1],
+            ws[-2] * ys[-1] + xs[-2] * zs[-1] - ys[-2] * ws[-1] - zs[-2] * xs[-1],
+            ws[-2] * zs[-1] - xs[-2] * ys[-1] + ys[-2] * xs[-1] - zs[-2] * ws[-1],
+        ]
+    )
+    # Handle the middle range of quaternions
+    # Multiply by a factor of 1/2 since the central difference covers 2 timesteps
+    dw[1:-1, :] = (1 / 2) * np.column_stack(
+        [
+            ws[:-2] * xs[2:] - xs[:-2] * ws[2:] - ys[:-2] * zs[2:] + zs[:-2] * ys[2:],
+            ws[:-2] * ys[2:] + xs[:-2] * zs[2:] - ys[:-2] * ws[2:] - zs[:-2] * xs[2:],
+            ws[:-2] * zs[2:] - xs[:-2] * ys[2:] + ys[:-2] * xs[2:] - zs[:-2] * ws[2:],
+        ]
+    )
+    # If dt is scalar, broadcasting is simple. If dt is an array of time deltas, adjust shape for broadcasting
     if np.ndim(dt) == 0:
-        grads = rt.quaternion_gradient(wxyz_quats, dt)
+        return 2.0 * dw / dt
     else:
-        grads = rt.quaternion_gradient(wxyz_quats, 1)
-        grads = grads / np.reshape(dt, (-1, 1))
-    return grads
+        if len(dt) != n:
+            raise ValueError(
+                f"Invalid dt array length: {len(dt)}. Must be of length {n}"
+            )
+        return 2.0 / (np.reshape(dt, (-1, 1)) * dw)
 
 
 def xyzw_to_wxyz(quats: npt.ArrayLike) -> np.ndarray:
