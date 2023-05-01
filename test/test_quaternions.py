@@ -18,7 +18,7 @@ from pyastrobee.utils.quaternions import (
     xyzw_to_wxyz,
     wxyz_to_xyzw,
     quaternion_diff,
-    quaternion_angular_diff,
+    quaternion_angular_error,
 )
 
 
@@ -83,14 +83,17 @@ class QuaternionTest(unittest.TestCase):
             xyzw_to_wxyz(invalid_quat)
 
     def test_quaternion_diff(self):
+        fixed_angles = np.array([0.01, 0.02, 0.03])
         q1 = np.array([0, 0, 0, 1])
-        q2 = rts.fixed_xyz_to_quat([0.01, 0.02, 0.03])
+        q2 = rts.fixed_xyz_to_quat(fixed_angles)
         q3 = quaternion_diff(q1, q2)
         np.testing.assert_array_almost_equal(q3, q2)
         # Test angular difference in compact axis-angle form
-        ang_diff = quaternion_angular_diff(q1, q2)
+        ang_diff = quaternion_angular_error(q2, q1)
         caa = rts.compact_axis_angle(*rts.quat_to_axis_angle(q2))
-        np.testing.assert_array_almost_equal(ang_diff, caa)
+        np.testing.assert_array_almost_equal(ang_diff, caa, decimal=4)
+        # For small fixed angles, the error should be about the same
+        np.testing.assert_array_almost_equal(ang_diff, fixed_angles, decimal=2)
 
     def test_quaternion_interpolation(self):
         # TODO. Need to think of a good way to evaluate this test case

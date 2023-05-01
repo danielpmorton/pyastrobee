@@ -19,7 +19,7 @@ from pyastrobee.control.trajectory import (
     stopping_criteria,
 )
 from pyastrobee.control.controller import ControlLogger
-from pyastrobee.utils.quaternions import quaternion_angular_diff
+from pyastrobee.utils.quaternions import quaternion_angular_error
 
 
 class ForcePIDController:
@@ -105,7 +105,7 @@ class ForcePIDController:
         Returns:
             np.ndarray: Torque, (Tx, Ty, Tz), shape (3,)
         """
-        ang_err = quaternion_angular_diff(des_q, cur_q)
+        ang_err = quaternion_angular_error(cur_q, des_q)
         ang_vel_err = cur_w - des_w
         # Standard 3D free-body torque equation based on desired ang. accel and current ang. vel
         torque = self.inertia @ des_a + np.cross(cur_w, self.inertia @ cur_w)

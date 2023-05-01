@@ -16,8 +16,6 @@ from pyastrobee.utils.rotations import (
     axis_angle_between_two_vectors,
     axis_angle_to_quat,
     quat_to_rmat,
-    quat_to_axis_angle,
-    compact_axis_angle,
 )
 
 
@@ -336,32 +334,37 @@ def quaternion_diff(
     return combine_quaternions(q2, conjugate(q1))
 
 
-def quaternion_angular_diff(
-    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+def quaternion_angular_error(
+    q: Union[Quaternion, npt.ArrayLike], q_des: Union[Quaternion, npt.ArrayLike]
 ) -> np.ndarray:
-    """Gives a world-frame compact-axis-angle form of the angular error between two quaternions (q1 -> q2)
+    """Gives the instantaneous angular error between two quaternions (q w.r.t q_des)
 
     - This is similar (but not the same) as a difference between fixed-XYZ conventions
       (for small angles, these are very close).
     - Differences between Euler/Fixed angle sets often do not represent true rotations
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Starting XYZW quaternion, shape (4,)
-        q2 (Union[Quaternion, npt.ArrayLike]): Ending XYZW quaternion, shape (4,)
+        q (Union[Quaternion, npt.ArrayLike]): Current XYZW quaternion, shape (4,)
+        q_des (Union[Quaternion, npt.ArrayLike]): Desired XYZW quaternion, shape (4,)
 
     Returns:
-        np.ndarray: XYZW quaternion, shape (4,)
+        np.ndarray: Instantaneous angular error, shape (3,)
     """
-    if isinstance(q1, Quaternion):
-        q1 = q1.xyzw
+    if isinstance(q, Quaternion):
+        q = q.xyzw
     else:
-        q1 = check_quaternion(q1)
-    if isinstance(q2, Quaternion):
-        q2 = q2.xyzw
+        q = check_quaternion(q)
+    if isinstance(q_des, Quaternion):
+        q_des = q_des.xyzw
     else:
-        q2 = check_quaternion(q2)
-    # These lines are based on the math from pytransform3d's quaternion_gradient(),
-    # but simplified to work with just 2 quats and no time info
-    q3 = quaternion_diff(q1, q2)
-    axis, angle = quat_to_axis_angle(q3)
-    return compact_axis_angle(axis, angle)
+        q_des = check_quaternion(q_des)
+
+    x, y, z, w = q
+    xd, yd, zd, wd = q_des
+    return 2 * np.array(
+        [
+            wd * x - xd * w - yd * z + zd * y,
+            wd * y + xd * z - yd * w - zd * x,
+            wd * z - xd * y + yd * x - zd * w,
+        ]
+    )
