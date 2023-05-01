@@ -24,18 +24,11 @@
 
 ## Status
 ### TODOs:
-- [ ] Improve PID? IDK if https://github.com/m-lundberg/simple-pid will be of use
-- [ ] Look more into NASA's trapezoidal planner?? See `mobility/planner_trapezoidal/src/planner_trapezoidal.cc`
-- [ ] LQR
-  - [ ] http://underactuated.mit.edu/lqr.html
-  - [ ] https://github.com/python-control/python-control/blob/main/control/statefbk.py
-  - [ ] https://github.com/ssloy/tutorials/blob/master/tutorials/pendulum/lqr.py
-- [ ] Compare quaternion representations against Euler-Rodrigues
-  - [ ] https://rotations.berkeley.edu/other-representations-of-a-rotation/
 - [ ] Define equations of motion
   - [ ] https://www.frontiersin.org/articles/10.3389/frobt.2018.00041/full
   - [ ] https://physics.stackexchange.com/questions/424249/kinematic-equation-for-spacecraft-using-quaternion
   - [ ] https://physics.stackexchange.com/questions/567442/equation-of-motion-for-rigid-body-dynamics-with-quaternions
+  - [ ] Try out MotionGenesis?
 - [ ] Visualize the path of a trajectory (alternate option to showing all of the frames?)
 - [ ] Visualize the traj's acceleration vector at each timestep?
 - [ ] Make a script with just moving a simple mass under force and record the velocity (with getBaseVelocity)
@@ -50,27 +43,18 @@
   - [ ] If there isn't a way to query this directly, try adding a visual body anchored to the center of the bag
   - [ ] Or maybe try to see if we can query the OBJ texture body?
 - [ ] Update the VTK meshes so that we can just apply `astrobee_texture` directly? Might need to regenerate them based on the OBJ file that has the correct UV map
-- [ ] When the Astrobee is loaded it steps the sim (since it opens the gripper), which may be unwanted behavior
 - [ ] Collision information for the rigid bag looks pretty weird. (in wireframe mode). Will this be an issue? Should we vhacd this? Or make something out of simple geometry
 - [ ] Try out determining inertia matrices in MeshLab
 - [ ] See if it's possible to import the VTKs into Blender and adjust their texture maps
-- [ ] Load the Astrobee with the anchored soft bag with NO CONSTRAINT, click + drag to see if the physics seems ok
-- [ ] Turn the load_bag function from the demo into something a bit more robust
 - [ ] Add min-jerk and screw path trajectory
   - [ ] See the NU Modern Robotics videos
     - [ ] https://modernrobotics.northwestern.edu/nu-gm-book-resource/9-1-and-9-2-point-to-point-trajectories-part-1-of-2/
-- [ ] Check on quaternion normalization meaning
 - [ ] Check out `humanoidMotionCapture` in pybullet examples!!
   - [ ] Especially how they use `pdControllerStable` and `pdControllerExplicit`
 - [ ] Add test cases for batched quaternion operations
-- [ ] Deal with stuff from demo
-  - [ ] Delete the unnecessary code
-  - [ ] Make the file self-contained with Rika's code
-  - [ ] Rename the file with the demo date
 - [ ] Figure out how to get textures to apply properly to VTK files
 - [ ] Look into changeDynamics()
 - [ ] Fix the weird orientation of the ISS meshes now that we know about the OBJ orientation export issues
-- [ ] Add anything from the demo to the control section, if we want to keep it
 - [ ] Make an "electromagnetic" snap to a wall when the bag is in the right position
 - [ ] Add a way to pause the sim when looping in interactive mode (ipython / debugger)
 - [ ] Idea: add a parameter on initialization of Astrobee() deciding on the control mode? 
@@ -79,7 +63,6 @@
 - [ ] Add an overview of the repo structure to the docs
 - [ ] Decide if all arm/gripper control should remain in Astrobee or not
 - [ ] Figure out how to export just the volume mesh from gmsh
-- [ ] Get velocity control integrated into the keyboard controller
 - [ ] Decide if astrobee_geom should be merged with something else
 - [ ] Test out soft contact forces in an old build of Bullet (or old pybullet version in new pyenv) 
   - [ ] https://github.com/bulletphysics/bullet3/issues/4406
@@ -88,6 +71,22 @@
 - [ ] Set up pointcloud (see dedo)
 - [ ] Try out remeshing only half of a bag to see if a denser mesh in an area will give different properties in Bullet
 - [ ] Add more tests
+- [ ] Experiment with tetrahedral meshes
+  - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
+  - [ ] Try out different mesh parameters:
+    - [ ] Number of mesh elements in the handle
+    - [ ] Handle geometry and size
+    - [ ] Main compartment geometry
+    - [ ] Number of mesh elements in the main compartment
+    - [ ] One side of the main compartment having a denser mesh than the other
+    - [ ] Figure out relationship between number of mesh elements / size of mesh elements to stiffness
+- [ ] Dynamics/Control improvements
+  - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
+  - [ ] Check out the GNC/CTL section of nasa/astrobee, try to replicate their control method? And see Keenan's papers
+  - [ ] Check out `calculateMassMatrix`
+  - [ ] Try making a Jacobian mapping between desired forces and torques on the robot to the generalized forces we need to apply in Pybullet (t = J.T @ F)
+  - [ ] Improve PID? IDK if https://github.com/m-lundberg/simple-pid will be of use
+  - [ ] Look more into NASA's trapezoidal planner?? See `mobility/planner_trapezoidal/src/planner_trapezoidal.cc`
 
 ### References to look into
 - [ ] (NOTE): Improve how you're keeping track of these refs (and include the random citations inside some of the attitude dynamics / quaternion code)
@@ -123,33 +122,15 @@
   - [ ] LOTS of astrobee stuff actually - and flight-test tracking data which we can use as a comparison for our own tracking info
 
 ### In Progress:
-- [ ] Create trajectories
-  - [ ] Make a class
-  - [X] Make a way to visualize these (see pytransform trajectories)
-  - [X] Visualize trajectory inside pybullet (see `addUserDebugLine` / `addUserDebugPoints`)
-  - [ ] Follow trajectory using PID controller
-  - [ ] Visualize tracking error
-- [ ] Implement force control / velocity control
-  - [ ] Improve physics models for blower, drag, ...
-  - [ ] Refine step sizes / timesteps / tolerances when stepping through sim loop
-  - [ ] Check out the GNC/CTL section of nasa/astrobee, try to replicate their control method? And see Keenan's papers
-  - [ ] Check out `calculateMassMatrix`
-  - [ ] Try making a Jacobian mapping between desired forces and torques on the robot to the generalized forces we need to apply in Pybullet (t = J.T @ F)
-- [ ] Experiment with tetrahedral meshes
-  - [ ] Try out tetgen/pyvista/tetwild/gmsh python interfaces
-  - [ ] Try out different mesh parameters:
-    - [ ] Number of mesh elements in the handle
-    - [ ] Handle geometry and size
-    - [ ] Main compartment geometry
-    - [ ] Number of mesh elements in the main compartment
-    - [ ] One side of the main compartment having a denser mesh than the other
-    - [ ] Figure out relationship between number of mesh elements / size of mesh elements to stiffness
-- [ ] Improve the demo script
-  - [ ] Load the tet mesh instead of the tri mesh
-  - [ ] Improve waypoint positions
-  - [ ] Debug excessive intermediate rotations (position controller stuff)
-
+- [ ] MPC
+- [ ] LQR
+  - [ ] http://underactuated.mit.edu/lqr.html
+  - [ ] https://github.com/python-control/python-control/blob/main/control/statefbk.py
+  - [ ] https://github.com/ssloy/tutorials/blob/master/tutorials/pendulum/lqr.py
 ### Backlog:
+- [ ] When the Astrobee is loaded it steps the sim (since it opens the gripper), which may be unwanted behavior
+- [ ] Get velocity control integrated into the keyboard controller
+- [ ] Improve physics models for blower, drag, ...
 - [ ] Look into some of the other modules in pytransform3d like urdf, camera, ...
 - [ ] Create a unified sim loop in Astrobee or Controller?
 - [ ] Test out setRealTimeSimulation?
@@ -169,6 +150,19 @@
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 
 ### Done:
+- [X] Compare quaternion representations against Euler-Rodrigues
+- [X] Implement force control with PID
+- [X] Improve the demo script
+  - [X] Load the tet mesh instead of the tri mesh
+  - [X] Debug excessive intermediate rotations (position controller stuff)
+- [X] Create trajectories
+  - [X] Make a class
+  - [X] Make a way to visualize these (see pytransform trajectories)
+  - [X] Visualize trajectory inside pybullet (see `addUserDebugLine` / `addUserDebugPoints`)
+  - [X] Follow trajectory using PID controller
+  - [X] Visualize tracking error
+- [X] Load the Astrobee with the anchored soft bag with NO CONSTRAINT, click + drag to see if the physics seems ok
+- [X] Turn the load_bag function from the demo into something a bit more robust
 - [X] Update the pose controller to use the new quaternion heading function
 - [X] Fix the orientation issue in `load_rigid_object` and `load_deformable_object`
 - [X] Move info about working with the NASA ROS sim out of "Assorted Notes" and into its own page in docs
