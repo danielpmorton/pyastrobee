@@ -19,6 +19,7 @@ from pyastrobee.utils.quaternions import (
     wxyz_to_xyzw,
     quaternion_diff,
     quaternion_angular_error,
+    random_quaternion,
 )
 
 
@@ -64,6 +65,14 @@ class QuaternionTest(unittest.TestCase):
         # The following check is very low-precision but this seems to be a general drawback
         # of this method that we're using
         # Test against the first timestep (2 in total)
+        np.testing.assert_almost_equal(ang_vel[0], w, decimal=3)
+        # Repeat the test starting from a quaternion other than the identity quat
+        # This ensures that we have the correct local vs global sense of angular velocity
+        q1 = random_quaternion()
+        deriv = quaternion_derivative(q1, w)
+        q2 = normalize(q1 + deriv * dt)
+        arr = np.row_stack([q1, q2])
+        ang_vel = quats_to_angular_velocities(arr, dt)
         np.testing.assert_almost_equal(ang_vel[0], w, decimal=3)
 
     def test_wxyz_xyzw_conversion(self):

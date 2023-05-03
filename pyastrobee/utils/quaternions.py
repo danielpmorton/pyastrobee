@@ -126,15 +126,13 @@ def wxyz_to_xyzw(quats: npt.ArrayLike) -> np.ndarray:
 
 
 def quaternion_derivative(
-    q: Union[Quaternion, npt.ArrayLike], w: npt.ArrayLike
+    q: Union[Quaternion, npt.ArrayLike], omega: npt.ArrayLike
 ) -> np.ndarray:
-    """Quaternion derivative for a given angular velocity
-
-    Based on "A Survey of Attitude Representations", Shuster, eqn. 306
+    """Quaternion derivative for a given world-frame angular velocity
 
     Args:
         q (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,)
-        w (npt.ArrayLike): Angular velocity (wx, wy, wz), shape (3,)
+        omega (npt.ArrayLike): Angular velocity (wx, wy, wz) in world frame, shape (3,)
 
     Returns:
         np.ndarray: Quaternion derivative, shape (4,)
@@ -143,9 +141,9 @@ def quaternion_derivative(
         q = q.xyzw
     else:
         q = check_quaternion(q)
-    qx, qy, qz, qw = q
-    Z = np.array([[qw, -qz, qy], [qz, qw, -qx], [-qy, qx, qw], [-qx, -qy, -qz]])
-    return (1 / 2) * Z @ w
+    x, y, z, w = q
+    GT = np.array([[w, z, -y], [-z, w, x], [y, -x, w], [-x, -y, -z]])
+    return (1 / 2) * GT @ omega
 
 
 def quaternion_integration(
