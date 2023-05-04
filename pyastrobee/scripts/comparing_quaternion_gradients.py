@@ -8,64 +8,11 @@ Based on https://mariogc.com/post/angular-velocity-quaternions/
 RepoIMU: https://github.com/agnieszkaszczesna/RepoIMU/tree/main
 """
 
-from typing import Union
-
 import numpy as np
-import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 from pyastrobee.utils.quaternions import wxyz_to_xyzw
-
-
-# I copied this over from where I defined it in the quaternions.py file
-# We aren't using it (right now) since we use the world frame ang vel
-# But, this reference data uses body-frame, so we can use it here
-def quats_to_body_frame_ang_vels(
-    quats: np.ndarray, dt: Union[float, npt.ArrayLike]
-) -> np.ndarray:
-    xs = quats[:, 0]
-    ys = quats[:, 1]
-    zs = quats[:, 2]
-    ws = quats[:, 3]
-    n = quats.shape[0]  # Number of quaternions
-
-    # This uses a new central differencing method to improve handling at start/end points
-    dw = np.zeros((n, 3))
-    # Handle the start
-    dw[0, :] = np.array(
-        [
-            ws[0] * xs[1] - xs[0] * ws[1] - ys[0] * zs[1] + zs[0] * ys[1],
-            ws[0] * ys[1] + xs[0] * zs[1] - ys[0] * ws[1] - zs[0] * xs[1],
-            ws[0] * zs[1] - xs[0] * ys[1] + ys[0] * xs[1] - zs[0] * ws[1],
-        ]
-    )
-    # Handle the end
-    dw[-1, :] = np.array(
-        [
-            ws[-2] * xs[-1] - xs[-2] * ws[-1] - ys[-2] * zs[-1] + zs[-2] * ys[-1],
-            ws[-2] * ys[-1] + xs[-2] * zs[-1] - ys[-2] * ws[-1] - zs[-2] * xs[-1],
-            ws[-2] * zs[-1] - xs[-2] * ys[-1] + ys[-2] * xs[-1] - zs[-2] * ws[-1],
-        ]
-    )
-    # Handle the middle range of quaternions
-    # Multiply by a factor of 1/2 since the central difference covers 2 timesteps
-    dw[1:-1, :] = (1 / 2) * np.column_stack(
-        [
-            ws[:-2] * xs[2:] - xs[:-2] * ws[2:] - ys[:-2] * zs[2:] + zs[:-2] * ys[2:],
-            ws[:-2] * ys[2:] + xs[:-2] * zs[2:] - ys[:-2] * ws[2:] - zs[:-2] * xs[2:],
-            ws[:-2] * zs[2:] - xs[:-2] * ys[2:] + ys[:-2] * xs[2:] - zs[:-2] * ws[2:],
-        ]
-    )
-    # If dt is scalar, broadcasting is simple. If dt is an array of time deltas, adjust shape for broadcasting
-    if np.ndim(dt) == 0:
-        return 2.0 * dw / dt
-    else:
-        if len(dt) != n:
-            raise ValueError(
-                f"Invalid dt array length: {len(dt)}. Must be of length {n}"
-            )
-        return 2.0 / (np.reshape(dt, (-1, 1)) * dw)
-
+from pyastrobee.utils.quaternion_derivatives import body_frame_angular_velocities
 
 if __name__ == "__main__":
     # This data file seemed to have a nice set of values with good variation and signal/noise ratio
@@ -78,7 +25,7 @@ if __name__ == "__main__":
     gyroscopes = array[:, 8:11]
 
     dt = 0.01  # Constant, observed based on the reference data
-    angvels = quats_to_body_frame_ang_vels(wxyz_to_xyzw(quaternions), dt)
+    angvels = body_frame_angular_velocities(wxyz_to_xyzw(quaternions), dt)
 
     # Plotting each method against the ground truth info from the dataset
     colors = ["red", "green", "blue"]
