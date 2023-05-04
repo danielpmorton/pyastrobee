@@ -65,7 +65,7 @@ def quats_to_angular_velocities(
 ) -> np.ndarray:
     """Determines the angular velocities of a sequence of quaternions, for a given sampling time
 
-    - These angular velocities are defined in WORLD frmae, not the robot's body-fixed frame
+    - These angular velocities are defined in WORLD frame, not the robot's body-fixed frame
     - For more info on frames, refer to https://github.com/dfki-ric/pytransform3d/discussions/249
 
     Args:
@@ -327,59 +327,3 @@ def quaternion_angular_error(
 
     x, y, z, w = q
     return 2 * np.array([[-w, z, -y, x], [-z, -w, x, y], [y, -x, -w, z]]) @ q_des
-
-
-# (TODO) Leaving this commented out unless we decide it's useful in the future
-# def quaternion_body_frame_angular_error(q, q_des):
-#     # This is a subtle difference from the world-frame angular error
-#     xd, yd, zd, wd = q_des
-#     return (
-#         2 * np.array([[wd, zd, -yd, -xd], [-zd, wd, xd, -yd], [yd, -xd, wd, -zd]]) @ q
-#     )
-
-# (TODO) This may be of use for the future when we work more in robot frame
-# def quats_to_body_frame_ang_vels(
-#     quats: np.ndarray, dt: Union[float, npt.ArrayLike]
-# ) -> np.ndarray:
-#     xs = quats[:, 0]
-#     ys = quats[:, 1]
-#     zs = quats[:, 2]
-#     ws = quats[:, 3]
-#     n = quats.shape[0]  # Number of quaternions
-
-#     # This uses a new central differencing method to improve handling at start/end points
-#     dw = np.zeros((n, 3))
-#     # Handle the start
-#     dw[0, :] = np.array(
-#         [
-#             ws[0] * xs[1] - xs[0] * ws[1] - ys[0] * zs[1] + zs[0] * ys[1],
-#             ws[0] * ys[1] + xs[0] * zs[1] - ys[0] * ws[1] - zs[0] * xs[1],
-#             ws[0] * zs[1] - xs[0] * ys[1] + ys[0] * xs[1] - zs[0] * ws[1],
-#         ]
-#     )
-#     # Handle the end
-#     dw[-1, :] = np.array(
-#         [
-#             ws[-2] * xs[-1] - xs[-2] * ws[-1] - ys[-2] * zs[-1] + zs[-2] * ys[-1],
-#             ws[-2] * ys[-1] + xs[-2] * zs[-1] - ys[-2] * ws[-1] - zs[-2] * xs[-1],
-#             ws[-2] * zs[-1] - xs[-2] * ys[-1] + ys[-2] * xs[-1] - zs[-2] * ws[-1],
-#         ]
-#     )
-#     # Handle the middle range of quaternions
-#     # Multiply by a factor of 1/2 since the central difference covers 2 timesteps
-#     dw[1:-1, :] = (1 / 2) * np.column_stack(
-#         [
-#             ws[:-2] * xs[2:] - xs[:-2] * ws[2:] - ys[:-2] * zs[2:] + zs[:-2] * ys[2:],
-#             ws[:-2] * ys[2:] + xs[:-2] * zs[2:] - ys[:-2] * ws[2:] - zs[:-2] * xs[2:],
-#             ws[:-2] * zs[2:] - xs[:-2] * ys[2:] + ys[:-2] * xs[2:] - zs[:-2] * ws[2:],
-#         ]
-#     )
-#     # If dt is scalar, broadcasting is simple. If dt is an array of time deltas, adjust shape for broadcasting
-#     if np.ndim(dt) == 0:
-#         return 2.0 * dw / dt
-#     else:
-#         if len(dt) != n:
-#             raise ValueError(
-#                 f"Invalid dt array length: {len(dt)}. Must be of length {n}"
-#             )
-#         return 2.0 / (np.reshape(dt, (-1, 1)) * dw)
