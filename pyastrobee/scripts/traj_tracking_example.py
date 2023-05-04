@@ -30,15 +30,13 @@ mass = 10
 sidelengths = [0.25, 0.25, 0.25]
 box = create_box(pose_1[:3], pose_1[3:], mass, sidelengths, True)
 max_time = 10
-dt = 0.01
+dt = 1 / 240
 traj = polynomial_trajectory(pose_1, pose_2, max_time, dt)
 visualize_traj(traj, 20)
-# mass * dt seems to give a general trend of how the required gains change depending on mass/time
-# However, it seems like this shouldn't depend on dt? Perhaps it's an artifact of doing discrete simulation steps
-kp = 1000 * mass * dt
-kv = 100 * mass * dt
-kq = 10 * mass * dt
-kw = 1 * mass * dt
+kp = 20
+kv = 5
+kq = 1
+kw = 0.1
 base_idx = -1  # Base link index of the robot
 inertia = box_inertia(mass, *sidelengths)
 controller = ForcePIDController(box, mass, inertia, kp, kv, kq, kw, dt)
