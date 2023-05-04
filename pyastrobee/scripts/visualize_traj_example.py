@@ -38,4 +38,4 @@ pybullet.addUserDebugText("3rd-order polynomial", start_pos + [0, 2, 1])
 # Leave the sim running
 while True:
     pybullet.stepSimulation()
-    time.sleep(1 / 120)
+    time.sleep(1 / 240)

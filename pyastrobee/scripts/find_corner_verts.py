@@ -88,7 +88,7 @@ if __name__ == "__main__":
         init_time = time.time()
         while time.time() - init_time < 10:
             pybullet.stepSimulation()
-            time.sleep(1 / 120)
+            time.sleep(1 / 240)
         # Clear the sim before continuing to the next bag
         input("Press Enter to continue to the next bag")
         pybullet.removeBody(bag_id)

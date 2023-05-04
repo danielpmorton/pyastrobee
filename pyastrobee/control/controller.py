@@ -57,7 +57,7 @@ class Controller(ABC):
         self._force_command = np.array([0, 0, 0])
         self._torque_command = np.array([0, 0, 0])
 
-        self.dt = 1 / 120  # Timestep (TODO should this be in a different place?)
+        self.dt = 1 / 240  # Timestep (TODO should this be in a different place?)
         self.dv_max = LINEAR_ACCEL_LIMIT * self.dt  # TODO move this to controller
         self.dw_max = ANGULAR_ACCEL_LIMIT * self.dt
         self.step_count = 0  # Initialization
@@ -222,7 +222,7 @@ class PoseController:
                 self.constraint_id, traj[i, :3], traj[i, 3:], maxForce=max_force
             )
             pybullet.stepSimulation()
-            time.sleep(1 / 120)
+            time.sleep(1 / 240)
 
     def delete_constraint(self) -> None:
         """Deletes the constraint between the Astrobee and the world"""

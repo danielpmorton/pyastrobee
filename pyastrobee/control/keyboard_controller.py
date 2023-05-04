@@ -275,7 +275,7 @@ class KeyboardController:
         pybullet.stepSimulation()
         # Update the camera view so we maintain our same perspective on the robot as it moves
         pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
-        time.sleep(1 / 120)  # TODO make this a parameter?
+        time.sleep(1 / 240)  # TODO make this a parameter?
 
     def run(self):
         """Runs the simulation loop with the keyboard listener active"""

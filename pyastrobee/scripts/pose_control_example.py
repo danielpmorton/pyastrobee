@@ -36,4 +36,4 @@ for _ in range(10):
 print("Looping sim...")
 while True:
     pybullet.stepSimulation()
-    time.sleep(1 / 120)
+    time.sleep(1 / 240)

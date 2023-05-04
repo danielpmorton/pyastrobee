@@ -69,4 +69,4 @@ load_rigid_object(
 input("The sim is paused. Press Enter to begin looping it")
 while True:
     pybullet.stepSimulation()
-    time.sleep(1 / 120)
+    time.sleep(1 / 240)

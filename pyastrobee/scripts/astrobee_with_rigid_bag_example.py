@@ -12,4 +12,4 @@ robot = pybullet.loadURDF("pyastrobee/assets/urdf/astrobee_with_rigid_bag.urdf")
 # Loop sim
 while True:
     pybullet.stepSimulation()
-    time.sleep(1 / 120)
+    time.sleep(1 / 240)

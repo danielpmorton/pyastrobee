@@ -135,4 +135,4 @@ if __name__ == "__main__":
         T = get_bag_frame(bag_mesh, TOP_BAG_CORNER_VERTS)
         visualize_frame(T, lifetime=1)
         pybullet.stepSimulation()
-        time.sleep(1 / 120)
+        time.sleep(1 / 240)

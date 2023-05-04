@@ -319,16 +319,16 @@ if __name__ == "__main__":
         # print("Angular velocity: ", ang_vel)
         # visualize_frame(pos_quat_to_tmat([*pos, *orn]), lifetime=0.5)
         pybullet.stepSimulation()
-        time.sleep(1 / 120)
+        time.sleep(1 / 240)
     bag.detach()
     detach_time = time.time()
     unload_time_lim = 10
     print(f"Detached. Unloading the bag in {unload_time_lim} seconds")
     while time.time() - detach_time < unload_time_lim:
         pybullet.stepSimulation()
-        time.sleep(1 / 120)
+        time.sleep(1 / 240)
     bag.unload()  # Currently kinda weird
     print("Unloaded")
     while True:
         pybullet.stepSimulation()
-        time.sleep(1 / 120)
+        time.sleep(1 / 240)

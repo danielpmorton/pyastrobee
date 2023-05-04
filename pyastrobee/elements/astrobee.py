@@ -466,7 +466,7 @@ class Astrobee:
         tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
         while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
             pybullet.stepSimulation()
-            time.sleep(1 / 120)  # TODO determine timestep
+            time.sleep(1 / 240)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
         """Gives the current joint angles for the Astrobee

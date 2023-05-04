@@ -14,4 +14,4 @@ load_deformable_object(
 )
 while True:
     pybullet.stepSimulation()
-    time.sleep(1 / 120)
+    time.sleep(1 / 240)
