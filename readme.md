@@ -20,6 +20,8 @@
 
 [Using NASA's simulator](docs/nasa_sim.md): Helpful commands and installation debugging
 
+[Assorted Pybullet tips](docs/pybullet_tips.md): Important notes that might not be clear from the quickstart guide
+
 [References](docs/references.md): Links to hepful resources
 
 ## Status
