@@ -307,39 +307,57 @@ class Astrobee:
         return astrobee_inertial.MASS
 
     @property
-    def mass_matrix(self):
-        # ADDITIONAL TESTING REQUIRED
-        raise NotImplementedError
+    def mass_matrix(self) -> np.ndarray:
+        """Mass/Inertia matrix for the Astrobee, given its current configuration
+
+        - This is used to determine the kinetic energy (K = (1/2) * qdot.T @ M @ qdot) or the relationship between
+          joint accelerations and torque (M * joint_accels + centrifugal_coriolis_vec + gravity_vec = torque)
+
+        Returns:
+            np.ndarray: The mass matrix, shape (12, 12). (12 is the number of degrees of freedom
+                of the Astrobee - 6 DOF for a floating base, plus 6 for the six non-fixed joints)
+        """
         # Inputs must be a lists (no numpy) or else pybullet will seg fault
-        mmat = pybullet.calculateMassMatrix(self.id, list(self.joint_angles))
-        # This appears to be of size (12, 12) which is a bit odd
-        # Need to dig into this a little more and figure out how to use this
-        return np.array(mmat)
+        M = pybullet.calculateMassMatrix(self.id, list(self.joint_angles))
+        return np.array(M)
 
     @property
-    def jacobians(self) -> np.ndarray:
-        # ADDITIONAL TESTING REQUIRED
-        raise NotImplementedError
+    def jacobians(
+        self, link: Union[Links, int], local_pos: npt.ArrayLike = [0.0, 0.0, 0.0]
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Calculate the linear and angular jacobians (Jv and Jw) for a point on a link
+
+        - These relate joint motion and task-space motion: [v; w] = [Jv; Jw] * dq
+        - These jacobians will have a 12 columns corresponding to 6 DOF from the Astrobee's floating base, plus another
+          6 DOF from the non-fixed joints
+
+        Args:
+            link (Union[Links, int]): Link or link index of interest.
+                Common links: For the base, set this to -1. For the arm distal link, set this to 2
+            local_pos (npt.ArrayLike, optional): Position in the link's reference frame. Defaults to [0.0, 0.0, 0.0].
+                For the grasp point, use the position from the calibrated distal/grasp transformation
+
+        Returns:
+            Tuple of:
+                np.ndarray: Jv: Linear jacobian, shape (3, 12)
+                np.ndarray: Jw: Angular jacobian, shape (3, 12)
+        """
+        if isinstance(link, Astrobee.Links):
+            link = link.value
         ndof = 6  # 7 joints, but 1 fixed
-        # make the link id / local pos something more useful... the grasp point based on the distal link?
-        link_id = -1
-        local_pos = [0.0, 0.0, 0.0]
-        desired_accels = 6 * [0.0]
+        # The quickstart guide says that the joint velocities and desired accelerations are just there
+        # for an internal call to calculateInverseDynamics (and maybe aren't really meaningful?)
+        desired_accels = ndof * [0.0]
         # All inputs must be lists (no numpy) or else pybullet will seg fault
         Jv, Jw = pybullet.calculateJacobian(
             self.id,
-            link_id,
-            local_pos,
+            link,
+            list(local_pos),
             list(self.joint_angles)[1:],  # Don't include the first fixed joint
             list(self.joint_vels)[1:],  # Don't include the first fixed joint
             desired_accels,
         )
-        Jv = np.array(Jv)
-        Jw = np.array(Jw)
-        # Jv and Jw will each be of shape (3, 12)
-        # I suppose 12 refers to 6dof (floating base) and 6 non-fixed joints
-        # It appears that the first 6 cols refer to the floating base
-        return Jv, Jw
+        return np.array(Jv), np.array(Jw)
 
     def get_link_transform(self, link_index: Union[Links, int]) -> np.ndarray:
         """Calculates the transformation matrix (w.r.t the world) for a specified link
