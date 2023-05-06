@@ -10,8 +10,27 @@ import time
 
 import pybullet
 import numpy as np
+from scipy.linalg import block_diag
 
 from pyastrobee.elements.astrobee import Astrobee
+
+# Found this based on a permutation of the array from the textbook
+# It seems to differ from the arrays I made the other day though
+def lambda_matrix(q):
+    x, y, z, w = q
+    return np.array([[w, z, -y], [-z, w, x], [y, -x, w], [-x, -y, -z]])
+
+
+def Er(q):
+    return 0.5 * lambda_matrix(q)
+
+
+def Er_plus(q):
+    return 2 * lambda_matrix(q).T
+
+
+def E(Ep, Er):
+    return block_diag(Ep, Er)
 
 
 def get_current_control_point(t):
@@ -60,6 +79,7 @@ def get_current_control_point(t):
 
 
 def main():
+    pybullet.connect(pybullet.GUI)
     robot = Astrobee()
     dt = 1 / 240
     counter = 0
@@ -69,7 +89,7 @@ def main():
     joint_damping_kv = 20
     start_time = time.time()
     while True:
-        curr_time = time.time() - start_time()
+        curr_time = time.time() - start_time
         # g = NotImplemented  # Gravity vector (= 0 since we're in space)
         # Get current robot state information
         vel = robot.velocity
@@ -77,11 +97,13 @@ def main():
         pos = robot.position
         orn = robot.orientation
         # Get operational space matrices
-        Jv, Jw = robot.jacobians
+        Jv, Jw = robot.get_jacobians(2, [-0.08240211, 0, -0.04971851])  # CHECK THIS
+        ndof = Jv.shape[1]
         J0 = np.row_stack([Jv, Jw])
         A = robot.mass_matrix
-        L0 = NotImplemented  # Lambda matrix (get real name)
-        Jbar = NotImplemented  # Dynamically consistent generalized Jacobian inverse
+        A_inv = np.linalg.inv(A)
+        L0 = np.linalg.inv(J0 @ A_inv @ J0.T)  # Lambda matrix (get real name)
+        Jbar = A_inv @ J0.T @ L0  # Dynamically consistent generalized Jacobian inverse
         N_bar = np.eye(ndof) - Jbar @ J0  # Nullspace projection matrix
         # Get trajectory values
         pos_des, vel_des, accel_des, q_des, dq_des, d2q_des = get_current_control_point(
@@ -92,7 +114,7 @@ def main():
         alpha_des = 2 * lambda_matrix(q_des).T @ d2q_des
         # Compute errors
         q_err = orn - q_des
-        angular_err = Er_plus(orn) * q_err
+        angular_err = Er_plus(orn) @ q_err
         pos_err = pos - pos_des
         vel_err = vel - vel_des
         omega_err = omega - omega_des
@@ -101,8 +123,11 @@ def main():
         M = alpha_des - op_kp * angular_err - op_kv * omega_err
         F0_star = np.concatenate([F, M])
         # p = Jbar.T @ g GRAVITY IS 0
-        F0 = L0 * F0_star
-        qdot = robot.joint_vels  # CHECK SHAPE (and correspondence with fixed joint)
+        F0 = L0 @ F0_star
+        # TODO CHECK ON qdot's JOINT CORRESPONDENCE WITH THE JACOBIAN
+        qdot = np.concatenate(
+            [robot.velocity, robot.angular_velocity, robot.joint_vels[1:]]
+        )
         joint_damping = N_bar.T @ (A @ (-joint_damping_kv * qdot))
         # Compute the torques
         command_torques = joint_damping + J0.T @ F0
@@ -126,8 +151,20 @@ def main():
         pybullet.applyExternalTorque(
             robot.id, -1, list(external_torques), pybullet.LINK_FRAME  # LINK OR WORLD??
         )
+        # TODO check on if the arg is "force" or "forces"
+        pybullet.setJointMotorControlArray(
+            robot.id,
+            list(range(1, Astrobee.NUM_JOINTS)), # Ignore 1st fixed joint??
+            pybullet.TORQUE_CONTROL,
+            forces=list(joint_torques),
+        )
         # TODO !!! NEED TO APPLY THE JOINT TORQUES
         # Zero out the torques for the gripper???? Or will they already be zeroed out if we use the jacobian
         # for the arm distal link?
         pybullet.stepSimulation()
         time.sleep(dt)
+        counter += 1
+
+
+if __name__ == "__main__":
+    main()
