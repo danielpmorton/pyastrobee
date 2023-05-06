@@ -321,8 +321,7 @@ class Astrobee:
         M = pybullet.calculateMassMatrix(self.id, list(self.joint_angles))
         return np.array(M)
 
-    @property
-    def jacobians(
+    def get_jacobians(
         self, link: Union[Links, int], local_pos: npt.ArrayLike = [0.0, 0.0, 0.0]
     ) -> tuple[np.ndarray, np.ndarray]:
         """Calculate the linear and angular jacobians (Jv and Jw) for a point on a link
