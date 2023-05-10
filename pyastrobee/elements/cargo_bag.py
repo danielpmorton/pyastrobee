@@ -29,6 +29,7 @@ from pyastrobee.utils.mesh_utils import get_mesh_data, get_closest_mesh_vertex
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat
 from pyastrobee.utils.python_utils import print_green
+from pyastrobee.utils.quaternions import quats_to_angular_velocities
 
 # Constants. TODO Move these to class attributes?
 MESH_DIR = "pyastrobee/assets/meshes/bags/"
@@ -79,6 +80,8 @@ class CargoBag:
         pos: Optional[npt.ArrayLike] = None,
         orn: Optional[npt.ArrayLike] = None,
     ):
+        if not pybullet.isConnected():
+            raise ConnectionError("Need to connect to pybullet before loading a bag")
         # Validate inputs
         if bag_name not in BAG_NAMES:
             raise ValueError(
@@ -100,6 +103,8 @@ class CargoBag:
         self._num_mesh_vertices = None
         self._attached_robot = None
         self._id = None
+        # Get the simulator timestep (used for calculating the velocity of the bag)
+        self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
         # Load the bag depending on the specified method
         if attached_robot is not None:
             self._load_attached(attached_robot)
@@ -122,8 +127,7 @@ class CargoBag:
         """Positions of the mesh vertices, shape (n, 3)"""
         if self.id is None:
             raise AttributeError("Mesh has not been loaded")
-        if self._mesh_vertices is None:
-            self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(self.id)
+        self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(self.id)
         return self._mesh_vertices
 
     @property
@@ -184,44 +188,63 @@ class CargoBag:
     @property
     def position(self) -> np.ndarray:
         """Current XYZ position of the origin (COM frame) of the cargo bag"""
-        # Using pybullet's built-in function should be reliable, but if not, we
         return np.array(pybullet.getBasePositionAndOrientation(self.id)[0])
 
     @property
     def orientation(self) -> np.ndarray:
         """Current XYZW quaternion orientation of the cargo bag's COM frame"""
-        # TODO THIS MAY BE BROKEN
         return np.array(pybullet.getBasePositionAndOrientation(self.id)[1])
 
     @property
     def velocity(self) -> np.ndarray:
         """Current [vx, vy, vz] velocity of the cargo bag's COM frame
 
-        (FIXME)
-        This is currently BROKEN since there seems to be an issue with Pybullet's querying
-        of softbody velocities. We can maybe implement a method where we track the position
-        across multiple simulation steps, but this is not ideal
+        - If both velocity and angular velocity are desired, use the dynamics_state property instead
         """
-        raise NotImplementedError("Figure out how to deal with softbody velocities")
-        # return np.array(pybullet.getBaseVelocity(self.id)[0])
+        return self.dynamics_state[2]
 
     @property
     def angular_velocity(self) -> np.ndarray:
         """Current [wx, wy, wz] angular velocity of the cargo bag's COM frame
 
-        (FIXME) - see note about broken softbody velocities
+        - If both velocity and angular velocity are desired, use the dynamics_state property instead
         """
-        raise NotImplementedError("Figure out how to deal with softbody velocities")
-        # return np.array(pybullet.getBaseVelocity(self.id)[1])
+        return self.dynamics_state[3]
 
     @property
     def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """Current state of the bag dynamics: Position, orientation, linear vel, and angular vel"""
-        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
-        # lin_vel, ang_vel = pybullet.getBaseVelocity(self.id)
-        # (FIXME) Returning NANs for the velocities (for now) while we work out the softbody velocity issue
-        lin_vel, ang_vel = np.full(3, np.nan), np.full(3, np.nan)
-        return np.array(pos), np.array(orn), np.array(lin_vel), np.array(ang_vel)
+        """Current state of the bag dynamics: Position, orientation, linear vel, and angular vel
+
+        - NOTE this moves the simulation forward by 1 step
+        - Bullet's velocity definition for softbodies is incorrect or not implemented. I've tried
+          implementing this myself in the C++, but it is also not reliable. So instead, we'll need to step
+          the sim in this call to do our own calculations
+
+        Returns:
+            Tuple of:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: XYZW quaternion orientation, shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+        """
+        old_pos, old_orn = pybullet.getBasePositionAndOrientation(self.id)
+        # Step the sim to get a second reference frame we can use to determine velocity
+        # This is not ideal, but it's the best way to do this until Pybullet's getBaseVelocity for softbodies works
+        pybullet.stepSimulation()
+        new_pos, new_orn = pybullet.getBasePositionAndOrientation(self.id)
+        lin_vel = np.subtract(new_pos, old_pos) / self._dt
+        ang_vel = quats_to_angular_velocities(
+            np.row_stack([old_orn, new_orn]), self._dt
+        )
+        if ang_vel.ndim > 1:
+            ang_vel = ang_vel[0, :]
+        # Return the stepped-ahead position since it's the most recent state we know about
+        return (
+            np.array(new_pos),
+            np.array(new_orn),
+            np.array(lin_vel),
+            np.array(ang_vel),
+        )
 
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> None:
         """Loads a cargo bag at the specified position/orientation
@@ -247,7 +270,6 @@ class CargoBag:
             self_collision,
             self.vtk_file,
         )
-        # Add an anchor to the center of the bag to help determine the dynamics?
 
     def _load_attached(self, robot: Astrobee) -> None:
         """Load the cargo bag attached to the gripper of an Astrobee
@@ -310,25 +332,26 @@ if __name__ == "__main__":
     bag = CargoBag("top_handle_bag", robo)
     init_time = time.time()
     detach_time_lim = 10
+    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
     print(f"Provide a disturbance force. Detaching bag in {detach_time_lim} seconds")
     while time.time() - init_time < detach_time_lim:
-        # pos, orn, lin_vel, ang_vel = bag.dynamics_state
-        # print("Position: ", pos)
-        # print("Orientation: ", orn)
-        # print("Velocity: ", lin_vel)
-        # print("Angular velocity: ", ang_vel)
+        pos, orn, lin_vel, ang_vel = bag.dynamics_state
+        print("Position: ", pos)
+        print("Orientation: ", orn)
+        print("Velocity: ", lin_vel)
+        print("Angular velocity: ", ang_vel)
         # visualize_frame(pos_quat_to_tmat([*pos, *orn]), lifetime=0.5)
         pybullet.stepSimulation()
-        time.sleep(1 / 240)
+        time.sleep(dt)
     bag.detach()
     detach_time = time.time()
     unload_time_lim = 10
     print(f"Detached. Unloading the bag in {unload_time_lim} seconds")
     while time.time() - detach_time < unload_time_lim:
         pybullet.stepSimulation()
-        time.sleep(1 / 240)
+        time.sleep(dt)
     bag.unload()  # Currently kinda weird
     print("Unloaded")
     while True:
         pybullet.stepSimulation()
-        time.sleep(1 / 240)
+        time.sleep(dt)
