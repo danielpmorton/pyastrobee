@@ -120,6 +120,9 @@ class KeyboardController:
         # Initialize listener, update when listener started
         self.listener: keyboard.Listener = None
 
+        # Timestep
+        self.dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+
         # Having this in position/Euler can be more interpretable than position/quaternion
         # Also, it is easier to scale Euler angles than quaternions for coarse control
         # (multiplying a quaternion by a constant won't change the rotation it represents)
@@ -139,7 +142,7 @@ class KeyboardController:
         }
         # Change the keys to be in pynput Key format, and add coarse control for uppercase letters
         self.pose_deltas = {}
-        for (key, delta) in self.pos_euler_deltas_lowercase.items():
+        for key, delta in self.pos_euler_deltas_lowercase.items():
             self.pose_deltas[
                 keyboard.KeyCode.from_char(key)
             ] = pos_euler_xyz_to_pos_quat(delta)
@@ -275,7 +278,7 @@ class KeyboardController:
         pybullet.stepSimulation()
         # Update the camera view so we maintain our same perspective on the robot as it moves
         pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
-        time.sleep(1 / 240)  # TODO make this a parameter?
+        time.sleep(self.dt)
 
     def run(self):
         """Runs the simulation loop with the keyboard listener active"""

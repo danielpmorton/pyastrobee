@@ -123,6 +123,7 @@ class Astrobee:
         self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
+        self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]  # Timestep
         self.set_gripper_position(gripper_pos)
         self.set_arm_joints(arm_joints)  # Do this only if nonzero?
         print_green("Astrobee is ready")
@@ -483,7 +484,7 @@ class Astrobee:
         tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
         while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
             pybullet.stepSimulation()
-            time.sleep(1 / 240)  # TODO determine timestep
+            time.sleep(self._dt)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
         """Gives the current joint angles for the Astrobee

@@ -30,7 +30,7 @@ mass = 10
 sidelengths = [0.25, 0.25, 0.25]
 box = create_box(pose_1[:3], pose_1[3:], mass, sidelengths, True)
 max_time = 10
-dt = 1 / 240
+dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
 traj = polynomial_trajectory(pose_1, pose_2, max_time, dt)
 visualize_traj(traj, 20)
 kp = 20
