@@ -308,6 +308,21 @@ class Astrobee:
         return astrobee_inertial.MASS
 
     @property
+    def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Current state of the Astrobee's dynamics: Position, orientation, linear vel, and angular vel
+
+        Returns:
+            Tuple of:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: XYZW quaternion orientation, shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+        """
+        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = pybullet.getBaseVelocity(self.id)
+        return np.array(pos), np.array(orn), np.array(lin_vel), np.array(ang_vel)
+
+    @property
     def mass_matrix(self) -> np.ndarray:
         """Mass/Inertia matrix for the Astrobee, given its current configuration
 
