@@ -10,6 +10,10 @@
 # So, we need to do some sort of a bezier-style curve on the surface of the
 # 4d unit sphere to define the boundary conditions
 
+# There is no guarantee of quaternion normalization with this method BUT it seems that
+# most of the quaternions are within a 5% difference of unit norm
+# So, if we normalize these after-the-fact, it won't significantly change the rotation representation
+
 import numpy as np
 
 
@@ -93,6 +97,46 @@ def get_ddq_from_curve(p, tau):
     )
 
 
+# Make third-order versions of these functions to see if that simplifies things
+# Might also lead to smoother curves? But no control of accel BCs
+# Should we enforce 0 acceleration BCs???
+def third_order_p(qi, qf, dqi, dqf, T):
+    # Equation 13 (MODIFIED to remove H.O.T.s)
+    # TODO check that this modification actually makes math sense
+    return np.row_stack(
+        [
+            qi,
+            3 * qi + dqi * T,
+            qf,
+            3 * qf - dqf * T,
+        ]
+    )
+
+
+def third_order_q(p, tau):
+    # Equation 12 (MODIFIED to remove H.O.T.s)
+    return (1 - tau) ** 3 * (p[0] + p[1] * tau + p[2] * tau**2) + (tau**3) * (p[3])
+
+
+def third_order_dq(p, tau):
+    # Derivative of equation 12 wrt time  (MODIFIED to remove H.O.T.s)
+    return (
+        -3 * (1 - tau) ** 2 * (p[0] + p[1] * tau + p[2] * tau**2)
+        + (1 - tau) ** 3 * (p[1] + 2 * p[2] * tau)
+        + 3 * tau**2 * p[3]
+    )
+
+
+def third_order_ddq(p, tau):
+    # Second derivative of equation 12 wrt time (MODIFIED to remove H.O.T.s)
+    return (
+        6 * (1 - tau) * (p[0] + p[1] * tau + p[2] * tau**2)
+        - 6 * (1 - tau) ** 2 * (p[1] + 2 * p[2] * tau)
+        + (1 - tau) ** 3 * 2 * p[2]
+        + 6 * tau * p[3]
+    )
+
+
 def get_N(q):
     # Norm of quaternion
     return np.linalg.norm(q)
@@ -127,7 +171,7 @@ def get_ddqn(wn, dwn, dNn, ddNn, qn):
     )
 
 
-def poly_coeffs(tk, tf, qbark, wk, dwk, qf, dqf, ddqf, T):
+def poly_coeffs(tk, tf, qbark, wk, dwk, qf, dqf, ddqf):
     # Algorithm 2
     Tk = tf - tk
     Nk = np.linalg.norm(qbark)  # Should be 1
@@ -136,7 +180,14 @@ def poly_coeffs(tk, tf, qbark, wk, dwk, qf, dqf, ddqf, T):
     ddNk = 0  # IGNORE THIS
     dqk = multiply(pure((1 / 2) * wk), qbark)
     ddqk = multiply(pure((1 / 2) * dwk - (1 / 4) * squared_norm(wk) + ddNk), qbark)
-    return get_p(qbark, qf, dqk, dqf, ddqk, ddqf, T)
+    return get_p(qbark, qf, dqk, dqf, ddqk, ddqf, Tk)
+
+
+def third_order_poly_coeffs(tk, tf, qbark, wk, qf, dqf):
+    Tk = tf - tk
+    Nk = np.linalg.norm(qbark)  # Should be 1
+    dqk = multiply(pure((1 / 2) * wk), qbark)
+    return third_order_p(qbark, qf, dqk, dqf, Tk)
 
 
 def quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf):
@@ -147,7 +198,7 @@ def quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf):
     dqf = get_dqn(wf, dNf, qf)
     ddqf = get_ddqn(wf, dwf, dNf, ddNf, qf)
     T = tf - ti
-    pfixed = poly_coeffs(ti, tf, qi, wi, dwi, qf, dqf, ddqf, T)
+    pfixed = poly_coeffs(ti, tf, qi, wi, dwi, qf, dqf, ddqf)
     t = ti
     # TODO This loop should be handled differently
     dt = 1 / 350  # NEW
@@ -169,50 +220,115 @@ def quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf):
     return qs, ws, dws
 
 
+def third_order_interp(ti, tf, qi, wi, qf, wf):
+    # Algorithm 1
+    if dot(qi, qf) < 0:
+        qf = -qf  # Ensure shortest path interpolation
+    dNf = 0
+    dqf = get_dqn(wf, dNf, qf)
+    T = tf - ti
+    pfixed = third_order_poly_coeffs(ti, tf, qi, wi, qf, dqf)
+    t = ti
+    # TODO This loop should be handled differently
+    dt = 1 / 350  # NEW
+    m = int(T / dt)  # NEW
+    qs = np.zeros((m, 4))
+    ws = np.zeros((m, 3))
+    dws = np.zeros((m, 3))
+    for k in range(m):
+        t = ti + (k / m) * (tf - ti)  # NEW
+        tau = (t - ti) / (tf - ti)
+        q = third_order_q(pfixed, tau)
+        dq = third_order_dq(pfixed, tau)
+        ddq = third_order_ddq(pfixed, tau)
+        w = get_w(q, dq)
+        dw = get_dw(q, dq, ddq)
+        qs[k] = q
+        ws[k] = w
+        dws[k] = dw
+    return qs, ws, dws
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
+    from pyastrobee.utils.quaternions import quats_to_angular_velocities, wxyz_to_xyzw
 
     ti = 0
     tf = 5
     qi = np.array([1, 0, 0, 0])
     # wi = np.zeros(3)
-    wi = np.array([0.1, 0.2, 0.3])
+    wi = 0.1 * np.random.rand(3)
     dwi = np.zeros(3)
     qf = np.random.rand(4)
     qf /= np.linalg.norm(qf)
-    wf = np.zeros(3)
+    # wf = np.zeros(3)
+    wf = 0.1 * np.random.rand(3)
     dwf = np.zeros(3)
     qs, ws, dws = quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf)
+    q3s, w3s, dw3s = third_order_interp(ti, tf, qi, wi, qf, wf)
+    # Plotting the angular velocities from this function did not seem to work
+    # IDK why... but using my quaternion to angular velocity function works nicely
+    # fig = plt.figure()
+    # subfigs = fig.subfigures(1, 3)
+    # left = subfigs[0].subplots(1, 4)
+    # middle = subfigs[1].subplots(1, 3)
+    # right = subfigs[2].subplots(1, 3)
+    # x_axis = range(qs.shape[0])
+    # q_labels = ["qw", "qx", "qy", "qz"]
+    # w_labels = ["wx", "wy", "wz"]
+    # dw_labels = ["ax", "ay", "az"]
+    # x_label = "Time"
+    # for i, ax in enumerate(left):
+    #     ax.plot(x_axis, qs[:, i])
+    #     ax.set_title(q_labels[i])
+    #     ax.set_xlabel(x_label)
+    # for i, ax in enumerate(middle):
+    #     ax.plot(x_axis, ws[:, i])
+    #     ax.set_title(w_labels[i])
+    #     ax.set_xlabel(x_label)
+    # for i, ax in enumerate(right):
+    #     ax.plot(x_axis, dws[:, i])
+    #     ax.set_title(dw_labels[i])
+    #     ax.set_xlabel(x_label)
+    # plt.show()
+
+    new_ws = quats_to_angular_velocities(wxyz_to_xyzw(qs), 1 / 350)
+    # x_axis = range(qs.shape[0])
+    # w_labels = ["wx", "wy", "wz"]
+    # plt.figure()
+    # for i in range(3):
+    #     plt.subplot(1, 3, i + 1)
+    #     plt.plot(x_axis, new_ws[:, i])
+    #     plt.title(w_labels[i])
+    # plt.show()
+
+    new_w3s = quats_to_angular_velocities(wxyz_to_xyzw(q3s), 1 / 350)
+    # x_axis = range(qs.shape[0])
+    # w_labels = ["wx", "wy", "wz"]
+    # plt.figure()
+    # for i in range(3):
+    #     plt.subplot(1, 3, i + 1)
+    #     plt.plot(x_axis, new_w3s[:, i])
+    #     plt.title(w_labels[i])
+    # plt.show()
+
+    # Comparing 5th order (left) to third order (right)
+    # It seems like 5th order generally leads to LOWER spikes in the angular velocity
+    # So maybe we should stick to the 5th order
+    # HOWEVER, why is this spike here in the first place? In many cases it seems like this shouldn't be necessary
     fig = plt.figure()
-    subfigs = fig.subfigures(1, 3)
-    left = subfigs[0].subplots(1, 4)
-    middle = subfigs[1].subplots(1, 3)
-    right = subfigs[2].subplots(1, 3)
+    subfigs = fig.subfigures(1, 2)
+    left = subfigs[0].subplots(1, 3)
+    right = subfigs[1].subplots(1, 3)
     x_axis = range(qs.shape[0])
-    q_labels = ["qw", "qx", "qy", "qz"]
     w_labels = ["wx", "wy", "wz"]
-    dw_labels = ["ax", "ay", "az"]
     x_label = "Time"
     for i, ax in enumerate(left):
-        ax.plot(x_axis, qs[:, i])
-        ax.set_title(q_labels[i])
-        ax.set_xlabel(x_label)
-    for i, ax in enumerate(middle):
-        ax.plot(x_axis, ws[:, i])
+        ax.plot(x_axis, new_ws[:, i])
         ax.set_title(w_labels[i])
         ax.set_xlabel(x_label)
     for i, ax in enumerate(right):
-        ax.plot(x_axis, dws[:, i])
-        ax.set_title(dw_labels[i])
+        ax.plot(x_axis, new_w3s[:, i])
+        ax.set_title(w_labels[i])
         ax.set_xlabel(x_label)
-    plt.show()
-
-    from pyastrobee.utils.quaternions import quats_to_angular_velocities, wxyz_to_xyzw
-
-    new_ws = quats_to_angular_velocities(wxyz_to_xyzw(qs), 1 / 350)
-    plt.figure()
-    for i in range(3):
-        plt.subplot(1, 3, i + 1)
-        plt.plot(x_axis, new_ws)
-        plt.title(w_labels[i])
     plt.show()
