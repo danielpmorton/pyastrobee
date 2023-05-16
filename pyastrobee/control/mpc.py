@@ -11,6 +11,11 @@ from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.elements.cargo_bag import CargoBag
 from pyastrobee.elements.iss import load_iss
 from pyastrobee.utils.bullet_utils import initialize_pybullet
+from pyastrobee.utils.quaternions import quaternion_angular_error
+from pyastrobee.control.polynomial_trajectories import (
+    polynomial_trajectory,
+    polynomial_traj_with_velocity_bcs,
+)
 
 # class SimState:
 #     def __init__(self, robot_state, bag_state):
@@ -83,11 +88,144 @@ def save_state(
     return state_id, bag_pos, bag_orn, bag_vel, bag_ang_vel
 
 
+# see simple_init
 def init(robot_pose, use_gui: bool = True):
     client = initialize_pybullet(use_gui)
     load_iss()
     robot = Astrobee(robot_pose)
     bag = CargoBag("top_handle_bag", robot)
+    return client
+
+
+def deviation_penalty(
+    cur_pos: npt.ArrayLike,
+    cur_orn: npt.ArrayLike,
+    cur_vel: npt.ArrayLike,
+    cur_ang_vel: npt.ArrayLike,
+    des_pos: npt.ArrayLike,
+    des_orn: npt.ArrayLike,
+    des_vel: npt.ArrayLike,
+    des_ang_vel: npt.ArrayLike,
+    l_pos: float,
+    l_orn: float,
+    l_vel: float,
+    l_ang_vel: float,
+) -> float:
+    pos_err = np.subtract(cur_pos, des_pos)
+    orn_err = quaternion_angular_error(cur_orn, des_orn)
+    vel_err = np.subtract(cur_vel, des_vel)
+    ang_vel_err = np.subtract(cur_ang_vel, des_ang_vel)
+    # NOTE Would an L1 norm be better here?
+    return (
+        l_pos * np.linalg.norm(pos_err)
+        + l_orn * np.linalg.norm(orn_err)
+        + l_vel * np.linalg.norm(vel_err)
+        + l_ang_vel * np.linalg.norm(ang_vel_err)
+    )
+
+
+def generate_trajs(
+    cur_pos: npt.ArrayLike,
+    cur_orn: npt.ArrayLike,
+    cur_vel: npt.ArrayLike,
+    cur_ang_vel: npt.ArrayLike,
+    nominal_target_pos: npt.ArrayLike,
+    nominal_target_orn: npt.ArrayLike,
+    nominal_target_vel: npt.ArrayLike,
+    nominal_target_ang_vel: npt.ArrayLike,
+    pos_sampling_stdev: float,
+    orn_sampling_stdev: float,
+    vel_sampling_stdev: float,
+    ang_vel_sampling_stdev: float,
+    n_trajs: int,
+    n_steps: int,
+    dt: float,
+):
+    # TODO see if sampling orientations with gaussian noise on quaternions makes any sense
+    # TODO decide if stdevs of the gaussian should be an array so we can have different amounts of noise about
+    #      different directions??? Would it make sense to have a sampling ellipsoid elongated along the direction
+    #      of the nominal trajectory rather (as compared to orthogonal directions)?
+
+    # Sample endpoints for the candidate trajectories about the nominal targets
+    sampled_positions = np.random.multivariate_normal(
+        nominal_target_pos, pos_sampling_stdev**2 * np.eye(3), n_trajs
+    )
+    sampled_quats = np.random.multivariate_normal(
+        nominal_target_orn, orn_sampling_stdev**2 * np.eye(4), n_trajs
+    )
+    sampled_quats /= np.linalg.norm(sampled_quats, axis=1).reshape(-1, 1)  # Normalize
+    sampled_vels = np.random.multivariate_normal(
+        nominal_target_vel, vel_sampling_stdev**2 * np.eye(3), n_trajs
+    )
+    sampled_ang_vels = np.random.multivariate_normal(
+        nominal_target_ang_vel, ang_vel_sampling_stdev**2 * np.eye(3), n_trajs
+    )
+
+    # Generate trajectories from the sampled endpoints
+    trajs = []
+    for i in range(n_trajs):
+        trajs.append(
+            polynomial_traj_with_velocity_bcs(
+                cur_pos,
+                cur_orn,
+                cur_vel,
+                cur_ang_vel,
+                sampled_positions[i],
+                sampled_quats[i],
+                sampled_vels[i],
+                sampled_ang_vels[i],
+                n_steps * dt,
+                dt,
+            )
+        )
+
+    return trajs
+
+
+def mpc_main():
+    # call init to start up the sim
+    # loop over steps:
+    # break the loop at a stopping criteria
+    # (for us, stopping criteria is probably if the bag is "stopped" at the desired
+    # location and the astrobee is also "stopped", so we can disconnect the bag from astrobee)
+    # TODO check on what perfect model rollouts means
+    # TODO check on the (step % MPC_STEPS)?
+    #
+    # ah i see
+    # ok main loop is the overall control loop like what I've made before
+    # The inner MPC if statement / loop runs the sim a bunch of times to figure out what the
+    # best action to take is, then spits out the best move
+    # the main loop then continues from this point knowing the best move, and executes it
+    #
+    # NOTE rika uses a "visualize traj deviation" function which might be useful to implement
+    # We should consider defining the trajectory of the bag rather than the astrobee though)
+    #
+    # the loop continues until the stopping condition which breaks
+
+    # Based on how I set up the generate trajs function, we'll need one baseline trajectory to use as a reference
+    # for sampling purposes
+    # I am assuming this is a trajectory for the bag
+    # But perhaps this should be a trajectory for the gripper? Or the gripper mapped back to the robot base?
+    pass
+
+
+# See perfect_model_rollout
+# TODO is there ever an imperfect rollout? I suppoose there could be... implement this later
+# TODO figure out how to use the sim parameter effectively here so we can get some parallel envs going
+def rollout():
+    # This seems to be effectively the same thing as stepping through the main control loop
+    # (but, with a limited horizon)
+    # The implementation for this should look pretty similar to some of the step() functions
+    # I've written in some of the other controllers
+    pass
+
+
+def visualize_deviation():
+    # It might be nice to modify the visuzlize_frame function to work here
+    # Could visualize a frame normally for the desired pose
+    # and then maybe a different-colored frame for the current frame
+    # TODO check if we can add a dotted line? That would be easiest
+    pass
 
 
 if __name__ == "__main__":
