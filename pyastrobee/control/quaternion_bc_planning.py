@@ -17,7 +17,6 @@ Note: this paper uses WXYZ quaternions
 
 TODO:
 - Decide when normalization should occur!
-- Decide how to make sure we maintain the same number of timesteps when pairing this with a position interpolation
 """
 
 import numpy as np
@@ -30,13 +29,13 @@ from pyastrobee.utils.quaternions import (
 )
 
 
-def quaternion_interpolation_with_BCs(
+def quaternion_interpolation_with_bcs(
     qi: npt.ArrayLike,
     qf: npt.ArrayLike,
     wi: npt.ArrayLike,
     wf: npt.ArrayLike,
     duration: float,
-    dt: float,
+    n: int,
 ) -> np.ndarray:
     """Generate a sequence of quaternions between two orientations with angular velocity boundary conditions
 
@@ -49,7 +48,7 @@ def quaternion_interpolation_with_BCs(
         wi (npt.ArrayLike): Initial inertial-frame angular velocity, shape (3,)
         wf (npt.ArrayLike): Final inertial-frame angular velocity, shape (3,)
         duration (float): Trajectory duration, seconds
-        dt (float): Timestep, seconds
+        n (int): Number of timesteps
 
     Returns:
         np.ndarray: Sequence of XYZW quaternions, shape (n, 4)
@@ -77,8 +76,7 @@ def quaternion_interpolation_with_BCs(
     # Get the polynomial coefficients
     p = _fifth_order_quat_poly_coeffs(qi, qf, dqi, dqf, ddqi, ddqf, duration)
     # Linearly sample along this polynomial to get the interpolated quaternions
-    m = round(duration / dt)
-    taus = np.linspace(0, 1, m, endpoint=True)
+    taus = np.linspace(0, 1, n, endpoint=True)
     wxyz_quats = _interpolate_along_quat_poly(p, taus)
     # Convert back to XYZW for compatibility with the rest of the repository
     return wxyz_to_xyzw(wxyz_quats)
@@ -267,7 +265,8 @@ def main():
     qf /= np.linalg.norm(qf)  # Normalize
     wf = 0.1 * np.random.rand(3)  # Final angular velocity
     dt = 1 / 350  # Timestep (set to the pybullet physics timestep we're using)
-    qs = quaternion_interpolation_with_BCs(qi, qf, wi, wf, T, dt)
+    n = round(T / dt)  # Number of timesteps
+    qs = quaternion_interpolation_with_bcs(qi, qf, wi, wf, T, n)
     ws = quats_to_angular_velocities(qs, dt)
     dws = np.gradient(ws, dt, axis=0)
 

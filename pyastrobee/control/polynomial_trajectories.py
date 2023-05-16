@@ -19,6 +19,7 @@ from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     quats_to_angular_velocities,
 )
+from pyastrobee.control.quaternion_bc_planning import quaternion_interpolation_with_bcs
 
 
 def polynomial_slerp(
@@ -134,13 +135,96 @@ def polynomial_trajectory(
     )
 
 
+def polynomial_traj_with_velocity_bcs(
+    p0: npt.ArrayLike,
+    q0: npt.ArrayLike,
+    v0: npt.ArrayLike,
+    w0: npt.ArrayLike,
+    pf: npt.ArrayLike,
+    qf: npt.ArrayLike,
+    vf: npt.ArrayLike,
+    wf: npt.ArrayLike,
+    duration: float,
+    dt: float,
+) -> Trajectory:
+    """Generate a polynomial trajectory between two poses, with velocity boundary conditions on either end
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
+        v0 (npt.ArrayLike): Initial linear velocity, shape (3,)
+        w0 (npt.ArrayLike): Initial angular velocity, shape (3,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
+        vf (npt.ArrayLike): Final linear velocity, shape (3,)
+        wf (npt.ArrayLike): Final angular velocity, shape (3,)
+        duration (float): Trajectory duration (seconds)
+        dt (float): Sampling period (seconds)
+
+    Returns:
+        Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
+    """
+    times = np.arange(0, duration + dt, dt)
+    n = len(times)
+    x0, y0, z0 = p0
+    xf, yf, zf = pf
+    t0 = times[0]
+    tf = times[-1]
+    vx0, vy0, vz0 = v0
+    vxf, vyf, vzf = vf
+    x, vx, ax, _ = third_order_poly(t0, tf, x0, xf, vx0, vxf, n)
+    y, vy, ay, _ = third_order_poly(t0, tf, y0, yf, vy0, vyf, n)
+    z, vz, az, _ = third_order_poly(t0, tf, z0, zf, vz0, vzf, n)
+    q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, duration, n)
+    omega = quats_to_angular_velocities(q, dt)
+    alpha = np.gradient(omega, dt, axis=0)
+    return Trajectory(
+        positions=np.column_stack([x, y, z]),
+        quats=q,
+        lin_vels=np.column_stack([vx, vy, vz]),
+        ang_vels=omega,
+        lin_accels=np.column_stack([ax, ay, az]),
+        ang_accels=alpha,
+        times=times,
+    )
+
+
+def main():
+    # TODO add the astrobee following the trajectory??
+
+    # Update these values depending on what examples you want to run
+    RUN_NO_BC_EXAMPLE = False
+    RUN_BC_EXAMPLE = True
+
+    # Example with no boundary conditions
+    if RUN_NO_BC_EXAMPLE:
+        np.random.seed(0)
+        pose1 = np.array([0, 0, 0, 0, 0, 0, 1])
+        pose2 = np.array([1, 1, 1, *random_quaternion()])
+        traj = polynomial_trajectory(pose1, pose2, 5, 0.1)
+        print("Plotting trajectory information")
+        traj.plot()
+        input("Press Enter to visualize the trajectory in pybullet, when ready")
+        traj.visualize()
+
+    # Example with boundary conditions on the initial/final velocities
+    if RUN_BC_EXAMPLE:
+        p0 = np.array([1, 2, 3])
+        q0 = np.array([1, 2, 3, 4]) / np.linalg.norm([1, 2, 3, 4])
+        v0 = np.array([1, 2, 3])
+        w0 = np.array([0.1, 0.2, 0.3])
+        pf = np.array([2, 3, 4])
+        qf = np.array([2, 3, 4, 5]) / np.linalg.norm([2, 3, 4, 5])
+        vf = np.array([2, 3, 4])
+        wf = np.array([0.2, 0.3, 0.4])
+        duration = 10
+        dt = 0.1  # Arbitrary
+        traj = polynomial_traj_with_velocity_bcs(
+            p0, q0, v0, w0, pf, qf, vf, wf, duration, dt
+        )
+        traj.plot()
+        traj.visualize()
+
+
 if __name__ == "__main__":
-    np.random.seed(0)
-    pose1 = np.array([0, 0, 0, 0, 0, 0, 1])
-    pose2 = np.array([1, 1, 1, *random_quaternion()])
-    traj = polynomial_trajectory(pose1, pose2, 5, 0.1)
-    print("Plotting trajectory information")
-    traj.plot()
-    input("Press Enter to visualize the trajectory in pybullet, when ready")
-    traj.visualize()
-    # TODO add the astrobee following the trajectory
+    main()
