@@ -75,6 +75,18 @@ def get_q_from_curve(p, tau):
     )
 
 
+def get_qs_from_curve_vectorized(p, taus):
+    # Vectorized version of Equation 12
+    # Output should be n x 4
+    # Convert taus to a column vector for proper broadcasting
+    taus = np.atleast_2d(taus)
+    if taus.shape[0] == 1:
+        taus = taus.T
+    return (1 - taus) ** 3 * (p[0] + p[1] * taus + p[2] * taus**2) + (taus**3) * (
+        p[3] + p[4] * (1 - taus) + p[5] * (1 - taus) ** 2
+    )
+
+
 def get_dq_from_curve(p, tau):
     # Derivative of equation 12 wrt time
     return (
@@ -220,6 +232,38 @@ def quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf):
     return qs, ws, dws
 
 
+def vectorized_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf):
+    # Algorithm 1
+    if dot(qi, qf) < 0:
+        qf = -qf  # Ensure shortest path interpolation
+    dNf, ddNf = (0, 0)
+    dqf = get_dqn(wf, dNf, qf)
+    ddqf = get_ddqn(wf, dwf, dNf, ddNf, qf)
+    T = tf - ti
+    pfixed = poly_coeffs(ti, tf, qi, wi, dwi, qf, dqf, ddqf)
+    t = ti
+    # TODO This loop should be handled differently
+    dt = 1 / 350  # NEW
+    m = int(T / dt)  # NEW
+    qs = np.zeros((m, 4))
+    ws = np.zeros((m, 3))
+    dws = np.zeros((m, 3))
+    taus = np.linspace(0, 1, m, endpoint=True)
+    return get_qs_from_curve_vectorized(pfixed, taus)
+    # for k in range(m):
+    #     t = ti + (k / m) * (tf - ti)  # NEW
+    #     tau = (t - ti) / (tf - ti)
+    #     q = get_q_from_curve(pfixed, tau)
+    #     dq = get_dq_from_curve(pfixed, tau)
+    #     ddq = get_ddq_from_curve(pfixed, tau)
+    #     w = get_w(q, dq)
+    #     dw = get_dw(q, dq, ddq)
+    #     qs[k] = q
+    #     ws[k] = w
+    #     dws[k] = dw
+    # return qs, ws, dws
+
+
 def third_order_interp(ti, tf, qi, wi, qf, wf):
     # Algorithm 1
     if dot(qi, qf) < 0:
@@ -264,7 +308,8 @@ if __name__ == "__main__":
     # wf = np.zeros(3)
     wf = 0.1 * np.random.rand(3)
     dwf = np.zeros(3)
-    qs, ws, dws = quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf)
+    # qs, ws, dws = quaternion_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf)
+    qs = vectorized_interpolation(ti, tf, qi, wi, dwi, qf, wf, dwf)
     q3s, w3s, dw3s = third_order_interp(ti, tf, qi, wi, qf, wf)
     # Plotting the angular velocities from this function did not seem to work
     # IDK why... but using my quaternion to angular velocity function works nicely
