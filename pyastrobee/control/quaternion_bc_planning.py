@@ -14,9 +14,6 @@ significantly affect the orientation representation
 
 See "Orientation Planning in Task Space using Quaternion Polynomials" DOI: 10.1109/ROBIO.2017.8324769 for more info
 Note: this paper uses WXYZ quaternions
-
-TODO:
-- Decide when normalization should occur!
 """
 
 import numpy as np
@@ -79,7 +76,10 @@ def quaternion_interpolation_with_bcs(
     taus = np.linspace(0, 1, n, endpoint=True)
     wxyz_quats = _interpolate_along_quat_poly(p, taus)
     # Convert back to XYZW for compatibility with the rest of the repository
-    return wxyz_to_xyzw(wxyz_quats)
+    quats = wxyz_to_xyzw(wxyz_quats)
+    # Normalize, since this process does not guarantee norm 1 quaternions
+    quats /= np.linalg.norm(quats, axis=1).reshape(-1, 1)
+    return quats
 
 
 # Below are all helper functions based on the equations from the reference paper
