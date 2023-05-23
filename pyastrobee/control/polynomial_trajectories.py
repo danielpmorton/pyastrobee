@@ -29,7 +29,8 @@ def polynomial_slerp(
 ) -> np.ndarray:
     """SLERP based on a third-order polynomial discretization
 
-    This will sample interpolated quaternions based on the polynomial rather than a linear spacing
+    This will interpolate quaternions based on a polynomial spacing rather than a linear spacing. The resulting
+    angular velocity vector has a constant direction, but will be quadratic, starting and ending at 0
 
     Args:
         q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
@@ -246,7 +247,11 @@ def polynomial_traj_with_velocity_bcs(
     x, vx, ax, _ = third_order_poly(t0, tf, x0, xf, vx0, vxf, n)
     y, vy, ay, _ = third_order_poly(t0, tf, y0, yf, vy0, vyf, n)
     z, vz, az, _ = third_order_poly(t0, tf, z0, zf, vz0, vzf, n)
-    q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, duration, n)
+    # TODO make these an input. It's a bit weird that we don't have the acceleration constraint though
+    # since we're using the third-order poly on the position traj... Figure this out
+    dw0 = np.zeros(3)
+    dwf = np.zeros(3)
+    q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
     omega = quats_to_angular_velocities(q, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
@@ -265,10 +270,14 @@ def fifth_order_polynomial_traj_with_velocity_bcs(
     q0: npt.ArrayLike,
     v0: npt.ArrayLike,
     w0: npt.ArrayLike,
+    a0: npt.ArrayLike,
+    dw0: npt.ArrayLike,
     pf: npt.ArrayLike,
     qf: npt.ArrayLike,
     vf: npt.ArrayLike,
     wf: npt.ArrayLike,
+    af: npt.ArrayLike,
+    dwf: npt.ArrayLike,
     duration: float,
     dt: float,
 ) -> Trajectory:
@@ -277,12 +286,16 @@ def fifth_order_polynomial_traj_with_velocity_bcs(
     Args:
         p0 (npt.ArrayLike): Initial position, shape (3,)
         q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
-        v0 (npt.ArrayLike): Initial linear velocity, third_order_polyshape (3,)
+        v0 (npt.ArrayLike): Initial linear velocity, shape (3,)
         w0 (npt.ArrayLike): Initial angular velocity, shape (3,)
+        a0 (npt.ArrayLike): Initial linear acceleration, shape (3,)
+        dw0 (npt.ArrayLike): Initial angular acceleration, shape (3,)
         pf (npt.ArrayLike): Final position, shape (3,)
         qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
         vf (npt.ArrayLike): Final linear velocity, shape (3,)
         wf (npt.ArrayLike): Final angular velocity, shape (3,)
+        af (npt.ArrayLike): Final linear acceleration, shape (3,)
+        dwf (npt.ArrayLike): Final angular acceleration, shape (3,)
         duration (float): Trajectory duration (seconds)
         dt (float): Sampling period (seconds)
 
@@ -297,12 +310,12 @@ def fifth_order_polynomial_traj_with_velocity_bcs(
     tf = times[-1]
     vx0, vy0, vz0 = v0
     vxf, vyf, vzf = vf
-    ax0, ay0, az0 = (0, 0, 0)
-    axf, ayf, azf = (0, 0, 0)
+    ax0, ay0, az0 = a0
+    axf, ayf, azf = af
     x, vx, ax, _ = fifth_order_poly(t0, tf, x0, xf, vx0, vxf, ax0, axf, n)
     y, vy, ay, _ = fifth_order_poly(t0, tf, y0, yf, vy0, vyf, ay0, ayf, n)
     z, vz, az, _ = fifth_order_poly(t0, tf, z0, zf, vz0, vzf, az0, azf, n)
-    q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, duration, n)
+    q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
     omega = quats_to_angular_velocities(q, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(

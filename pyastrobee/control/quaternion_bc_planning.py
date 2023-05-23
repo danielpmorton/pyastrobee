@@ -31,6 +31,8 @@ def quaternion_interpolation_with_bcs(
     qf: npt.ArrayLike,
     wi: npt.ArrayLike,
     wf: npt.ArrayLike,
+    dwi: npt.ArrayLike,
+    dwf: npt.ArrayLike,
     duration: float,
     n: int,
 ) -> np.ndarray:
@@ -44,6 +46,8 @@ def quaternion_interpolation_with_bcs(
         qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
         wi (npt.ArrayLike): Initial inertial-frame angular velocity, shape (3,)
         wf (npt.ArrayLike): Final inertial-frame angular velocity, shape (3,)
+        dwi (npt.ArrayLike): Initial inertial-frame angular acceleration, shape (3,)
+        dwf (npt.ArrayLike): Final inertial-frame angular acceleration, shape (3,)
         duration (float): Trajectory duration, seconds
         n (int): Number of timesteps
 
@@ -62,9 +66,6 @@ def quaternion_interpolation_with_bcs(
     # (in theory quaternion norms should always be fixed at 1, but this interpolation
     # does not necessarily guarantee this. But, it generally stays within 5% of norm 1)
     dNi, ddNi, dNf, ddNf = (0, 0, 0, 0)
-    # Assume that the angular acceleration at the start and end points are 0
-    # TODO decide if this is an appropriate assumption
-    dwi, dwf = (np.zeros(3), np.zeros(3))
     # Get the first and second derivatives of the quaternion at the starting/ending points
     dqi = _get_dq(wi, dNi, qi)
     ddqi = _get_ddq(wi, dwi, dNi, ddNi, qi)
@@ -261,12 +262,14 @@ def main():
     T = tf - ti  # Duration
     qi = np.array([0, 0, 0, 1])  # Initial quaternion
     wi = 0.1 * np.random.rand(3)  # Initial ang vel
+    dwi = np.zeros(3)  # Initial ang accel
     qf = np.random.rand(4)  # Final quaternion (pre-normalization)
     qf /= np.linalg.norm(qf)  # Normalize
     wf = 0.1 * np.random.rand(3)  # Final angular velocity
+    dwf = np.zeros(3)  # Final angular acceleration
     dt = 1 / 350  # Timestep (set to the pybullet physics timestep we're using)
     n = round(T / dt)  # Number of timesteps
-    qs = quaternion_interpolation_with_bcs(qi, qf, wi, wf, T, n)
+    qs = quaternion_interpolation_with_bcs(qi, qf, wi, wf, dwi, dwf, T, n)
     ws = quats_to_angular_velocities(qs, dt)
     dws = np.gradient(ws, dt, axis=0)
 
