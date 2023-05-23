@@ -26,6 +26,20 @@
 
 ## Status
 ### TODOs:
+- [ ] Make baseline example with PD control of the robot AND the bag
+- [ ] Define the inverse kinematics / transformation with the arm in a FIXED position
+- [ ] Make new bag textures with better UV mapping
+- [ ] (Optional) Finish the PR in bullet3 relating to angular velocity
+- [ ] Make a constant-angular-velocity (orientation-only?) trajectory. Allow for multiple revolutions?
+- [ ] Add derivative info to the old pose-only trajectories, return a Trajectory
+- [ ] (Rika?) Try out different constraint attachments to the gripper (magnetic?)
+- [ ] Merge in the lqr/osc/mpc branches
+  - [ ] Check out mujoco LQR https://github.com/deepmind/mujoco/blob/main/python/LQR.ipynb
+  - [ ] Set up LQR for error dynamics rather than general system? How to deal with LQR controlling to 0?
+- [ ] Continue working on OSC in the osc branch
+- [ ] Do some more tests on the jacobians and mass matrix
+- [ ] Reorganize the scripts folder
+- [ ] Add test cases for the quaternion / angular velocity math
 - [ ] Define equations of motion
   - [ ] https://www.frontiersin.org/articles/10.3389/frobt.2018.00041/full
   - [ ] https://physics.stackexchange.com/questions/424249/kinematic-equation-for-spacecraft-using-quaternion
@@ -152,6 +166,7 @@
 - [ ] If there is a need for multiple bullet clients in the future, add the "sim" parameters back in from dedo
 
 ### Done:
+- [X] Clear up world/robot frame confusion for relationship between quaternions and angular velocities
 - [X] Compare quaternion representations against Euler-Rodrigues
 - [X] Implement force control with PID
 - [X] Improve the demo script
