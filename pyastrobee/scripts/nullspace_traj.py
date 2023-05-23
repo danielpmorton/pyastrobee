@@ -1,22 +1,13 @@
-# TEST SCRIPT
-# mainly want to see if we can relax a constraint on a 5th order polynomial and then use the nullspace of the matrix
-# to try to improve the overall path of the trajectory
+"""Test script to evaluate 5th order polynomials with one free parameter
 
+This is mainly to evaluate how much the trajectory can change when we leave a parameter unconstrained
+and don't just evaluate the nominal solution we might get at first
 
-from typing import Union
+TODO: figure out how to quantify which one of these is "best" in a convex way so we can reliably optimize trajs
+"""
 
 import numpy as np
-import numpy.typing as npt
 import matplotlib.pyplot as plt
-
-from pyastrobee.control.trajectory import Trajectory
-from pyastrobee.utils.quaternion_class import Quaternion
-from pyastrobee.utils.quaternions import (
-    random_quaternion,
-    quaternion_slerp,
-    quats_to_angular_velocities,
-)
-from pyastrobee.control.quaternion_bc_planning import quaternion_interpolation_with_bcs
 
 
 def main():
@@ -28,7 +19,7 @@ def main():
     vf = 0.2
     a0 = -0.2
     # af = -0.1 # LEAVE THIS UNCONSTRAINED
-    n = 50
+    n_pts = 50
 
     A = np.array(
         [
@@ -41,65 +32,76 @@ def main():
         ]
     )
     b = np.array([x0, xf, v0, vf, a0])  # , af])
+    m, n = A.shape  # (5, 6) - 6 parameters for 5th order poly, 5 constraints
 
     # Have Ax=b, but A is R5x6, x is R6, b = R5
     # So we have one degree of freedom
 
     A_bar = A.T @ np.linalg.inv(A @ A.T)  # Right inverse
-    N = np.eye(6) - A_bar @ A
+    N = np.eye(n) - A_bar @ A  # Nullspace projection matrix
 
     # Form a linear discretization in time
-    times = np.linspace(t0, tf, n, endpoint=True)
-
-    # Set up figure
-    fig = plt.figure()
+    times = np.linspace(t0, tf, n_pts, endpoint=True)
 
     # Generate a bunch of vectors in the nullspace to modify the parameters of the polynomial
     n_param_sets = 20
     # Set up matrices for storing the data
-    params = np.zeros((n_param_sets, 6))
-    delta_params = np.zeros((n_param_sets, 6))
+    params = np.zeros((n_param_sets, n))
+    delta_params = np.zeros((n_param_sets, n))
     fs = np.zeros((n_param_sets, len(times)))
     dfs = np.zeros((n_param_sets, len(times)))
     d2fs = np.zeros((n_param_sets, len(times)))
 
-    # Can this be fully vectorized???
+    # Calculate matrices corresponding to our time evolution, relating to the polynomial coefficients and derivatives
+    tau = np.row_stack(
+        [np.ones(n_pts), times, times**2, times**3, times**4, times**5]
+    )
+    dtau = np.row_stack(
+        [
+            np.zeros(n_pts),
+            np.ones(n_pts),
+            2 * times,
+            3 * times**2,
+            4 * times**3,
+            5 * times**4,
+        ]
+    )
+    d2tau = np.row_stack(
+        [
+            np.zeros((2, n_pts)),
+            2 * np.ones(n_pts),
+            6 * times,
+            12 * times**2,
+            20 * times**3,
+        ]
+    )
+    # Generate a bunch of vectors in the nullspace of our polynomial constraints
+    delta_params = (N @ np.random.rand(6, n_param_sets)).T
+    # Add these vectors to the nominal polynomial coefficients
+    params = A_bar @ b + delta_params
+    # Determine the function and derivative evaluations over the duration of the traj
+    fs = params @ tau
+    dfs = params @ dtau
+    d2fs = params @ d2tau
+
+    # Print out the coefficients for debugging
     for i in range(n_param_sets):
-        delta_params[i] = N @ np.random.rand(6)
-        # Solve the system using our generalized inverse
-        params[i] = A_bar @ b + delta_params[i]
-        # Use this to calculate the polynomial based on the coefficients
-        f = params[i].T @ np.row_stack(
-            [np.ones(n), times, times**2, times**3, times**4, times**5]
-        )
-        # Also calculate the derivatives of the function (for instance, velocity/acceleration)
-        df = params[i].T @ np.row_stack(
-            [
-                np.zeros(n),
-                np.ones(n),
-                2 * times,
-                3 * times**2,
-                4 * times**3,
-                5 * times**4,
-            ]
-        )
-        d2f = params[i].T @ np.row_stack(
-            [
-                np.zeros((2, n)),
-                2 * np.ones(n),
-                6 * times,
-                12 * times**2,
-                20 * times**3,
-            ]
-        )
+        print(f"{i}: {params[i]}")
 
-        plt.subplot(1, 3, 1)
-        plt.plot(times, f)
-        plt.subplot(1, 3, 2)
-        plt.plot(times, df)
-        plt.subplot(1, 3, 3)
-        plt.plot(times, d2f)
-
+    # Plot each trajectory for comparison
+    # Set up figure
+    fig = plt.figure()
+    labels = [str(i) for i in range(n_param_sets)]
+    plt.subplot(1, 3, 1)
+    plt.plot(times, fs.T, label=labels)
+    plt.title("Position")
+    plt.subplot(1, 3, 2)
+    plt.plot(times, dfs.T, label=labels)
+    plt.title("Velocity")
+    plt.subplot(1, 3, 3)
+    plt.plot(times, d2fs.T, label=labels)
+    plt.title("Acceleration")
+    plt.legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
     plt.show()
 
 
