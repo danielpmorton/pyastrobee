@@ -1,5 +1,7 @@
 """Assorted helper functions related to math operations / linear algebra"""
 
+from typing import Union
+
 import numpy as np
 import numpy.typing as npt
 
@@ -76,3 +78,32 @@ def skew(v: npt.ArrayLike) -> np.ndarray:
     if len(v) != 3:
         raise ValueError(f"Vector needs to be of length 3.\nGot: {v}")
     return np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+
+
+def spherical_vonmises_sampling(
+    mu: npt.ArrayLike, kappa: Union[float, npt.ArrayLike], n_pts: int
+) -> np.ndarray:
+    """Samples points on a (generalized) sphere based on the von Mises distribution
+
+    This is slightly more relevant to sampling on a sphere than a Gaussian because the
+    distribution is circular in nature. Technically, the von Mises-Fisher distribution is for
+    a sphere but Numpy doesn't seem to distinguish between these.
+
+    Args:
+        mu (npt.ArrayLike): Mean. Length defines the dimension of the sphere. Should be normalized
+        kappa (Union[float, npt.ArrayLike]): Concentration parameter. This can be thought of as the
+            "inverse of variance". Large kappa results in a distribution that approaches a gaussian;
+            small kappa approaches a uniform distribution. As a quick not-at-all precise measure,
+            kappa = 0: Uniform distribution around the sphere
+            kappa = 5: Angular dispersion of ~90 degrees from the mean
+            kappa = 10: Angular dispersion of ~60 degrees from the mean
+            kappa = 50: Angular dispersion of ~15 degrees from the mean
+        n_pts (int): Number of points to sample
+
+    Returns:
+        np.ndarray: Sampled points, shape (n_pts, dimension)
+    """
+    mu = np.atleast_1d(mu)
+    kappa = np.atleast_1d(kappa)
+    sampled = np.random.vonmises(mu, kappa, size=(n_pts, len(mu)))
+    return sampled / np.linalg.norm(sampled, axis=1).reshape(-1, 1)
