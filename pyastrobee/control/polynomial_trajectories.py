@@ -5,6 +5,14 @@ TODO
 - Enforce actuator limits - make sure that the trajectory doesn't exceed the max velocity values.
   If so, increase the duration
 - Merge this file with planner.py?
+
+TODO BEFORE NEXT COMMIT
+- Make it clearer which functions are third order vs fifth order
+- Don't mix third and fifth order
+- Make a third order version of the quaternion interpolation?
+- Don't arbitrarily assign boundary conditions of 0, make them inputs
+- Change the BC example so that it doesn't make such a weird motion
+- See if we can work in the nullspace of the 5th order poly
 """
 
 from typing import Union

@@ -167,6 +167,7 @@
 
 ### Done:
 - [X] Clear up world/robot frame confusion for relationship between quaternions and angular velocities
+- [X] Try out fourth-order polynomials (weirdly asymmetric - ew)
 - [X] Compare quaternion representations against Euler-Rodrigues
 - [X] Implement force control with PID
 - [X] Improve the demo script
