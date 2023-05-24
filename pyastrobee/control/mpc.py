@@ -16,28 +16,8 @@ from pyastrobee.control.polynomial_trajectories import (
     polynomial_trajectory,
     polynomial_traj_with_velocity_bcs,
 )
-
-# class SimState:
-#     def __init__(self, robot_state, bag_state):
-#         pass
-
-
-# class BagState:
-#     def __init__(self, pos, orn, lin_vel, ang_vel):
-#         self.pos = pos
-#         self.orn = orn
-#         self.lin_vel = lin_vel
-#         self.ang_vel = ang_vel
-
-
-# class RobotState:
-#     def __init__(self, pos, orn, lin_vel, ang_vel, joint_pos, joint_vels):
-#         self.pos = pos
-#         self.orn = orn
-#         self.lin_vel = lin_vel
-#         self.ang_vel = ang_vel
-#         self.joint_pos = joint_pos
-#         self.joint_vels = joint_vels
+from pyastrobee.utils.math_utils import spherical_vonmises_sampling
+from pyastrobee.control.trajectory import Trajectory
 
 
 def reset_state(
@@ -140,20 +120,43 @@ def generate_trajs(
     n_trajs: int,
     n_steps: int,
     dt: float,
-):
-    # TODO see if sampling orientations with gaussian noise on quaternions makes any sense
-    # TODO decide if stdevs of the gaussian should be an array so we can have different amounts of noise about
-    #      different directions??? Would it make sense to have a sampling ellipsoid elongated along the direction
-    #      of the nominal trajectory rather (as compared to orthogonal directions)?
+) -> list[Trajectory]:
+    """Generate a number of trajectories from the current state to a sampled state about a nominal target
+
+    TODO
+    - Decide if we should be passing in covariance matrices or arrays instead of scalars
+    - Decide if the "orientation stdev" should be replaced by the von Mises kappa parameter
+    - Update the trajectory generation when we improve that process
+    - Add in the current acceleration parameters so we can enforce acceleration continuity
+
+    Args:
+        cur_pos (npt.ArrayLike): Current position, shape (3,)
+        cur_orn (npt.ArrayLike): Current XYZW quaternion orientation, shape (4,)
+        cur_vel (npt.ArrayLike): Current linear velocity, shape (3,)
+        cur_ang_vel (npt.ArrayLike): Current angular velocity, shape (3,)
+        nominal_target_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)
+        nominal_target_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)
+        nominal_target_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)
+        nominal_target_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)
+        pos_sampling_stdev (float): Standard deviation of the position sampling distribution
+        orn_sampling_stdev (float): Standard deviation of the orientation sampling distribution
+        vel_sampling_stdev (float): Standard deviation of the velocity sampling distribution
+        ang_vel_sampling_stdev (float): Standard deviation of the angular velocity sampling distribution
+        n_trajs (int): Number of trajectories to generate
+        n_steps (int): Number of trajectory steps between the current state and the sampled goal state
+        dt (float): Timestep
+
+    Returns:
+        list[Trajectory]: Sampled trajectories, length n_trajs
+    """
 
     # Sample endpoints for the candidate trajectories about the nominal targets
     sampled_positions = np.random.multivariate_normal(
         nominal_target_pos, pos_sampling_stdev**2 * np.eye(3), n_trajs
     )
-    sampled_quats = np.random.multivariate_normal(
-        nominal_target_orn, orn_sampling_stdev**2 * np.eye(4), n_trajs
+    sampled_quats = spherical_vonmises_sampling(
+        nominal_target_orn, 1 / (orn_sampling_stdev**2), n_trajs
     )
-    sampled_quats /= np.linalg.norm(sampled_quats, axis=1).reshape(-1, 1)  # Normalize
     sampled_vels = np.random.multivariate_normal(
         nominal_target_vel, vel_sampling_stdev**2 * np.eye(3), n_trajs
     )
