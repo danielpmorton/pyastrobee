@@ -27,7 +27,7 @@ from pyastrobee.utils.rotations import (
 )
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
-from pyastrobee.control.trajectory import visualize_traj
+from pyastrobee.trajectories.trajectory import visualize_traj
 
 
 class TrajFinder:

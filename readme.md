@@ -40,6 +40,7 @@
 - [ ] Do some more tests on the jacobians and mass matrix
 - [ ] Reorganize the scripts folder
 - [ ] Add test cases for the quaternion / angular velocity math
+- [ ] Organize all of the different trajectory files (remove/archive out-of-date stuff)
 - [ ] Define equations of motion
   - [ ] https://www.frontiersin.org/articles/10.3389/frobt.2018.00041/full
   - [ ] https://physics.stackexchange.com/questions/424249/kinematic-equation-for-spacecraft-using-quaternion

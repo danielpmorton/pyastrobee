@@ -12,12 +12,12 @@ from pyastrobee.elements.cargo_bag import CargoBag
 from pyastrobee.elements.iss import load_iss
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.quaternions import quaternion_angular_error
-from pyastrobee.control.polynomial_trajectories import (
+from pyastrobee.trajectories.polynomial_trajectories import (
     polynomial_trajectory,
     polynomial_traj_with_velocity_bcs,
 )
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
-from pyastrobee.control.trajectory import Trajectory
+from pyastrobee.trajectories.trajectory import Trajectory
 
 
 def reset_state(

@@ -13,7 +13,7 @@ import pybullet
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.control.trajectory import (
+from pyastrobee.trajectories.trajectory import (
     Trajectory,
     TrajectoryLogger,
     stopping_criteria,

@@ -9,8 +9,8 @@ import numpy as np
 from pyastrobee.control.force_controller_new import ForcePIDController
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.quaternions import random_quaternion
-from pyastrobee.control.polynomial_trajectories import polynomial_trajectory
-from pyastrobee.control.trajectory import (
+from pyastrobee.trajectories.polynomial_trajectories import polynomial_trajectory
+from pyastrobee.trajectories.trajectory import (
     visualize_traj,
     compare_trajs,
     TrajectoryLogger,

@@ -36,7 +36,7 @@ from pyastrobee.config.astrobee_motion import (
 )  # Change this import handling?
 from pyastrobee.control.physics_models import drag_force_model
 from pyastrobee.utils.python_utils import print_red
-from pyastrobee.control.planner import point_and_move_pose_traj
+from pyastrobee.trajectories.planner import point_and_move_pose_traj
 
 
 class Controller(ABC):

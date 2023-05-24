@@ -20,14 +20,16 @@ from typing import Union
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.control.trajectory import Trajectory
+from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternions import (
     random_quaternion,
     quaternion_slerp,
     quats_to_angular_velocities,
 )
-from pyastrobee.control.quaternion_bc_planning import quaternion_interpolation_with_bcs
+from pyastrobee.trajectories.quaternion_bc_planning import (
+    quaternion_interpolation_with_bcs,
+)
 
 
 def polynomial_slerp(
