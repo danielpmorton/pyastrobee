@@ -26,6 +26,8 @@
 
 ## Status
 ### TODOs:
+- [ ] FINISH MPC
+- [ ] Define forces and torques in the local frame (or find a way to convert the constraints back to global frame)
 - [ ] Make baseline example with PD control of the robot AND the bag
 - [ ] Define the inverse kinematics / transformation with the arm in a FIXED position
 - [ ] Make new bag textures with better UV mapping
