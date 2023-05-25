@@ -28,6 +28,8 @@ setup(
         "ipython",  # Interactive sessions
         "control",  # Control systems reference code
         "slycot",  # Used in conjunction with the control package
+        "cvxpy",  # Optimization
+        "clarabel",  # More optimization
     ],
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
