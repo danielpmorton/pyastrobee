@@ -6,8 +6,9 @@ TODO see if we can bring back the matrix forms of these gains
 TODO add stopping tolerances as inputs?
 TODO unify variable naming and argument positioning
 TODO enforce max force/torque limits, convert between frames
+TODO decide if the stopping tolerance parameters should be in a different location
+     (OR, figure out a way to define this for the bag as well)
 """
-import time
 
 import pybullet
 import numpy as np
@@ -34,6 +35,10 @@ class ForcePIDController:
         kq (float): Gain for orientation (quaternion) error
         kw (float): Gain for angular velocity (omega) error
         dt (float): Timestep
+        pos_tol (float, optional): Stopping tolerance on position error magnitude. Defaults to 1e-2.
+        orn_tol (float, optional): Stopping tolerance on quaternion distance between cur/des. Defaults to 1e-2.
+        vel_tol (float, optional): Stopping tolerance on linear velocity error magnitude. Defaults to 1e-2.
+        ang_vel_tol (float, optional): Stopping tolerance on angular velocity error magnitude. Defaults to 5e-3.
     """
 
     def __init__(
@@ -46,6 +51,10 @@ class ForcePIDController:
         kq: float,
         kw: float,
         dt: float,
+        pos_tol: float = 1e-2,
+        orn_tol: float = 1e-2,
+        vel_tol: float = 1e-2,
+        ang_vel_tol: float = 5e-3,
     ):
         self.id = robot_id
         self.mass = mass
@@ -55,6 +64,10 @@ class ForcePIDController:
         self.kq = kq
         self.kw = kw
         self.dt = dt
+        self.pos_tol = pos_tol
+        self.orn_tol = orn_tol
+        self.vel_tol = vel_tol
+        self.ang_vel_tol = ang_vel_tol
         self.traj_log = TrajectoryLogger()
         self.control_log = ControlLogger()
 
@@ -147,7 +160,18 @@ class ForcePIDController:
         des_alpha = np.zeros(3)
         while True:
             pos, orn, lin_vel, ang_vel = self.get_current_state()
-            if stopping_criteria(pos, orn, lin_vel, ang_vel, des_pos, des_quat):
+            if stopping_criteria(
+                pos,
+                orn,
+                lin_vel,
+                ang_vel,
+                des_pos,
+                des_quat,
+                self.pos_tol,
+                self.orn_tol,
+                self.vel_tol,
+                self.ang_vel_tol,
+            ):
                 return
             self.step(
                 pos,
@@ -192,11 +216,9 @@ class ForcePIDController:
         force = self.get_force(pos, vel, des_pos, des_vel, des_accel)
         torque = self.get_torque(orn, omega, des_orn, des_omega, des_alpha)
         self.control_log.log_control(force, torque, self.dt)
-        # TODO: explain -1? And does pos need to be a list?
         pybullet.applyExternalForce(self.id, -1, force, list(pos), pybullet.WORLD_FRAME)
         pybullet.applyExternalTorque(self.id, -1, list(torque), pybullet.WORLD_FRAME)
         pybullet.stepSimulation()
-        time.sleep(self.dt)
 
     def get_current_state(
         self,

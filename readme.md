@@ -27,6 +27,8 @@
 ## Status
 ### TODOs:
 - [ ] FINISH MPC
+- [ ] GET FORCE/TORQUE CLAMPING/CONSTRAINTS IMPLEMENTED
+- [ ] Increase the mass of the bag because it's too light right now
 - [ ] Define forces and torques in the local frame (or find a way to convert the constraints back to global frame)
 - [ ] Make baseline example with PD control of the robot AND the bag
 - [ ] Define the inverse kinematics / transformation with the arm in a FIXED position
