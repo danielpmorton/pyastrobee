@@ -107,48 +107,6 @@
   - [ ] Improve PID? IDK if https://github.com/m-lundberg/simple-pid will be of use
   - [ ] Look more into NASA's trapezoidal planner?? See `mobility/planner_trapezoidal/src/planner_trapezoidal.cc`
 
-### References
-
-Control
-- Orientation planning in task space using quaternion polynomials
-- A general construction scheme for unit quaternion curves with simple high order derivatives
-- Sola: Quaternion kinematics for the error-state Kalman filter
-- Shuster: A survey of attitude representations
-
-Optimization
-- Tobia/Boyd: Fast Path Planning Through Large Collections of Safe Boxes
-
-Astrobee/Spheres
-- Somrita: NNGusto: Learning-based warm-starting for fast sequential convex programming and trajectory optimization
-- The ReSWARM Microgravity Flight Experiments: Planning, Control, and Model Estimation for On-Orbit Close Proximity Operations
-- Geometric methods for the planning, control, and estimation of free-flying autonomous systems
-- Smooth trajectory generation on SE3 for a free flying space robot
-- Two-stage path planning approach for designing multiple spacecraft reconfiguration maneuvers and application to SPHERES onboard ISS
-
-Python
-- See the `setup.py` file for dependencies, cite packages as needed
-
-Simulation
-- Rika: DEDO - Dynamic Environments with Deformable Objects
-
-Dynamics
-- Mitiguy: Advanced Dynamics and Motion Simulation
-
-Robotics
-- Khatib: Introduction to Robotics: Lecture Notes, CS223A, Winter 2023
-- Khatib: Advanced Robotic Manipulation: Lecture Notes, CS327A, Spring 2023
-
-Not currently using, but possibly useful in the future:
-- Full quaternion based attitude control for a quadrotor
-- Richard Murray: Optimization-based control
-- Learning end-to-end robotic manipulation of deformable objects
-- Controlling Ocean One
-- Linear quaternion differential equations: basic theory and fundamental results
-- Dynamic movement primitives
-- Quaternion-Based Control Architecture for Determining Controllability/Maneuverability Limits
-- Spacecraft robust attitude tracking design: PID control approach
-- A tuning method of multi variable PID gains using Jacobian
-
 Various links to look into:
 - `LinearQuadraticRegulator` from `pydrake.all`
   - See http://underactuated.mit.edu/lqr.html
@@ -166,6 +124,7 @@ Various links to look into:
   - [ ] http://underactuated.mit.edu/lqr.html
   - [ ] https://github.com/python-control/python-control/blob/main/control/statefbk.py
   - [ ] https://github.com/ssloy/tutorials/blob/master/tutorials/pendulum/lqr.py
+
 ### Backlog:
 - [ ] When the Astrobee is loaded it steps the sim (since it opens the gripper), which may be unwanted behavior
 - [ ] Get velocity control integrated into the keyboard controller
