@@ -107,38 +107,58 @@
   - [ ] Improve PID? IDK if https://github.com/m-lundberg/simple-pid will be of use
   - [ ] Look more into NASA's trapezoidal planner?? See `mobility/planner_trapezoidal/src/planner_trapezoidal.cc`
 
-### References to look into
-- [ ] (NOTE): Improve how you're keeping track of these refs (and include the random citations inside some of the attitude dynamics / quaternion code)
-- [ ] Dissertation used for quadratic planning methods
-  - [ ] https://repository.upenn.edu/dissertations/AAI10934473/
-- [ ] `LinearQuadraticRegulator` from `pydrake.all`
-  - [ ] See http://underactuated.mit.edu/lqr.html
-  - [ ] https://github.com/RobotLocomotion/drake/blob/master/systems/controllers/linear_quadratic_regulator.cc
-- [ ] https://github.com/rock-learning/bolero
-- [ ] Check out how this guy implemented his Robot, Trajectory, and Planner classes
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
-  - [ ] https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/planner.py
-- [ ] See if there are any useful transformations here:
-  - [ ] https://github.com/cgohlke/transformations/
-- [ ] Check out quaternions in numpy? https://github.com/moble/quaternion
-- [ ] Global positioning of robot manipulators via PD control plus a class of nonlinear integral actions https://ieeexplore.ieee.org/document/701091
-- [ ] Spacecraft robust attitude tracking design: PID control approach https://ieeexplore.ieee.org/document/1023210
-- [ ] Spacecraft attitude dynamics https://www.amazon.com/Spacecraft-Attitude-Dynamics-Aeronautical-Engineering/dp/0486439259
-- [ ] NNGusto https://stanfordasl.github.io/wp-content/papercite-data/pdf/Banerjee.Lew.Bonalli.ea.AeroConf20.pdf
-  - [ ] Github: https://github.com/StanfordASL/nnGuSTO
-- [ ] Two-Stage Path Planning Approach for Designing Multiple Spacecraft Reconfiguration Maneuvers and Application to SPHERES onboard ISS http://dspace.mit.edu/bitstream/handle/1721.1/42050/230816006-MIT.pdf
-- [ ] Controlling Ocean One http://www.fsr.ethz.ch/papers/FSR_2017_paper_71.pdf
-- [ ] A Survey of Attitude Representations http://malcolmdshuster.com/Pub_1993h_J_Repsurv_scan.pdf
-- [ ] ??? Quaternion kinematics for the error-state Kalman filter http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf
-- [ ] Smooth Trajectory Generation on SE(3) for a Free Flying Space Robot https://longhorizon.org/trey/papers/watterson16_smooth_trajectory_se3.pdf
-- [ ] ???? A tuning method of multi variable PID gains using Jacobian https://ieeexplore.ieee.org/document/1223127
-- [ ] Full quaternion based attitude control for a quadrotor https://ieeexplore.ieee.org/document/6669617
-- [ ] Quaternion-Based Control Architecture for Determining Controllability/Maneuverability Limits https://arc.aiaa.org/doi/pdf/10.2514/6.2012-5028
-  - [ ] There's a nice "Simple PID Quaternion Control Example" section here
-- [ ] ReSWARM: https://arxiv.org/pdf/2301.01319.pdf
-  - [ ] Has some Astrobee dynamics equations *and talks about cargo maneuvering*
-  - [ ] LOTS of astrobee stuff actually - and flight-test tracking data which we can use as a comparison for our own tracking info
+### References
+
+Control
+- Orientation planning in task space using quaternion polynomials
+- A general construction scheme for unit quaternion curves with simple high order derivatives
+- Sola: Quaternion kinematics for the error-state Kalman filter
+- Shuster: A survey of attitude representations
+
+Optimization
+- Tobia/Boyd: Fast Path Planning Through Large Collections of Safe Boxes
+
+Astrobee/Spheres
+- Somrita: NNGusto: Learning-based warm-starting for fast sequential convex programming and trajectory optimization
+- The ReSWARM Microgravity Flight Experiments: Planning, Control, and Model Estimation for On-Orbit Close Proximity Operations
+- Geometric methods for the planning, control, and estimation of free-flying autonomous systems
+- Smooth trajectory generation on SE3 for a free flying space robot
+- Two-stage path planning approach for designing multiple spacecraft reconfiguration maneuvers and application to SPHERES onboard ISS
+
+Python
+- See the `setup.py` file for dependencies, cite packages as needed
+
+Simulation
+- Rika: DEDO - Dynamic Environments with Deformable Objects
+
+Dynamics
+- Mitiguy: Advanced Dynamics and Motion Simulation
+
+Robotics
+- Khatib: Introduction to Robotics: Lecture Notes, CS223A, Winter 2023
+- Khatib: Advanced Robotic Manipulation: Lecture Notes, CS327A, Spring 2023
+
+Not currently using, but possibly useful in the future:
+- Full quaternion based attitude control for a quadrotor
+- Richard Murray: Optimization-based control
+- Learning end-to-end robotic manipulation of deformable objects
+- Controlling Ocean One
+- Linear quaternion differential equations: basic theory and fundamental results
+- Dynamic movement primitives
+- Quaternion-Based Control Architecture for Determining Controllability/Maneuverability Limits
+- Spacecraft robust attitude tracking design: PID control approach
+- A tuning method of multi variable PID gains using Jacobian
+
+Various links to look into:
+- `LinearQuadraticRegulator` from `pydrake.all`
+  - See http://underactuated.mit.edu/lqr.html
+  - https://github.com/RobotLocomotion/drake/blob/master/systems/controllers/linear_quadratic_regulator.cc
+- https://github.com/rock-learning/bolero
+- Check out how this guy implemented his Robot, Trajectory, and Planner classes
+  - https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/robot.py
+  - https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/trajectory.py
+  - https://github.com/sahandrez/jaco_control/blob/master/jaco_control/utils/planner.py
+
 
 ### In Progress:
 - [ ] MPC
