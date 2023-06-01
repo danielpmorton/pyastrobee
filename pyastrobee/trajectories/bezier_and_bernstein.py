@@ -78,7 +78,7 @@ class BezierCurve:
             np.ndarray: Points along the curve, shape (n_pts, dimension)
         """
         c = np.array([self._bernstein(t, n) for n in range(self.h + 1)])
-        return c.T.dot(self.points)
+        return c.T @ self.points
 
     def _bernstein(self, t: Union[float, npt.ArrayLike], n: int) -> npt.ArrayLike:
         """Wrapper around the Bernstein polynomial function, using attributes of self@BezierCurve
