@@ -11,13 +11,78 @@ from pyastrobee.elements.astrobee import Astrobee
 from pyastrobee.elements.cargo_bag import CargoBag
 from pyastrobee.elements.iss import load_iss
 from pyastrobee.utils.bullet_utils import initialize_pybullet
-from pyastrobee.utils.quaternions import quaternion_angular_error
-from pyastrobee.trajectories.polynomial_trajectories import (
-    polynomial_trajectory,
-    polynomial_traj_with_velocity_bcs,
+from pyastrobee.utils.quaternions import (
+    quaternion_angular_error,
+    quats_to_angular_velocities,
+)
+from pyastrobee.trajectories.bezier_and_bernstein import bezier_trajectory
+from pyastrobee.trajectories.quaternion_bc_planning import (
+    quaternion_interpolation_with_bcs,
 )
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
 from pyastrobee.trajectories.trajectory import Trajectory
+
+
+# This trajectory generation method is just temporary while I'm working out the
+# optimal rotation trajectory method (which if works will be more accurate for rotation)
+def bezier_and_quat_poly_traj(
+    p0: npt.ArrayLike,
+    q0: npt.ArrayLike,
+    v0: Optional[npt.ArrayLike],
+    w0: npt.ArrayLike,
+    a0: Optional[npt.ArrayLike],
+    dw0: npt.ArrayLike,
+    pf: npt.ArrayLike,
+    qf: npt.ArrayLike,
+    vf: Optional[npt.ArrayLike],
+    wf: npt.ArrayLike,
+    af: Optional[npt.ArrayLike],
+    dwf: npt.ArrayLike,
+    duration: float,
+    dt: float,
+) -> Trajectory:
+    """Generate an optimal Bezier-curve-based position trajectory with a polynomial orientation component
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
+        v0 (npt.ArrayLike): Initial linear velocity, shape (3,)
+        w0 (npt.ArrayLike): Initial angular velocity, shape (3,)
+        a0 (npt.ArrayLike): Initial linear acceleration, shape (3,)
+        dw0 (npt.ArrayLike): Initial angular acceleration, shape (3,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
+        vf (npt.ArrayLike): Final linear velocity, shape (3,)
+        wf (npt.ArrayLike): Final angular velocity, shape (3,)
+        af (npt.ArrayLike): Final linear acceleration, shape (3,)
+        dwf (npt.ArrayLike): Final angular acceleration, shape (3,)
+        duration (float): Trajectory duration (seconds)
+        dt (float): Sampling period (seconds)
+
+    Returns:
+        Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
+    """
+    times = np.arange(0, duration + dt, dt)
+    n = len(times)
+    t0 = times[0]
+    tf = times[-1]
+    # Min-jerk position traj
+    n_control_pts = 8
+    pos, vel, accel, _ = bezier_trajectory(
+        p0, pf, t0, tf, n_control_pts, n, v0, vf, a0, af, 1, 0
+    )
+    quats = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
+    omega = quats_to_angular_velocities(quats, dt)
+    alpha = np.gradient(omega, dt, axis=0)
+    return Trajectory(
+        positions=pos,
+        quats=quats,
+        lin_vels=vel,
+        ang_vels=omega,
+        lin_accels=accel,
+        ang_accels=alpha,
+        times=times,
+    )
 
 
 def reset_state(
@@ -109,14 +174,20 @@ def generate_trajs(
     cur_orn: npt.ArrayLike,
     cur_vel: npt.ArrayLike,
     cur_ang_vel: npt.ArrayLike,
+    cur_accel: npt.ArrayLike,  # Optional?
+    cur_alpha: npt.ArrayLike,  # Optional?
     nominal_target_pos: npt.ArrayLike,
     nominal_target_orn: npt.ArrayLike,
     nominal_target_vel: npt.ArrayLike,
     nominal_target_ang_vel: npt.ArrayLike,
+    nominal_target_accel: npt.ArrayLike,  # Optional?
+    nominal_target_alpha: npt.ArrayLike,  # Optional?
     pos_sampling_stdev: float,
     orn_sampling_stdev: float,
     vel_sampling_stdev: float,
     ang_vel_sampling_stdev: float,
+    accel_sampling_stdev: float,
+    alpha_sampling_stdev: float,
     n_trajs: int,
     n_steps: int,
     dt: float,
@@ -163,25 +234,34 @@ def generate_trajs(
     sampled_ang_vels = np.random.multivariate_normal(
         nominal_target_ang_vel, ang_vel_sampling_stdev**2 * np.eye(3), n_trajs
     )
+    sampled_accels = np.random.multivariate_normal(
+        nominal_target_accel, accel_sampling_stdev**2 * np.eye(3), n_trajs
+    )
+    sampled_alphas = np.random.multivariate_normal(
+        nominal_target_alpha, alpha_sampling_stdev**2 * np.eye(3), n_trajs
+    )
 
     # Generate trajectories from the sampled endpoints
     trajs = []
     for i in range(n_trajs):
         trajs.append(
-            polynomial_traj_with_velocity_bcs(
+            bezier_and_quat_poly_traj(
                 cur_pos,
                 cur_orn,
                 cur_vel,
                 cur_ang_vel,
+                cur_accel,
+                cur_alpha,
                 sampled_positions[i],
                 sampled_quats[i],
                 sampled_vels[i],
                 sampled_ang_vels[i],
+                sampled_accels[i],
+                sampled_alphas[i],
                 n_steps * dt,
                 dt,
             )
         )
-
     return trajs
 
 
