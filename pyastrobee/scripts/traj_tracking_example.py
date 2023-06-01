@@ -16,7 +16,7 @@ from pyastrobee.elements.cargo_bag import CargoBag
 from pyastrobee.control.force_controller_new import ForcePIDController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion
-from pyastrobee.trajectories.polynomial_trajectories import polynomial_trajectory
+from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.trajectories.trajectory import visualize_traj, compare_trajs
 
 

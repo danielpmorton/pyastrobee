@@ -10,7 +10,7 @@ from pyastrobee.trajectories.planner import (
     interpolation_pose_traj,
     point_and_move_pose_traj,
 )
-from pyastrobee.trajectories.polynomial_trajectories import polynomial_trajectory
+from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 
 # Create start/end poses

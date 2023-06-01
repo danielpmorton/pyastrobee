@@ -15,7 +15,7 @@ import numpy as np
 import control
 
 from pyastrobee.trajectories.trajectory import stopping_criteria, visualize_traj
-from pyastrobee.trajectories.polynomial_trajectories import polynomial_trajectory
+from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.bullet_utils import create_box
 

@@ -14,7 +14,7 @@ from pyastrobee.utils.quaternions import (
     quats_to_angular_velocities,
 )
 from pyastrobee.utils.rotations import quat_to_rmat, rmat_to_quat
-from pyastrobee.trajectories.bezier_and_bernstein import BezierCurve
+from pyastrobee.trajectories.bezier import BezierCurve
 from pyastrobee.trajectories.trajectory import Trajectory
 
 
@@ -115,7 +115,6 @@ def rmat_derivative(R, w):
 
 # TODO see if there is a way to directly do this in rotation matrix space
 def midpoint_rmat(R0, Rf):
-
     q_mid = quaternion_slerp(rmat_to_quat(R0), rmat_to_quat(Rf), 0.5)
     return quat_to_rmat(q_mid)
 
@@ -145,7 +144,6 @@ def traj_gen(
     a0: Optional[npt.ArrayLike] = None,
     af: Optional[npt.ArrayLike] = None,
 ):
-
     w_pts = cp.Variable((n_control_pts, 3))
     w_curve = BezierCurve(w_pts, t0, tf)
     dw_curve = w_curve.derivative
@@ -296,7 +294,6 @@ def test_traj_gen():
 
 
 if __name__ == "__main__":
-
     # for i in range(1000):
     #     q1 = random_quaternion()
     #     q2 = random_quaternion()

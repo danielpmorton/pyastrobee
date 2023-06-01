@@ -15,8 +15,8 @@ from pyastrobee.utils.quaternions import (
     quaternion_angular_error,
     quats_to_angular_velocities,
 )
-from pyastrobee.trajectories.bezier_and_bernstein import bezier_trajectory
-from pyastrobee.trajectories.quaternion_bc_planning import (
+from pyastrobee.trajectories.bezier import bezier_trajectory
+from pyastrobee.trajectories.quaternion_interpolation import (
     quaternion_interpolation_with_bcs,
 )
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling

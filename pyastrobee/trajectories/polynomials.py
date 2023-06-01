@@ -27,7 +27,7 @@ from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     quats_to_angular_velocities,
 )
-from pyastrobee.trajectories.quaternion_bc_planning import (
+from pyastrobee.trajectories.quaternion_interpolation import (
     quaternion_interpolation_with_bcs,
 )
 
