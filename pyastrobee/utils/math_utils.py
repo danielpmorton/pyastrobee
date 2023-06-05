@@ -80,6 +80,48 @@ def skew(v: npt.ArrayLike) -> np.ndarray:
     return np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
 
 
+def unskew(S: npt.ArrayLike) -> np.ndarray:
+    """Gives the vector associated with a skew-symmetric matrix S such that skew(vec) = S
+
+    Args:
+        S (npt.ArrayLike): Skew-symmetric 3x3 matrix
+
+    Returns:
+        np.ndarray: "Unskewed" vector, shape (3,)
+    """
+    S = np.asarray(S)
+    if S.shape != (3, 3):
+        raise ValueError(f"S must be a 3x3 matrix. Got shape: {S.shape}")
+    return np.array([S[2, 1], S[0, 2], S[1, 0]])
+
+
+def is_skew(S: np.ndarray) -> bool:
+    """Checks that a square matrix is skew-symmetric
+
+    Args:
+        S (np.ndarray): Matrix to check
+
+    Returns:
+        bool: True if skew-symmetric, False otherwise
+    """
+    return np.allclose(S, -S.T)
+
+
+def is_special_orthogonal(R: np.ndarray) -> bool:
+    """Checks that a square matrix is in the special orthogonal group
+
+    Args:
+        R (np.ndarray): Matrix to check
+
+    Returns:
+        bool: True if special orthogonal (such as a rotation matrix), False otherwise
+    """
+    m, n = R.shape
+    if m != n:
+        return False
+    return np.allclose(R @ R.T, np.eye(n)) and np.isclose(np.linalg.det(R), 1)
+
+
 def spherical_vonmises_sampling(
     mu: npt.ArrayLike, kappa: Union[float, npt.ArrayLike], n_pts: int
 ) -> np.ndarray:
