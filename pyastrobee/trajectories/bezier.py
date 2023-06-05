@@ -287,11 +287,9 @@ def plot_2d_bezier_pts(
         plt.Axes: The plot
     """
     assert curve.d == 2
-    options = {"fc": "orange", "ec": "k", "zorder": 3}
-    options.update(kwargs)
     if ax is None:
         ax = plt.gca()
-    ax.scatter(*curve.points.T, **options)
+    ax.scatter(*curve.points.T, **kwargs)
     if show:
         plt.show()
     return ax
@@ -316,12 +314,10 @@ def plot_2d_bezier_curve(
         plt.Axes: The plot
     """
     assert curve.d == 2
-    options = {"c": "b"}
-    options.update(kwargs)
     t = np.linspace(curve.a, curve.b, n_pts, endpoint=True)
     if ax is None:
         ax = plt.gca()
-    ax.plot(*curve(t).T, **options)
+    ax.plot(*curve(t).T, **kwargs)
     if show:
         plt.show()
     return ax
@@ -341,11 +337,9 @@ def plot_2d_bezier_hull(
         plt.Axes: The plot
     """
     assert curve.d == 2
-    options = {"fc": "lightcoral"}
-    options.update(kwargs)
     hull = ConvexHull(curve.points)
     ordered_points = hull.points[hull.vertices]
-    poly = Polygon(ordered_points, **options)
+    poly = Polygon(ordered_points, **kwargs)
     if ax is None:
         ax = plt.gca()
     ax.add_patch(poly)
