@@ -1,3 +1,24 @@
+"""
+NOTES:
+- Stephen's idea of using a difference reference matrix for the Cayley transformation doesn't seem to be invertible?
+  - If we pass in a skew matrix with some rotation matrix as a reference, the output WILL NOT be S.O.
+  - If we pass in a S.O. matrix with a S.O. matrix as a reference, the output WILL be skew
+  - (this could be an issue when we are mapping back from the tangent space to rotations)
+- Originally I thought we could map the rotation to the tangent (skew) space and then create 3D bezier curves in
+  the "unskewed" vector space, but ....... TODO
+
+  maybe some confusion is happening because I assumed that the tangent space vector components directly relate
+  to the rvec parmaeters? But it might be pretty different
+
+It seems like I should probably just be working in the tangent space of quaternions because the derivatives might be a
+lot simpler (linear with respect to the angular velocity vector) -- the angular velocity relationship with derivatives
+of rvecs is complicated and includes some weird (nonconvex) cross products and division between terms
+
+I also need to actually figure out the relationship between rodrigues rotation vectors and the skew symmetric matrices
+-- right now it just seems like entries are "relatively close" but sometimes have a sign flip or a 2x scaling issue
+"""
+
+
 from typing import Optional
 
 import numpy as np
@@ -6,12 +27,13 @@ import cvxpy as cp
 import cv2
 import matplotlib.pyplot as plt
 
-from pyastrobee.utils.math_utils import skew, normalize
+from pyastrobee.utils.math_utils import skew, normalize, is_skew, is_special_orthogonal
 from pyastrobee.utils.quaternions import (
     quaternion_angular_error,
     random_quaternion,
     quaternion_slerp,
     quats_to_angular_velocities,
+    quaternion_integration,
 )
 from pyastrobee.utils.rotations import quat_to_rmat, rmat_to_quat
 from pyastrobee.trajectories.bezier import BezierCurve
@@ -94,12 +116,34 @@ def rmat_angular_error(R, R_des):
     return rmat_to_rvec(R @ R_des.T)
 
 
-def cayley(A, ref=None):
-    # A should either be an orthogonal matrix or skew-symmetric
-    # The function is an involution so the skew->orthogonal mapping is the same as orthogonal->skew
-    n = A.shape[0]
+def cayley(A: npt.ArrayLike, ref: Optional[npt.ArrayLike] = None) -> np.ndarray:
+    """Cayley transform: Mapping between skew-symmetric matrices and SO(n)
+
+    - This function is an involution so the skew->SO(n) mapping function is the same as SO(n)->skew
+    - TODO check that the "reference matrix" concept actually works - Stephen Boyd seems to think so
+      ^^ It seems that it "works" only moving from SO(n)->skew?
+
+    Args:
+        A (npt.ArrayLike): Either a skew-symmetrix matrix or a special orthogonal matrix, shape (n, n)
+        ref (Optional[npt.ArrayLike]): Reference matrix for the transformation. Defaults to None, in which case
+            we use the standard reference of the (n x n) identity
+
+    Returns:
+        np.ndarray: Skew-symmetric matrix or special orthogonal matrix, depending on the input. Shape (n, n)
+    """
+    # TODO should we check that a matrix is actually skew or in SO(3)?
+    # TODO need to figure out if there should be a factor of 2 here
+    # TODO should we check that the reference matrix is special orthogonal?
+    A = np.asarray(A)
+    m, n = A.shape
+    if m != n:
+        raise ValueError(f"Input must be a square matrix! Got shape: {(m, n)}")
     if ref is None:
         ref = np.eye(n)
+    else:
+        ref = np.asarray(ref)
+        if ref.shape != A.shape:
+            raise ValueError("Reference must have the same shape as the input!")
     return (ref - A) @ np.linalg.inv(ref + A)
 
 
@@ -245,9 +289,169 @@ def traj_gen_2(
     return qs, ws, dws, times
 
 
+def traj_gen_3(
+    R0: np.ndarray,
+    Rf: np.ndarray,
+    t0: float,
+    tf: float,
+    n_control_pts: int,
+    n_timesteps: int,
+    w0: Optional[npt.ArrayLike] = None,
+    wf: Optional[npt.ArrayLike] = None,
+    a0: Optional[npt.ArrayLike] = None,
+    af: Optional[npt.ArrayLike] = None,
+):
+    # NEW IDEA
+    # since derivatives of the rvec curve do not represent angular velocities,
+    # numerically integrate the rotations with the known initial ang vel / ang accel
+    # and use this for derivative information
+
+    # TODO there is way too much conversion happening here between quaternions and such
+    # Need to create equivalent functions for rotation matrices
+
+    times = np.linspace(t0, tf, n_timesteps, endpoint=True)
+    dt = times[1] - times[0]  # Do this differently
+
+    # Rmid = midpoint_rmat(R0, Rf)
+    Rref = np.eye(3)
+    # Note: cayley + unskewing is probably the same as using rodrigues's formula
+    # But, rodrigues doesn't lend itself well to using another (non-identity) reference point
+    S0 = cayley(R0, Rref)
+    Sf = cayley(Rf, Rref)
+    r0 = unskew(S0)
+    rf = unskew(Sf)
+
+    # if only w is given: integrate one point
+    # if w and a are given: integrate two points
+    # TODO clean up these assertions and conversions
+    assert w0 is not None
+    assert wf is not None
+    assert a0 is not None
+    assert af is not None
+    w0 = np.asarray(w0)
+    wf = np.asarray(wf)
+    a0 = np.asarray(a0)
+    af = np.asarray(af)
+
+    q0 = rmat_to_quat(R0)
+    qf = rmat_to_quat(Rf)
+    q1 = quaternion_integration(q0, w0, dt)
+    w1 = w0 + a0 * dt
+    q2 = quaternion_integration(q1, w1, dt)
+    R1 = quat_to_rmat(q1)
+    R2 = quat_to_rmat(q2)
+    r1 = rmat_to_rvec(R1)
+    r2 = rmat_to_rvec(R2)
+    qfminus1 = quaternion_integration(qf, -wf, dt)
+    wfminus1 = wf - af * dt
+    qfminus2 = quaternion_integration(qfminus1, -wfminus1, dt)
+    Rfminus1 = quat_to_rmat(qfminus1)
+    Rfminus2 = quat_to_rmat(qfminus2)
+    rfminus1 = rmat_to_rvec(Rfminus1)
+    rfminus2 = rmat_to_rvec(Rfminus2)
+    # find the derivatives in rvec space based on these integrated values
+    dr0 = (r1 - r0) / dt
+    dr1 = (r2 - r1) / dt
+    ddr0 = (dr1 - dr0) / dt
+    drf = (rf - rfminus1) / dt
+    drfminus1 = (rfminus1 - rfminus2) / dt
+    ddrf = (drf - drfminus1) / dt
+
+    r_pts = cp.Variable((n_control_pts, 3))
+    r_curve = BezierCurve(r_pts, t0, tf)
+    dr_curve = r_curve.derivative
+    dr_pts = dr_curve.points
+    d2r_curve = dr_curve.derivative
+    d2r_pts = d2r_curve.points
+    d3r_curve = d2r_curve.derivative
+    d3r_pts = d3r_curve.points
+    constraints = [
+        r_pts[0] == r0,
+        r_pts[-1] == rf,
+        dr_pts[0] == dr0,
+        dr_pts[-1] == drf,
+        d2r_pts[0] == ddr0,
+        d2r_pts[-1] == ddrf,
+    ]
+
+    # TODO: see if a min-jerk formulation of the third derivative on the tangent space is representative
+    # of a min-jerk trajectory on the manifold
+
+    # TODO also see if the rotation vector is equivalent to the tangent space!!!
+
+    objective = cp.Minimize(d3r_curve.l2_squared)
+    prob = cp.Problem(objective, constraints)
+    prob.solve(solver=cp.CLARABEL)
+    solved_r_curve = BezierCurve(r_pts.value, t0, tf)
+    solved_w_curve = solved_r_curve.derivative
+    solved_dw_curve = solved_w_curve.derivative
+    rs = solved_r_curve(times)
+    ws = solved_w_curve(times)
+    dws = solved_dw_curve(times)
+    Rs = np.array([cayley(skew(r)) for r in rs])
+    qs = np.array([rmat_to_quat(R) for R in Rs])
+    return qs, ws, dws, times
+
+
 def plot_orn_traj(qs, ws, dws, times):
     traj = Trajectory(None, qs, None, ws, None, dws, times)
     traj.plot()
+
+
+# Assorted testing functions below
+# TODO turn these into proper test cases in the tests/ folder
+
+
+def test_rmat_rvec_conversion():
+    # Use quaternions as a reference conversion point
+    q = random_quaternion()
+    R = quat_to_rmat(q)
+    r = rmat_to_rvec(R)
+    R_test = rvec_to_rmat(r)
+    np.testing.assert_array_almost_equal(R, R_test)
+    np.testing.assert_array_almost_equal(q, rmat_to_quat(R_test))
+    print("Test passed")
+
+
+def test_rvec_tangent_space_comparison():
+    # Test with an arbitray rotation which may not be "small"
+    np.random.seed(1)
+    q1 = random_quaternion()
+    R1 = quat_to_rmat(q1)
+    r1 = rmat_to_rvec(R1)
+    S1 = cayley(R1)
+    s1 = unskew(S1)
+    print(f"Rodrigues vec: {r1}")
+    print(f"Cayley tangent space vec: {s1}")
+    # Generate a small rotation near the origin to see if cayley and rodrigues agree
+    q2 = normalize(np.array([0, 0, 0, 1]) + 0.001 * np.random.rand(4))
+    R2 = quat_to_rmat(q2)
+    r2 = rmat_to_rvec(R2)
+    S2 = cayley(R2)
+    s2 = unskew(S2)
+    print("Small rotation experiment:")
+    print(f"Rodrigues: {r1}")
+    print(f"Cayley: {s1}")
+
+
+def test_cayley():
+    # Test transformation starting with an arbitrary matrix in SO(3)
+    q = random_quaternion()
+    R = quat_to_rmat(q)
+    S = cayley(R)
+    assert is_skew(S)
+    # Test transformation starting from an arbitrary skew-symmetric matrix
+    v = np.random.rand(3)
+    S2 = skew(v)
+    R2 = cayley(S2)
+    assert is_special_orthogonal(R2)
+    # Try out the cayley transform from a different reference matrix, and check invertibility
+    R3 = cayley(S2, ref=R2)
+    assert is_special_orthogonal(R3)
+    S3 = cayley(R3, ref=R2)
+    assert is_skew(S3)
+    assert np.allclose(S2, S3)
+    print("Test passed")
 
 
 def test_traj_gen():
@@ -267,7 +471,10 @@ def test_traj_gen():
     # qs, ws, dws, times = traj_gen_2(
     #     R0, Rf, t0, tf, n_control_pts, n_timesteps, w0, wf, a0, af
     # )
-    qs, ws, dws, times = traj_gen(
+    # qs, ws, dws, times = traj_gen(
+    #     R0, Rf, t0, tf, n_control_pts, n_timesteps, w0, wf, a0, af
+    # )
+    qs, ws, dws, times = traj_gen_3(
         R0, Rf, t0, tf, n_control_pts, n_timesteps, w0, wf, a0, af
     )
     # debugging the plot
@@ -321,3 +528,6 @@ if __name__ == "__main__":
     # print(R_delta - rvec_to_rmat(r_err))
 
     test_traj_gen()
+    # test_rvec_tangent_space_comparison()
+    # test_rmat_rvec_conversion()
+    # test_cayley()
