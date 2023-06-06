@@ -10,6 +10,8 @@ TODO decide if the stopping tolerance parameters should be in a different locati
      (OR, figure out a way to define this for the bag as well)
 """
 
+from typing import Optional
+
 import pybullet
 import numpy as np
 import numpy.typing as npt
@@ -125,11 +127,20 @@ class ForcePIDController:
         # Add in the proportional and derivative terms
         return torque - self.kw * ang_vel_err - self.kq * ang_err
 
-    def follow_traj(self, traj: Trajectory) -> None:
+    def follow_traj(
+        self,
+        traj: Trajectory,
+        stop_at_end: bool = True,
+        max_stop_iters: Optional[int] = None,
+    ) -> None:
         """Use PID force/torque control to follow a trajectory
 
         Args:
             traj (Trajectory): Trajectory with position, orientation, and derivative info across time
+            stop_at_end (bool, optional): Whether or not to command the robot to come to a stop at the last
+                pose in the trajectory. Defaults to True
+            max_stop_iters (int, optional): If stop_at_end is True, this gives a maximum number of iterations to
+                allow for stopping. Defaults to None (keep controlling until stopped)
         """
         for i in range(traj.num_timesteps):
             pos, orn, lin_vel, ang_vel = self.get_current_state()
@@ -145,19 +156,28 @@ class ForcePIDController:
                 traj.angular_velocities[i, :],
                 traj.angular_accels[i, :],
             )
-        self.stop(traj.positions[-1, :], traj.quaternions[-1, :])
+        if stop_at_end:
+            self.stop(traj.positions[-1, :], traj.quaternions[-1, :], max_stop_iters)
 
-    def stop(self, des_pos: npt.ArrayLike, des_quat: npt.ArrayLike) -> None:
+    def stop(
+        self,
+        des_pos: npt.ArrayLike,
+        des_quat: npt.ArrayLike,
+        max_iters: Optional[int] = None,
+    ) -> None:
         """Controls the robot to stop at a desired position/orientation
 
         Args:
             des_pos (npt.ArrayLike): Desired position, shape (3,)
             des_quat (npt.ArrayLike): Desired orientation (XYZW quaternion), shape (4,)
+            max_iters (int, optional): Maximum number of control iterations to allow for stopping.
+                Defaults to None (keep controlling until stopped)
         """
         des_vel = np.zeros(3)
         des_accel = np.zeros(3)
         des_omega = np.zeros(3)
         des_alpha = np.zeros(3)
+        iters = 0
         while True:
             pos, orn, lin_vel, ang_vel = self.get_current_state()
             if stopping_criteria(
@@ -173,6 +193,9 @@ class ForcePIDController:
                 self.ang_vel_tol,
             ):
                 return
+            if max_iters is not None and iters >= max_iters:
+                print("Maximum iterations reached, stopping unsuccessful")
+                return
             self.step(
                 pos,
                 lin_vel,
@@ -185,6 +208,7 @@ class ForcePIDController:
                 des_omega,
                 des_alpha,
             )
+            iters += 1
 
     def step(
         self,
