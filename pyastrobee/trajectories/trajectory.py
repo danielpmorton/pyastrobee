@@ -91,6 +91,10 @@ class Trajectory:
         return self.positions.shape[0]
 
     @property
+    def duration(self) -> float:
+        return self._times[-1] - self._times[0]
+
+    @property
     def poses(self) -> np.ndarray:
         """Pose array (position + xyzw quaternion), shape (n, 7)"""
         # if self._poses is not None:
@@ -110,22 +114,26 @@ class Trajectory:
         self._tmats = batched_pos_quats_to_tmats(self.poses)
         return self._tmats
 
-    def visualize(self, n: Optional[int] = None) -> None:
+    def visualize(self, n: Optional[int] = None) -> list[int]:
         """View the trajectory in Pybullet
 
         Args:
             n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
                 Defaults to None (plot all frames)
+
+        Returns:
+            list[int]: Pybullet IDs for the lines drawn onto the GUI
         """
         connection_status = pybullet.isConnected()
         # Bring up the Pybullet GUI if needed
         if not connection_status:
             pybullet.connect(pybullet.GUI)
-        visualize_traj(self, n)
+        ids = visualize_traj(self, n)
         input("Press Enter to continue")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
             pybullet.disconnect()
+        return ids
 
     def plot(self, show: bool = True) -> Figure:
         """Plot the trajectory components over time

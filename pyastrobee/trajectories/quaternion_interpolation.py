@@ -59,6 +59,8 @@ def quaternion_interpolation_with_bcs(
     qf = xyzw_to_wxyz(qf)
     wi = np.asarray(wi)
     wf = np.asarray(wf)
+    dwi = np.asarray(dwi)
+    dwf = np.asarray(dwf)
     # Ensure shortest path interpolation
     if _dot(qi, qf) < 0:
         qf = -qf
