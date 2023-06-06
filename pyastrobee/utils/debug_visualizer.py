@@ -153,6 +153,45 @@ def visualize_quaternion(
     return visualize_frame(tmat, length, width, lifetime)
 
 
+def visualize_path(
+    positions: npt.ArrayLike,
+    n: Optional[int] = None,
+    color: npt.ArrayLike = [1, 0, 0],
+    width: float = 3,
+    lifetime: float = 0,
+) -> list[int]:
+    """Visualize a sequence of positions on the Pybullet GUI
+
+    Args:
+        positions (npt.ArrayLike): Sequence of positions, shape (n, 3)
+        n (Optional[int]): Number of lines to plot, if plotting the lines between all positions is not desired.
+            Defaults to None (plot all lines between positions)
+        color (npt.ArrayLike, optional): RGB color values. Defaults to [1, 0, 0] (red).
+        width (float, optional): Width of the line. Defaults to 3 (pixels)
+        lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
+            Defaults to 0 (keep them on-screen permanently until deleted)
+
+    Returns:
+        list[int]: Pybullet IDs of the lines added to the GUI
+    """
+    positions = np.atleast_2d(positions)
+    n_positions, dim = positions.shape
+    assert dim == 3
+    # If desired, sample frames evenly across the trajectory to plot a subset
+    if n is not None and n < n_positions:
+        # This indexing ensures that the first and last frames are plotted
+        idx = np.round(np.linspace(0, n_positions - 1, n, endpoint=True)).astype(int)
+        positions = positions[idx, :]
+    ids = []
+    for i in range(positions.shape[0] - 1):
+        ids.append(
+            pybullet.addUserDebugLine(
+                positions[i], positions[i + 1], color, width, lifetime
+            )
+        )
+    return ids
+
+
 def remove_debug_objects(ids: Union[int, list[int], np.ndarray[int]]) -> None:
     """Removes user-created line(s)/point(s)/etc. from the Pybullet GUI
 
