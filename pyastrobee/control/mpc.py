@@ -147,8 +147,9 @@ def save_state(
             np.ndarray: Linear velocity of the cargo bag, shape (3,)
             np.ndarray: Angular velocity of the cargo bag, shape (3,)
     """
-    state_id = pybullet.saveState()
+    # Note: calling saveState() after getting the bag dynamics since the bag dynamics function will step the sim
     bag_pos, bag_orn, bag_vel, bag_ang_vel = bag.dynamics_state
+    state_id = pybullet.saveState()
     return state_id, bag_pos, bag_orn, bag_vel, bag_ang_vel
 
 
