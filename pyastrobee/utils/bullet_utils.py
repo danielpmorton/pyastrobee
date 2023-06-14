@@ -321,13 +321,16 @@ def configure_visualization(
         pybullet.configureDebugVisualizer(**kwargs)
 
 
-def load_floor(texture_filename: Optional[str] = None, z_pos: float = 0.0) -> None:
+def load_floor(texture_filename: Optional[str] = None, z_pos: float = 0.0) -> int:
     """Loads a floor into the pybullet simulation
 
     Args:
         texture_filename (str, optional): If adding a texture to the floor plane, pass in the filename.
             Defaults to None.
         z_pos (float, optional): Height (z-coordinate) of the floor in the world. Defaults to 0.0
+
+    Returns:
+        int: Pybullet ID corresponding to the floor
     """
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
     floor_id = pybullet.loadURDF("plane.urdf", basePosition=[0, 0, z_pos])
@@ -339,6 +342,7 @@ def load_floor(texture_filename: Optional[str] = None, z_pos: float = 0.0) -> No
             rgbaColor=[1, 1, 1, 0],
             textureUniqueId=texture_id,
         )
+    return floor_id
 
 
 def run_sim(viz_freq: float = 240, timeout: Optional[float] = None):

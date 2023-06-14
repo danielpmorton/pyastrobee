@@ -16,7 +16,12 @@ import pybullet_data
 
 
 from pyastrobee.elements.cargo_bag import CargoBag
-from pyastrobee.utils.bullet_utils import initialize_pybullet, load_deformable_object
+from pyastrobee.utils.rotations import euler_xyz_to_quat
+from pyastrobee.utils.bullet_utils import (
+    initialize_pybullet,
+    load_deformable_object,
+    load_floor,
+)
 
 
 def loop_sim(t=5):
@@ -47,6 +52,31 @@ def run_test(object: str):
     loop_sim()
 
 
+def multi_object_test():
+    initialize_pybullet()
+    floor_id = load_floor(z_pos=-2)
+    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+    cloth_1 = load_deformable_object(
+        "cloth_z_up.obj", pos=[0, 0, 0], orn=euler_xyz_to_quat([1.57, 3.14, 0])
+    )
+    cloth_2 = load_deformable_object(
+        "cloth_z_up.obj", pos=[1, 1, 1], orn=euler_xyz_to_quat([1.57, 3.14, 0])
+    )
+    print(f"Cloth IDs: {cloth_1}, {cloth_2}")
+    print(f"Floor ID: {floor_id}")
+    print("Apply a disturbance force")
+    loop_sim()
+    input("Press Enter to save the state")
+    state_id = pybullet.saveState()
+    input("Press Enter to let the sim run for a bit")
+    loop_sim()
+    input("Press Enter to reset the state")
+    pybullet.restoreState(stateId=state_id)
+    input("Press Enter to let the sim keep running")
+    loop_sim()
+
+
 if __name__ == "__main__":
+    multi_object_test()
     # run_test("bag")
-    run_test("cloth")
+    # run_test("cloth")
