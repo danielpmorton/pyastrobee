@@ -26,9 +26,20 @@ pyenv shell astrobee
 ```
 ## Install dependencies
 
+Install all packages except for pybullet:
 ```
 cd $HOME/pyastrobee
 pip install -e .
+```
+
+Install pybullet from source:
+```
+export BULLET_DIR=$HOME/software/bullet3  # Can change this install location as desired
+git clone https://github.com/danielpmorton/bullet3 $BULLET_DIR
+cd $BULLET_DIR
+git remote add upstream https://github.com/bulletphysics/bullet3
+./build_cmake_pybullet_double.sh  # Locally build Bullet/Pybullet
+pip install .
 ```
 
 After doing this, open a python interpreter and run the following commands:
@@ -36,7 +47,7 @@ After doing this, open a python interpreter and run the following commands:
 import pybullet
 pybullet.isNumpyEnabled()
 ```
-The `isNumpyEnabled()` line should return `1`. If not, `pip uninstall pybullet`, then make sure that numpy is installed in your current environment, and retry `pip install pybullet`
+The `isNumpyEnabled()` line should return `1`. If not, `pip uninstall pybullet`, then make sure that numpy is installed in your current environment, and retry the pip installation seen above.
 
 
 ## Interacting with the Astrobee
