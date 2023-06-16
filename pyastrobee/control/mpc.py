@@ -104,55 +104,6 @@ def bezier_and_quat_poly_traj(
     )
 
 
-def reset_state(
-    state_id: int,
-    bag_id: int,
-    bag_pos: npt.ArrayLike,
-    bag_orn: npt.ArrayLike,
-    bag_lin_vel: npt.ArrayLike,
-    bag_ang_vel: npt.ArrayLike,
-) -> None:
-    """Resets the state of the simulation (including the state of the cargo bag)
-
-    Args:
-        state_id (int): Pybullet ID for the saveState object
-        bag_id (int): Pybullet ID for the cargo bag
-        bag_pos (npt.ArrayLike): Position of the cargo bag, shape (3,)
-        bag_orn (npt.ArrayLike): Orientation of the cargo bag (XYZW quaternion), shape (4,)
-        bag_lin_vel (npt.ArrayLike): Linear velocity of the cargo bag, shape (3,)
-        bag_ang_vel (npt.ArrayLike): Angular velocity of the cargo bag, shape (3,)
-    """
-    pybullet.restoreState(stateId=state_id)
-    pybullet.resetBasePositionAndOrientation(bag_id, bag_pos, bag_orn)
-    pybullet.resetBaseVelocity(bag_id, bag_lin_vel, bag_ang_vel)
-
-
-def save_state(
-    bag: CargoBag,
-) -> tuple[int, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Save the state of the simulation, including the state of the bag
-
-    - Normally, you could just call saveState, but this does not save the state of deformable objects
-    - saveState will save info about the Astrobee and the environment, but we need to manually save information
-      about the current dyanmics of the bag
-
-    Args:
-        bag (CargoBag): The cargo bag in the current simulation
-
-    Returns:
-        tuple of:
-            int: The Pybullet ID of the saveState object
-            np.ndarray: Position of the cargo bag, shape (3,)
-            np.ndarray: Orientation of the cargo bag (XYZW quaternion), shape (4,)
-            np.ndarray: Linear velocity of the cargo bag, shape (3,)
-            np.ndarray: Angular velocity of the cargo bag, shape (3,)
-    """
-    # Note: calling saveState() after getting the bag dynamics since the bag dynamics function will step the sim
-    bag_pos, bag_orn, bag_vel, bag_ang_vel = bag.dynamics_state
-    state_id = pybullet.saveState()
-    return state_id, bag_pos, bag_orn, bag_vel, bag_ang_vel
-
-
 def init(
     robot_pose: npt.ArrayLike, use_gui: bool = True
 ) -> tuple[int, Astrobee, CargoBag]:
@@ -418,7 +369,7 @@ def mpc_main(
         if step_count >= max_steps:
             print("MAX STEPS EXCEEDED")
             break
-        state_id, bag_pos, bag_orn, bag_vel, bag_ang_vel = save_state(bag)
+        state_id = pybullet.saveState()
         pos, orn, vel, ang_vel = robot.dynamics_state
         if cur_idx == end_idx and stopping_criteria(
             pos,
@@ -488,7 +439,7 @@ def mpc_main(
                     ang_vel_penalty,
                 )
             )
-            reset_state(state_id, bag.id, bag_pos, bag_orn, bag_vel, bag_ang_vel)
+            pybullet.restoreState(stateId=state_id)
         best_traj = trajs[np.argmin(costs)]
         # Execute the best trajectory
         tracking_controller.follow_traj(best_traj, stop_at_end)
@@ -500,13 +451,13 @@ def mpc_main(
     # TODO decide what to do once the main loop finishes?
 
 
-def _test_mpc():
+def _test_mpc(debug=False):
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
     duration = 5
-    mpc_main(start_pose, end_pose, duration, debug=True)
+    mpc_main(start_pose, end_pose, duration, debug)
 
 
 if __name__ == "__main__":
-    _test_mpc()
+    _test_mpc(debug=False)
     # _test_init()
