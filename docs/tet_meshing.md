@@ -1,13 +1,13 @@
 # Working with tetrahedral meshes in Pybullet
 
-Loading OBJ files for deformables is great for objects that are "floppy" or "thin" in nature, such as a tote bag, but not so good for objects that are more "squishy", like a duffel bag full of clothes. This is because files such as `.OBJ` or `.STL` are surface (triangular) meshes, so they have no volumetric information to them. 
+Loading OBJ files for deformables is great for objects that are "floppy" or "thin" in nature, such as a tote bag, but not so good for objects that are more "squishy", like a sponge. This is because files such as `.OBJ` or `.STL` are surface (triangular) meshes, so they have no volumetric information to them. 
 
 So, instead we'll need to use a tetrahedral mesh in `.VTK` format
 
 ## Using GMSH
 
 1. Open the GMSH GUI (`./gmsh` within the `bin/` directory of your GMSH install)
-2. File -> Open -> Click on the STL file to load
+2. File -> Open -> Click on the STL file to load. Note: In theory GMSH should be able to open an OBJ, but OBJs tend to lead to import errors. If this is the case, use a STL of the same mesh instead.
 3. Geometry -> Elementary entities -> Add -> Volume
 4. When prompted with "Select volume boundary", click on the mesh
 5. If a popup mentions "A scripting command is going to be appended to a non-geo file", click on "Create new .geo file"

@@ -1,4 +1,8 @@
-"""Simple script for loading a tetrahedral mesh version of the cargo bag"""
+"""Simple script for loading a tetrahedral mesh version of the cargo bag
+
+This is also useful for confirming if a new VTK file has been constructed properly (change the filename with the VTK
+to test, and see if it imports without errors)
+"""
 
 import pybullet
 import time
