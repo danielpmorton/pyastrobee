@@ -24,9 +24,9 @@ import pybullet
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.elements.astrobee import Astrobee
-from pyastrobee.elements.cargo_bag import CargoBag
-from pyastrobee.elements.iss import load_iss
+from pyastrobee.core.astrobee import Astrobee
+from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.iss import load_iss
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.quaternions import (
     quaternion_angular_error,

@@ -11,8 +11,8 @@ This can also be used as a sandbox for experimenting with the PID tuning
 import pybullet
 import numpy as np
 
-from pyastrobee.elements.astrobee import Astrobee
-from pyastrobee.elements.cargo_bag import CargoBag
+from pyastrobee.core.astrobee import Astrobee
+from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.control.force_controller_new import ForcePIDController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion

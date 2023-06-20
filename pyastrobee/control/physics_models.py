@@ -7,7 +7,7 @@ https://github.com/nasa/astrobee/tree/master/simulation/src
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.elements.astrobee import Astrobee  # Circular import?
+from pyastrobee.core.astrobee import Astrobee  # Circular import?
 from pyastrobee.config.astrobee_geom import CROSS_SECTION_AREA
 
 

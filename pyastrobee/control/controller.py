@@ -25,7 +25,7 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
-from pyastrobee.elements.astrobee import Astrobee
+from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.config.astrobee_motion import (
     LINEAR_ACCEL_LIMIT,
     LINEAR_SPEED_LIMIT,

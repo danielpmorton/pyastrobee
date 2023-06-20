@@ -12,7 +12,8 @@ import pybullet
 import numpy as np
 from scipy.linalg import block_diag
 
-from pyastrobee.elements.astrobee import Astrobee
+from pyastrobee.core.astrobee import Astrobee
+
 
 # Found this based on a permutation of the array from the textbook
 # It seems to differ from the arrays I made the other day though
@@ -154,7 +155,7 @@ def main():
         # TODO check on if the arg is "force" or "forces"
         pybullet.setJointMotorControlArray(
             robot.id,
-            list(range(1, Astrobee.NUM_JOINTS)), # Ignore 1st fixed joint??
+            list(range(1, Astrobee.NUM_JOINTS)),  # Ignore 1st fixed joint??
             pybullet.TORQUE_CONTROL,
             forces=list(joint_torques),
         )

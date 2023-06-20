@@ -50,13 +50,13 @@ import numpy as np
 import pybullet
 from pynput import keyboard
 
-from pyastrobee.elements.astrobee import Astrobee
+from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.poses import (
     pos_euler_xyz_to_pos_quat,
     add_local_pose_delta,
     add_global_pose_delta,
 )
-from pyastrobee.elements.iss import load_iss
+from pyastrobee.core.iss import load_iss
 from pyastrobee.utils.debug_visualizer import get_viz_camera_params
 from pyastrobee.utils.python_utils import print_green, print_red
 

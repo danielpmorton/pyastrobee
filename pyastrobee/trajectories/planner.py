@@ -25,7 +25,7 @@ Easy alternatives:
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.elements.astrobee import Astrobee
+from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     get_closest_heading_quat,

@@ -6,7 +6,7 @@ TODO fix the physics for the visualization of the point
 import numpy as np
 import pybullet
 
-from pyastrobee.elements.astrobee import Astrobee
+from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim, create_sphere
 from pyastrobee.utils.rotations import Ry
 from pyastrobee.utils.transformations import make_transform_mat
