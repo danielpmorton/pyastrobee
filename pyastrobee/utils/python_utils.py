@@ -54,3 +54,15 @@ def set_small_vals_to_zero(arr: npt.ArrayLike, tol: float = 1e-10) -> np.ndarray
     arr = np.array(arr)
     arr[np.abs(arr) < tol] = 0
     return arr
+
+
+def flatten(l: list[list]) -> list:
+    """Flatten a list of lists into a single list
+
+    Args:
+        l (list[list]): List of lists to flaten
+
+    Returns:
+        list: Flattened list
+    """
+    return [item for sublist in l for item in sublist]

@@ -21,6 +21,7 @@ from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat
 from pyastrobee.utils.debug_visualizer import visualize_frame
 from pyastrobee.utils.quaternions import random_quaternion
+from pyastrobee.utils.transformations import invert_transform_mat
 import pyastrobee.config.bag_properties as bag_props
 
 front_file = "pyastrobee/assets/meshes/bags/front_handle_bag.obj"
@@ -30,10 +31,9 @@ top_file = "pyastrobee/assets/meshes/bags/top_handle_bag.obj"
 pybullet.connect(pybullet.GUI)
 np.random.seed(0)
 
-FRONT_BAG_TO_EE = bag_props.FRONT_BAG_GRASP_TRANSFORM
-SIDE_BAG_TO_EE = bag_props.SIDE_BAG_GRASP_TRANSFORM
-TOP_BAG_TO_EE = bag_props.TOP_BAG_GRASP_TRANSFORM
-
+FRONT_BAG_TO_EE = invert_transform_mat(bag_props.FRONT_HANDLE_TRANSFORM)
+SIDE_BAG_TO_EE = invert_transform_mat(bag_props.RIGHT_HANDLE_TRANSFORM)
+TOP_BAG_TO_EE = invert_transform_mat(bag_props.TOP_HANDLE_TRANSFORM)
 
 robot = Astrobee(pose=[1, 1, 1, *random_quaternion()])
 EE2W = pos_quat_to_tmat(robot.ee_pose)

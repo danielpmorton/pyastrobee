@@ -3,16 +3,14 @@
 TODO !! Fix the softbody velocity issue
 TODO ! the unloading mechanic is currently broken since it only removes the softbody and not the visual
 TODO If the reliability of the softbody position/orientation is not good, use the get_bag_frame() function I made
-TODO Maybe add an anchor to the center of the bag to help with dynamics? But this won't give angular vel I think
 TODO decide if the bag_props import can be handled better
 TODO decide if the constants should be moved to class attributes
-TODO decide if there is a better way to handle the "attached vs freefloating" initialization
 TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
 TODO decide if we should set up the class attributes to handle multiple bags loaded in sim
     (Like the Astrobee class)
 """
 import time
-from typing import Optional
+from typing import Union
 
 import pybullet
 import numpy as np
@@ -26,38 +24,40 @@ from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
 )
 from pyastrobee.utils.mesh_utils import get_mesh_data, get_closest_mesh_vertex
-from pyastrobee.utils.poses import pos_quat_to_tmat
-from pyastrobee.utils.rotations import rmat_to_quat
-from pyastrobee.utils.python_utils import print_green
+from pyastrobee.utils.poses import pos_quat_to_tmat, tmat_to_pos_quat
+from pyastrobee.utils.python_utils import print_green, flatten
 from pyastrobee.utils.quaternions import quats_to_angular_velocities
 
 # Constants. TODO Move these to class attributes?
 MESH_DIR = "pyastrobee/assets/meshes/bags/"
-BAG_NAMES = ["front_handle_bag", "side_handle_bag", "top_handle_bag"]
+# TODO: update the bag naming
+SINGLE_HANDLE_BAGS = ["front_handle_bag", "side_handle_bag", "top_handle_bag"]
+DUAL_HANDLE_BAGS = ["front_back_handle", "side_side_handle", "top_bottom_handle"]
+BAG_NAMES = SINGLE_HANDLE_BAGS + DUAL_HANDLE_BAGS
 _objs = [MESH_DIR + name + ".obj" for name in BAG_NAMES]
 _vtks = [MESH_DIR + name + ".vtk" for name in BAG_NAMES]
 OBJS = dict(zip(BAG_NAMES, _objs))
 VTKS = dict(zip(BAG_NAMES, _vtks))
-GRASP_TRANSFORMS = dict(
-    zip(
-        BAG_NAMES,
-        [
-            bag_props.FRONT_BAG_GRASP_TRANSFORM,
-            bag_props.SIDE_BAG_GRASP_TRANSFORM,
-            bag_props.TOP_BAG_GRASP_TRANSFORM,
-        ],
-    )
-)
-BAG_CORNERS = dict(
-    zip(
-        BAG_NAMES,
-        [
-            bag_props.FRONT_BAG_CORNER_VERTS,
-            bag_props.SIDE_BAG_CORNER_VERTS,
-            bag_props.TOP_BAG_CORNER_VERTS,
-        ],
-    )
-)
+HANDLE_TRANSFORMS = {
+    "front": bag_props.FRONT_HANDLE_TRANSFORM,
+    "back": bag_props.BACK_HANDLE_TRANSFORM,
+    "left": bag_props.LEFT_HANDLE_TRANSFORM,
+    "right": bag_props.RIGHT_HANDLE_TRANSFORM,
+    "top": bag_props.TOP_HANDLE_TRANSFORM,
+    "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
+}
+# TODO: These need updating, they are out of date
+# Also, they're unused for now, so commenting out
+# BAG_CORNERS = dict(
+#     zip(
+#         BAG_NAMES,
+#         [
+#             bag_props.FRONT_BAG_CORNER_VERTS,
+#             bag_props.SIDE_BAG_CORNER_VERTS,
+#             bag_props.TOP_BAG_CORNER_VERTS,
+#         ],
+#     )
+# )
 
 
 class CargoBag:
@@ -65,51 +65,33 @@ class CargoBag:
 
     Args:
         bag_name (str): Type of cargo bag to load. One of "front_handle_bag", "side_handle_bag", "top_handle_bag"
-        attached_robot (Optional[Astrobee], optional): If initially attaching the cargo bag to a robot, include
-            the robot here. Defaults to None, in which case pos/orn must be specified
-        pos (Optional[npt.ArrayLike], optional): If not attaching to a robot, this is the XYZ position to load
-            the bag. Defaults to None, in which case the robot must be speficied
-        orn (Optional[npt.ArrayLike], optional): If not attaching to a robot, this is the XYZW quaternion to load
-            the bag. Defaults to None, in which case the robot must be speficied
+        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to [0, 0, 0]
+        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to [0, 0, 0, 1]
     """
 
     def __init__(
         self,
         bag_name: str,
-        attached_robot: Optional[Astrobee] = None,
-        pos: Optional[npt.ArrayLike] = None,
-        orn: Optional[npt.ArrayLike] = None,
+        pos: npt.ArrayLike = [0, 0, 0],
+        orn: npt.ArrayLike = [0, 0, 0, 1],
     ):
         if not pybullet.isConnected():
             raise ConnectionError("Need to connect to pybullet before loading a bag")
-        # Validate inputs
         if bag_name not in BAG_NAMES:
             raise ValueError(
                 f"Invalid bag name: {bag_name}. Must be one of {BAG_NAMES}"
             )
-        if attached_robot is not None:
-            if not isinstance(attached_robot, Astrobee):
-                raise ValueError("Invalid robot input. Must be an Astrobee() instance")
-        else:
-            if pos is None or orn is None:
-                raise ValueError(
-                    "Must provide a position and orientation to load the bag if not attaching to a robot"
-                )
         self._name = bag_name
         # Initializations
-        self._anchors = []
-        self._anchor_objects = []
+        self._anchors = {}
+        self._anchor_objects = {}
         self._mesh_vertices = None
         self._num_mesh_vertices = None
-        self._attached_robot = None
+        self._attached = []
         self._id = None
         # Get the simulator timestep (used for calculating the velocity of the bag)
         self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
-        # Load the bag depending on the specified method
-        if attached_robot is not None:
-            self._load_attached(attached_robot)
-        else:
-            self._load(pos, orn)
+        self._load(pos, orn)
         print_green("Bag is ready")
 
     # Read-only physical properties defined at initialization of the bag
@@ -158,12 +140,13 @@ class CargoBag:
     @property
     def anchors(self) -> tuple[list[int], list[int]]:
         """Anchor IDs and IDs of their associated visual geometries"""
-        return (self._anchors, self._anchor_objects)
+        # Unpack the list of lists in the anchor dictionaries
+        return flatten(self._anchors.values()), flatten(self._anchor_objects.values())
 
     @property
-    def attached_robot(self) -> int:
-        """ID of the robot grasping the bag"""
-        return self._attached_robot
+    def attached(self) -> list[int]:
+        """ID(s) of the robot (or robots) grasping the bag. Empty if no robots are attached"""
+        return self._attached
 
     @property
     def name(self) -> str:
@@ -181,9 +164,32 @@ class CargoBag:
         return VTKS[self._name]
 
     @property
-    def grasp_transform(self) -> np.ndarray:
-        """Transformation matrix between the bag origin to grasp frame at the handle"""
-        return GRASP_TRANSFORMS[self._name]
+    def grasp_transforms(self) -> list[np.ndarray]:
+        """Transformation matrices "handle to bag" representing the grasp locations on the handles to the bag COM
+
+        In the case of a single-handled bag, this list will only have one entry
+        """
+        if self._name == "front_handle_bag":
+            return [HANDLE_TRANSFORMS["front"]]
+        elif self._name == "side_handle_bag":
+            return [HANDLE_TRANSFORMS["right"]]
+        elif self._name == "top_handle_bag":
+            return [HANDLE_TRANSFORMS["top"]]
+        elif self._name == "front_back_handle":
+            return [HANDLE_TRANSFORMS["front"], HANDLE_TRANSFORMS["back"]]
+        elif self._name == "side_side_handle":
+            return [HANDLE_TRANSFORMS["right"], HANDLE_TRANSFORMS["left"]]
+        elif self._name == "top_bottom_handle":
+            return [HANDLE_TRANSFORMS["top"], HANDLE_TRANSFORMS["bottom"]]
+        else:
+            raise NotImplementedError(
+                f"Grasp transform(s) not available for bag: {self._name}"
+            )
+
+    @property
+    def pose(self) -> np.ndarray:
+        """Current position + XYZW quaternion pose of the bag's COM frame"""
+        return np.concatenate(pybullet.getBasePositionAndOrientation(self.id))
 
     @property
     def position(self) -> np.ndarray:
@@ -246,6 +252,16 @@ class CargoBag:
             np.array(ang_vel),
         )
 
+    @property
+    def num_handles(self) -> int:
+        """Number of handles on the cargo bag"""
+        if self._name in SINGLE_HANDLE_BAGS:
+            return 1
+        elif self._name in DUAL_HANDLE_BAGS:
+            return 2
+        else:
+            return 0  # This may have an application in the future
+
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> None:
         """Loads a cargo bag at the specified position/orientation
 
@@ -271,50 +287,119 @@ class CargoBag:
             self.vtk_file,
         )
 
-    def _load_attached(self, robot: Astrobee) -> None:
-        """Load the cargo bag attached to the gripper of an Astrobee
+    def attach_to(
+        self, robot_or_robots: Union[Astrobee, list[Astrobee], tuple[Astrobee]]
+    ) -> None:
+        """Attaches a robot (or multiple robots) to the handle(s) of the bag
 
         Args:
-            robot (Astrobee): The robot to attach the bag to
+            robot_or_robots (Union[Astrobee, list[Astrobee], tuple[Astrobee]]): Robot(s) to attach to the bag
+
+        Raises:
+            ValueError: For invalid inputs, or if the bag does not have enough handles for each robot
+            NotImplementedError: Multi-robot case with >2 robots
         """
-        # Determine the transformation which dictates where we need to load the bag
-        # for the handle to line up with the gripper
-        T_ee2world = pos_quat_to_tmat(robot.ee_pose)
-        T_bag2ee = self.grasp_transform
-        T_bag2world = T_ee2world @ T_bag2ee
-        # Load the bag at the position/orientation specified by the transform
-        pos = T_bag2world[:3, 3]
-        orn = rmat_to_quat(T_bag2world[:3, :3])
-        self._load(pos, orn)
-        # Generate the constraints between the bag and the robot
-        # Find the points on the mesh on either side of the handle
-        # (Using the left/right gripper link frames as reference points)
+        # Handle inputs
+        if isinstance(robot_or_robots, Astrobee):  # Single robot
+            num_robots = 1
+        elif isinstance(robot_or_robots, (list, tuple)):  # Multi-robot
+            if not all(isinstance(r, Astrobee) for r in robot_or_robots):
+                raise ValueError("Non-Astrobee input detected")
+            num_robots = len(robot_or_robots)
+            if self.num_handles < num_robots:
+                raise ValueError(
+                    f"Bag does not have enough handles to support {num_robots} robots"
+                )
+            if num_robots == 1:  # Edge case: Unpack the list if only one robot
+                robot_or_robots = robot_or_robots[0]
+        else:
+            raise ValueError(
+                "Invalid input: Must provide either an Astrobee or a list of multiple Astrobees"
+            )
+
+        # We will attach the bag by updating the positions of the Astrobee(s) to interface with the bag
+        bag_to_world = pos_quat_to_tmat(self.pose)
+        if num_robots == 1:
+            robot = robot_or_robots
+            handle_to_bag = self.grasp_transforms[0]
+            handle_to_world = bag_to_world @ handle_to_bag
+            self._attach(robot, tmat_to_pos_quat(handle_to_world))
+        elif num_robots == 2:
+            robot_1, robot_2 = robot_or_robots
+            handle_1_to_bag = self.grasp_transforms[0]
+            handle_2_to_bag = self.grasp_transforms[1]
+            handle_1_to_world = bag_to_world @ handle_1_to_bag
+            handle_2_to_world = bag_to_world @ handle_2_to_bag
+            self._attach(robot_1, tmat_to_pos_quat(handle_1_to_world))
+            self._attach(robot_2, tmat_to_pos_quat(handle_2_to_world))
+        else:
+            raise NotImplementedError(
+                "The multi-robot case is only implemented for 2 Astrobees"
+            )
+
+    def _attach(self, robot: Astrobee, handle_pose: npt.ArrayLike) -> None:
+        """Helper function: Connects a single robot to a handle at a specified pose
+
+        TODO decide between moving the bag to the robot, or the robot to the bag
+
+        Args:
+            robot (Astrobee): Robot to attach
+            handle_pose (npt.ArrayLike): Position + quaternion grasp pose (handle-to-world), shape (7,)
+        """
+        robot.reset_to_ee_pose(handle_pose)  # Move robot to bag
+        # Generate the constraints between the bag and the robot: First, find the points on the mesh on either side
+        # of the handle (Using the left/right gripper link frames as reference points), then create the anchors
         pos_1 = robot.get_link_transform(robot.Links.GRIPPER_LEFT_DISTAL)[:3, 3]
         pos_2 = robot.get_link_transform(robot.Links.GRIPPER_RIGHT_DISTAL)[:3, 3]
         v1_pos, v1_id = get_closest_mesh_vertex(pos_1, self.mesh_vertices)
         v2_pos, v2_id = get_closest_mesh_vertex(pos_2, self.mesh_vertices)
-        # (TODO) decide if it makes more sense to anchor to the gripper fingers themselves
-        # or if anchoring to the "palm" (the arm distal link) is ok
-        link_to_anchor = robot.Links.ARM_DISTAL.value
         anchor1_id, geom1_id = create_anchor(
-            self.id, v1_id, robot.id, link_to_anchor, add_geom=True, geom_pos=v1_pos
+            self.id,
+            v1_id,
+            robot.id,
+            robot.Links.ARM_DISTAL.value,
+            add_geom=True,
+            geom_pos=v1_pos,
         )
         anchor2_id, geom2_id = create_anchor(
-            self.id, v2_id, robot.id, link_to_anchor, add_geom=True, geom_pos=v2_pos
+            self.id,
+            v2_id,
+            robot.id,
+            robot.Links.ARM_DISTAL.value,
+            add_geom=True,
+            geom_pos=v2_pos,
         )
-        self._anchors = (anchor1_id, anchor2_id)
-        self._anchor_objects = (geom1_id, geom2_id)
-        self._attached_robot = robot.id
+        self._anchors.update({robot.id: [anchor1_id, anchor2_id]})
+        self._anchor_objects.update({robot.id: [geom1_id, geom2_id]})
+        self._attached.append(robot.id)
 
     def detach(self) -> None:
-        """Remove any currently attached anchors from the bag (and any associated visual geometry)"""
-        for cid in self._anchors:
+        """Remove all anchors (and visuals) from the bag"""
+
+        anchors, anchor_objects = self.anchors
+        for cid in anchors:
             pybullet.removeConstraint(cid)
-        for obj in self._anchor_objects:
+        for obj in anchor_objects:
             pybullet.removeBody(obj)
-        self._anchors = []
-        self._anchor_objects = []
-        self._attached_robot = None
+        self._anchors = {}
+        self._anchor_objects = {}
+        self._attached = []
+
+    def detach_robot(self, robot_id: int) -> None:
+        """Detaches a specific robot from the bag by removing its associated anchors / visuals
+
+        Args:
+            robot_id (int): Pybullet ID of the robot to detach
+        """
+        if robot_id not in self.attached:
+            raise ValueError("Cannot detach robot: ID unknown")
+        for cid in self._anchors[robot_id]:
+            pybullet.removeConstraint(cid)
+        for obj in self._anchor_objects[robot_id]:
+            pybullet.removeBody(obj)
+        self._anchors.pop(robot_id)
+        self._anchor_objects.pop(robot_id)
+        self._attached.remove(robot_id)
 
     def unload(self) -> None:
         """Removes the cargo bag from the simulation
@@ -326,32 +411,22 @@ class CargoBag:
         self.id = None
 
 
-if __name__ == "__main__":
+# TODO decide if this is useful (or something similar)
+# (move the bag to the robot, instead of robot to the bag)
+# def load_bag_attached(robot: Astrobee, bag_name: str) -> CargoBag:
+#     pass
+
+
+def _main():
+    # Very simple example of loading the bag and attaching a robot
     initialize_pybullet()
-    robo = Astrobee()
-    bag = CargoBag("top_handle_bag", robo)
-    init_time = time.time()
-    detach_time_lim = 10
-    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
-    print(f"Provide a disturbance force. Detaching bag in {detach_time_lim} seconds")
-    while time.time() - init_time < detach_time_lim:
-        pos, orn, lin_vel, ang_vel = bag.dynamics_state
-        print("Position: ", pos)
-        print("Orientation: ", orn)
-        print("Velocity: ", lin_vel)
-        print("Angular velocity: ", ang_vel)
-        # visualize_frame(pos_quat_to_tmat([*pos, *orn]), lifetime=0.5)
-        pybullet.stepSimulation()
-        time.sleep(dt)
-    bag.detach()
-    detach_time = time.time()
-    unload_time_lim = 10
-    print(f"Detached. Unloading the bag in {unload_time_lim} seconds")
-    while time.time() - detach_time < unload_time_lim:
-        pybullet.stepSimulation()
-        time.sleep(dt)
-    bag.unload()  # Currently kinda weird
-    print("Unloaded")
+    robot = Astrobee()
+    bag = CargoBag("top_handle_bag")
+    bag.attach_to(robot)
     while True:
         pybullet.stepSimulation()
-        time.sleep(dt)
+        time.sleep(1 / 120)
+
+
+if __name__ == "__main__":
+    _main()

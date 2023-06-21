@@ -3,21 +3,21 @@
 import numpy as np
 
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.utils.rotations import Ry, Rz
+from pyastrobee.utils.rotations import Rx, Ry, Rz
 
 
-# These transformation matrices can be thought of as "Bag to End-Effector" when grasped
-# So for instance, we can compose these as "Bag to World" = "EE to World" @ "Bag to EE"
-# Where "EE to World" is the pose of the end-effector grasp point
-# The rotation component aligns the frame of the OBJ file with the graping frame
-# The translation component is based on the CAD - it's the distance from the center of the bag to the handle
-# If the CAD changes, these values will also need to be updated
-FRONT_BAG_GRASP_TRANSFORM = make_transform_mat(
-    Rz(np.pi / 2) @ Ry(-np.pi / 2), [-0.175, 0, 0]
+# Transformation matrices ("handle-to-bag"). These are defined so that the Astrobee gripper frame will be able
+# to grasp the handle (z pointing along the handle, and x pointing out of the bag). "Bag frame" refers to the
+# center of mass frame of the bag (what pybullet returns when you query the bag's position/orientation)
+# Note: These need to be updated if the CAD changes
+FRONT_HANDLE_TRANSFORM = make_transform_mat(
+    Ry(-np.pi / 2) @ Rz(-np.pi / 2), [0, -0.16, 0]
 )
-SIDE_BAG_GRASP_TRANSFORM = make_transform_mat(np.eye(3), [-0.295, 0, 0])
-TOP_BAG_GRASP_TRANSFORM = make_transform_mat(Ry(np.pi / 2), [-0.245, 0, 0])
-
+BACK_HANDLE_TRANSFORM = make_transform_mat(Rz(np.pi / 2) @ Rx(-np.pi / 2), [0, 0.16, 0])
+LEFT_HANDLE_TRANSFORM = make_transform_mat(Rz(np.pi), [-0.285, 0, 0])
+RIGHT_HANDLE_TRANSFORM = make_transform_mat(np.eye(3), [0.285, 0, 0])
+TOP_HANDLE_TRANSFORM = make_transform_mat(Ry(-np.pi / 2), [0, 0, 0.245])
+BOTTOM_HANDLE_TRANSFORM = make_transform_mat(Ry(np.pi / 2) @ Rx(np.pi), [0, 0, -0.245])
 
 # Softbody parameters (TODO: these may need to be refined)
 MASS = 1.0
@@ -26,6 +26,7 @@ DAMPING_STIFFNESS = 0.1
 ELASTIC_STIFFNESS = 50.0
 FRICTION_COEFF = 0.1
 
+# TODO: THESE ARE OUT OF DATE. Recalibrate these!!
 # Indices of the mesh vertices closest to the corners of the bags
 # These vertices are ordered as follows:
 # 0. Right back top
