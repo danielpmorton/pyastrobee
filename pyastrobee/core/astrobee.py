@@ -124,8 +124,8 @@ class Astrobee:
         Astrobee.LOADED_IDS.append(self.id)
         Astrobee.NUM_ROBOTS += 1
         self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]  # Timestep
-        self.set_gripper_position(gripper_pos)
-        self.set_arm_joints(arm_joints)  # Do this only if nonzero?
+        self.set_gripper_position(gripper_pos, force=True)
+        self.set_arm_joints(arm_joints, force=True)
         print_green("Astrobee is ready")
 
     @classmethod
@@ -414,14 +414,15 @@ class Astrobee:
         r_pct = 100 * (r_angles - r_closed) / (r_open - r_closed)
         return np.round(np.average(np.concatenate([l_pct, r_pct]))).astype(int)
 
-    def set_gripper_position(self, position: float) -> None:
+    def set_gripper_position(self, position: float, force: bool = False) -> None:
         """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
 
         TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
-        TODO update this to use self.set_joint_angles()!
 
         Args:
             position (float): Gripper position, in range [0, 100]
+            force (bool, optional): Whether to (non-physically) instantly reset the gripper position, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
         """
         if position < 0 or position > 100:
             raise ValueError("Position should be in range [0, 100]")
@@ -429,7 +430,7 @@ class Astrobee:
         left_pos = l_closed + (position / 100) * (l_open - l_closed)
         right_pos = r_closed + (position / 100) * (r_open - r_closed)
         angle_cmd = [*left_pos, *right_pos]
-        self.set_gripper_joints(angle_cmd)
+        self.set_gripper_joints(angle_cmd, force)
 
     def open_gripper(self) -> None:
         """Fully opens the gripper"""
@@ -466,7 +467,10 @@ class Astrobee:
         return left_closed, left_open, right_closed, right_open
 
     def set_joint_angles(
-        self, angles: npt.ArrayLike, indices: Optional[npt.ArrayLike] = None
+        self,
+        angles: npt.ArrayLike,
+        indices: Optional[npt.ArrayLike] = None,
+        force: bool = False,
     ):
         """Sets the joint angles for the Astrobee (either all joints, or a specified subset)
 
@@ -474,6 +478,8 @@ class Astrobee:
             angles (npt.ArrayLike): Desired joint angles, in radians
             indices (npt.ArrayLike, optional): Indices of the joints to control. Defaults to None,
                 in which case we assume all 7 joints will be set.
+            force (bool, optional): Whether to (non-physically) instantly reset the joint state, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
 
         Raises:
             ValueError: If the number of angles provided do not match the number of indices
@@ -493,13 +499,17 @@ class Astrobee:
             raise ValueError(
                 f"Joint angle command is outside of joint limits.\nGot: {angles} for joints {indices}"
             )
-        pybullet.setJointMotorControlArray(
-            self.id, indices, pybullet.POSITION_CONTROL, angles
-        )
-        tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
-        while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
-            pybullet.stepSimulation()
-            time.sleep(self._dt)  # TODO determine timestep
+        if force:
+            for ind, angle in zip(indices, angles):
+                pybullet.resetJointState(self.id, ind, angle)
+        else:
+            pybullet.setJointMotorControlArray(
+                self.id, indices, pybullet.POSITION_CONTROL, angles
+            )
+            tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
+            while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
+                pybullet.stepSimulation()
+                time.sleep(self._dt)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
         """Gives the current joint angles for the Astrobee
@@ -514,21 +524,25 @@ class Astrobee:
         states = pybullet.getJointStates(self.id, indices)
         return np.array([state[0] for state in states])
 
-    def set_arm_joints(self, angles: npt.ArrayLike) -> None:
+    def set_arm_joints(self, angles: npt.ArrayLike, force: bool = False) -> None:
         """Sets the joint angles for the arm (proximal + distal)
 
         Args:
             angles (npt.ArrayLike): Arm joint angles, length = 2
+            force (bool, optional): Whether to (non-physically) instantly reset the joint states, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
         """
-        self.set_joint_angles(angles, Astrobee.ARM_JOINT_IDXS)
+        self.set_joint_angles(angles, Astrobee.ARM_JOINT_IDXS, force)
 
-    def set_gripper_joints(self, angles: npt.ArrayLike) -> None:
+    def set_gripper_joints(self, angles: npt.ArrayLike, force: bool = False) -> None:
         """Sets the joint angles for the gripper (left + right, proximal + distal)
 
         Args:
             angles (npt.ArrayLike): Gripper joint angles, length = 4
+            force (bool, optional): Whether to (non-physically) instantly reset the gripper joints, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
         """
-        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS)
+        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS, force)
 
     def reset_to_ee_pose(self, pose: npt.ArrayLike) -> None:
         """Resets the position of the robot to achieve a target end-effector pose
