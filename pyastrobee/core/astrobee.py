@@ -17,7 +17,7 @@ import numpy.typing as npt
 
 
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
-from pyastrobee.utils.transformations import make_transform_mat
+from pyastrobee.utils.transformations import make_transform_mat, invert_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms, astrobee_inertial
@@ -530,6 +530,32 @@ class Astrobee:
         """
         self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS)
 
+    def reset_to_ee_pose(self, pose: npt.ArrayLike) -> None:
+        """Resets the position of the robot to achieve a target end-effector pose
+
+        This will currently NOT adjust any of the joints in a "smart" way, it will just reset the position of the base
+        given the current joint configuration
+
+        Args:
+            pose (npt.ArrayLike): Desired position + XYZW quaternion end-effector pose, shape (7,)
+        """
+        # Notation: EE: End effector, B: Base, W: World
+        des_EE2W = pos_quat_to_tmat(pose)
+        cur_B2W = pos_quat_to_tmat(self.pose)
+        cur_EE2W = pos_quat_to_tmat(self.ee_pose)
+        cur_W2EE = invert_transform_mat(cur_EE2W)
+        cur_B2EE = cur_W2EE @ cur_B2W
+        des_B2W = des_EE2W @ cur_B2EE
+        self.reset_to_base_pose(tmat_to_pos_quat(des_B2W))
+
+    def reset_to_base_pose(self, pose: npt.ArrayLike) -> None:
+        """Resets the base of the robot to a target pose
+
+        Args:
+            pose (npt.ArrayLike): Desired position + XYZW quaternion pose of the Astrobee's base, shape (7,)
+        """
+        pybullet.resetBasePositionAndOrientation(self.id, pose[:3], pose[3:])
+
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
     # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
@@ -576,9 +602,6 @@ class Astrobee:
     #         states[i][1] for i in range(Astrobee.NUM_JOINTS)
     #     ]  # Index 2: reaction forces
 
-    # def set_ee_pose(self, pose):
-    #     pass
-
     # TODO: should refine these states so it is clear what is going on
     # Should it be possible for the robot to be in multiple states? e.g. moving and manipulating??
     # Should we keep multiple states in separate enumerations?
@@ -589,9 +612,6 @@ class Astrobee:
     #     PLANNING = 2
     #     MOVING = 3
     #     MANIPULATING = 4
-
-    # def set_arm_pose_world(self, pose):
-    #     pass
 
 
 if __name__ == "__main__":
