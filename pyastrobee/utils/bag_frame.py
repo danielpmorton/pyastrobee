@@ -19,7 +19,7 @@ from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.debug_visualizer import visualize_frame
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import load_deformable_object
-from pyastrobee.config.bag_properties import TOP_BAG_CORNER_VERTS
+from pyastrobee.config.bag_properties import TOP_HANDLE_BAG_CORNERS
 
 # For indexing into the list of vertices
 # Naming these as constants so their usage is clearer in the functions below
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     bag_id = load_deformable_object(filename, bending_stiffness=10)
     while True:
         n_verts, bag_mesh = get_mesh_data(bag_id)
-        T = get_bag_frame(bag_mesh, TOP_BAG_CORNER_VERTS)
+        T = get_bag_frame(bag_mesh, TOP_HANDLE_BAG_CORNERS)
         visualize_frame(T, lifetime=1)
         pybullet.stepSimulation()
         time.sleep(1 / 240)

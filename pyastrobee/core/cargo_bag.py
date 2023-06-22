@@ -45,18 +45,19 @@ HANDLE_TRANSFORMS = {
     "top": bag_props.TOP_HANDLE_TRANSFORM,
     "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
 }
-# TODO: These need updating, they are out of date
-# Also, they're unused for now, so commenting out
-# BAG_CORNERS = dict(
-#     zip(
-#         BAG_NAMES,
-#         [
-#             bag_props.FRONT_BAG_CORNER_VERTS,
-#             bag_props.SIDE_BAG_CORNER_VERTS,
-#             bag_props.TOP_BAG_CORNER_VERTS,
-#         ],
-#     )
-# )
+BAG_CORNERS = dict(
+    zip(
+        BAG_NAMES,
+        [
+            bag_props.FRONT_HANDLE_BAG_CORNERS,
+            bag_props.RIGHT_HANDLE_BAG_CORNERS,
+            bag_props.TOP_HANDLE_BAG_CORNERS,
+            bag_props.FRONT_BACK_HANDLE_BAG_CORNERS,
+            bag_props.RIGHT_LEFT_HANDLE_BAG_CORNERS,
+            bag_props.TOP_BOTTOM_HANDLE_BAG_CORNERS,
+        ],
+    )
+)
 
 
 class CargoBag:

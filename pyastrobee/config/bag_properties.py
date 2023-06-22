@@ -26,7 +26,6 @@ DAMPING_STIFFNESS = 0.1
 ELASTIC_STIFFNESS = 50.0
 FRICTION_COEFF = 0.1
 
-# TODO: THESE ARE OUT OF DATE. Recalibrate these!!
 # Indices of the mesh vertices closest to the corners of the bags
 # These vertices are ordered as follows:
 # 0. Right back top
@@ -37,9 +36,12 @@ FRICTION_COEFF = 0.1
 # 5. Left back bottom
 # 6. Left front top
 # 7. Left front bottom
-FRONT_BAG_CORNER_VERTS = [228, 331, 138, 372, 279, 223, 166, 201]
-SIDE_BAG_CORNER_VERTS = [299, 221, 111, 151, 332, 312, 186, 89]
-TOP_BAG_CORNER_VERTS = [296, 243, 281, 99, 237, 151, 171, 262]
+FRONT_HANDLE_BAG_CORNERS = [289, 371, 241, 207, 330, 338, 359, 225]
+RIGHT_HANDLE_BAG_CORNERS = [314, 412, 276, 216, 294, 355, 327, 243]
+TOP_HANDLE_BAG_CORNERS = [296, 243, 281, 99, 237, 151, 171, 262]
+FRONT_BACK_HANDLE_BAG_CORNERS = [438, 431, 319, 290, 347, 392, 311, 305]
+RIGHT_LEFT_HANDLE_BAG_CORNERS = [461, 609, 410, 611, 444, 518, 395, 502]
+TOP_BOTTOM_HANDLE_BAG_CORNERS = [356, 359, 333, 322, 346, 331, 214, 316]
 
 # Dimensions of the bounding box around the main compartment of the bag (meters)
 BOX_LENGTH = 0.50  # X dimension
