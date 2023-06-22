@@ -1,6 +1,6 @@
 # Blender 3.4.1
 # www.blender.org
-mtllib front_handle_bag.mtl
+mtllib front_handle.mtl
 o front_handle
 v 0.075000 -0.125000 -0.025000
 v -0.033491 -0.154091 0.025000

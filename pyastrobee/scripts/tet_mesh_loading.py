@@ -12,7 +12,7 @@ pybullet.connect(pybullet.GUI)
 pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
 load_floor()
 load_deformable_object(
-    "pyastrobee/assets/meshes/bags/front_handle_bag.vtk",
+    "pyastrobee/assets/meshes/bags/front_handle.vtk",
     pos=[0, 0, 1],
     bending_stiffness=10,
 )

@@ -30,9 +30,8 @@ from pyastrobee.utils.quaternions import quats_to_angular_velocities
 
 # Constants. TODO Move these to class attributes?
 MESH_DIR = "pyastrobee/assets/meshes/bags/"
-# TODO: update the bag naming
-SINGLE_HANDLE_BAGS = ["front_handle_bag", "side_handle_bag", "top_handle_bag"]
-DUAL_HANDLE_BAGS = ["front_back_handle", "side_side_handle", "top_bottom_handle"]
+SINGLE_HANDLE_BAGS = ["front_handle", "right_handle", "top_handle"]
+DUAL_HANDLE_BAGS = ["front_back_handle", "right_left_handle", "top_bottom_handle"]
 BAG_NAMES = SINGLE_HANDLE_BAGS + DUAL_HANDLE_BAGS
 _objs = [MESH_DIR + name + ".obj" for name in BAG_NAMES]
 _vtks = [MESH_DIR + name + ".vtk" for name in BAG_NAMES]
@@ -64,7 +63,8 @@ class CargoBag:
     """Class for loading and managing properties associated with the cargo bags
 
     Args:
-        bag_name (str): Type of cargo bag to load. One of "front_handle_bag", "side_handle_bag", "top_handle_bag"
+        bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
+            Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
         pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to [0, 0, 0]
         orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to [0, 0, 0, 1]
     """
@@ -169,15 +169,15 @@ class CargoBag:
 
         In the case of a single-handled bag, this list will only have one entry
         """
-        if self._name == "front_handle_bag":
+        if self._name == "front_handle":
             return [HANDLE_TRANSFORMS["front"]]
-        elif self._name == "side_handle_bag":
+        elif self._name == "right_handle":
             return [HANDLE_TRANSFORMS["right"]]
-        elif self._name == "top_handle_bag":
+        elif self._name == "top_handle":
             return [HANDLE_TRANSFORMS["top"]]
         elif self._name == "front_back_handle":
             return [HANDLE_TRANSFORMS["front"], HANDLE_TRANSFORMS["back"]]
-        elif self._name == "side_side_handle":
+        elif self._name == "right_left_handle":
             return [HANDLE_TRANSFORMS["right"], HANDLE_TRANSFORMS["left"]]
         elif self._name == "top_bottom_handle":
             return [HANDLE_TRANSFORMS["top"], HANDLE_TRANSFORMS["bottom"]]
@@ -421,7 +421,7 @@ def _main():
     # Very simple example of loading the bag and attaching a robot
     initialize_pybullet()
     robot = Astrobee()
-    bag = CargoBag("top_handle_bag")
+    bag = CargoBag("top_handle")
     bag.attach_to(robot)
     while True:
         pybullet.stepSimulation()

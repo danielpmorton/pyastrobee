@@ -14,12 +14,12 @@ from pyastrobee.utils.bullet_utils import load_rigid_object
 from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 import pyastrobee.config.bag_properties as bag_props
 
-front_file = "pyastrobee/assets/meshes/bags/front_handle_bag.obj"
-side_file = "pyastrobee/assets/meshes/bags/side_handle_bag.obj"
-top_file = "pyastrobee/assets/meshes/bags/top_handle_bag.obj"
+front_file = "pyastrobee/assets/meshes/bags/front_handle.obj"
+side_file = "pyastrobee/assets/meshes/bags/right_handle.obj"
+top_file = "pyastrobee/assets/meshes/bags/top_handle.obj"
 
 front_back_file = "pyastrobee/assets/meshes/bags/front_back_handle.obj"
-side_side_file = "pyastrobee/assets/meshes/bags/side_side_handle.obj"
+side_side_file = "pyastrobee/assets/meshes/bags/right_left_handle.obj"
 top_bottom_file = "pyastrobee/assets/meshes/bags/top_bottom_handle.obj"
 
 

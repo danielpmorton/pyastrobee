@@ -24,9 +24,9 @@ from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.transformations import invert_transform_mat
 import pyastrobee.config.bag_properties as bag_props
 
-front_file = "pyastrobee/assets/meshes/bags/front_handle_bag.obj"
-side_file = "pyastrobee/assets/meshes/bags/side_handle_bag.obj"
-top_file = "pyastrobee/assets/meshes/bags/top_handle_bag.obj"
+front_file = "pyastrobee/assets/meshes/bags/front_handle.obj"
+side_file = "pyastrobee/assets/meshes/bags/right_handle.obj"
+top_file = "pyastrobee/assets/meshes/bags/top_handle.obj"
 
 pybullet.connect(pybullet.GUI)
 np.random.seed(0)

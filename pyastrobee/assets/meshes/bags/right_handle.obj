@@ -1,7 +1,7 @@
 # Blender 3.4.1
 # www.blender.org
-mtllib side_handle_bag.mtl
-o side_handle
+mtllib right_handle.mtl
+o right_handle
 v 0.250000 -0.025000 -0.075000
 v 0.279091 0.025000 0.033491
 v 0.250000 -0.025000 -0.068348

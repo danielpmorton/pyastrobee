@@ -1,5 +1,5 @@
 # vtk DataFile Version 2.0
-top_handle_bag_remesh, Created by Gmsh 4.11.1 
+top_handle_remesh, Created by Gmsh 4.11.1 
 ASCII
 DATASET UNSTRUCTURED_GRID
 POINTS 379 double

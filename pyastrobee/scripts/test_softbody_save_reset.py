@@ -39,13 +39,13 @@ def run_test(object: str):
     """Pause, save, and reset the sim after user interaction. Object is either "bag", "cloth", or "astrobee"."""
     initialize_pybullet()
     if object == "bag":
-        bag = CargoBag("top_handle_bag", None, [0, 0, 0], [0, 0, 0, 1])
+        bag = CargoBag("top_handle", None, [0, 0, 0], [0, 0, 0, 1])
     elif object == "cloth":
         pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
         cloth_id = load_deformable_object("cloth_z_up.obj")
     elif object == "astrobee":
         robot = Astrobee()
-        bag = CargoBag("top_handle_bag", robot)
+        bag = CargoBag("top_handle", robot)
     print("Apply a disturbance force")
     loop_sim()
     input("Press Enter to save the state")
@@ -78,7 +78,7 @@ def multi_reset_test():
     controller = ForcePIDController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
-    bag = CargoBag("top_handle_bag", robot)
+    bag = CargoBag("top_handle", robot)
     steps_between_resets = 10  # Adjust to change reset frequency
     for i in range(traj.num_timesteps):
         pos, orn, lin_vel, ang_vel = controller.get_current_state()

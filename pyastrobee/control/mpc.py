@@ -122,7 +122,7 @@ def init(
     client = initialize_pybullet(use_gui)
     load_iss()
     robot = Astrobee(robot_pose)
-    bag = CargoBag("top_handle_bag", robot)
+    bag = CargoBag("top_handle", robot)
     return client, robot, bag
 
 

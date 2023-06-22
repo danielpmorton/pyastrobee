@@ -128,7 +128,7 @@ def get_bag_frame(mesh: npt.ArrayLike, corners: list[int]) -> np.ndarray:
 if __name__ == "__main__":
     pybullet.connect(pybullet.GUI)
     pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
-    filename = "pyastrobee/assets/meshes/bags/top_handle_bag.vtk"
+    filename = "pyastrobee/assets/meshes/bags/top_handle.vtk"
     bag_id = load_deformable_object(filename, bending_stiffness=10)
     while True:
         n_verts, bag_mesh = get_mesh_data(bag_id)

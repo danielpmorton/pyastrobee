@@ -48,9 +48,9 @@ def get_box_corners(pos: npt.ArrayLike, orn: npt.ArrayLike) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    front_bag_file = "pyastrobee/assets/meshes/bags/front_handle_bag.vtk"
-    side_bag_file = "pyastrobee/assets/meshes/bags/side_handle_bag.vtk"
-    top_bag_file = "pyastrobee/assets/meshes/bags/top_handle_bag.vtk"
+    front_bag_file = "pyastrobee/assets/meshes/bags/front_handle.vtk"
+    side_bag_file = "pyastrobee/assets/meshes/bags/right_handle.vtk"
+    top_bag_file = "pyastrobee/assets/meshes/bags/top_handle.vtk"
     pybullet.connect(pybullet.GUI)
     pybullet.resetSimulation(pybullet.RESET_USE_DEFORMABLE_WORLD)
     # Run the identification process on each of the bags

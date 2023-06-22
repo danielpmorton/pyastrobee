@@ -1,7 +1,7 @@
 # Blender 3.4.1
 # www.blender.org
-mtllib top_handle_bag.mtl
-o top_handle_bag
+mtllib top_handle.mtl
+o top_handle
 v 0.075000 -0.025000 0.210000
 v 0.062937 0.025000 0.222076
 v 0.068348 -0.025000 0.210000

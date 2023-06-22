@@ -30,7 +30,7 @@ def load_bag(robot_id, side=0):
     # Load deformable bag and attach the middle of each side of the handle to
     # the middle of each of the astrobee fingers.
     pfx = "pyastrobee/assets/meshes/bags/"
-    fnames = ["front_handle_bag.vtk", "side_handle_bag.vtk"]  # TODO add top_handle_bag
+    fnames = ["front_handle.vtk", "right_handle.vtk"]  # TODO add top_handle
     poss = np.array([[-0.05, 0.00, -0.53], [-0.05, 0.00, -0.65]])  # z=-0.53  -0.48
     orns = np.array([[-np.pi / 2, 0, 0], [0, -np.pi / 2, 0]])
     orns = [fixed_xyz_to_quat(orn) for orn in orns]  # Quick fix for convention update
