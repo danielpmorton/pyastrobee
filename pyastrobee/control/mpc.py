@@ -123,7 +123,7 @@ def init(
     load_iss()
     robot = Astrobee(robot_pose)
     bag = CargoBag("top_handle")
-    bag.attach_to(robot)
+    bag.attach_to(robot, object_to_move="bag")
     return client, robot, bag
 
 
