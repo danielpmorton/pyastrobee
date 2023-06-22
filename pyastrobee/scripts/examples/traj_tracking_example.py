@@ -74,10 +74,11 @@ def astrobee_example():
 def astrobee_with_bag_example():
     initialize_pybullet(bg_color=[1, 1, 1])
     np.random.seed(0)
-    pose_1 = [0, 0, 0, 0, 0, 0, 1]
-    pose_2 = [1, 2, 3, *random_quaternion()]
     robot = Astrobee()
-    bag = CargoBag("top_handle", robot)
+    bag = CargoBag("top_handle")
+    bag.attach_to(robot)
+    pose_1 = robot.pose
+    pose_2 = [1, 2, 3, *random_quaternion()]
     max_time = 10
     dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
     traj = polynomial_trajectory(pose_1, pose_2, max_time, dt)
