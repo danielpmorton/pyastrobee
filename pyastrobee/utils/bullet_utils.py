@@ -21,11 +21,11 @@ def load_rigid_object(
     filename: str,
     texture_filename: Optional[str] = None,
     scale: float = 1.0,
-    pos: list[float] = [0.0, 0.0, 0.0],
-    orn: list[float] = [0.0, 0.0, 0.0, 1.0],
+    pos: npt.ArrayLike = (0.0, 0.0, 0.0),
+    orn: npt.ArrayLike = (0.0, 0.0, 0.0, 1.0),
     mass: float = 1.0,
     fixed: bool = False,
-    rgba: list[float] = [1.0, 1.0, 1.0, 1.0],
+    rgba: npt.ArrayLike = (1.0, 1.0, 1.0, 1.0),
 ) -> int:
     """Loads a rigid object from an OBJ or URDF file
 
@@ -37,12 +37,12 @@ def load_rigid_object(
         texture_filename (str, optional): Path to a texture file to apply. Defaults to None, in which case no
             texture will be applied
         scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
-        pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
-        orn (list[float], optional): Initial XYZW quaternion orientation. Defaults to [0, 0, 0, 1].
+        pos (npt.ArrayLike, optional): Initial position for the loaded object. Defaults to (0, 0, 0).
+        orn (npt.ArrayLike, optional): Initial XYZW quaternion orientation. Defaults to (0, 0, 0, 1).
         mass (float, optional): Mass of the loaded object. Defaults to 1.0.
         fixed (bool, optional): Whether or not to fix the object in space. Defaults to False.
-        rgba (list[float], optional): Color of the object, expressed as RGBA, each within range [0, 1].
-            Defaults to [1.0, 1.0, 1.0, 1.0] (white).
+        rgba (npt.ArrayLike, optional): Color of the object, expressed as RGBA, each within range [0, 1].
+            Defaults to (1.0, 1.0, 1.0, 1.0) (white).
 
     Raises:
         ValueError: If the filename is not a valid OBJ or URDF
@@ -151,8 +151,8 @@ def load_deformable_object(
     filename: str,
     texture_filename: Optional[str] = None,
     scale: float = 1.0,
-    pos: list[float] = [0.0, 0.0, 0.0],
-    orn: list[float] = [0.0, 0.0, 0.0, 1.0],
+    pos: npt.ArrayLike = (0.0, 0.0, 0.0),
+    orn: npt.ArrayLike = (0.0, 0.0, 0.0, 1.0),
     mass: float = 1.0,
     bending_stiffness: float = 50.0,
     damping_stiffness: float = 0.1,
@@ -173,8 +173,8 @@ def load_deformable_object(
         texture_filename (str, optional): Path to a texture file to apply. Defaults to None, in which case no
             texture will be applied
         scale (float, optional): Scaling factor for the loaded object. Defaults to 1.0.
-        pos (list[float], optional): Initial position for the loaded object. Defaults to [0.0, 0.0, 0.0].
-        orn (list[float], optional): Initial XYZW quaternion orientation. Defaults to [0, 0, 0, 1].
+        pos (npt.ArrayLike, optional): Initial position for the loaded object. Defaults to (0.0, 0.0, 0.0).
+        orn (npt.ArrayLike, optional): Initial XYZW quaternion orientation. Defaults to (0, 0, 0, 1).
         mass (float, optional): Mass of the loaded object. Defaults to 1.0 (Keeping at 1.0 is the most stable option).
         bending_stiffness (float, optional): Bending stiffness of the loaded object. Defaults to 1.0.
         damping_stiffness (float, optional): Damping stiffness of the loaded object. Defaults to 0.1.
@@ -199,8 +199,8 @@ def load_deformable_object(
         mass=mass,
         fileName=filename,
         scale=scale,
-        basePosition=pos,
-        baseOrientation=orn,
+        basePosition=list(pos),
+        baseOrientation=list(orn),
         springElasticStiffness=elastic_stiffness,
         springDampingStiffness=damping_stiffness,
         springBendingStiffness=bending_stiffness,
@@ -236,7 +236,7 @@ def initialize_pybullet(
     use_gui: bool = True,
     physics_freq: float = 350,
     gravity: float = 0.0,
-    bg_color: list[float] = [0.0, 0.0, 0.0],
+    bg_color: npt.ArrayLike = (0.0, 0.0, 0.0),
 ) -> int:
     """Starts a pybullet client with the required physics parameters we care about
 
@@ -245,8 +245,8 @@ def initialize_pybullet(
         physics_freq (float, optional): Physics simulation frequency, in Hz. Defaults to 350.
             Note: Pybullet defaults to 240 Hz, but this seemed to be unstable for soft bodies
         gravity (float, optional): Z component of gravitational acceleration vector. Defaults to 0.
-        bg_color (list[float], optional): RGB values for the GUI background, each in range [0, 1].
-            Defaults to [0.0, 0.0, 0.0] (black). Note: [1.0, 1.0, 1.0] is white
+        bg_color (npt.ArrayLike, optional): RGB values for the GUI background, each in range [0, 1].
+            Defaults to (0.0, 0.0, 0.0) (black). Note: (1.0, 1.0, 1.0) is white
 
     Returns:
         int: A Physics Client ID
@@ -389,7 +389,7 @@ def create_sphere(
     mass: float,
     radius: float,
     use_collision: bool,
-    rgba: list[float] = [1, 1, 1, 1],
+    rgba: npt.ArrayLike = (1, 1, 1, 1),
 ) -> int:
     """Creates a rigid sphere in the Pybullet simulation
 
@@ -398,8 +398,8 @@ def create_sphere(
         mass (float): Mass of the sphere. If set to 0, the sphere is fixed in space
         radius (float): Radius of the sphere
         use_collision (bool): Whether or not collision is enabled for the sphere
-        rgba (list[float], optional): Color of the sphere, with each RGBA value being in [0, 1].
-            Defaults to [1, 1, 1, 1] (white)
+        rgba (npt.ArrayLike, optional): Color of the sphere, with each RGBA value being in [0, 1].
+            Defaults to (1, 1, 1, 1) (white)
 
     Returns:
         int: ID of the sphere in Pybullet
@@ -475,7 +475,7 @@ def create_box(
     mass: float,
     sidelengths: npt.ArrayLike,
     use_collision: bool,
-    rgba: list[float] = [1, 1, 1, 1],
+    rgba: npt.ArrayLike = (1, 1, 1, 1),
 ) -> int:
     """Creates a rigid box in the Pybullet simulation
 
@@ -485,8 +485,8 @@ def create_box(
         mass (float): Mass of the box. If set to 0, the box is fixed in space
         sidelengths (npt.ArrayLike): Sidelengths of the box along the local XYZ axes, shape (3,)
         use_collision (bool): Whether or not collision is enabled for the box
-        rgba (list[float], optional): Color of the box, with each RGBA value being in [0, 1].
-            Defaults to [1, 1, 1, 1] (white)
+        rgba (npt.ArrayLike, optional): Color of the box, with each RGBA value being in [0, 1].
+            Defaults to (1, 1, 1, 1) (white)
 
     Returns:
         int: ID of the box in Pybullet

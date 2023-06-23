@@ -37,13 +37,13 @@ class ISSModule(Enum):
 
 
 def load_iss(
-    orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2], debug: bool = False
+    orn: npt.ArrayLike = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2), debug: bool = False
 ) -> list[int]:
     """Loads all modules of the ISS into pybullet
 
     Args:
         orn (npt.ArrayLike, optional): Orientation of the ISS (XYZW quaternion). Defaults to
-            [sqrt(2)/2, 0, 0, sqrt(2)/2] (a 90-degree rotation in x). This will orient the ISS so
+            (sqrt(2)/2, 0, 0, sqrt(2)/2) (a 90-degree rotation in x). This will orient the ISS so
             it lays flat in the simulator.
         debug (bool, optional): Whether or not we are in debug-collision-bodies mode. If True, this will just
             visualize the collision bodies. Defaults to False
@@ -61,7 +61,7 @@ def load_iss(
 
 def load_iss_module(
     module: ISSModule,
-    orn: npt.ArrayLike = [np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2],
+    orn: npt.ArrayLike = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2),
     debug: bool = False,
 ) -> int:
     """Loads a single ISS module. For example, US_LAB
@@ -69,7 +69,7 @@ def load_iss_module(
     Args:
         module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...
         orn (npt.ArrayLike, optional): Orientation of the ISS module (XYZW quaternion). Defaults to
-            [sqrt(2)/2, 0, 0, sqrt(2)/2] (a 90-degree rotation in x). This will orient the module so
+            (sqrt(2)/2, 0, 0, sqrt(2)/2) (a 90-degree rotation in x). This will orient the module so
             it lays flat in the simulator.
         debug (bool, optional): Whether or not we are in debug-collision-bodies mode. If True, this will just
             visualize the module's collision body. Defaults to False

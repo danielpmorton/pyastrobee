@@ -67,15 +67,15 @@ class CargoBag:
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
-        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to [0, 0, 0]
-        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to [0, 0, 0, 1]
+        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
+        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
     """
 
     def __init__(
         self,
         bag_name: str,
-        pos: npt.ArrayLike = [0, 0, 0],
-        orn: npt.ArrayLike = [0, 0, 0, 1],
+        pos: npt.ArrayLike = (0, 0, 0),
+        orn: npt.ArrayLike = (0, 0, 0, 1),
     ):
         if not pybullet.isConnected():
             raise ConnectionError("Need to connect to pybullet before loading a bag")

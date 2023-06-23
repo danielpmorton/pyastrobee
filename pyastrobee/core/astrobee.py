@@ -29,9 +29,9 @@ class Astrobee:
 
     Args:
         pose (npt.ArrayLike, optional): Initial pose of the astrobee when loaded. Defaults to
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0] (At origin, pointed forward along x axis).
+            (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0) (At origin, pointed forward along x axis).
         arm_joints (npt.ArrayLike, optional): Initial position of the arm's joints. Defaults to
-            [0.0, 0.0] (Hanging straight down)
+            (0.0, 0.0) (Hanging straight down)
         gripper_pos (float, optional): Initial gripper position, in [0, 100]. Defaults to 100 (fully open)
 
     Raises:
@@ -112,8 +112,8 @@ class Astrobee:
 
     def __init__(
         self,
-        pose: npt.ArrayLike = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
-        arm_joints: npt.ArrayLike = [0.0, 0.0],
+        pose: npt.ArrayLike = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+        arm_joints: npt.ArrayLike = (0.0, 0.0),
         gripper_pos: float = 100,
     ):
         if not pybullet.isConnected():
@@ -338,7 +338,7 @@ class Astrobee:
         return np.array(M)
 
     def get_jacobians(
-        self, link: Union[Links, int], local_pos: npt.ArrayLike = [0.0, 0.0, 0.0]
+        self, link: Union[Links, int], local_pos: npt.ArrayLike = (0.0, 0.0, 0.0)
     ) -> tuple[np.ndarray, np.ndarray]:
         """Calculate the linear and angular jacobians (Jv and Jw) for a point on a link
 
