@@ -570,6 +570,9 @@ class Astrobee:
         """
         pybullet.resetBasePositionAndOrientation(self.id, pose[:3], pose[3:])
 
+    def localize(self):
+        raise NotImplementedError()  # TODO.. see dynamics state. Should have a noise parameter
+
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
     # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
