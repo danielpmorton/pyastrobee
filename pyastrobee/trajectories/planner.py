@@ -20,9 +20,7 @@ from pyastrobee.trajectories.quaternion_interpolation import (
 from pyastrobee.utils.quaternions import quats_to_angular_velocities
 
 
-# This trajectory generation method is just temporary while I'm working out the
-# optimal rotation trajectory method (which if works will be more accurate for rotation)
-def bezier_and_quat_poly_traj(
+def plan_trajectory(
     p0: npt.ArrayLike,
     q0: npt.ArrayLike,
     v0: Optional[npt.ArrayLike],

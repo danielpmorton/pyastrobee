@@ -28,7 +28,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.quaternions import quaternion_angular_error
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
 from pyastrobee.trajectories.trajectory import Trajectory, stopping_criteria
-from pyastrobee.trajectories.planner import bezier_and_quat_poly_traj
+from pyastrobee.trajectories.planner import plan_trajectory
 from pyastrobee.control.force_controller_new import ForcePIDController
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
@@ -177,7 +177,7 @@ def generate_trajs(
         nominal_target_alpha, alpha_sampling_stdev**2 * np.eye(3), n_samples
     )
     trajs = [
-        bezier_and_quat_poly_traj(
+        plan_trajectory(
             cur_pos,
             cur_orn,
             cur_vel,
@@ -196,7 +196,7 @@ def generate_trajs(
     ]
     for i in range(n_samples):
         trajs.append(
-            bezier_and_quat_poly_traj(
+            plan_trajectory(
                 cur_pos,
                 cur_orn,
                 cur_vel,
@@ -266,7 +266,7 @@ def mpc_main(
         kw,
         dt,
     )
-    nominal_traj = bezier_and_quat_poly_traj(
+    nominal_traj = plan_trajectory(
         start_pose[:3],
         start_pose[3:],
         np.zeros(3),
