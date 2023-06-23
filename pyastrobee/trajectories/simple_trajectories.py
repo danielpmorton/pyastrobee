@@ -1,13 +1,6 @@
-"""Motion planning
+"""Simple examples of position/orientation trajectories
 
-** This general concept is likely out of date with how the Controller class(es) are set up
-Figure out if all of the motion planning implementation should just go into the controller?
-Or generate a trajectory plan here and then pass it in to the controller
-
-TODO
-- Add support for multiple astrobees?
-
-Check out these options:
+TODO check out other motion planning libraries
 https://github.com/stanford-iprl-lab/mob-manip/blob/main/mob_manip/utils/common/plan_control_traj.py
 https://github.com/krishauser/Klampt
 https://github.com/caelan/pybullet-planning
@@ -16,16 +9,11 @@ https://arxiv.org/pdf/2205.04422.pdf
 https://ompl.kavrakilab.org/
 https://github.com/lyfkyle/pybullet_ompl
 https://github.com/schmrlng/MotionPlanning.jl/tree/master/src (convert to python?)
-
-Easy alternatives:
-- Turn + move in straight line to waypoint
-- Try pybullet.rayTest for checking collisions?
 """
 
 import numpy as np
 import numpy.typing as npt
 
-from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     get_closest_heading_quat,
@@ -132,11 +120,3 @@ def interpolation_pose_traj(
     positions = np.linspace(start_position, end_position, n)
     quats = quaternion_slerp(start_quat, end_quat, np.linspace(0, 1, n))
     return np.hstack((positions, quats))
-
-
-class Planner:
-    def __init__(self, robot: Astrobee):
-        self.robot = robot
-
-    def plan_trajectory(self, pose_goal):
-        pass

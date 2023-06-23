@@ -6,7 +6,7 @@ import numpy as np
 import pybullet
 
 from pyastrobee.trajectories.trajectory import visualize_traj
-from pyastrobee.trajectories.planner import (
+from pyastrobee.trajectories.simple_trajectories import (
     interpolation_pose_traj,
     point_and_move_pose_traj,
 )
