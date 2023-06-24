@@ -34,6 +34,8 @@ setup(
         "control",  # Control systems reference code
         "cvxpy",  # Optimization
         "clarabel",  # More optimization
+        "stable-baselines3",  # Environments
+        "gymnasium",  # Environments
     ],
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
