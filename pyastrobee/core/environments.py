@@ -38,6 +38,9 @@ class AstrobeeEnv(gym.Env):
         self.target_orn = None  # Init
         self.target_vel = None  # Init
         self.target_omega = None  # Init
+        # Dummy parameters for gym/stable baselines compatibility
+        self.observation_space = None
+        self.action_space = None
 
     def set_target_state(self, des_pos, des_orn, des_vel, des_omega) -> None:
         self.target_pos = des_pos
@@ -81,24 +84,41 @@ class AstrobeeEnv(gym.Env):
         # TODO check on this "end of trajectory" indexing...
         if self.traj_plan is None or self._traj_idx == self.traj_plan.num_timesteps:
             pybullet.stepSimulation()
-        pos, orn, vel, omega = self.robot.dynamics_state
-        self.controller.step(
-            pos,
-            vel,
-            orn,
-            omega,
-            self.traj_plan.positions[self._traj_idx],
-            self.traj_plan.linear_velocities[self._traj_idx],
-            self.traj_plan.linear_accels[self._traj_idx],
-            self.traj_plan.quaternions[self._traj_idx],
-            self.traj_plan.angular_velocities[self._traj_idx],
-            self.traj_plan.angular_accels[self._traj_idx],
-        )
+        else:
+            pos, orn, vel, omega = self.robot.dynamics_state
+            self.controller.step(
+                pos,
+                vel,
+                orn,
+                omega,
+                self.traj_plan.positions[self._traj_idx],
+                self.traj_plan.linear_velocities[self._traj_idx],
+                self.traj_plan.linear_accels[self._traj_idx],
+                self.traj_plan.quaternions[self._traj_idx],
+                self.traj_plan.angular_velocities[self._traj_idx],
+                self.traj_plan.angular_accels[self._traj_idx],
+            )
+
+
+def test_vec_env():
+    # TODO check on the difference between subproc and dummy
+    n_envs = 2
+    env_kwargs = {"use_gui": False}
+    vec_env = make_vec_env(
+        AstrobeeEnv,
+        n_envs,
+        env_kwargs=env_kwargs,
+        vec_env_cls=SubprocVecEnv if n_envs > 1 else DummyVecEnv,
+    )
+    input("completed")
 
 
 def _main():
     env = AstrobeeEnv()
+    while True:
+        env.step()
 
 
 if __name__ == "__main__":
-    _main()
+    # _main()
+    test_vec_env()
