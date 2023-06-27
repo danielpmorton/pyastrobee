@@ -10,9 +10,10 @@ TODO decide if we should set up the class attributes to handle multiple bags loa
     (Like the Astrobee class)
 """
 import time
-from typing import Union
+from typing import Union, Optional
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
@@ -69,6 +70,8 @@ class CargoBag:
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
         pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
         orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
 
     def __init__(
@@ -76,8 +79,10 @@ class CargoBag:
         bag_name: str,
         pos: npt.ArrayLike = (0, 0, 0),
         orn: npt.ArrayLike = (0, 0, 0, 1),
+        client: Optional[BulletClient] = None,
     ):
-        if not pybullet.isConnected():
+        self.client: pybullet = pybullet if client is None else client
+        if not self.client.isConnected():
             raise ConnectionError("Need to connect to pybullet before loading a bag")
         if bag_name not in BAG_NAMES:
             raise ValueError(
@@ -92,7 +97,7 @@ class CargoBag:
         self._attached = []
         self._id = None
         # Get the simulator timestep (used for calculating the velocity of the bag)
-        self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+        self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self._load(pos, orn)
         print_green("Bag is ready")
 
@@ -103,7 +108,9 @@ class CargoBag:
         if self.id is None:
             raise AttributeError("Mesh has not been loaded")
         if self._num_mesh_vertices is None:
-            self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(self.id)
+            self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(
+                self.id, self.client
+            )
         return self._num_mesh_vertices
 
     @property
@@ -111,7 +118,9 @@ class CargoBag:
         """Positions of the mesh vertices, shape (n, 3)"""
         if self.id is None:
             raise AttributeError("Mesh has not been loaded")
-        self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(self.id)
+        self._num_mesh_vertices, self._mesh_vertices = get_mesh_data(
+            self.id, self.client
+        )
         return self._mesh_vertices
 
     @property
@@ -191,17 +200,17 @@ class CargoBag:
     @property
     def pose(self) -> np.ndarray:
         """Current position + XYZW quaternion pose of the bag's COM frame"""
-        return np.concatenate(pybullet.getBasePositionAndOrientation(self.id))
+        return np.concatenate(self.client.getBasePositionAndOrientation(self.id))
 
     @property
     def position(self) -> np.ndarray:
         """Current XYZ position of the origin (COM frame) of the cargo bag"""
-        return np.array(pybullet.getBasePositionAndOrientation(self.id)[0])
+        return np.array(self.client.getBasePositionAndOrientation(self.id)[0])
 
     @property
     def orientation(self) -> np.ndarray:
         """Current XYZW quaternion orientation of the cargo bag's COM frame"""
-        return np.array(pybullet.getBasePositionAndOrientation(self.id)[1])
+        return np.array(self.client.getBasePositionAndOrientation(self.id)[1])
 
     @property
     def velocity(self) -> np.ndarray:
@@ -235,11 +244,11 @@ class CargoBag:
                 np.ndarray: Linear velocity, shape (3,)
                 np.ndarray: Angular velocity, shape (3,)
         """
-        old_pos, old_orn = pybullet.getBasePositionAndOrientation(self.id)
+        old_pos, old_orn = self.client.getBasePositionAndOrientation(self.id)
         # Step the sim to get a second reference frame we can use to determine velocity
         # This is not ideal, but it's the best way to do this until Pybullet's getBaseVelocity for softbodies works
-        pybullet.stepSimulation()
-        new_pos, new_orn = pybullet.getBasePositionAndOrientation(self.id)
+        self.client.stepSimulation()
+        new_pos, new_orn = self.client.getBasePositionAndOrientation(self.id)
         lin_vel = np.subtract(new_pos, old_pos) / self._dt
         ang_vel = quats_to_angular_velocities(
             np.row_stack([old_orn, new_orn]), self._dt
@@ -287,6 +296,7 @@ class CargoBag:
             self.friction_coeff,
             self_collision,
             self.vtk_file,
+            self.client,
         )
 
     def attach_to(
@@ -387,6 +397,7 @@ class CargoBag:
             robot.Links.ARM_DISTAL.value,
             add_geom=True,
             geom_pos=v1_pos,
+            client=self.client,
         )
         anchor2_id, geom2_id = create_anchor(
             self.id,
@@ -395,6 +406,7 @@ class CargoBag:
             robot.Links.ARM_DISTAL.value,
             add_geom=True,
             geom_pos=v2_pos,
+            client=self.client,
         )
         self._anchors.update({robot.id: [anchor1_id, anchor2_id]})
         self._anchor_objects.update({robot.id: [geom1_id, geom2_id]})
@@ -405,9 +417,9 @@ class CargoBag:
 
         anchors, anchor_objects = self.anchors
         for cid in anchors:
-            pybullet.removeConstraint(cid)
+            self.client.removeConstraint(cid)
         for obj in anchor_objects:
-            pybullet.removeBody(obj)
+            self.client.removeBody(obj)
         self._anchors = {}
         self._anchor_objects = {}
         self._attached = []
@@ -421,9 +433,9 @@ class CargoBag:
         if robot_id not in self.attached:
             raise ValueError("Cannot detach robot: ID unknown")
         for cid in self._anchors[robot_id]:
-            pybullet.removeConstraint(cid)
+            self.client.removeConstraint(cid)
         for obj in self._anchor_objects[robot_id]:
-            pybullet.removeBody(obj)
+            self.client.removeBody(obj)
         self._anchors.pop(robot_id)
         self._anchor_objects.pop(robot_id)
         self._attached.remove(robot_id)
@@ -434,7 +446,7 @@ class CargoBag:
         TODO this is kinda broken since it only removes the simulated body rather than the visual
         (if we update how we load the texture for the softbody this might be fixed)
         """
-        pybullet.removeBody(self.id)
+        self.client.removeBody(self.id)
         self.id = None
 
     def reset_to_handle_pose(
@@ -450,17 +462,17 @@ class CargoBag:
         bag_to_handle = invert_transform_mat(self.grasp_transforms[handle_index])
         bag_to_world = handle_to_world @ bag_to_handle
         bag_pose = tmat_to_pos_quat(bag_to_world)
-        pybullet.resetBasePositionAndOrientation(self.id, bag_pose[:3], bag_pose[3:])
+        self.client.resetBasePositionAndOrientation(self.id, bag_pose[:3], bag_pose[3:])
 
 
 def _main():
     # Very simple example of loading the bag and attaching a robot
-    initialize_pybullet()
+    client = initialize_pybullet()
     robot = Astrobee()
     bag = CargoBag("top_handle")
     bag.attach_to(robot)
     while True:
-        pybullet.stepSimulation()
+        client.stepSimulation()
         time.sleep(1 / 120)
 
 

@@ -13,6 +13,7 @@ TODO decide if the stopping tolerance parameters should be in a different locati
 from typing import Optional
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
@@ -41,6 +42,8 @@ class ForcePIDController:
         orn_tol (float, optional): Stopping tolerance on quaternion distance between cur/des. Defaults to 1e-2.
         vel_tol (float, optional): Stopping tolerance on linear velocity error magnitude. Defaults to 1e-2.
         ang_vel_tol (float, optional): Stopping tolerance on angular velocity error magnitude. Defaults to 5e-3.
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
 
     def __init__(
@@ -57,6 +60,7 @@ class ForcePIDController:
         orn_tol: float = 1e-2,
         vel_tol: float = 1e-2,
         ang_vel_tol: float = 5e-3,
+        client: Optional[BulletClient] = None,
     ):
         self.id = robot_id
         self.mass = mass
@@ -72,6 +76,7 @@ class ForcePIDController:
         self.ang_vel_tol = ang_vel_tol
         self.traj_log = TrajectoryLogger()
         self.control_log = ControlLogger()
+        self.client: pybullet = pybullet if client is None else client
 
     def get_force(
         self,
@@ -240,9 +245,11 @@ class ForcePIDController:
         force = self.get_force(pos, vel, des_pos, des_vel, des_accel)
         torque = self.get_torque(orn, omega, des_orn, des_omega, des_alpha)
         self.control_log.log_control(force, torque, self.dt)
-        pybullet.applyExternalForce(self.id, -1, force, list(pos), pybullet.WORLD_FRAME)
-        pybullet.applyExternalTorque(self.id, -1, list(torque), pybullet.WORLD_FRAME)
-        pybullet.stepSimulation()
+        self.client.applyExternalForce(
+            self.id, -1, force, list(pos), pybullet.WORLD_FRAME
+        )
+        self.client.applyExternalTorque(self.id, -1, list(torque), pybullet.WORLD_FRAME)
+        self.client.stepSimulation()
 
     def get_current_state(
         self,
@@ -256,8 +263,8 @@ class ForcePIDController:
                 np.ndarray: Current linear velocity, shape (3,)
                 np.ndarray: Current angular velocity, shape (3,)
         """
-        pos, quat = pybullet.getBasePositionAndOrientation(self.id)
-        lin_vel, ang_vel = pybullet.getBaseVelocity(self.id)
+        pos, quat = self.client.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = self.client.getBaseVelocity(self.id)
         self.traj_log.log_state(pos, quat, lin_vel, ang_vel, self.dt)
         # These are originally tuples, so convert to numpy
         return np.array(pos), np.array(quat), np.array(lin_vel), np.array(ang_vel)

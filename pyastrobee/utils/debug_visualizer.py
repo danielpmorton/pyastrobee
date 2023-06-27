@@ -13,6 +13,7 @@ from typing import Optional, Union
 import numpy as np
 import numpy.typing as npt
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.rotations import (
@@ -29,7 +30,11 @@ from pyastrobee.control.controller import PoseController
 
 
 def visualize_points(
-    position: npt.ArrayLike, color: npt.ArrayLike, size: float = 20, lifetime: float = 0
+    position: npt.ArrayLike,
+    color: npt.ArrayLike,
+    size: float = 20,
+    lifetime: float = 0,
+    client: Optional[BulletClient] = None,
 ) -> int:
     """Adds square points to the GUI to visualize positions in the sim
 
@@ -39,10 +44,13 @@ def visualize_points(
         size (float): Size of the points on the GUI, in pixels. Defaults to 20
         lifetime (float, optional): Amount of time to keep the points on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         int: Pybullet object ID for the point / point cloud
     """
+    client: pybullet = pybullet if client is None else client
     # Pybullet will crash if you try to visualize one point without packing it into a 2D array
     position = np.atleast_2d(position)
     color = np.atleast_2d(color)
@@ -63,11 +71,15 @@ def visualize_points(
             raise ValueError(
                 f"Number of colors ({color.shape[0]}) does not match the number of points ({n})."
             )
-    return pybullet.addUserDebugPoints(position, color, size, lifetime)
+    return client.addUserDebugPoints(position, color, size, lifetime)
 
 
 def visualize_frame(
-    tmat: np.ndarray, length: float = 1, width: float = 3, lifetime: float = 0
+    tmat: np.ndarray,
+    length: float = 1,
+    width: float = 3,
+    lifetime: float = 0,
+    client: Optional[BulletClient] = None,
 ) -> tuple[int, int, int]:
     """Adds RGB XYZ axes to the Pybullet GUI for a speficied transformation/frame/pose
 
@@ -77,10 +89,13 @@ def visualize_frame(
         width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
         lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
     """
+    client: pybullet = pybullet if client is None else client
     x_color = [1, 0, 0]  # R
     y_color = [0, 1, 0]  # G
     z_color = [0, 0, 1]  # B
@@ -88,9 +103,9 @@ def visualize_frame(
     x_endpt = origin + tmat[:3, 0] * length
     y_endpt = origin + tmat[:3, 1] * length
     z_endpt = origin + tmat[:3, 2] * length
-    x_ax_id = pybullet.addUserDebugLine(origin, x_endpt, x_color, width, lifetime)
-    y_ax_id = pybullet.addUserDebugLine(origin, y_endpt, y_color, width, lifetime)
-    z_ax_id = pybullet.addUserDebugLine(origin, z_endpt, z_color, width, lifetime)
+    x_ax_id = client.addUserDebugLine(origin, x_endpt, x_color, width, lifetime)
+    y_ax_id = client.addUserDebugLine(origin, y_endpt, y_color, width, lifetime)
+    z_ax_id = client.addUserDebugLine(origin, z_endpt, z_color, width, lifetime)
     return x_ax_id, y_ax_id, z_ax_id
 
 
@@ -100,6 +115,7 @@ def visualize_link_frame(
     length: float = 1,
     width: float = 3,
     lifetime: float = 0,
+    client: Optional[BulletClient] = None,
 ) -> tuple[int, int, int]:
     """Adds RGB XYZ axes to the Pybullet GUI for a specific link on the Astrobee
 
@@ -110,10 +126,13 @@ def visualize_link_frame(
         width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
         lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
     """
+    client: pybullet = pybullet if client is None else client
     x_color = [1, 0, 0]  # R
     y_color = [0, 1, 0]  # G
     z_color = [0, 0, 1]  # B
@@ -121,20 +140,24 @@ def visualize_link_frame(
     x_endpt = np.array([1, 0, 0]) * length
     y_endpt = np.array([0, 1, 0]) * length
     z_endpt = np.array([0, 0, 1]) * length
-    x_ax_id = pybullet.addUserDebugLine(
+    x_ax_id = client.addUserDebugLine(
         origin, x_endpt, x_color, width, lifetime, robot_id, link_id
     )
-    y_ax_id = pybullet.addUserDebugLine(
+    y_ax_id = client.addUserDebugLine(
         origin, y_endpt, y_color, width, lifetime, robot_id, link_id
     )
-    z_ax_id = pybullet.addUserDebugLine(
+    z_ax_id = client.addUserDebugLine(
         origin, z_endpt, z_color, width, lifetime, robot_id, link_id
     )
     return x_ax_id, y_ax_id, z_ax_id
 
 
 def visualize_quaternion(
-    quat: npt.ArrayLike, length: float = 1, width: float = 3, lifetime: float = 0
+    quat: npt.ArrayLike,
+    length: float = 1,
+    width: float = 3,
+    lifetime: float = 0,
+    client: Optional[BulletClient] = None,
 ) -> tuple[int, int, int]:
     """Wrapper around visualize_frame specifically for debugging quaternions. Shows the rotated frame at the origin
 
@@ -144,21 +167,24 @@ def visualize_quaternion(
         width (float, optional): Width of the axis lines. Defaults to 3. (units unknown, maybe mm?)
         lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         tuple[int, int, int]: Pybullet IDs of the three axis lines added to the GUI
     """
     rmat = quat_to_rmat(quat)
     tmat = make_transform_mat(rmat, [0, 0, 0])
-    return visualize_frame(tmat, length, width, lifetime)
+    return visualize_frame(tmat, length, width, lifetime, client)
 
 
 def visualize_path(
     positions: npt.ArrayLike,
     n: Optional[int] = None,
-    color: npt.ArrayLike = [1, 0, 0],
+    color: npt.ArrayLike = (1, 0, 0),
     width: float = 3,
     lifetime: float = 0,
+    client: Optional[BulletClient] = None,
 ) -> list[int]:
     """Visualize a sequence of positions on the Pybullet GUI
 
@@ -166,14 +192,17 @@ def visualize_path(
         positions (npt.ArrayLike): Sequence of positions, shape (n, 3)
         n (Optional[int]): Number of lines to plot, if plotting the lines between all positions is not desired.
             Defaults to None (plot all lines between positions)
-        color (npt.ArrayLike, optional): RGB color values. Defaults to [1, 0, 0] (red).
+        color (npt.ArrayLike, optional): RGB color values. Defaults to (1, 0, 0) (red).
         width (float, optional): Width of the line. Defaults to 3 (pixels)
         lifetime (float, optional): Amount of time to keep the lines on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         list[int]: Pybullet IDs of the lines added to the GUI
     """
+    client: pybullet = pybullet if client is None else client
     positions = np.atleast_2d(positions)
     n_positions, dim = positions.shape
     assert dim == 3
@@ -185,24 +214,29 @@ def visualize_path(
     ids = []
     for i in range(positions.shape[0] - 1):
         ids.append(
-            pybullet.addUserDebugLine(
+            client.addUserDebugLine(
                 positions[i], positions[i + 1], color, width, lifetime
             )
         )
     return ids
 
 
-def remove_debug_objects(ids: Union[int, list[int], np.ndarray[int]]) -> None:
+def remove_debug_objects(
+    ids: Union[int, list[int], np.ndarray[int]], client: Optional[BulletClient] = None
+) -> None:
     """Removes user-created line(s)/point(s)/etc. from the Pybullet GUI
 
     Args:
         ids (int or list/array of ints): ID(s) of the objects loaded into Pybullet
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
+    client: pybullet = pybullet if client is None else client
     if np.ndim(ids) == 0:  # Scalar, not iterable
-        pybullet.removeUserDebugItem(ids)
+        client.removeUserDebugItem(ids)
         return
     for i in ids:
-        pybullet.removeUserDebugItem(i)
+        client.removeUserDebugItem(i)
 
 
 def get_viz_camera_params(
@@ -241,7 +275,7 @@ def get_viz_camera_params(
     return dist, yaw, pitch, target
 
 
-if __name__ == "__main__":
+def _main():
     # Quick test if the debug visualizer camera parameters are able to track the robot motion
     pybullet.connect(pybullet.GUI)
     robot = Astrobee()
@@ -267,3 +301,7 @@ if __name__ == "__main__":
         pybullet.changeConstraint(controller.constraint_id, pos, orn)
         pybullet.stepSimulation()
         time.sleep(1 / 20)
+
+
+if __name__ == "__main__":
+    _main()

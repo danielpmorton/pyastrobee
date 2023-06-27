@@ -11,7 +11,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim, create_s
 from pyastrobee.utils.rotations import Ry
 from pyastrobee.utils.transformations import make_transform_mat
 
-initialize_pybullet(bg_color=[1, 1, 1])
+client = initialize_pybullet(bg_color=[1, 1, 1])
 
 # Use the half-open gripper to determine the position of the grasp point
 robot = Astrobee(gripper_pos=50)

@@ -11,6 +11,7 @@ TODO add max vel/accel lines into the plots?
 from typing import Optional, Union
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
@@ -114,25 +115,30 @@ class Trajectory:
         self._tmats = batched_pos_quats_to_tmats(self.poses)
         return self._tmats
 
-    def visualize(self, n: Optional[int] = None) -> list[int]:
+    def visualize(
+        self, n: Optional[int] = None, client: Optional[BulletClient] = None
+    ) -> list[int]:
         """View the trajectory in Pybullet
 
         Args:
             n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
                 Defaults to None (plot all frames)
+            client (BulletClient, optional): If connecting to multiple physics servers, include the client
+                (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
         Returns:
             list[int]: Pybullet IDs for the lines drawn onto the GUI
         """
-        connection_status = pybullet.isConnected()
+        client: pybullet = pybullet if client is None else client
+        connection_status = client.isConnected()
         # Bring up the Pybullet GUI if needed
         if not connection_status:
-            pybullet.connect(pybullet.GUI)
-        ids = visualize_traj(self, n)
+            client.connect(pybullet.GUI)
+        ids = visualize_traj(self, n, client)
         input("Press Enter to continue")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
-            pybullet.disconnect()
+            client.disconnect()
         return ids
 
     def plot(self, show: bool = True) -> Figure:
@@ -403,7 +409,9 @@ def compare_trajs(
 
 
 def visualize_traj(
-    traj: Union[Trajectory, npt.ArrayLike], n: Optional[int] = None
+    traj: Union[Trajectory, npt.ArrayLike],
+    n: Optional[int] = None,
+    client: Optional[BulletClient] = None,
 ) -> list[int]:
     """Visualizes a trajectory's sequence of poses on the Pybullet GUI
 
@@ -412,10 +420,13 @@ def visualize_traj(
             position + orientation info), or an array of position + quaternion poses, shape (n, 7)
         n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
             Defaults to None (plot all frames)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         list[int]: Pybullet IDs for the lines drawn onto the GUI
     """
+    client: pybullet = pybullet if client is None else client
     if isinstance(traj, Trajectory):
         traj = traj.poses
     else:
@@ -430,7 +441,7 @@ def visualize_traj(
     tmats = batched_pos_quats_to_tmats(traj)
     ids = []
     for i in range(tmats.shape[0]):
-        ids += visualize_frame(tmats[i, :, :])
+        ids += visualize_frame(tmats[i, :, :], client=client)
     return ids
 
 

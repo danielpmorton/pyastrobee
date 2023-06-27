@@ -3,28 +3,34 @@
 Reference: mesh_utils and anchor_utils in contactrika/dedo
 """
 
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 
 
-def get_mesh_data(object_id: int) -> tuple[int, np.ndarray]:
+def get_mesh_data(
+    object_id: int, client: Optional[BulletClient] = None
+) -> tuple[int, np.ndarray]:
     """Determines the number of vertices and their locations of a given mesh object in Pybullet
 
     Args:
         object_id (int): ID of the mesh loaded into Pybullet
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         tuple of:
             int: Number of vertices in the mesh
             np.ndarray: Mesh vertex positions, shape (num_verts, 3)
     """
+    client: pybullet = pybullet if client is None else client
     kwargs = {}
     if hasattr(pybullet, "MESH_DATA_SIMULATION_MESH"):
         kwargs["flags"] = pybullet.MESH_DATA_SIMULATION_MESH
-    num_verts, mesh_vert_positions = pybullet.getMeshData(object_id, **kwargs)
+    num_verts, mesh_vert_positions = client.getMeshData(object_id, **kwargs)
     # Mesh vertices are originally stored in a tuple of tuples, so convert to numpy for ease of use
     return num_verts, np.array(mesh_vert_positions)
 

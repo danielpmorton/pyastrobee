@@ -18,6 +18,7 @@ QUESTIONS
 """
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
@@ -35,7 +36,7 @@ from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
 def init(
     robot_pose: npt.ArrayLike, use_gui: bool = True
-) -> tuple[int, Astrobee, CargoBag]:
+) -> tuple[BulletClient, Astrobee, CargoBag]:
     """Initialize the simulation environment with our assets
 
     Args:
@@ -44,14 +45,14 @@ def init(
 
     Returns:
         Tuple of:
-            int: The Pybullet client ID
+            BulletClient: The Pybullet client
             Astrobee: The Astrobee object
             CargoBag: The Cargo Bag object
     """
     client = initialize_pybullet(use_gui)
-    load_iss()
-    robot = Astrobee(robot_pose)
-    bag = CargoBag("top_handle")
+    load_iss(client=client)
+    robot = Astrobee(robot_pose, client=client)
+    bag = CargoBag("top_handle", client=client)
     bag.attach_to(robot, object_to_move="bag")
     return client, robot, bag
 
@@ -257,14 +258,7 @@ def mpc_main(
 
     client, robot, bag = init(start_pose, use_gui=True)
     tracking_controller = ForcePIDController(
-        robot.id,
-        robot.mass,
-        robot.inertia,
-        kp,
-        kv,
-        kq,
-        kw,
-        dt,
+        robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, client=client
     )
     nominal_traj = plan_trajectory(
         start_pose[:3],
@@ -283,8 +277,8 @@ def mpc_main(
         dt,
     )
     if debug:
-        line_ids = nominal_traj.visualize(20)
-        remove_debug_objects(line_ids)
+        line_ids = nominal_traj.visualize(20, client)
+        remove_debug_objects(line_ids, client)
     # Add some buffer time to the end of the trajectory for stopping
     max_stopping_time = 3  # seconds
     max_steps = nominal_traj.num_timesteps + round(max_stopping_time / dt)
@@ -299,7 +293,7 @@ def mpc_main(
         if step_count >= max_steps:
             print("MAX STEPS EXCEEDED")
             break
-        state_id = pybullet.saveState()
+        state_id = client.saveState()
         pos, orn, vel, ang_vel = robot.dynamics_state
         if cur_idx == end_idx and stopping_criteria(
             pos,
@@ -347,8 +341,8 @@ def mpc_main(
         )
         for traj in trajs:
             if debug:
-                line_ids = traj.visualize(10)
-                remove_debug_objects(line_ids)
+                line_ids = traj.visualize(10, client)
+                remove_debug_objects(line_ids, client)
             # This is effectively a perfect rollout (TODO make this fact clearer)
             tracking_controller.follow_traj(traj, stop_at_end, n_rollout_steps)
             # TODO should we visualize the deviation in the trajectory?
@@ -369,7 +363,7 @@ def mpc_main(
                     ang_vel_penalty,
                 )
             )
-            pybullet.restoreState(stateId=state_id)
+            client.restoreState(stateId=state_id)
         best_traj = trajs[np.argmin(costs)]
         # Execute the best trajectory
         tracking_controller.follow_traj(best_traj, stop_at_end)

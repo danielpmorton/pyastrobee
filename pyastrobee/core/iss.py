@@ -8,8 +8,10 @@ Notes:
 
 import os
 from enum import Enum
+from typing import Optional
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
@@ -37,7 +39,9 @@ class ISSModule(Enum):
 
 
 def load_iss(
-    orn: npt.ArrayLike = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2), debug: bool = False
+    orn: npt.ArrayLike = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2),
+    debug: bool = False,
+    client: Optional[BulletClient] = None,
 ) -> list[int]:
     """Loads all modules of the ISS into pybullet
 
@@ -47,13 +51,15 @@ def load_iss(
             it lays flat in the simulator.
         debug (bool, optional): Whether or not we are in debug-collision-bodies mode. If True, this will just
             visualize the collision bodies. Defaults to False
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         list[int]: The pybullet IDs for each of the modules' collision body
     """
     ids = []
     for module in ISSModule:
-        module_id = load_iss_module(module, orn, debug)
+        module_id = load_iss_module(module, orn, debug, client)
         ids.append(module_id)
     print_green("ISS is ready")
     return ids
@@ -63,6 +69,7 @@ def load_iss_module(
     module: ISSModule,
     orn: npt.ArrayLike = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2),
     debug: bool = False,
+    client: Optional[BulletClient] = None,
 ) -> int:
     """Loads a single ISS module. For example, US_LAB
 
@@ -73,6 +80,8 @@ def load_iss_module(
             it lays flat in the simulator.
         debug (bool, optional): Whether or not we are in debug-collision-bodies mode. If True, this will just
             visualize the module's collision body. Defaults to False
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Raises:
         PybulletError: If pybullet fails to properly load a visual or collision object
@@ -80,22 +89,24 @@ def load_iss_module(
     Returns:
         int: ID of the body corresponding to the VHACD collision object
     """
+    client: pybullet = pybullet if client is None else client
+
     # Locate the paths to all of the meshes for the module
     vhacd_path, part_paths = _find_mesh_files(module)
 
     # If we're debugging the collision info, just load the VHACD results as both the collision and visual
     if debug:
-        visual_id = pybullet.createVisualShape(
+        visual_id = client.createVisualShape(
             shapeType=pybullet.GEOM_MESH,
             fileName=vhacd_path,
             visualFrameOrientation=orn,
         )
-        collision_id = pybullet.createCollisionShape(
+        collision_id = client.createCollisionShape(
             shapeType=pybullet.GEOM_MESH,
             fileName=vhacd_path,
             collisionFrameOrientation=orn,
         )
-        rigid_id = pybullet.createMultiBody(
+        rigid_id = client.createMultiBody(
             baseMass=0,  # Fixed position
             baseCollisionShapeIndex=collision_id,
             baseVisualShapeIndex=visual_id,
@@ -112,7 +123,7 @@ def load_iss_module(
     for i, path in enumerate(part_paths):
         # Every part will have an associated visual shape
         # When the path points to an OBJ, it will load colors via the associated MTL file in the same directory
-        visual_id = pybullet.createVisualShape(
+        visual_id = client.createVisualShape(
             shapeType=pybullet.GEOM_MESH, fileName=path, visualFrameOrientation=orn
         )
         if visual_id < 0:
@@ -121,7 +132,7 @@ def load_iss_module(
             )
         if i == 0:
             # Load the VHACD results as the collision info
-            collision_id = pybullet.createCollisionShape(
+            collision_id = client.createCollisionShape(
                 shapeType=pybullet.GEOM_MESH,
                 fileName=vhacd_path,
                 collisionFrameOrientation=orn,
@@ -132,7 +143,7 @@ def load_iss_module(
                 )
         else:
             collision_id = -1  # -1 means no collision bodies will be generated
-        rigid_id = pybullet.createMultiBody(
+        rigid_id = client.createMultiBody(
             baseMass=0,  # Fixed position
             baseCollisionShapeIndex=collision_id,
             baseVisualShapeIndex=visual_id,
@@ -184,7 +195,11 @@ def _find_mesh_files(module: ISSModule) -> tuple[str, list[str]]:
     return vhacd_path, part_paths
 
 
-if __name__ == "__main__":
-    initialize_pybullet()
+def _main():
+    client = initialize_pybullet()
     load_iss(debug=False)
     run_sim()
+
+
+if __name__ == "__main__":
+    _main()

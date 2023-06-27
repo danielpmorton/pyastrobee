@@ -10,7 +10,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 
 
 def test_attach_and_detach():
-    initialize_pybullet()
+    client = initialize_pybullet()
     robot = Astrobee()
     bag = CargoBag("top_handle")
     bag.attach_to(robot)
@@ -36,7 +36,7 @@ def test_attach_and_detach():
 
 
 def test_dynamics():
-    initialize_pybullet()
+    client = initialize_pybullet()
     robot = Astrobee()
     bag = CargoBag("top_handle")
     bag.attach_to(robot)
@@ -53,7 +53,7 @@ def test_dynamics():
 
 
 def test_multi_robot():
-    initialize_pybullet()
+    client = initialize_pybullet()
     robot_1 = Astrobee()
     robot_2 = Astrobee()
     bag = CargoBag("top_bottom_handle")

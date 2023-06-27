@@ -72,7 +72,7 @@ def astrobee_example():
 
 
 def astrobee_with_bag_example():
-    initialize_pybullet(bg_color=[1, 1, 1])
+    client = initialize_pybullet(bg_color=[1, 1, 1])
     np.random.seed(0)
     robot = Astrobee()
     bag = CargoBag("top_handle")

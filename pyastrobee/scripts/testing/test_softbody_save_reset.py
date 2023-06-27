@@ -37,7 +37,7 @@ def loop_sim(t=5):
 
 def run_test(object: str):
     """Pause, save, and reset the sim after user interaction. Object is either "bag", "cloth", or "astrobee"."""
-    initialize_pybullet()
+    client = initialize_pybullet()
     if object == "bag":
         bag = CargoBag("top_handle")
     elif object == "cloth":
@@ -65,7 +65,7 @@ def multi_reset_test():
     With previous implementations of save/restoreState, this lead to accumulated error in the handle of the bag.
     However, with the new internal Bullet implementation of this, it should not lead to this issue
     """
-    initialize_pybullet()
+    client = initialize_pybullet()
     robot = Astrobee()
     bag = CargoBag("top_handle")
     bag.attach_to(robot)
@@ -105,7 +105,7 @@ def multi_reset_test():
 
 def multi_object_test():
     """Test with a floor and two deformables to check that Bullet finds the correct UniqueIDs in the restore process"""
-    initialize_pybullet()
+    client = initialize_pybullet()
     floor_id = load_floor(z_pos=-2)
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
     cloth_1 = load_deformable_object(

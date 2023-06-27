@@ -114,7 +114,7 @@ def demo_with_iss():
         [-0.31709299, 0.31352898, 0.53193288, -0.03191529, 0.0062923, -0.83105266, 0.55524166],
     ]
     # fmt: on
-    initialize_pybullet()
+    client = initialize_pybullet()
     # pybullet.connect(pybullet.GUI)  # a simple version without deformables
     # Bring the camera close to the action (another just random hardcoded position I found)
     pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
@@ -134,7 +134,7 @@ def demo_with_iss():
 
 
 def demo_with_bag():
-    initialize_pybullet()
+    client = initialize_pybullet()
     cam_args = {
         "cameraDistance": 1.6,  # use 0.7 to look at anchor attachment closely
         "cameraPitch": 200,

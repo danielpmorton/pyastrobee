@@ -121,10 +121,7 @@ class Astrobee:
         gripper_pos: float = 100,
         client: Optional[BulletClient] = None,
     ):
-        if client is None:
-            self.client = pybullet
-        else:
-            self.client: pybullet = client
+        self.client: pybullet = pybullet if client is None else client
         if not self.client.isConnected():
             raise ConnectionError(
                 "Need to connect to pybullet before initializing an astrobee"
@@ -629,7 +626,11 @@ class Astrobee:
     #     MANIPULATING = 4
 
 
-if __name__ == "__main__":
-    initialize_pybullet(bg_color=[1, 1, 1])
+def _main():
+    client = initialize_pybullet(bg_color=[1, 1, 1])
     robot = Astrobee()
     run_sim()
+
+
+if __name__ == "__main__":
+    _main()
