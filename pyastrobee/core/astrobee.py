@@ -6,12 +6,16 @@ we assume that they all have the exact same configuration
 TODO
 - Figure out the sleep time in the while loops. What value should we use?
 - Get step sizes worked out!!
+- I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future, 
+  make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping track
+  of all of the IDs together will cause a mess)
 """
 
 import time
 from typing import Optional, Union
 
 import pybullet
+from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
@@ -33,6 +37,8 @@ class Astrobee:
         arm_joints (npt.ArrayLike, optional): Initial position of the arm's joints. Defaults to
             (0.0, 0.0) (Hanging straight down)
         gripper_pos (float, optional): Initial gripper position, in [0, 100]. Defaults to 100 (fully open)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Raises:
         ConnectionError: If a pybullet server is not connected before initialization
@@ -40,8 +46,6 @@ class Astrobee:
 
     # TODO add these to a constants or config file? Probably fine here for now
     URDF = "pyastrobee/assets/urdf/astrobee.urdf"
-    LOADED_IDS = []  # Initialization
-    NUM_ROBOTS = 0  # Initialization. TODO make this into a property?
     NUM_JOINTS = 7
     NUM_LINKS = 8
     TRANSFORMS = astrobee_transforms  # TODO figure out if this is the best way to store this info
@@ -115,31 +119,25 @@ class Astrobee:
         pose: npt.ArrayLike = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
         arm_joints: npt.ArrayLike = (0.0, 0.0),
         gripper_pos: float = 100,
+        client: Optional[BulletClient] = None,
     ):
-        if not pybullet.isConnected():
+        if client is None:
+            self.client = pybullet
+        else:
+            self.client: pybullet = client
+        if not self.client.isConnected():
             raise ConnectionError(
                 "Need to connect to pybullet before initializing an astrobee"
             )
-        self.id = pybullet.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
-        Astrobee.LOADED_IDS.append(self.id)
-        Astrobee.NUM_ROBOTS += 1
-        self._dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]  # Timestep
+        self.id = self.client.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
+        self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]  # Timestep
         self.set_gripper_position(gripper_pos, force=True)
         self.set_arm_joints(arm_joints, force=True)
         print_green("Astrobee is ready")
 
-    @classmethod
-    def unload_robot(cls, robot_id: int) -> None:
-        """Removes an Astrobee from the simulation
-
-        Args:
-            robot_id (int): ID of the robot to remove (the self.id parameter)
-        """
-        if robot_id not in Astrobee.LOADED_IDS:
-            raise ValueError(f"Invalid ID: {robot_id}, cannot unload the astrobee")
-        pybullet.removeBody(robot_id)
-        Astrobee.LOADED_IDS.remove(robot_id)
-        Astrobee.NUM_ROBOTS -= 1
+    def unload(self) -> None:
+        """Remove the Astrobee from the simulation"""
+        self.client.removeBody(self.id)
 
     @property
     def pose(self) -> np.ndarray:
@@ -148,7 +146,7 @@ class Astrobee:
         Returns:
             np.ndarray: Position and quaternion, size (7,)
         """
-        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
+        pos, orn = self.client.getBasePositionAndOrientation(self.id)
         return np.concatenate([pos, orn])
 
     @property
@@ -211,7 +209,7 @@ class Astrobee:
         Returns:
             np.ndarray: [vx, vy, vz] linear velocities, shape (3,)
         """
-        lin_vel, _ = pybullet.getBaseVelocity(self.id)
+        lin_vel, _ = self.client.getBaseVelocity(self.id)
         return np.array(lin_vel)
 
     @property
@@ -223,7 +221,7 @@ class Astrobee:
         Returns:
             np.ndarray: [wx, wy, wz] angular velocities, shape (3,)
         """
-        _, ang_vel = pybullet.getBaseVelocity(self.id)
+        _, ang_vel = self.client.getBaseVelocity(self.id)
         return np.array(ang_vel)
 
     @property
@@ -250,7 +248,7 @@ class Astrobee:
         # States: tuple[tuple], size (7, 4)
         # 7 corresponds to NUM_JOINTS
         # 4 corresponds to position, velocity, reaction forces, and applied torque
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        states = self.client.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
         # Index 0: position
         return np.array([states[i][0] for i in range(Astrobee.NUM_JOINTS)])
 
@@ -261,7 +259,7 @@ class Astrobee:
         Returns:
             np.ndarray: Joint velocities, shape (NUM_JOINTS,)
         """
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        states = self.client.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
         # Index 1: velocity
         return np.array([states[i][1] for i in range(Astrobee.NUM_JOINTS)])
 
@@ -272,7 +270,7 @@ class Astrobee:
         Returns:
             np.ndarray: Joint torques, shape (NUM_JOINTS,)
         """
-        states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+        states = self.client.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
         # Index 3: torque
         return np.array([states[i][3] for i in range(Astrobee.NUM_JOINTS)])
 
@@ -318,8 +316,8 @@ class Astrobee:
                 np.ndarray: Linear velocity, shape (3,)
                 np.ndarray: Angular velocity, shape (3,)
         """
-        pos, orn = pybullet.getBasePositionAndOrientation(self.id)
-        lin_vel, ang_vel = pybullet.getBaseVelocity(self.id)
+        pos, orn = self.client.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = self.client.getBaseVelocity(self.id)
         return np.array(pos), np.array(orn), np.array(lin_vel), np.array(ang_vel)
 
     @property
@@ -334,7 +332,7 @@ class Astrobee:
                 of the Astrobee - 6 DOF for a floating base, plus 6 for the six non-fixed joints)
         """
         # Inputs must be a lists (no numpy) or else pybullet will seg fault
-        M = pybullet.calculateMassMatrix(self.id, list(self.joint_angles))
+        M = self.client.calculateMassMatrix(self.id, list(self.joint_angles))
         return np.array(M)
 
     def get_jacobians(
@@ -364,7 +362,7 @@ class Astrobee:
         # for an internal call to calculateInverseDynamics (and maybe aren't really meaningful?)
         desired_accels = ndof * [0.0]
         # All inputs must be lists (no numpy) or else pybullet will seg fault
-        Jv, Jw = pybullet.calculateJacobian(
+        Jv, Jw = self.client.calculateJacobian(
             self.id,
             link,
             list(local_pos),
@@ -390,7 +388,7 @@ class Astrobee:
         # So, use this only for non-base links
         if link_index > 6 or link_index < 0:
             raise ValueError(f"Invalid link index: {link_index}")
-        link_state = pybullet.getLinkState(
+        link_state = self.client.getLinkState(
             self.id, link_index, computeForwardKinematics=True
         )
         # First two link state values are linkWorldPosition, linkWorldOrientation
@@ -405,7 +403,7 @@ class Astrobee:
         Returns:
             int: Position of the gripper, an integer between 0 (closed) and 100 (open)
         """
-        joint_states = pybullet.getJointStates(self.id, Astrobee.GRIPPER_JOINT_IDXS)
+        joint_states = self.client.getJointStates(self.id, Astrobee.GRIPPER_JOINT_IDXS)
         joint_angles = [state[0] for state in joint_states]
         l_angles = joint_angles[:2]
         r_angles = joint_angles[2:]
@@ -501,14 +499,14 @@ class Astrobee:
             )
         if force:
             for ind, angle in zip(indices, angles):
-                pybullet.resetJointState(self.id, ind, angle)
+                self.client.resetJointState(self.id, ind, angle)
         else:
-            pybullet.setJointMotorControlArray(
-                self.id, indices, pybullet.POSITION_CONTROL, angles
+            self.client.setJointMotorControlArray(
+                self.id, indices, self.client.POSITION_CONTROL, angles
             )
             tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
             while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
-                pybullet.stepSimulation()
+                self.client.stepSimulation()
                 time.sleep(self._dt)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
@@ -521,7 +519,7 @@ class Astrobee:
         Returns:
             np.ndarray: Joint angles (in radians), length = len(indices) or Astrobee.NUM_JOINTS
         """
-        states = pybullet.getJointStates(self.id, indices)
+        states = self.client.getJointStates(self.id, indices)
         return np.array([state[0] for state in states])
 
     def set_arm_joints(self, angles: npt.ArrayLike, force: bool = False) -> None:
@@ -568,7 +566,7 @@ class Astrobee:
         Args:
             pose (npt.ArrayLike): Desired position + XYZW quaternion pose of the Astrobee's base, shape (7,)
         """
-        pybullet.resetBasePositionAndOrientation(self.id, pose[:3], pose[3:])
+        self.client.resetBasePositionAndOrientation(self.id, pose[:3], pose[3:])
 
     def localize(self):
         raise NotImplementedError()  # TODO.. see dynamics state. Should have a noise parameter
@@ -614,7 +612,7 @@ class Astrobee:
     #     # TODO: decide if we should use this
     #     # Need to figure out if we are enabling torque sensors on these joints
     #     raise NotImplementedError
-    #     states = pybullet.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
+    #     states = self.client.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
     #     return [
     #         states[i][1] for i in range(Astrobee.NUM_JOINTS)
     #     ]  # Index 2: reaction forces
