@@ -1,0 +1,5 @@
+# Ignore everything, but make sure we create the saved_states directory
+# We'll ignore everything in saved_states via a separate gitignore
+*
+!.gitignore
+!saved_states/
