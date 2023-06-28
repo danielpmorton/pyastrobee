@@ -13,7 +13,7 @@ import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.cargo_bag import CargoBag
-from pyastrobee.control.force_controller_new import ForcePIDController
+from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
@@ -41,7 +41,7 @@ def unit_mass_cube_example():
     kq = 1
     kw = 0.1
     inertia = box_inertia(mass, *sidelengths)
-    controller = ForcePIDController(box, mass, inertia, kp, kv, kq, kw, dt)
+    controller = ForceTorqueController(box, mass, inertia, kp, kv, kq, kw, dt)
     controller.follow_traj(traj)
     pybullet.disconnect()
     compare_trajs(traj, controller.traj_log)
@@ -62,7 +62,7 @@ def astrobee_example():
     kv = 5
     kq = 1
     kw = 0.1
-    controller = ForcePIDController(
+    controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     controller.follow_traj(traj)
@@ -87,7 +87,7 @@ def astrobee_with_bag_example():
     kv = 5
     kq = 1
     kw = 0.1
-    controller = ForcePIDController(
+    controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, 1e-1, 1e-1, 1e-1, 1e-1
     )
     controller.follow_traj(traj)

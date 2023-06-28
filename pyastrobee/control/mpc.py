@@ -30,7 +30,7 @@ from pyastrobee.utils.quaternions import quaternion_angular_error
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
 from pyastrobee.trajectories.trajectory import Trajectory, stopping_criteria
 from pyastrobee.trajectories.planner import plan_trajectory
-from pyastrobee.control.force_controller_new import ForcePIDController
+from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
 
@@ -257,7 +257,7 @@ def mpc_main(
     ang_vel_tol = 5e-3
 
     client, robot, bag = init(start_pose, use_gui=True)
-    tracking_controller = ForcePIDController(
+    tracking_controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, client=client
     )
     nominal_traj = plan_trajectory(

@@ -17,7 +17,7 @@ import pybullet_data
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
-from pyastrobee.control.force_controller_new import ForcePIDController
+from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.utils.rotations import euler_xyz_to_quat
 from pyastrobee.utils.bullet_utils import (
@@ -78,7 +78,7 @@ def multi_reset_test():
     kv = 5
     kq = 1
     kw = 0.1
-    controller = ForcePIDController(
+    controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     steps_between_resets = 10  # Adjust to change reset frequency

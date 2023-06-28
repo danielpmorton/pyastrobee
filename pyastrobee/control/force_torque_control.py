@@ -26,7 +26,7 @@ from pyastrobee.control.controller import ControlLogger
 from pyastrobee.utils.quaternions import quaternion_angular_error
 
 
-class ForcePIDController:
+class ForceTorqueController:
     """PID-style force/torque control
 
     Args:
