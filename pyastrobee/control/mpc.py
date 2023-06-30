@@ -178,6 +178,7 @@ def mpc_main(
             n_candidate_trajs,
             min(n_rollout_steps, lookahead_idx - cur_idx + 1),
             dt,
+            include_nominal_traj=True,
         )
         for traj in trajs:
             if debug:

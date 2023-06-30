@@ -34,6 +34,7 @@ def generate_trajs(
     n_trajs: int,
     n_steps: int,
     dt: float,
+    include_nominal_traj: bool,
 ) -> list[Trajectory]:
     """Generate a number of trajectories from the current state to a sampled state about a nominal target
 
@@ -57,13 +58,37 @@ def generate_trajs(
         n_trajs (int): Number of trajectories to generate
         n_steps (int): Number of trajectory steps between the current state and the sampled goal state
         dt (float): Timestep
+        include_nominal_traj (bool): Whether or not to include the nominal (non-sampled) trajectory in the output
 
     Returns:
         list[Trajectory]: Sampled trajectories, length n_trajs
     """
-    # Sample enpoints and then use these to generate trajectories
-    # First trajectory will be nominal, other trajectories will be sampling-based
-    n_samples = n_trajs - 1
+    trajs = []
+    if include_nominal_traj:
+        # Let the first generated trajectory use the mean of all of the distributions
+        trajs.append(
+            plan_trajectory(
+                cur_pos,
+                cur_orn,
+                cur_vel,
+                cur_ang_vel,
+                cur_accel,
+                cur_alpha,
+                nominal_target_pos,
+                nominal_target_orn,
+                nominal_target_vel,
+                nominal_target_ang_vel,
+                nominal_target_accel,
+                nominal_target_alpha,
+                n_steps * dt,
+                dt,
+            )
+        )
+        # Reduce the number of trajectories to sample since we have added this nominal traj
+        n_samples = n_trajs - 1
+    else:
+        # Sample all of the trajectories
+        n_samples = n_trajs
 
     # Sample endpoints for the candidate trajectories about the nominal targets
     sampled_positions = np.random.multivariate_normal(
@@ -84,24 +109,6 @@ def generate_trajs(
     sampled_alphas = np.random.multivariate_normal(
         nominal_target_alpha, alpha_sampling_stdev**2 * np.eye(3), n_samples
     )
-    trajs = [
-        plan_trajectory(
-            cur_pos,
-            cur_orn,
-            cur_vel,
-            cur_ang_vel,
-            cur_accel,
-            cur_alpha,
-            nominal_target_pos,
-            nominal_target_orn,
-            nominal_target_vel,
-            nominal_target_ang_vel,
-            nominal_target_accel,
-            nominal_target_alpha,
-            n_steps * dt,
-            dt,
-        )
-    ]
     for i in range(n_samples):
         trajs.append(
             plan_trajectory(
