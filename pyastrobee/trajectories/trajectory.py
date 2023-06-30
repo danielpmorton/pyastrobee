@@ -152,6 +152,40 @@ class Trajectory:
         """
         return plot_traj(self, show=show)
 
+    def get_segment(
+        self, start_index: int, end_index: int, reset_time: bool = True
+    ) -> "Trajectory":
+        """Construct a trajectory segment from a larger trajectory
+
+        Args:
+            start_index (int): Starting index of the larger trajectory to extract the segment
+            end_index (int): Ending index of the larger trajectory to extract the segment
+            reset_time (bool): Whether to maintain the time association with the original trajectory,
+                or reset the start time back to 0. Defaults to True (reset start time back to 0)
+
+        Returns:
+            Trajectory: A new trajectory representing a segment of the original trajectory
+        """
+        # TODO: add check for invalid slicing indices? Or just leave it up to numpy
+
+        # Time needs to get handled differently because the trajectory may or may not have time info
+        if np.size(self.times) == 0:  # No time info
+            new_times = None
+        else:
+            new_times = self.times[start_index:end_index]
+            if reset_time:
+                new_times -= new_times[0]
+
+        return Trajectory(
+            self.positions[start_index:end_index],
+            self.quaternions[start_index:end_index],
+            self.linear_velocities[start_index:end_index],
+            self.angular_velocities[start_index:end_index],
+            self.linear_accels[start_index:end_index],
+            self.angular_accels[start_index:end_index],
+            new_times,
+        )
+
 
 class TrajectoryLogger(Trajectory):
     """Class for maintaining a history of a robot's state over time"""
@@ -278,7 +312,7 @@ def _plot(
     x_axis: np.ndarray,
     x_label: str,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """Helper function for plotting trajectory components
 
