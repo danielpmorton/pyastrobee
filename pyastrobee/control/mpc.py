@@ -118,6 +118,7 @@ def mpc_main(
     )
     if debug:
         line_ids = nominal_traj.visualize(20, client)
+        input("Press Enter to continue")
         remove_debug_objects(line_ids, client)
     # Add some buffer time to the end of the trajectory for stopping
     max_stopping_time = 3  # seconds
@@ -183,6 +184,7 @@ def mpc_main(
         for traj in trajs:
             if debug:
                 line_ids = traj.visualize(10, client)
+                input("Press Enter to continue")
                 remove_debug_objects(line_ids, client)
             # This is effectively a perfect rollout (TODO make this fact clearer)
             tracking_controller.follow_traj(traj, stop_at_end, n_rollout_steps)

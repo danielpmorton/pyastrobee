@@ -135,9 +135,9 @@ class Trajectory:
         if not connection_status:
             client.connect(pybullet.GUI)
         ids = visualize_traj(self, n, client)
-        input("Press Enter to continue")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
+            input("Press Enter to disconnect Pybullet")
             client.disconnect()
         return ids
 
