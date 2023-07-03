@@ -475,109 +475,35 @@ def make_vec_env(
     return vec_env
 
 
-def test_vec_env():
-    # TODO check on the difference between subproc and dummy
-    n_envs = 2
-    env_kwargs = {"is_primary": False, "use_gui": True}
-    vec_env = make_vec_env(
-        AstrobeeEnv,
-        n_envs,
-        env_kwargs=env_kwargs,
-        vec_env_cls=SubprocVecEnv if n_envs > 1 else DummyVecEnv,
-    )
-    # vec_env.env_method("step", indices=[0, 1])
-    # need to call reset() before step() for some reason ... figure this out
-    # vec_env.env_method("reset")
-    ret = vec_env.reset()  # Returns an array of observations
-    print("reset, returned: ", ret)
-    # NOTE: step method must contain an iterable of length num_envs
-    observations, rewards, dones, infos = vec_env.step(
-        (
-            np.zeros(2),
-            np.zeros(2),
-        )
-    )
-    time.sleep(0.2)
-    print("stepped, returned: ", observations, rewards, dones, infos)
-    vec_env.step_async(np.zeros(2))
-    print("stepped async (no return)")
-    ret = vec_env.step_wait()
-    print("waited for step async, returned: ", ret)
-
-    input("completed")
-
-
-def test_main_and_vecs():
-    # Test out creating a main GUI client which also handles saving the state
-    # and then including some vectorized environments that can run headless
-    # and restore the state saved from the main client
-    n_vec_envs = 2
-    env_kwargs = {"is_primary": False, "use_gui": True}  # For vec envs
+def _test_envs():
+    """Run a quick test of the environment generation methods"""
+    # Create one primary non-vectorized environment
     main_env = AstrobeeEnv(is_primary=True, use_gui=True)
-    vec_envs = make_vec_env(
-        AstrobeeEnv,
-        n_vec_envs,
-        env_kwargs=env_kwargs,
-        vec_env_cls=SubprocVecEnv if n_vec_envs > 1 else DummyVecEnv,
-    )
-    try:
-        main_env.reset()
-        vec_envs.reset()
-
-    finally:
-        main_env.close()
-        vec_envs.close()
-
-
-def test_attributes():
-    n_vec_envs = 2
-    env_kwargs = {"is_primary": False, "use_gui": True}  # For vec envs
-    # main_env = AstrobeeEnv(is_primary=True, use_gui=True)
-    vec_envs = make_vec_env(
-        AstrobeeEnv,
-        n_vec_envs,
-        env_kwargs=env_kwargs,
-        vec_env_cls=SubprocVecEnv if n_vec_envs > 1 else DummyVecEnv,
-    )
-    try:
-        # vec_envs.set_attr("use_gui")
-        pass
-    finally:
-        # main_env.close()
-        vec_envs.close()
-
-
-def test_new_make_vec_env():
-    """Test to see if the new make_vec_env function can handle different parameters upon initialization
-
-    We should see that four vectorized environments are created, but one has the GUI enabled
-    """
+    # Create a few vectorized environments
     n_vec_envs = 4
-    # Set the default env kwargs to not use the GUI
     env_kwargs = {"is_primary": False, "use_gui": False}
-    # For the rank-0 env, override the default and use the GUI
+    # Let one vectorized environment use the GUI for debugging
     per_env_kwargs = {0: {"use_gui": True}}
-    vec_env = make_vec_env(
+    vec_envs = make_vec_env(
         AstrobeeEnv,
         n_vec_envs,
         env_kwargs=env_kwargs,
         vec_env_cls=SubprocVecEnv if n_vec_envs > 1 else DummyVecEnv,
         per_env_kwargs=per_env_kwargs,
     )
-    vec_env.reset()
-    vec_env.step_async(np.zeros(2))
-    input("completed")
-
-
-def test_one_env():
-    env = AstrobeeEnv(True, True)
-    env.reset()
-    ret = env.step(1)
-    input("done")
+    try:
+        # Reset has to be called first
+        main_env.reset()
+        vec_envs.reset()
+        # Call step with dummy action values, note difference in return parameters
+        observation, reward, terminated, truncated, info = main_env.step(0)
+        observation, reward, done, info = vec_envs.step(np.zeros(n_vec_envs))
+        input("Stepped. Press Enter to finish")
+    finally:
+        # Terminate pybullet processes, delete any saved states
+        main_env.close()
+        vec_envs.close()
 
 
 if __name__ == "__main__":
-    # _main()
-    test_vec_env()
-    # test_new_make_vec_env()
-    # test_one_env()
+    _test_envs()
