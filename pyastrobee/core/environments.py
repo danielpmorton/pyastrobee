@@ -5,13 +5,11 @@ NOTE:
   non-vectorized environment will be reflected in all non-vectorized environments, but not the vectorized ones.
   You'd have to explicitly call the set_attr method for that)
 
-Note: some of this setup is specific to the MPC formulation
-... TODO make a AstrobeeMPCEnv(AstrobeeEnv) where the MPC version implements the step/reset functions
-in the specific way we need for MPC
-
 TODO
 - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
 - Use terminated/truncated as a stopping parameter
+- Should the reset() function reset the simulation back to an initial saved state?
+- Decide if the base AstrobeeEnv should have cleanup functionality
 """
 
 import os
@@ -38,7 +36,11 @@ from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
 
 class AstrobeeEnv(gym.Env):
-    # TODO: should the reset() function reset the sim back to an initial saved state?
+    """Base Astrobee environment containing the Astrobee, ISS, and a cargo bag
+
+    Args:
+        use_gui (bool): Whether or not to use the GUI as opposed to headless.
+    """
 
     SAVE_STATE_DIR = "artifacts/saved_states/"
     SAVE_STATE_PATHS = []
@@ -91,9 +93,10 @@ class AstrobeeEnv(gym.Env):
         # Implementation of Gym template method step(): See Gym for full method docstring
         # Note: The return parameters differ slightly from step() for a vectorized environment
 
+        # In this base environment, we will just step the pybullet simulation and return a dummy value for reward
+        # The MPC environment can add more specific MPC/control functionality here
         self.client.stepSimulation()
         reward = 0
-        # All returns are essentially dummy values except the reward
         observation = self._get_obs()
         terminated = False  # If at the terminal state
         truncated = False  # If stopping the sim before the terminal state
@@ -111,14 +114,13 @@ class AstrobeeEnv(gym.Env):
     def save_state(self) -> str:
         """Saves the current simulation state to disk
 
-        - Note: saved states are NOT overwritten because this could lead to issues with the parallel environments
-          and race conditions (TODO test this out)
-        - Saved states can be cleared out at the end of the simulation period
+        - Note: saved states are not currently overwritten (could lead to issues with parallel environments?). But,
+          these can be cleared out at the end of the simulation period
 
         Returns:
             str: Path to the saved state file
         """
-        # Autogenerate a filename/path and save to it
+        # Autogenerate a unique filename/path and save to it
         filename = "state_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         filepath = AstrobeeEnv.SAVE_STATE_DIR + filename + ".bullet"
         self.client.saveBullet(filepath)
@@ -158,10 +160,22 @@ class AstrobeeEnv(gym.Env):
 
 
 class AstrobeeMPCEnv(AstrobeeEnv):
+    """Astrobee environment for MPC: Contains additional controller parameters and functions associated with MPC, on
+    top of the base Astrobee environment capability
+
+    Args:
+        use_gui (bool): Whether or not to use the GUI as opposed to headless.
+        is_primary (bool): Whether or not this environment is the main simulation (True) or if it is one of the
+            vectorized environments for evaluating a rollout (False)
+        nominal_rollouts (bool, optional): If True, will roll-out a trajectory based on the nominal target.
+            If False, will sample a trajectory about the nominal target. Defaults to False.
+        cleanup (bool, optional): Whether or not to delete all saved states when the simulation ends. Defaults to True.
+    """
+
     def __init__(
         self,
-        is_primary: bool,
         use_gui: bool,
+        is_primary: bool,
         nominal_rollouts: bool = False,
         cleanup: bool = True,
     ):
@@ -253,9 +267,17 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self.target_duration = duration
 
     def sample_trajectory(self) -> None:
-        # used for the vectorized envs but not the main env
-        # (since we have the main env evaluate a known traj that was tested in the vec envs)
-        # note that set_target_state should be called before this
+        """Samples a trajectory about the nominal target.
+
+        - If the nominal_rollouts parameter is True for this environment, the final state of the trajectory will be
+          exactly the nominal value (no noise added when sampling)
+        - This should just be called in the vectorized rollout environments (not the main environment) since the main
+          environment will use the best trajectory from the rollout envs
+        """
+        if self.is_primary_simulation:
+            raise ValueError(
+                "Trajectory sampling should only occur in one of parallel environments for evaluation purposes"
+            )
         pos, orn, vel, omega = self.robot.dynamics_state
         n_trajs = 1
         self.traj_plan = generate_trajs(
@@ -334,11 +356,18 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         return super().save_state()
 
     def show_traj_plan(self, n: Optional[int]) -> None:
+        """Displays the planned trajectory on the current pybullet client GUI (if enabled)
+
+        Args:
+            n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
+                Defaults to None (plot all frames)
+        """
         if self.traj_plan is None:
             raise ValueError("No trajectory available to visualize")
         self.debug_viz_ids = self.traj_plan.visualize(n, self.client)
 
     def unshow_traj_plan(self) -> None:
+        """Removes a displayed trajectory from the pybullet client GUI"""
         if len(self.debug_viz_ids) == 0:
             return
         remove_debug_objects(self.debug_viz_ids, self.client)
