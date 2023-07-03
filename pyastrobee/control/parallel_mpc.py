@@ -17,7 +17,7 @@ import numpy as np
 import numpy.typing as npt
 from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
-from pyastrobee.core.environments import AstrobeeEnv, make_vec_env
+from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import plan_trajectory
 
@@ -30,14 +30,14 @@ def parallel_mpc_main(
     debug: bool = False,
 ):
     # Set up main environment
-    main_env = AstrobeeEnv(is_primary=True, use_gui=True)
+    main_env = AstrobeeMPCEnv(is_primary=True, use_gui=True)
     # Set up vectorized environments
     env_kwargs = {"is_primary": False, "use_gui": False}
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs
     per_env_kwargs = {debug_env_idx: {"use_gui": debug, "nominal_rollouts": True}}
     vec_env = make_vec_env(
-        AstrobeeEnv,
+        AstrobeeMPCEnv,
         n_vec_envs,
         env_kwargs=env_kwargs,
         vec_env_cls=SubprocVecEnv if n_vec_envs > 1 else DummyVecEnv,

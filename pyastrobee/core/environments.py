@@ -38,18 +38,12 @@ from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
 
 class AstrobeeEnv(gym.Env):
+    # TODO: should the reset() function reset the sim back to an initial saved state?
 
-    # Saved state class params
     SAVE_STATE_DIR = "artifacts/saved_states/"
     SAVE_STATE_PATHS = []
 
-    def __init__(
-        self,
-        is_primary: bool,
-        use_gui: bool,
-        nominal_rollouts: bool = False,
-        cleanup: bool = True,
-    ):
+    def __init__(self, use_gui: bool):
         # TODO: make more of these parameters variables to pass in
         # e.g. initial bag/robot position, number of robots, type of bag, ...
         self.client = initialize_pybullet(use_gui)
@@ -59,6 +53,119 @@ class AstrobeeEnv(gym.Env):
         self.bag.reset_to_handle_pose(self.robot.ee_pose)
         self.bag.attach_to(self.robot, object_to_move="bag")
         self.dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
+        # Dummy parameters for gym/stable baselines compatibility
+        self.observation_space = gym.spaces.Discrete(3)  # temporary
+        self.action_space = gym.spaces.Discrete(3)  # temporary
+        # Step the simulation once to get the bag in the right place
+        self.client.stepSimulation()
+
+    def reset(
+        self, seed: Optional[int] = None, options: Optional[dict[str, Any]] = None
+    ) -> tuple[ObsType, dict[str, Any]]:
+        # Implementation of Gym template method reset(): See Gym for full method docstring
+        # Gym states this must be the first line of the reset() method
+        super().reset(seed=seed)
+        return self._get_obs(), self._get_info()  # Initial state observation
+
+    def _get_obs(self) -> ObsType:
+        """Translates the environment's state into an observation
+
+        Returns:
+            ObsType: Observation
+        """
+        # This function setup was recommended in the gym documentation
+        return 0  # Dummy value for now
+
+    def _get_info(self) -> dict[str, Any]:
+        """Provide auxiliary information associated with an observation
+
+        Returns:
+            dict[str, Any]: Additional observation information
+        """
+        # This function setup was recommended in the gym documentation
+        return {}  # Dummy value for now
+
+    def step(
+        self, action: ActType
+    ) -> tuple[ObsType, float, bool, bool, dict[str, Any]]:
+        # Implementation of Gym template method step(): See Gym for full method docstring
+        # Note: The return parameters differ slightly from step() for a vectorized environment
+
+        self.client.stepSimulation()
+        reward = 0
+        # All returns are essentially dummy values except the reward
+        observation = self._get_obs()
+        terminated = False  # If at the terminal state
+        truncated = False  # If stopping the sim before the terminal state
+        info = self._get_info()
+        return observation, reward, terminated, truncated, info
+
+    def step_simulation(self):
+        """Single pybullet simulation step"""
+        self.client.stepSimulation()
+
+    def close(self):
+        # Implementation of Gym template method close(): See Gym for full method docstring
+        self.client.disconnect()
+
+    def save_state(self) -> str:
+        """Saves the current simulation state to disk
+
+        - Note: saved states are NOT overwritten because this could lead to issues with the parallel environments
+          and race conditions (TODO test this out)
+        - Saved states can be cleared out at the end of the simulation period
+
+        Returns:
+            str: Path to the saved state file
+        """
+        # Autogenerate a filename/path and save to it
+        filename = "state_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        filepath = AstrobeeEnv.SAVE_STATE_DIR + filename + ".bullet"
+        self.client.saveBullet(filepath)
+        AstrobeeEnv.SAVE_STATE_PATHS.append(filepath)
+        return filepath
+
+    def restore_state(self, filename: str) -> None:
+        """Restores the simulation to a saved state file
+
+        Args:
+            filename (str): Path to a .bullet saved state within the saved state directory
+        """
+        filename = self._check_state_file(filename)
+        self.client.restoreState(fileName=filename)
+
+    def _check_state_file(self, filename: str) -> str:
+        """Helper function: Validates that a saved state file exists
+
+        Args:
+            filename (str): Path to a .bullet saved state within the saved state directory
+
+        Returns:
+            str: Validated path
+        """
+        path = Path(filename)
+        if path.suffix != ".bullet":
+            raise ValueError(
+                f"Invalid filename: {filename}.\nNot a .bullet saved state file"
+            )
+        if path.parent != Path(AstrobeeEnv.SAVE_STATE_DIR):
+            raise ValueError(
+                f"Invalid filename: {filename}.\nCheck that the filename points to within the saved state directory"
+            )
+        if path.is_file():
+            return str(path)
+        raise FileNotFoundError(f"Could not find file: {filename}")
+
+
+class AstrobeeMPCEnv(AstrobeeEnv):
+    def __init__(
+        self,
+        is_primary: bool,
+        use_gui: bool,
+        nominal_rollouts: bool = False,
+        cleanup: bool = True,
+    ):
+        super().__init__(use_gui)
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
         kp, kv, kq, kw = 20, 5, 1, 0.1  # TODO make parameters
@@ -104,11 +211,6 @@ class AstrobeeEnv(gym.Env):
         self.target_vel = None  # Init
         self.target_omega = None  # Init
         self.target_duration = None  # Init
-        # Dummy parameters for gym/stable baselines compatibility
-        self.observation_space = gym.spaces.Discrete(3)  # temporary
-        self.action_space = gym.spaces.Discrete(3)  # temporary
-        # Step the simulation once to get the bag in the right place
-        self.client.stepSimulation()
         # TODO decide if saving the initial state is useful...
         # I was thinking maybe it would be nice to have a clean slate we could go back to
         # but I don't quite know what the use case would be right now
@@ -181,68 +283,35 @@ class AstrobeeEnv(gym.Env):
             include_nominal_traj=self._nominal_rollouts,
         )[0]
 
-    def reset(
-        self, seed: Optional[int] = None, options: Optional[dict[str, Any]] = None
-    ) -> tuple[ObsType, dict[str, Any]]:
-        # Implementation of Gym template method reset(): See Gym for full method docstring
-        # Gym states this must be the first line of the reset() method
-        super().reset(seed=seed)
-        # TODO: add resets for the class/instance variables?
-        # TODO: should state be reset back to initial saved state?
-        return self._get_obs(), self._get_info()  # Initial state observation
-
-    def _get_obs(self) -> ObsType:
-        """Translates the environment's state into an observation
-
-        Returns:
-            ObsType: Observation
-        """
-        # This function setup was recommended in the gym documentation
-        return 0  # Dummy value for now
-
-    def _get_info(self) -> dict[str, Any]:
-        """Provide auxiliary information associated with an observation
-
-        Returns:
-            dict[str, Any]: Additional observation information
-        """
-        # This function setup was recommended in the gym documentation
-        return {}  # Dummy value for now
-
     def step(
         self, action: ActType
     ) -> tuple[ObsType, float, bool, bool, dict[str, Any]]:
-        # Implementation of Gym template method step(): See Gym for full method docstring
-        # Note: The return parameters differ slightly from step() for a vectorized environment
         # Note: For MPC, this is less so a "step" than a "rollout" function. The trajectory should be sampled
         #       before calling this function
 
-        # TODO make this the default behavior in the non-MPC version of this environment
         if self.traj_plan is None:
-            self.client.stepSimulation()
-            reward = 0
-        else:
-            # TODO decide how to handle the stopping criteria
-            self.controller.follow_traj(
-                self.traj_plan, stop_at_end=False, max_stop_iters=None
-            )
-            # Get the state of the robot after we follow the trajectory
-            pos, orn, vel, omega = self.robot.dynamics_state
-            # Determine the reward based on how much we deviated from the target
-            reward = -1 * deviation_penalty(
-                pos,
-                orn,
-                vel,
-                omega,
-                self.target_pos,
-                self.target_orn,
-                self.target_vel,
-                self.target_omega,
-                self.pos_penalty,
-                self.orn_penalty,
-                self.vel_penalty,
-                self.ang_vel_penalty,
-            )
+            raise ValueError("Trajectory has not been planned")
+        # TODO decide how to handle the stopping criteria
+        self.controller.follow_traj(
+            self.traj_plan, stop_at_end=False, max_stop_iters=None
+        )
+        # Get the state of the robot after we follow the trajectory
+        pos, orn, vel, omega = self.robot.dynamics_state
+        # Determine the reward based on how much we deviated from the target
+        reward = -1 * deviation_penalty(
+            pos,
+            orn,
+            vel,
+            omega,
+            self.target_pos,
+            self.target_orn,
+            self.target_vel,
+            self.target_omega,
+            self.pos_penalty,
+            self.orn_penalty,
+            self.vel_penalty,
+            self.ang_vel_penalty,
+        )
         # All returns are essentially dummy values except the reward
         observation = self._get_obs()
         terminated = False  # If at the terminal state
@@ -250,74 +319,19 @@ class AstrobeeEnv(gym.Env):
         info = self._get_info()
         return observation, reward, terminated, truncated, info
 
-    def step_simulation(self):
-        """Single pybullet simulation step"""
-        self.client.stepSimulation()
-
     def close(self):
-        # Implementation of Gym template method close(): See Gym for full method docstring
         self.client.disconnect()
         if self.is_primary_simulation and self._cleanup:
             # Delete all of the previous saved states at the end of the simulation process
             # TODO: decide if each session should have its own directory?
-            for path in Path(AstrobeeEnv.SAVE_STATE_DIR).glob("*.bullet"):
+            for path in Path(AstrobeeMPCEnv.SAVE_STATE_DIR).glob("*.bullet"):
                 path.unlink()
 
     def save_state(self) -> str:
-        """Saves the current simulation state to disk
-
-        - Note: saved states are NOT overwritten because this could lead to issues with the parallel environments
-          and race conditions (TODO test this out)
-        - Saved states can be cleared out at the end of the simulation period
-
-        Raises:
-            PermissionError: This function should only be called from the main simulation instead of the rollout
-                simulations, so we raise an error if we try to call this from the wrong simulation
-
-        Returns:
-            str: Path to the saved state file
-        """
         # Ensure that any simulations strictly for evaluating rollouts cannot save their state
         if not self.is_primary_simulation:
             raise PermissionError("Only the primary simulation can save the state")
-
-        # Autogenerate a filename/path and save to it
-        filename = "state_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        filepath = AstrobeeEnv.SAVE_STATE_DIR + filename + ".bullet"
-        self.client.saveBullet(filepath)
-        AstrobeeEnv.SAVE_STATE_PATHS.append(filepath)
-        return filepath
-
-    def restore_state(self, filename: str) -> None:
-        """Restores the simulation to a saved state file
-
-        Args:
-            filename (str): Path to a .bullet saved state within the saved state directory
-        """
-        filename = self._check_state_file(filename)
-        self.client.restoreState(fileName=filename)
-
-    def _check_state_file(self, filename: str) -> str:
-        """Helper function: Validates that a saved state file exists
-
-        Args:
-            filename (str): Path to a .bullet saved state within the saved state directory
-
-        Returns:
-            str: Validated path
-        """
-        path = Path(filename)
-        if path.suffix != ".bullet":
-            raise ValueError(
-                f"Invalid filename: {filename}.\nNot a .bullet saved state file"
-            )
-        if path.parent != Path(AstrobeeEnv.SAVE_STATE_DIR):
-            raise ValueError(
-                f"Invalid filename: {filename}.\nCheck that the filename points to within the saved state directory"
-            )
-        if path.is_file():
-            return str(path)
-        raise FileNotFoundError(f"Could not find file: {filename}")
+        return super().save_state()
 
     def show_traj_plan(self, n: Optional[int]) -> None:
         if self.traj_plan is None:
@@ -443,10 +457,10 @@ def make_vec_env(
 def _test_envs():
     """Run a quick test of the environment generation methods"""
     # Create one primary non-vectorized environment
-    main_env = AstrobeeEnv(is_primary=True, use_gui=True)
+    main_env = AstrobeeEnv(use_gui=True)
     # Create a few vectorized environments
     n_vec_envs = 4
-    env_kwargs = {"is_primary": False, "use_gui": False}
+    env_kwargs = {"use_gui": False}
     # Let one vectorized environment use the GUI for debugging
     per_env_kwargs = {0: {"use_gui": True}}
     vec_envs = make_vec_env(
