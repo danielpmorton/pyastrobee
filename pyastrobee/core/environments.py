@@ -34,42 +34,12 @@ from pyastrobee.trajectories.trajectory import Trajectory, visualize_traj
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
-# Idea: could have a parameter upon initialization of the env to make one the "main"
-# simulation and then have the vectorized envs work for this main sim?
-# Figure out: Should we create all sims though the make_vec_env or should we make a main
-# simulation outside of this process??
-# ^^ main simulation non-vectorized, rollout sims vectorized
-# TODO figure out if the is_primary input thing I did is the best way to do this...
-
-# .. maybe have different methods depending on if we have the main environment or not?
-# class AstrobeeEnv(AstrobeeBaseEnv)
-# class AstrobeeVecEnv(AstrobeeBaseEnv )
-
-
-# Note that the returns from calling functions like step() and reset() in a vectorized env
-# differ from that of calling these from the environment itself
-# For instance: step
-# Returns:
-#     Tuple of:
-#         np.ndarray: Observations, length n_envs (CHECK)
-#         np.ndarray: Rewards, length n_envs (CHECK)
-#         np.ndarray: Terminated, (boolean array), length n_envs (CHECK)
-#         tuple[dict[str, Any], ...]: Info (Includes truncated info as 'TimeLimit.truncated'), length n_envs
-#             (One dict per env)
-
 
 class AstrobeeEnv(gym.Env):
 
     # Saved state class params
     SAVE_STATE_DIR = "artifacts/saved_states/"
     SAVE_STATE_PATHS = []
-    # Acceleration continuity class params
-    # (these can be updated in the master simulation and accessed by the rollout sims)
-    # TODO FIGURE OUT IF UPDATIN THIS COULD CAUSE PARALLEL/RACE ISSUES
-    # HANDLE THIS DIFFERENTLY... use set_attr?
-    # LAST_ACCEL_CMD = 0.0  # init
-    # LAST_ALPHA_CMD = 0.0  # init
-    # ^^ These were replaced with instance variables
 
     def __init__(
         self,
@@ -148,25 +118,7 @@ class AstrobeeEnv(gym.Env):
         or is a separate (likely vectorized) environment for evaluating rollouts"""
         return self._is_primary
 
-    # def set_target_state(self, a0, dw0, pf, qf, vf, wf, af, dwf, duration) -> None:
-    #     # Note: for the primary simulation, this will be the overall goal and will
-    #     # generate the nominal reference trajectory. For the vectorized sims, this will
-    #     # generate the rollout trajectories
-    #     self.target_pos = pf
-    #     self.target_orn = qf
-    #     self.target_vel = vf
-    #     self.target_omega = wf
-    #     # Any time we update a goal state we'll need to do a replan
-    #     p0, q0, v0, w0 = self.robot.dynamics_state
-    #     self.traj_plan = plan_trajectory(
-    #         p0, q0, v0, w0, a0, dw0, pf, qf, vf, wf, af, dwf, duration, self.dt
-    #     )
-
-    # def set_nominal_trajectory(self, traj: Trajectory):
-    #     self.traj_plan = traj
-
-    # TODO is there a better way of doing this
-    def _set_nominal_target(self, pos, orn, vel, omega, accel, alpha):
+    def set_target_state(self, pos, orn, vel, omega, accel, alpha):
         self.target_pos = pos
         self.target_orn = orn
         self.target_vel = vel
@@ -174,12 +126,8 @@ class AstrobeeEnv(gym.Env):
         self.target_accel = accel
         self.target_alpha = alpha
 
-    def sample_trajectory(
-        self, des_pos, des_orn, des_vel, des_omega, des_accel, des_alpha, n_steps
-    ):
-        self._set_nominal_target(
-            des_pos, des_orn, des_vel, des_omega, des_accel, des_alpha
-        )
+    def sample_trajectory(self, n_steps):
+        # note that set_target_state should be called before this
         pos, orn, vel, omega = self.robot.dynamics_state
         n_trajs = 1
         self.traj_plan = generate_trajs(
@@ -189,12 +137,12 @@ class AstrobeeEnv(gym.Env):
             omega,
             self.last_accel_cmd,
             self.last_alpha_cmd,
-            des_pos,
-            des_orn,
-            des_vel,
-            des_omega,
-            des_accel,
-            des_alpha,
+            self.target_pos,
+            self.target_orn,
+            self.target_vel,
+            self.target_omega,
+            self.target_accel,
+            self.target_alpha,
             self.pos_stdev,
             self.orn_stdev,
             self.vel_stdev,

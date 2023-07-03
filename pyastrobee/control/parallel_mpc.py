@@ -13,8 +13,7 @@ from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv  # make
 
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.environments import AstrobeeEnv
-from pyastrobee.core.make_vec_env import make_vec_env  # TODO remember to move this
+from pyastrobee.core.environments import AstrobeeEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import visualize_traj, Trajectory
 from pyastrobee.trajectories.planner import plan_trajectory
 
@@ -96,26 +95,20 @@ def parallel_mpc_main(
             saved_file = main_env.save_state()
             vec_env.env_method("restore_state", saved_file)
             lookahead_idx = min(cur_idx + n_rollout_steps, end_idx)
-
-            main_env._set_nominal_target(
+            # Set the desired state of the robot at the lookahead point
+            target_state = [
                 nominal_traj.positions[lookahead_idx],
                 nominal_traj.quaternions[lookahead_idx],
                 nominal_traj.linear_velocities[lookahead_idx],
                 nominal_traj.angular_velocities[lookahead_idx],
                 nominal_traj.linear_accels[lookahead_idx],
                 nominal_traj.angular_accels[lookahead_idx],
-            )  # TODO FIX THIS!!!! Temp
-            # ^^  Or just make this consistent across main/vec envs
-
+            ]
+            main_env.set_target_state(*target_state)
+            vec_env.env_method("set_target_state", *target_state)
             # Generate sampled trajectories within each vec env
             vec_env.env_method(
                 "sample_trajectory",
-                nominal_traj.positions[lookahead_idx],
-                nominal_traj.quaternions[lookahead_idx],
-                nominal_traj.linear_velocities[lookahead_idx],
-                nominal_traj.angular_velocities[lookahead_idx],
-                nominal_traj.linear_accels[lookahead_idx],
-                nominal_traj.angular_accels[lookahead_idx],
                 min(n_rollout_steps, lookahead_idx - cur_idx + 1),  # CHECK THIS
             )
             if debug:
