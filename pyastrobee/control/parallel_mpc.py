@@ -48,7 +48,6 @@ def parallel_mpc_main(
 
     # Generate nominal trajectory
     dt = main_env.client.getPhysicsEngineParameters()["fixedTimeStep"]
-    n_rollout_steps = 100
     nominal_traj = plan_trajectory(
         start_pose[:3],
         start_pose[3:],
@@ -65,28 +64,48 @@ def parallel_mpc_main(
         duration,
         dt,
     )
-    # Add some buffer time to the end of the trajectory for stopping
+
+    # Time parameters (TODO make some of these inputs?)
+    cur_time = 0.0
+    traj_end_time = nominal_traj.times[-1]
     max_stopping_time = 3  # seconds
-    max_steps = nominal_traj.num_timesteps + round(max_stopping_time / dt)
-    end_idx = nominal_traj.num_timesteps - 1
-    cur_idx = 0
-    step_count = 0
+    max_time = traj_end_time + max_stopping_time
+    target_rollout_duration = 1 / 3  # seconds
+
+    # Init stopping mode for when we get to the end of the trajectory
+    stopping = False
 
     # Execute the main MPC code in a try/finally block to make sure things close out / clean up when done
     try:
         while True:
-            if step_count >= max_steps:
-                print("MAX STEPS EXCEEDED")
+            # Determine the duration of the rollout and where on the trajectory we are interested
+            remaining_traj_time = traj_end_time - cur_time
+            remaining_total_time = max_time - cur_time
+            stopping = remaining_traj_time <= dt
+            done = remaining_total_time <= dt
+            if done:
+                print("Terminating due to time limit")
                 break
+            if stopping:
+                rollout_duration = min(target_rollout_duration, remaining_total_time)
+                lookahead_idx = -1
+            else:  # Following the trajectory
+                rollout_duration = min(target_rollout_duration, remaining_traj_time)
+                # Handle the case where we are nearing the end of the trajectory
+                if remaining_traj_time < target_rollout_duration:
+                    lookahead_idx = -1
+                else:
+                    lookahead_idx = np.searchsorted(
+                        nominal_traj.times, cur_time + rollout_duration
+                    )
+            # Clear any previously visualized trajectories before viewing the new plan
             if debug:
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
-            if cur_idx == end_idx:  # TODO add stopping criteria
-                break
+
             # Ensure that the vec envs start from the same point as the main simulation
             saved_file = main_env.save_state()
             vec_env.env_method("restore_state", saved_file)
             # Set the desired state of the robot at the lookahead point
-            lookahead_idx = min(cur_idx + n_rollout_steps, end_idx)
             target_state = [
                 nominal_traj.positions[lookahead_idx],
                 nominal_traj.quaternions[lookahead_idx],
@@ -94,17 +113,14 @@ def parallel_mpc_main(
                 nominal_traj.angular_velocities[lookahead_idx],
                 nominal_traj.linear_accels[lookahead_idx],
                 nominal_traj.angular_accels[lookahead_idx],
+                rollout_duration,
             ]
             main_env.set_target_state(*target_state)
             vec_env.env_method("set_target_state", *target_state)
             # Generate sampled trajectories within each vec env
-            vec_env.env_method(
-                "sample_trajectory",
-                min(n_rollout_steps, lookahead_idx - cur_idx + 1),  # CHECK THIS
-            )
+            vec_env.env_method("sample_trajectory")
             if debug:
                 vec_env.env_method("show_traj_plan", 10, indices=[debug_env_idx])
-
             # Stepping in the vec env will follow the sampled trajectory
             # Action input in step(actions) is a dummy parameter for now, just for Gym compatibility
             observation, reward, done, info = vec_env.step(np.zeros(n_vec_envs))
@@ -114,14 +130,19 @@ def parallel_mpc_main(
             # Follow the best rollout in the main environment. (Use dummy action value in step call)
             main_env.traj_plan = best_traj
             observation, reward, terminated, truncated, info = main_env.step(0)
-            # Update loop variables
-            cur_idx = lookahead_idx
-            step_count += n_rollout_steps
+
+            # TODO: use stopping criteria in terminated/truncated
+            # Idea: terminated -> successfully stopped; truncated -> out of time
+            # if terminated: print_green(success_message); elif truncated: print_red(failure_message); then break
+
             # Update our knowledge of the last acceleration commands
             main_env.last_accel_cmd = best_traj.linear_accels[-1]
             main_env.last_alpha_cmd = best_traj.angular_accels[-1]
             vec_env.set_attr("last_accel_cmd", best_traj.linear_accels[-1])
             vec_env.set_attr("last_alpha_cmd", best_traj.angular_accels[-1])
+
+            # Update our time information
+            cur_time += rollout_duration
 
         input("Complete. Press Enter to exit")
     finally:

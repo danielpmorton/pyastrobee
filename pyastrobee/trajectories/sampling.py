@@ -32,7 +32,7 @@ def generate_trajs(
     accel_sampling_stdev: float,
     alpha_sampling_stdev: float,
     n_trajs: int,
-    n_steps: int,
+    duration: float,
     dt: float,
     include_nominal_traj: bool,
 ) -> list[Trajectory]:
@@ -56,7 +56,7 @@ def generate_trajs(
         vel_sampling_stdev (float): Standard deviation of the velocity sampling distribution
         ang_vel_sampling_stdev (float): Standard deviation of the angular velocity sampling distribution
         n_trajs (int): Number of trajectories to generate
-        n_steps (int): Number of trajectory steps between the current state and the sampled goal state
+        duration (float): Trajectory duration, in seconds
         dt (float): Timestep
         include_nominal_traj (bool): Whether or not to include the nominal (non-sampled) trajectory in the output
 
@@ -80,7 +80,7 @@ def generate_trajs(
                 nominal_target_ang_vel,
                 nominal_target_accel,
                 nominal_target_alpha,
-                n_steps * dt,
+                duration,
                 dt,
             )
         )
@@ -127,7 +127,7 @@ def generate_trajs(
                 sampled_ang_vels[i],
                 sampled_accels[i],
                 sampled_alphas[i],
-                n_steps * dt,
+                duration,
                 dt,
             )
         )

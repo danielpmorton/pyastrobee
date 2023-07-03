@@ -103,6 +103,7 @@ class AstrobeeEnv(gym.Env):
         self.target_orn = None  # Init
         self.target_vel = None  # Init
         self.target_omega = None  # Init
+        self.target_duration = None  # Init
         # Dummy parameters for gym/stable baselines compatibility
         self.observation_space = gym.spaces.Discrete(3)  # temporary
         self.action_space = gym.spaces.Discrete(3)  # temporary
@@ -128,20 +129,18 @@ class AstrobeeEnv(gym.Env):
         omega: npt.ArrayLike,
         accel: npt.ArrayLike,
         alpha: npt.ArrayLike,
+        duration: float,
     ) -> None:
         """Set the target dynamics state for planning/sampling trajectories and determining penalties
 
-        TODO do we need to encode a time in the future when this occurs????
-
-        TODO finish docstring
-
         Args:
-            pos (npt.ArrayLike): _description_
-            orn (npt.ArrayLike): _description_
-            vel (npt.ArrayLike): _description_
-            omega (npt.ArrayLike): _description_
-            accel (npt.ArrayLike): _description_
-            alpha (npt.ArrayLike): _description_
+            pos (npt.ArrayLike): Desired position, shape (3,)
+            orn (npt.ArrayLike): Desired XYZW quaternion orientation, shape (4,)
+            vel (npt.ArrayLike): Desired linear velocity, shape (3,)
+            omega (npt.ArrayLike): Desired angular velocity, shape (3,)
+            accel (npt.ArrayLike): Desired linear acceleration, shape (3,)
+            alpha (npt.ArrayLike): Desired angular acceleration, shape (3,)
+            duration (float): Amount of time to pass before achieving this desired state
         """
         self.target_pos = pos
         self.target_orn = orn
@@ -149,8 +148,9 @@ class AstrobeeEnv(gym.Env):
         self.target_omega = omega
         self.target_accel = accel
         self.target_alpha = alpha
+        self.target_duration = duration
 
-    def sample_trajectory(self, n_steps: int) -> None:
+    def sample_trajectory(self) -> None:
         # used for the vectorized envs but not the main env
         # (since we have the main env evaluate a known traj that was tested in the vec envs)
         # note that set_target_state should be called before this
@@ -176,7 +176,7 @@ class AstrobeeEnv(gym.Env):
             self.accel_stdev,
             self.alpha_stdev,
             n_trajs,
-            n_steps,
+            self.target_duration,
             self.dt,
             include_nominal_traj=self._nominal_rollouts,
         )[0]

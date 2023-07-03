@@ -177,7 +177,7 @@ def mpc_main(
             accel_stdev,
             alpha_stdev,
             n_candidate_trajs,
-            min(n_rollout_steps, lookahead_idx - cur_idx + 1),
+            dt * (lookahead_idx - cur_idx),
             dt,
             include_nominal_traj=True,
         )
