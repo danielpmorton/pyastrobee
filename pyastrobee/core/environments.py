@@ -1,20 +1,24 @@
 """Gym and vectorized environments for the Astrobee/ISS/Cargo setup
 
+NOTE:
+- Class variables DO NOT get updated in vectorized environments (for instance, modifying the value in a
+  non-vectorized environment will be reflected in all non-vectorized environments, but not the vectorized ones.
+  You'd have to explicitly call the set_attr method for that)
+
 Note: some of this setup is specific to the MPC formulation
 ... TODO make a AstrobeeMPCEnv(AstrobeeEnv) where the MPC version implements the step/reset functions
 in the specific way we need for MPC
 
 TODO
 - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
+- Use terminated/truncated as a stopping parameter
 """
 
 import os
-import time
 from pathlib import Path
 from typing import Optional, Any, Callable, Dict, Type, Union
 from datetime import datetime
 
-import pybullet
 import numpy as np
 import numpy.typing as npt
 import gymnasium as gym
@@ -28,9 +32,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import load_iss
 from pyastrobee.core.cargo_bag import CargoBag
-from pyastrobee.trajectories.planner import plan_trajectory
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
-from pyastrobee.trajectories.trajectory import Trajectory, visualize_traj
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
@@ -118,7 +120,29 @@ class AstrobeeEnv(gym.Env):
         or is a separate (likely vectorized) environment for evaluating rollouts"""
         return self._is_primary
 
-    def set_target_state(self, pos, orn, vel, omega, accel, alpha):
+    def set_target_state(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        vel: npt.ArrayLike,
+        omega: npt.ArrayLike,
+        accel: npt.ArrayLike,
+        alpha: npt.ArrayLike,
+    ) -> None:
+        """Set the target dynamics state for planning/sampling trajectories and determining penalties
+
+        TODO do we need to encode a time in the future when this occurs????
+
+        TODO finish docstring
+
+        Args:
+            pos (npt.ArrayLike): _description_
+            orn (npt.ArrayLike): _description_
+            vel (npt.ArrayLike): _description_
+            omega (npt.ArrayLike): _description_
+            accel (npt.ArrayLike): _description_
+            alpha (npt.ArrayLike): _description_
+        """
         self.target_pos = pos
         self.target_orn = orn
         self.target_vel = vel
@@ -126,7 +150,9 @@ class AstrobeeEnv(gym.Env):
         self.target_accel = accel
         self.target_alpha = alpha
 
-    def sample_trajectory(self, n_steps):
+    def sample_trajectory(self, n_steps: int) -> None:
+        # used for the vectorized envs but not the main env
+        # (since we have the main env evaluate a known traj that was tested in the vec envs)
         # note that set_target_state should be called before this
         pos, orn, vel, omega = self.robot.dynamics_state
         n_trajs = 1
@@ -161,7 +187,8 @@ class AstrobeeEnv(gym.Env):
         # Implementation of Gym template method reset(): See Gym for full method docstring
         # Gym states this must be the first line of the reset() method
         super().reset(seed=seed)
-        # TODO: add resets for the instance variables? Class variables?
+        # TODO: add resets for the class/instance variables?
+        # TODO: should state be reset back to initial saved state?
         return self._get_obs(), self._get_info()  # Initial state observation
 
     def _get_obs(self) -> ObsType:
@@ -171,7 +198,7 @@ class AstrobeeEnv(gym.Env):
             ObsType: Observation
         """
         # This function setup was recommended in the gym documentation
-        return 123  # Dummy value for now
+        return 0  # Dummy value for now
 
     def _get_info(self) -> dict[str, Any]:
         """Provide auxiliary information associated with an observation
@@ -180,28 +207,20 @@ class AstrobeeEnv(gym.Env):
             dict[str, Any]: Additional observation information
         """
         # This function setup was recommended in the gym documentation
-        return {"a": 1}  # Dummy value for now
+        return {}  # Dummy value for now
 
     def step(
         self, action: ActType
     ) -> tuple[ObsType, float, bool, bool, dict[str, Any]]:
         # Implementation of Gym template method step(): See Gym for full method docstring
-        # Note: When called from a vectorized environment, the return is different
-
-        # This is less so a "step" function than a "rollout" function
-        # TODO clear up this confusion? IDK if this is possible since gym looks for step()
-
-        # TODO decide if the step function should sample a trajectory and then roll it out?
-        # Or should the trajectory be already sampled prior to this
-
-        # Main simulation should evaluate the number of steps in the MPC rollout length
-        # Vectorized simulations should evaluate their full trajectory plan (the rollout itself)
-        # ^^ HOWEVER, this logic should be handled externally to this function
+        # Note: The return parameters differ slightly from step() for a vectorized environment
+        # Note: For MPC, this is less so a "step" than a "rollout" function. The trajectory should be sampled
+        #       before calling this function
 
         # TODO make this the default behavior in the non-MPC version of this environment
         if self.traj_plan is None:
             self.client.stepSimulation()
-            reward = 0.123  # TODO FIX
+            reward = 0
         else:
             # TODO decide how to handle the stopping criteria
             self.controller.follow_traj(
@@ -210,8 +229,6 @@ class AstrobeeEnv(gym.Env):
             # Get the state of the robot after we follow the trajectory
             pos, orn, vel, omega = self.robot.dynamics_state
             # Determine the reward based on how much we deviated from the target
-            # Note that the target can be different from the last state in the traj plan
-            # since that last state was sampled about the nominal target
             reward = -1 * deviation_penalty(
                 pos,
                 orn,
