@@ -61,6 +61,7 @@ def make_vec_env(
     vec_env_kwargs = vec_env_kwargs or {}
     monitor_kwargs = monitor_kwargs or {}
     wrapper_kwargs = wrapper_kwargs or {}
+    per_env_kwargs = per_env_kwargs or {}
     assert vec_env_kwargs is not None  # for mypy
 
     def make_env(rank: int) -> Callable[[], gym.Env]:

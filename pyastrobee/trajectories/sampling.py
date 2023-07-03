@@ -90,6 +90,9 @@ def generate_trajs(
         # Sample all of the trajectories
         n_samples = n_trajs
 
+    if n_samples == 0:
+        return trajs
+
     # Sample endpoints for the candidate trajectories about the nominal targets
     sampled_positions = np.random.multivariate_normal(
         nominal_target_pos, pos_sampling_stdev**2 * np.eye(3), n_samples
