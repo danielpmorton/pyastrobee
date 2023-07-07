@@ -1,3 +1,5 @@
+"""Trajectory generation methods for the two-robot case"""
+
 import numpy as np
 
 from pyastrobee.trajectories.trajectory import Trajectory
@@ -6,46 +8,80 @@ from pyastrobee.utils.transformations import (
     invert_transform_mat,
     transform_point,
 )
+
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.rotations import rmat_to_quat
 from pyastrobee.utils.quaternions import quats_to_angular_velocities
 
 
-def follower_trajectory(leader_traj: Trajectory, T_F2L: np.ndarray) -> Trajectory:
-    follower_positions = np.zeros_like(leader_traj.positions)
-    follower_quats = np.zeros_like(leader_traj.quaternions)
-    # follower_vels = np.zeros_like(leader_traj.linear_velocities)
-    # follower_omegas = np.zeros_like(leader_traj.angular_velocities)
-    # follower_accels = np.zeros_like(leader_traj.linear_accels)
-    # follower_alphas = np.zeros_like(leader_traj.angular_accels)
+def offset_trajectory(
+    reference_traj: Trajectory, offset_transform: np.ndarray
+) -> Trajectory:
+    """Construct a trajectory with a fixed offset to a given reference trajectory
 
-    # Assume we have a fixed timestep for now (TODO?)
-    dt = leader_traj.times[1] - leader_traj.times[0]
+    This can also be thought as "Leader/Follower" where leader has the reference trajectory, and follower has the offset
+    trajectory. However, this can generalize to more cases than just leader/follower
 
-    #
-    for i in range(leader_traj.num_timesteps):
-        pose = leader_traj.poses[i]
-        T_L2W = pos_quat_to_tmat(pose)
-        T_F2W = T_L2W @ T_F2L
-        follower_positions[i] = T_F2W[:3, 3]
-        follower_quats[i] = rmat_to_quat(T_F2W[:3, :3])
+    Args:
+        reference_traj (Trajectory): Trajectory to use as a reference
+        offset_transform (np.ndarray): "Offset to reference" transformation matrix, dictating the positional/angular
+            difference from the reference trajectory. Shape (4, 4)
 
-    follower_vels = np.gradient(follower_positions, dt, axis=0)
-    follower_accels = np.gradient(follower_vels, dt, axis=0)
-    follower_omegas = quats_to_angular_velocities(follower_quats, dt)
-    follower_alphas = np.gradient(follower_omegas, dt, axis=0)
+    Returns:
+        Trajectory: Trajectory with a fixed offset to the reference trajectory
+    """
+    # TODO: check that the transformation matrix is valid?
+
+    # Transform each pose according to the offset transform
+    offset_positions = np.zeros_like(reference_traj.positions)
+    offset_quats = np.zeros_like(reference_traj.quaternions)
+    for i in range(reference_traj.num_timesteps):
+        pose = reference_traj.poses[i]
+        T_R2W = pos_quat_to_tmat(pose)  # Reference to World
+        T_O2W = T_R2W @ offset_transform  # Offset to World
+        offset_positions[i] = T_O2W[:3, 3]
+        offset_quats[i] = rmat_to_quat(T_O2W[:3, :3])
+
+    # Take the gradients of the poses to determine derivative information
+    offset_vels = np.gradient(offset_positions, reference_traj.times, axis=0)
+    offset_accels = np.gradient(offset_vels, reference_traj.times, axis=0)
+    offset_omegas = quats_to_angular_velocities(
+        offset_quats, np.gradient(reference_traj.times)
+    )
+    offset_alphas = np.gradient(offset_omegas, reference_traj.times, axis=0)
     return Trajectory(
-        follower_positions,
-        follower_quats,
-        follower_vels,
-        follower_omegas,
-        follower_accels,
-        follower_alphas,
-        leader_traj.times,
+        offset_positions,
+        offset_quats,
+        offset_vels,
+        offset_omegas,
+        offset_accels,
+        offset_alphas,
+        reference_traj.times,
     )
 
 
-def _test_leader_follower():
+def dual_trajectory(
+    reference_traj: Trajectory, transform_A: np.ndarray, transform_B: np.ndarray
+) -> tuple[Trajectory, Trajectory]:
+    """Construct two trajectories moving about a reference trajectory with fixed offset transformations
+
+    This can be used as a slightly better formulation of leader/follower to ensure similar trajectory dynamics
+    for two robots moving together about a reference
+
+    Args:
+        reference_traj (Trajectory): Trajectory to use as a central reference trajectory
+        transform_A (np.ndarray): "Offset to reference" transformation matrix for the first trajectory
+        transform_B (np.ndarray): "Offset to reference" transformation matrix for the second trajectory
+
+    Returns:
+        tuple[Trajectory, Trajectory]: The two trajectories, both offset about the reference
+    """
+    return offset_trajectory(reference_traj, transform_A), offset_trajectory(
+        reference_traj, transform_B
+    )
+
+
+def _test_dual_trajectory():
     # pylint: disable=import-outside-toplevel
     import time
     import pybullet
@@ -53,22 +89,23 @@ def _test_leader_follower():
     from pyastrobee.utils.rotations import Rx
     from pyastrobee.trajectories.planner import plan_trajectory
     from pyastrobee.control.force_torque_control import ForceTorqueController
+    from pyastrobee.utils.debug_visualizer import visualize_path
 
     pybullet.connect(pybullet.GUI)
     duration = 5
     dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
-    start_pose_1 = [0, -0.5, 0, *rmat_to_quat(Rx(np.pi / 2))]
-    start_vel_1 = [0.3, 0.3, 0.3]
+    start_pose_1 = [0, -0.5, 0, 0, 0, 0, 1]
+    start_vel_1 = np.zeros(3)
     start_omega_1 = np.zeros(3)
     start_accel_1 = np.zeros(3)
     start_alpha_1 = np.zeros(3)
-    end_pose_1 = [2, -0.5, 1, *rmat_to_quat(Rx(-np.pi / 2))]
-    end_vel_1 = start_vel_1
+    end_pose_1 = [2, -0.5, 1, *rmat_to_quat(Rx(np.pi))]
+    end_vel_1 = np.zeros(3)
     end_omega_1 = np.zeros(3)
     end_accel_1 = np.zeros(3)
     end_alpha_1 = np.zeros(3)
 
-    leader_traj = plan_trajectory(
+    reference_traj = plan_trajectory(
         start_pose_1[:3],
         start_pose_1[3:],
         start_vel_1,
@@ -88,106 +125,91 @@ def _test_leader_follower():
     # (get the correct values depending on the bag)
     # The rotation will probably always be the same unless we mess with the arm joints
     offset_distance = 1
-    T_F2L = make_transform_mat(Rx(np.pi), [0, 0, -1 * offset_distance])
+    T_A = make_transform_mat(Rx(np.pi), [0, 0, -1 * offset_distance])
+    T_B = make_transform_mat(Rx(0), [0, 0, 1 * offset_distance])
 
-    follower_traj = follower_trajectory(leader_traj, T_F2L)
-    leader = Astrobee(start_pose_1)
-    follower = Astrobee(follower_traj.poses[0])
+    traj_A, traj_B = dual_trajectory(reference_traj, T_A, T_B)
+    robot_A = Astrobee(traj_A.poses[0])
+    robot_B = Astrobee(traj_B.poses[0])
 
-    kp, kv, kq, kw = 20, 5, 5, 5  # 20, 5, 1, 0.1
+    # These need to be better tuned for this example
+    # I think some of the tracking error is due to high centrifugal forces in this example
+    # which causes some error due to the COM offset from the arm
+    kp, kv, kq, kw = 50, 10, 2, 0.2
     leader_controller = ForceTorqueController(
-        leader.id, leader.mass, leader.inertia, kp, kv, kq, kw, dt
+        robot_A.id, robot_A.mass, robot_A.inertia, kp, kv, kq, kw, dt
     )
     follower_controller = ForceTorqueController(
-        follower.id, follower.mass, follower.inertia, kp, kv, kq, kw, dt
+        robot_B.id, robot_B.mass, robot_B.inertia, kp, kv, kq, kw, dt
     )
 
-    leader_traj.visualize(10)
-    follower_traj.visualize(10)
+    n_viz = 20
+    traj_A.visualize(n_viz)
+    visualize_path(traj_A.positions, n_viz, (1, 1, 1))
+    traj_B.visualize(n_viz)
+    visualize_path(traj_B.positions, n_viz, (1, 1, 1))
+    visualize_path(reference_traj.positions, n_viz, (1, 1, 1))
 
-    for i in range(leader_traj.num_timesteps):
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = leader.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = follower.dynamics_state
+    for i in range(traj_A.num_timesteps):
+        pos_1, orn_1, lin_vel_1, ang_vel_1 = robot_A.dynamics_state
+        pos_2, orn_2, lin_vel_2, ang_vel_2 = robot_B.dynamics_state
         leader_controller.step(
             pos_1,
             lin_vel_1,
             orn_1,
             ang_vel_1,
-            leader_traj.positions[i, :],
-            leader_traj.linear_velocities[i, :],
-            leader_traj.linear_accels[i, :],
-            leader_traj.quaternions[i, :],
-            leader_traj.angular_velocities[i, :],
-            leader_traj.angular_accels[i, :],
+            traj_A.positions[i, :],
+            traj_A.linear_velocities[i, :],
+            traj_A.linear_accels[i, :],
+            traj_A.quaternions[i, :],
+            traj_A.angular_velocities[i, :],
+            traj_A.angular_accels[i, :],
         )
         follower_controller.step(
             pos_2,
             lin_vel_2,
             orn_2,
             ang_vel_2,
-            follower_traj.positions[i, :],
-            follower_traj.linear_velocities[i, :],
-            follower_traj.linear_accels[i, :],
-            follower_traj.quaternions[i, :],
-            follower_traj.angular_velocities[i, :],
-            follower_traj.angular_accels[i, :],
+            traj_B.positions[i, :],
+            traj_B.linear_velocities[i, :],
+            traj_B.linear_accels[i, :],
+            traj_B.quaternions[i, :],
+            traj_B.angular_velocities[i, :],
+            traj_B.angular_accels[i, :],
         )
         time.sleep(1 / 120)
 
     # Stopping mode
     while True:
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = leader.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = follower.dynamics_state
+        pos_1, orn_1, lin_vel_1, ang_vel_1 = robot_A.dynamics_state
+        pos_2, orn_2, lin_vel_2, ang_vel_2 = robot_B.dynamics_state
         leader_controller.step(
             pos_1,
             lin_vel_1,
             orn_1,
             ang_vel_1,
-            leader_traj.positions[-1, :],
-            leader_traj.linear_velocities[-1, :],
-            leader_traj.linear_accels[-1, :],
-            leader_traj.quaternions[-1, :],
-            leader_traj.angular_velocities[-1, :],
-            leader_traj.angular_accels[-1, :],
+            traj_A.positions[-1, :],
+            traj_A.linear_velocities[-1, :],
+            traj_A.linear_accels[-1, :],
+            traj_A.quaternions[-1, :],
+            traj_A.angular_velocities[-1, :],
+            traj_A.angular_accels[-1, :],
         )
         follower_controller.step(
             pos_2,
             lin_vel_2,
             orn_2,
             ang_vel_2,
-            follower_traj.positions[-1, :],
-            follower_traj.linear_velocities[-1, :],
-            follower_traj.linear_accels[-1, :],
-            follower_traj.quaternions[-1, :],
-            follower_traj.angular_velocities[-1, :],
-            follower_traj.angular_accels[-1, :],
+            traj_B.positions[-1, :],
+            traj_B.linear_velocities[-1, :],
+            traj_B.linear_accels[-1, :],
+            traj_B.quaternions[-1, :],
+            traj_B.angular_velocities[-1, :],
+            traj_B.angular_accels[-1, :],
         )
         time.sleep(1 / 120)
 
-    input("Press Enter to continue")
-
-
-# # TODO delete this
-# def _test_follower_transform():
-#     # pylint: disable=import-outside-toplevel
-#     import pybullet
-#     from pyastrobee.core.astrobee import Astrobee
-#     from pyastrobee.utils.rotations import Rx
-#     from pyastrobee.trajectories.planner import plan_trajectory
-#     from pyastrobee.control.force_torque_control import ForceTorqueController
-#     from pyastrobee.utils.poses import tmat_to_pos_quat
-#     from pyastrobee.utils.quaternions import random_quaternion
-
-#     T_F2L = make_transform_mat(Rx(np.pi), [0, 0, -1])
-
-#     pybullet.connect(pybullet.GUI)
-#     leader = Astrobee([*np.random.rand(3), *random_quaternion()])
-#     T_L2W = pos_quat_to_tmat(leader.pose)
-#     T_F2W = T_L2W @ T_F2L
-#     follower = Astrobee(tmat_to_pos_quat(T_F2W))
-#     input("Enter to continue")
-
 
 if __name__ == "__main__":
-    _test_leader_follower()
-    # _test_follower_transform()
+    # _test_leader_follower()
+    _test_dual_trajectory()
