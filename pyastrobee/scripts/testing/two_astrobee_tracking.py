@@ -10,7 +10,10 @@ from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.rotations import Rx, rmat_to_quat
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.trajectories.leader_follower import offset_trajectory, multi_trajectory
+from pyastrobee.trajectories.multi_robot_trajs import (
+    offset_trajectory,
+    multi_trajectory,
+)
 from pyastrobee.utils.debug_visualizer import visualize_path
 from pyastrobee.control.multi_robot import multi_robot_control
 
