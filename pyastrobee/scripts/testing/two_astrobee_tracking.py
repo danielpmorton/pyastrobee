@@ -1,8 +1,5 @@
 """Testing out various ways of commanding two astrobees to manipulate the bag while tracking a trajectory"""
 
-
-import time
-
 import pybullet
 import numpy as np
 
@@ -13,7 +10,9 @@ from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.rotations import Rx, rmat_to_quat
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.trajectories.leader_follower import offset_trajectory
+from pyastrobee.trajectories.leader_follower import offset_trajectory, multi_trajectory
+from pyastrobee.utils.debug_visualizer import visualize_path
+from pyastrobee.control.multi_robot import multi_robot_control
 
 
 def independent_example():
@@ -86,38 +85,9 @@ def independent_example():
     traj_1.visualize(10)
     traj_2.visualize(10)
 
-    assert traj_1.num_timesteps == traj_2.num_timesteps
-    for i in range(traj_1.num_timesteps):
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = robot_1.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = robot_2.dynamics_state
-        controller_1.step(
-            pos_1,
-            lin_vel_1,
-            orn_1,
-            ang_vel_1,
-            traj_1.positions[i, :],
-            traj_1.linear_velocities[i, :],
-            traj_1.linear_accels[i, :],
-            traj_1.quaternions[i, :],
-            traj_1.angular_velocities[i, :],
-            traj_1.angular_accels[i, :],
-        )
-        controller_2.step(
-            pos_2,
-            lin_vel_2,
-            orn_2,
-            ang_vel_2,
-            traj_2.positions[i, :],
-            traj_2.linear_velocities[i, :],
-            traj_2.linear_accels[i, :],
-            traj_2.quaternions[i, :],
-            traj_2.angular_velocities[i, :],
-            traj_2.angular_accels[i, :],
-        )
-
-    while True:
-        pybullet.stepSimulation()
-        time.sleep(1 / 120)
+    multi_robot_control(
+        [robot_1, robot_2], [traj_1, traj_2], [controller_1, controller_2], False
+    )
 
 
 def bag_example():
@@ -194,45 +164,17 @@ def bag_example():
     traj_1.visualize(10)
     traj_2.visualize(10)
 
-    assert traj_1.num_timesteps == traj_2.num_timesteps
-    for i in range(traj_1.num_timesteps):
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = robot_1.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = robot_2.dynamics_state
-        controller_1.step(
-            pos_1,
-            lin_vel_1,
-            orn_1,
-            ang_vel_1,
-            traj_1.positions[i, :],
-            traj_1.linear_velocities[i, :],
-            traj_1.linear_accels[i, :],
-            traj_1.quaternions[i, :],
-            traj_1.angular_velocities[i, :],
-            traj_1.angular_accels[i, :],
-        )
-        controller_2.step(
-            pos_2,
-            lin_vel_2,
-            orn_2,
-            ang_vel_2,
-            traj_2.positions[i, :],
-            traj_2.linear_velocities[i, :],
-            traj_2.linear_accels[i, :],
-            traj_2.quaternions[i, :],
-            traj_2.angular_velocities[i, :],
-            traj_2.angular_accels[i, :],
-        )
-
-    while True:
-        pybullet.stepSimulation()
-        # time.sleep(1 / 120)
+    multi_robot_control(
+        [robot_1, robot_2], [traj_1, traj_2], [controller_1, controller_2], False
+    )
 
 
 def leader_follower_example():
+    """Example with one astrobee following a set 'leader' trajectory, and a second astrobee following at a fixed
+    offset from the leader
 
-    # TODO add info
-    # TODO tracking seems like it could be improved
-
+    TODO tracking seems like it could be improved
+    """
     pybullet.connect(pybullet.GUI)
     duration = 5
     dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
@@ -284,67 +226,86 @@ def leader_follower_example():
     leader_traj.visualize(10)
     follower_traj.visualize(10)
 
-    for i in range(leader_traj.num_timesteps):
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = leader.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = follower.dynamics_state
-        leader_controller.step(
-            pos_1,
-            lin_vel_1,
-            orn_1,
-            ang_vel_1,
-            leader_traj.positions[i, :],
-            leader_traj.linear_velocities[i, :],
-            leader_traj.linear_accels[i, :],
-            leader_traj.quaternions[i, :],
-            leader_traj.angular_velocities[i, :],
-            leader_traj.angular_accels[i, :],
-        )
-        follower_controller.step(
-            pos_2,
-            lin_vel_2,
-            orn_2,
-            ang_vel_2,
-            follower_traj.positions[i, :],
-            follower_traj.linear_velocities[i, :],
-            follower_traj.linear_accels[i, :],
-            follower_traj.quaternions[i, :],
-            follower_traj.angular_velocities[i, :],
-            follower_traj.angular_accels[i, :],
-        )
-        time.sleep(1 / 120)
+    multi_robot_control(
+        [leader, follower],
+        [leader_traj, follower_traj],
+        [leader_controller, follower_controller],
+        True,
+    )
 
-    # Stopping mode
-    while True:
-        pos_1, orn_1, lin_vel_1, ang_vel_1 = leader.dynamics_state
-        pos_2, orn_2, lin_vel_2, ang_vel_2 = follower.dynamics_state
-        leader_controller.step(
-            pos_1,
-            lin_vel_1,
-            orn_1,
-            ang_vel_1,
-            leader_traj.positions[-1, :],
-            leader_traj.linear_velocities[-1, :],
-            leader_traj.linear_accels[-1, :],
-            leader_traj.quaternions[-1, :],
-            leader_traj.angular_velocities[-1, :],
-            leader_traj.angular_accels[-1, :],
-        )
-        follower_controller.step(
-            pos_2,
-            lin_vel_2,
-            orn_2,
-            ang_vel_2,
-            follower_traj.positions[-1, :],
-            follower_traj.linear_velocities[-1, :],
-            follower_traj.linear_accels[-1, :],
-            follower_traj.quaternions[-1, :],
-            follower_traj.angular_velocities[-1, :],
-            follower_traj.angular_accels[-1, :],
-        )
-        time.sleep(1 / 120)
+
+def dual_trajectory_example():
+    """Example with two astrobees each tracking with a symetric offset about a reference trajectory"""
+
+    pybullet.connect(pybullet.GUI)
+    duration = 5
+    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+    start_pose_1 = [0, -0.5, 0, 0, 0, 0, 1]
+    start_vel_1 = np.zeros(3)
+    start_omega_1 = np.zeros(3)
+    start_accel_1 = np.zeros(3)
+    start_alpha_1 = np.zeros(3)
+    end_pose_1 = [2, -0.5, 1, *rmat_to_quat(Rx(np.pi))]
+    end_vel_1 = np.zeros(3)
+    end_omega_1 = np.zeros(3)
+    end_accel_1 = np.zeros(3)
+    end_alpha_1 = np.zeros(3)
+
+    reference_traj = plan_trajectory(
+        start_pose_1[:3],
+        start_pose_1[3:],
+        start_vel_1,
+        start_omega_1,
+        start_accel_1,
+        start_alpha_1,
+        end_pose_1[:3],
+        end_pose_1[3:],
+        end_vel_1,
+        end_omega_1,
+        end_accel_1,
+        end_alpha_1,
+        duration,
+        dt,
+    )
+    # TODO make the offset distance a parameter to tune
+    # (get the correct values depending on the bag)
+    # The rotation will probably always be the same unless we mess with the arm joints
+    offset_distance = 1
+    T_A = make_transform_mat(Rx(np.pi), [0, 0, -1 * offset_distance])
+    T_B = make_transform_mat(Rx(0), [0, 0, 1 * offset_distance])
+
+    traj_A, traj_B = multi_trajectory(reference_traj, [T_A, T_B])
+    robot_A = Astrobee(traj_A.poses[0])
+    robot_B = Astrobee(traj_B.poses[0])
+
+    # These need to be better tuned for this example
+    # I think some of the tracking error is due to high centrifugal forces in this example
+    # which causes some error due to the COM offset from the arm
+    kp, kv, kq, kw = 50, 10, 2, 0.2
+    leader_controller = ForceTorqueController(
+        robot_A.id, robot_A.mass, robot_A.inertia, kp, kv, kq, kw, dt
+    )
+    follower_controller = ForceTorqueController(
+        robot_B.id, robot_B.mass, robot_B.inertia, kp, kv, kq, kw, dt
+    )
+
+    n_viz = 20
+    traj_A.visualize(n_viz)
+    visualize_path(traj_A.positions, n_viz, (1, 1, 1))
+    traj_B.visualize(n_viz)
+    visualize_path(traj_B.positions, n_viz, (1, 1, 1))
+    visualize_path(reference_traj.positions, n_viz, (1, 1, 1))
+
+    multi_robot_control(
+        [robot_A, robot_B],
+        [traj_A, traj_B],
+        [leader_controller, follower_controller],
+        True,
+    )
 
 
 if __name__ == "__main__":
     # independent_example()
     # bag_example()
-    leader_follower_example()
+    # leader_follower_example()
+    dual_trajectory_example()
