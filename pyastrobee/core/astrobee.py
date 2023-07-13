@@ -9,6 +9,8 @@ TODO
 - I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future, 
   make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping track
   of all of the IDs together will cause a mess)
+- Determine off-diagonal inertia matrix values, and account for the arm in the inertia values?
+- Check on if the known Astrobee inertia matches what Pybullet thinks the inertia is
 """
 
 import time
@@ -24,7 +26,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 from pyastrobee.utils.transformations import make_transform_mat, invert_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
-from pyastrobee.config import astrobee_transforms, astrobee_inertial
+from pyastrobee.config import astrobee_transforms
 from pyastrobee.utils.python_utils import print_green, ExtendedEnum
 
 
@@ -44,7 +46,6 @@ class Astrobee:
         ConnectionError: If a pybullet server is not connected before initialization
     """
 
-    # TODO add these to a constants or config file? Probably fine here for now
     URDF = "pyastrobee/assets/urdf/astrobee.urdf"
     NUM_JOINTS = 7
     NUM_LINKS = 8
@@ -83,8 +84,11 @@ class Astrobee:
         0.12,  # gripper right distal joint
     ]
 
-    # Should these actually be enums, or would a dict be better? The names can be tricky,
-    # so typing those out as strings every time could be not ideal
+    # Inertial properties: From A Brief Guide to Astrobee
+    MASS = 9.58  # kg
+    INERTIA = np.diag([0.153, 0.143, 0.162])  # kg-m^2
+    INV_INERTIA = np.linalg.inv(INERTIA)  # Precompute
+
     class Joints(ExtendedEnum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""
 
@@ -127,7 +131,7 @@ class Astrobee:
                 "Need to connect to pybullet before initializing an astrobee"
             )
         self.id = self.client.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
-        self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]  # Timestep
+        self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self.set_gripper_position(gripper_pos, force=True)
         self.set_arm_joints(arm_joints, force=True)
         print_green("Astrobee is ready")
@@ -292,15 +296,55 @@ class Astrobee:
     @property
     def inertia(self) -> np.ndarray:
         """(3, 3) inertia tensor for the Astrobee"""
-        # Using the values from the Astrobee documentation
-        # (TODO) This does not account for the position of the arm (Does it account for the arm at all?)
-        return astrobee_inertial.INERTIA
+        return self.INERTIA
 
     @property
     def mass(self) -> float:
         """Mass of the Astrobee"""
-        # TODO check if this accounts for the arm or if it is base-only
-        return astrobee_inertial.MASS
+        return self.MASS
+
+    @property
+    def state_matrix(self):
+        """The A matrix, such that x_dot = Ax + Bu
+
+        We assume that the state x = [position, velocity, quaternion, angular velocity] ∈ R13
+        and that the control u = [force, torque] ∈ R6
+
+        This is dependent on the current quaternion/angular velocity due to the nonlinearities
+        in the orientation representation
+        """
+        A = np.zeros((13, 13))
+        Ixx, Iyy, Izz = np.diag(self.inertia)
+        _, orn, _, ang_vel = self.dynamics_state
+        qx, qy, qz, qw = orn
+        w1, w2, w3 = ang_vel
+        A[:6, :6] = np.kron([[0, 1], [0, 0]], np.eye(3))
+        # fmt: off
+        A[6:, 6:] = np.array(
+            [
+                [0, -w3 / 2, w2 / 2, w1 / 2, qw / 2, qz / 2, -qy / 2],
+                [w3 / 2, 0, -w1 / 2, w2 / 2, -qz / 2, qw / 2, qx / 2],
+                [-w2 / 2, w1 / 2, 0, w3 / 2, qy / 2, -qx / 2, qw / 2],
+                [-w1 / 2, -w2 / 2, -w3 / 2, 0, -qx / 2, -qy / 2, -qz / 2],
+                [0, 0, 0, 0, 0, (Iyy * w3 - Izz * w3) / Ixx, (Iyy * w2 - Izz * w2) / Ixx],
+                [0, 0, 0, 0, -(Ixx * w3 - Izz * w3) / Iyy, 0, -(Ixx * w1 - Izz * w1) / Iyy],
+                [0, 0, 0, 0, (Ixx * w2 - Iyy * w2) / Izz, (Ixx * w1 - Iyy * w1) / Izz, 0],
+            ]
+        )
+        # fmt: on
+        return A
+
+    @property
+    def control_matrix(self):
+        """The B matrix, such that x_dot = Ax + Bu
+
+        We assume that the state x = [position, velocity, quaternion, angular velocity] ∈ R13
+        and that the control u = [force, torque] ∈ R6
+        """
+        B = np.zeros((13, 6))
+        B[3:6, :3] = (1 / self.mass) * np.eye(3)
+        B[10:, 3:] = self.INV_INERTIA
+        return B
 
     @property
     def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
