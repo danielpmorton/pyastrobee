@@ -28,6 +28,11 @@ from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
 from pyastrobee.utils.python_utils import print_green, ExtendedEnum
+from pyastrobee.utils.dynamics import (
+    inertial_transformation,
+    state_matrix,
+    control_matrix,
+)
 
 
 class Astrobee:
@@ -85,7 +90,7 @@ class Astrobee:
     ]
 
     # Inertial properties: From A Brief Guide to Astrobee
-    MASS = 9.58  # kg
+    MASS = 9.775552639689618  # 9.58  # kg
     INERTIA = np.diag([0.153, 0.143, 0.162])  # kg-m^2
     INV_INERTIA = np.linalg.inv(INERTIA)  # Precompute
 
@@ -130,7 +135,9 @@ class Astrobee:
             raise ConnectionError(
                 "Need to connect to pybullet before initializing an astrobee"
             )
-        self.id = self.client.loadURDF(Astrobee.URDF, pose[:3], pose[3:])
+        self.id = self.client.loadURDF(
+            Astrobee.URDF, pose[:3], pose[3:], flags=pybullet.URDF_USE_INERTIA_FROM_FILE
+        )
         self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self.set_gripper_position(gripper_pos, force=True)
         self.set_arm_joints(arm_joints, force=True)
@@ -303,6 +310,8 @@ class Astrobee:
         """Mass of the Astrobee"""
         return self.MASS
 
+    # TODO combine the A/B matrices into a single function
+
     @property
     def state_matrix(self):
         """The A matrix, such that x_dot = Ax + Bu
@@ -313,26 +322,9 @@ class Astrobee:
         This is dependent on the current quaternion/angular velocity due to the nonlinearities
         in the orientation representation
         """
-        A = np.zeros((13, 13))
-        Ixx, Iyy, Izz = np.diag(self.inertia)
-        _, orn, _, ang_vel = self.dynamics_state
-        qx, qy, qz, qw = orn
-        w1, w2, w3 = ang_vel
-        A[:6, :6] = np.kron([[0, 1], [0, 0]], np.eye(3))
-        # fmt: off
-        A[6:, 6:] = np.array(
-            [
-                [0, -w3 / 2, w2 / 2, w1 / 2, qw / 2, qz / 2, -qy / 2],
-                [w3 / 2, 0, -w1 / 2, w2 / 2, -qz / 2, qw / 2, qx / 2],
-                [-w2 / 2, w1 / 2, 0, w3 / 2, qy / 2, -qx / 2, qw / 2],
-                [-w1 / 2, -w2 / 2, -w3 / 2, 0, -qx / 2, -qy / 2, -qz / 2],
-                [0, 0, 0, 0, 0, (Iyy * w3 - Izz * w3) / Ixx, (Iyy * w2 - Izz * w2) / Ixx],
-                [0, 0, 0, 0, -(Ixx * w3 - Izz * w3) / Iyy, 0, -(Ixx * w1 - Izz * w1) / Iyy],
-                [0, 0, 0, 0, (Ixx * w2 - Iyy * w2) / Izz, (Ixx * w1 - Iyy * w1) / Izz, 0],
-            ]
-        )
-        # fmt: on
-        return A
+        _, q, _, w = self.dynamics_state
+        # return state_matrix(q, w, self.INERTIA, self.INV_INERTIA)
+        return state_matrix(q, w, self.true_inertia, np.linalg.inv(self.true_inertia))
 
     @property
     def control_matrix(self):
@@ -341,10 +333,18 @@ class Astrobee:
         We assume that the state x = [position, velocity, quaternion, angular velocity] ∈ R13
         and that the control u = [force, torque] ∈ R6
         """
-        B = np.zeros((13, 6))
-        B[3:6, :3] = (1 / self.mass) * np.eye(3)
-        B[10:, 3:] = self.INV_INERTIA
-        return B
+        # return control_matrix(self.MASS, self.INV_INERTIA)
+        return control_matrix(self.MASS, np.linalg.inv(self.true_inertia))
+
+    @property
+    def state_vector(self):
+        """The state vector x, such that x_dot = Ax + Bu
+
+        We compose the state as [position, velocity, quaternion, angular velocity] ∈ R13
+        """
+        pos, orn = self.client.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = self.client.getBaseVelocity(self.id)
+        return np.concatenate([pos, lin_vel, orn, ang_vel])
 
     @property
     def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -611,6 +611,24 @@ class Astrobee:
 
     def localize(self):
         raise NotImplementedError()  # TODO.. see dynamics state. Should have a noise parameter
+
+    @property
+    def true_inertia(self):
+        T_B2W = self.tmat  # Base to world
+        inertia = np.zeros((3, 3))
+        for link in Astrobee.Links:
+            info = pybullet.getDynamicsInfo(self.id, link.value)
+            mass = info[0]
+            inertia_diagonal = info[2]
+            if link.value == -1:  # Separate handling for base link
+                inertia += np.diag(inertia_diagonal)
+            else:
+                T_L2W = self.get_link_transform(link.value)  # Link to world
+                T_L2B = invert_transform_mat(T_B2W) @ T_L2W  # Link to base
+                inertia += inertial_transformation(
+                    mass, np.diag(inertia_diagonal), T_L2B
+                )
+        return inertia
 
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
