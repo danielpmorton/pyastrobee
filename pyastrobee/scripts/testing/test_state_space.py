@@ -20,7 +20,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
-def test_state_space(use_true_inertia: bool = False):
+def test_state_space(use_sim_inertial_props: bool = False):
     np.random.seed(0)
     client = initialize_pybullet()
     robot = Astrobee(client=client)
@@ -29,10 +29,9 @@ def test_state_space(use_true_inertia: bool = False):
     # Hacky way to do this... but it works
     # We'll just compute the inertia tensor based on the robot configuration ONCE, because we generally won't move the
     # arm joints, and if we do this every sim step it's crazy slow
-    if use_true_inertia:
-        inertia = robot.compute_true_inertia()
-        robot.INERTIA = inertia  # HACKY
-        robot.INV_INERTIA = np.linalg.inv(inertia)  # HACKY
+    if use_sim_inertial_props:
+        robot.recompute_inertia()
+        robot.recompute_mass()
 
     kp, kv, kq, kw = 20, 5, 1, 0.1
     controller = ForceTorqueController(
@@ -117,4 +116,4 @@ def eval_state_space(x_log, x_dot_log, dt):
 
 
 if __name__ == "__main__":
-    test_state_space(use_true_inertia=True)
+    test_state_space(use_sim_inertial_props=True)

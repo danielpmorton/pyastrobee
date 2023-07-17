@@ -89,11 +89,6 @@ class Astrobee:
         0.12,  # gripper right distal joint
     ]
 
-    # Inertial properties: From A Brief Guide to Astrobee
-    MASS = 9.775552639689618  # 9.58  # kg
-    INERTIA = np.diag([0.153, 0.143, 0.162])  # kg-m^2
-    INV_INERTIA = np.linalg.inv(INERTIA)  # Precompute
-
     class Joints(ExtendedEnum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""
 
@@ -141,6 +136,11 @@ class Astrobee:
         self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self.set_gripper_position(gripper_pos, force=True)
         self.set_arm_joints(arm_joints, force=True)
+        # Initialize dynamics info with estimated numbers from NASA, we can recompute based on the sim state later
+        # if desired. Values are from A Brief Guide to Astrobee
+        self._mass = 9.58  # kg
+        self._inertia = np.diag([0.153, 0.143, 0.162])  # kg-m^2
+        self._inv_inertia = np.linalg.inv(self._inertia)
         print_green("Astrobee is ready")
 
     def unload(self) -> None:
@@ -302,13 +302,18 @@ class Astrobee:
 
     @property
     def inertia(self) -> np.ndarray:
-        """(3, 3) inertia tensor for the Astrobee"""
-        return self.INERTIA
+        """Inertia tensor for the Astrobee, shape (3, 3)"""
+        return self._inertia
+
+    @property
+    def inv_inertia(self) -> np.ndarray:
+        """Inverse of the Astrobee's inertia tensor, shape (3, 3)"""
+        return self._inv_inertia
 
     @property
     def mass(self) -> float:
         """Mass of the Astrobee"""
-        return self.MASS
+        return self._mass
 
     @property
     def state_space_matrices(self):
@@ -329,8 +334,8 @@ class Astrobee:
         # TODO: decide if using the true joint-angle-based inertia tensor
         _, q, _, w = self.dynamics_state
         return (
-            state_matrix(q, w, self.INERTIA, self.INV_INERTIA),
-            control_matrix(self.MASS, self.INV_INERTIA),
+            state_matrix(q, w, self.inertia, self.inv_inertia),
+            control_matrix(self.mass, self.inv_inertia),
         )
 
     @property
@@ -609,16 +614,13 @@ class Astrobee:
     def localize(self):
         raise NotImplementedError()  # TODO.. see dynamics state. Should have a noise parameter
 
-    def compute_true_inertia(self) -> np.ndarray:
-        """Calculate the robot-configuration-based inertia tensor
+    def recompute_inertia(self) -> None:
+        """Calculate the inertia tensor based on the current state of the robot in sim
 
-        This will take into account the positioning of the arm, but this is fairly expensive to compute and should NOT
-        be done on every simulation step.
+        This is more accurate than the base-only value from NASA's documentation, but it is fairly expensive to
+        compute and should NOT be done on every simulation step.
 
-        TODO / Idea: Should we always use this value, but only compute it when the joint state is updated?
-
-        Returns:
-            np.ndarray: Inertia tensor, shape (3, 3)
+        This will update the inertia and inv_inertia properties of the Astrobee instance
         """
         T_B2W = self.tmat  # Base to world
         inertia = np.zeros((3, 3))
@@ -634,7 +636,19 @@ class Astrobee:
                 inertia += inertial_transformation(
                     link_mass, np.diag(link_inertia_diagonal), T_L2B
                 )
-        return inertia
+        self._inertia = inertia
+        self._inv_inertia = np.linalg.inv(inertia)
+
+    def recompute_mass(self) -> None:
+        """Compute the mass of the robot in simulation (this may be slightly off from NASA's quoted numbers)
+
+        This will update the mass property of the Astrobee instance
+        """
+        mass = 0.0
+        for link in Astrobee.Links:
+            # First info parameter is the link mass
+            mass += pybullet.getDynamicsInfo(self.id, link.value)[0]
+        self._mass = mass
 
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
