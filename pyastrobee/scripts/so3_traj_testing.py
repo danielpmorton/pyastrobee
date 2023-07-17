@@ -116,12 +116,16 @@ def rmat_angular_error(R, R_des):
     return rmat_to_rvec(R @ R_des.T)
 
 
-def cayley(A: npt.ArrayLike, ref: Optional[npt.ArrayLike] = None) -> np.ndarray:
+def cayley(A: npt.ArrayLike, center: Optional[npt.ArrayLike] = None) -> np.ndarray:
     """Cayley transform: Mapping between skew-symmetric matrices and SO(n)
 
     - This function is an involution so the skew->SO(n) mapping function is the same as SO(n)->skew
     - TODO check that the "reference matrix" concept actually works - Stephen Boyd seems to think so
       ^^ It seems that it "works" only moving from SO(n)->skew?
+
+    Updated version of the Cayley transform is from:
+    http://imar.ro/journals/Revue_Mathematique/pdfs/2018/2/5.pdf
+    Assume that we are working with the real case, so we don't need to worry about conjugates
 
     Args:
         A (npt.ArrayLike): Either a skew-symmetrix matrix or a special orthogonal matrix, shape (n, n)
@@ -138,13 +142,14 @@ def cayley(A: npt.ArrayLike, ref: Optional[npt.ArrayLike] = None) -> np.ndarray:
     m, n = A.shape
     if m != n:
         raise ValueError(f"Input must be a square matrix! Got shape: {(m, n)}")
-    if ref is None:
-        ref = np.eye(n)
+    In = np.eye(n)
+    if center is None:
+        center = In
     else:
-        ref = np.asarray(ref)
-        if ref.shape != A.shape:
+        center = np.asarray(center)
+        if center.shape != A.shape:
             raise ValueError("Reference must have the same shape as the input!")
-    return (ref - A) @ np.linalg.inv(ref + A)
+    return (In - center.T @ A) @ np.linalg.inv(center + A)
 
 
 def rmat_derivative(R, w):
@@ -440,15 +445,28 @@ def test_cayley():
     R = quat_to_rmat(q)
     S = cayley(R)
     assert is_skew(S)
+    # Test invertibility of the transformation
+    np.testing.assert_array_almost_equal(R, cayley(cayley(R)))
+    np.testing.assert_array_almost_equal(S, cayley(cayley(S)))
     # Test transformation starting from an arbitrary skew-symmetric matrix
     v = np.random.rand(3)
     S2 = skew(v)
     R2 = cayley(S2)
     assert is_special_orthogonal(R2)
+    # Test invertibility with a different center
+    # Note: using the transpose for the inverse mapping
+    np.testing.assert_array_almost_equal(R, cayley(cayley(R, R2), R2.T))
+    np.testing.assert_array_almost_equal(S, cayley(cayley(S, R2), R2.T))
     # Try out the cayley transform from a different reference matrix, and check invertibility
-    R3 = cayley(S2, ref=R2)
+    # Note: in general, cayley(some_skew_matrix, some_center) will NOT produce a special orthogonal matrix
+    # for any center other than the identity, BUT we can still invert a transform even though this is the case
+    # e.g. in general, R, cayley(R, center) is NOT skew and cayley(S, center) is NOT S.O.
+    # BUT the output of these functions can be passed back into cayley with the center transposed and return the original value
+    # unless the skew matric was constructed using that center
+
+    R3 = cayley(S2, center=R2)
     assert is_special_orthogonal(R3)
-    S3 = cayley(R3, ref=R2)
+    S3 = cayley(R3, center=R2)
     assert is_skew(S3)
     assert np.allclose(S2, S3)
     print("Test passed")
@@ -527,7 +545,7 @@ if __name__ == "__main__":
 
     # print(R_delta - rvec_to_rmat(r_err))
 
-    test_traj_gen()
+    # test_traj_gen()
     # test_rvec_tangent_space_comparison()
     # test_rmat_rvec_conversion()
-    # test_cayley()
+    test_cayley()
