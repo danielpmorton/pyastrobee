@@ -21,17 +21,19 @@ from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
 def test_state_space(use_sim_inertial_props: bool = False):
+    """Evaluate a trajectory and see how well the state-space model matches the true state derivatives
+
+    Args:
+        use_sim_inertial_props (bool, optional): Whether to recompute the mass/inertia properties based on the
+            current Astrobee state in simulation. Defaults to False (use NASA's constant values)
+    """
     np.random.seed(0)
     client = initialize_pybullet()
     robot = Astrobee(client=client)
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
 
-    # Hacky way to do this... but it works
-    # We'll just compute the inertia tensor based on the robot configuration ONCE, because we generally won't move the
-    # arm joints, and if we do this every sim step it's crazy slow
     if use_sim_inertial_props:
-        robot.recompute_inertia()
-        robot.recompute_mass()
+        robot.recompute_inertial_properties()
 
     kp, kv, kq, kw = 20, 5, 1, 0.1
     controller = ForceTorqueController(

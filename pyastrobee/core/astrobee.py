@@ -614,16 +614,18 @@ class Astrobee:
     def localize(self):
         raise NotImplementedError()  # TODO.. see dynamics state. Should have a noise parameter
 
-    def recompute_inertia(self) -> None:
-        """Calculate the inertia tensor based on the current state of the robot in sim
+    def recompute_inertial_properties(self) -> None:
+        """Calculate the inertial properties based on the current state of the robot in sim
 
-        This is more accurate than the base-only value from NASA's documentation, but it is fairly expensive to
+        This is more accurate than the fixed, base-only values from NASA's documentation, but it is fairly expensive to
         compute and should NOT be done on every simulation step.
 
-        This will update the inertia and inv_inertia properties of the Astrobee instance
+        This will update the mass, inertia, and inv_inertia properties of the Astrobee instance
         """
-        T_B2W = self.tmat  # Base to world
+        # Note: Mass will be fixed, but it is not necessarily the same value as provided by NASA
+        mass = 0.0
         inertia = np.zeros((3, 3))
+        T_B2W = self.tmat  # Base to world
         for link in Astrobee.Links:
             link_info = pybullet.getDynamicsInfo(self.id, link.value)
             link_mass = link_info[0]
@@ -636,19 +638,10 @@ class Astrobee:
                 inertia += inertial_transformation(
                     link_mass, np.diag(link_inertia_diagonal), T_L2B
                 )
+            mass += link_mass
+        self._mass = mass
         self._inertia = inertia
         self._inv_inertia = np.linalg.inv(inertia)
-
-    def recompute_mass(self) -> None:
-        """Compute the mass of the robot in simulation (this may be slightly off from NASA's quoted numbers)
-
-        This will update the mass property of the Astrobee instance
-        """
-        mass = 0.0
-        for link in Astrobee.Links:
-            # First info parameter is the link mass
-            mass += pybullet.getDynamicsInfo(self.id, link.value)[0]
-        self._mass = mass
 
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
