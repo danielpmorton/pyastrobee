@@ -643,6 +643,29 @@ class Astrobee:
         self._inertia = inertia
         self._inv_inertia = np.linalg.inv(inertia)
 
+    def store_arm(self, force: bool = False):
+        """Folds the Astrobee's arm into its body
+
+        Note: Storing the arm reduces the products of inertia, so this is the preferable
+        configuration if not manipulating any objects
+
+        Args:
+            force (bool, optional): Whether to (non-physically) instantly reset the joints, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
+        """
+        self.set_arm_joints([Astrobee.JOINT_POS_LIMITS[1, 1], 0], force)
+        self.set_gripper_position(0, force)
+
+    def deploy_arm(self, force: bool = False):
+        """Sets the arm to the default position, with the gripper fully open
+
+        Args:
+            force (bool, optional): Whether to (non-physically) instantly reset the joints, instead
+                of stepping the sim. Should only be used at initialization. Defaults to False
+        """
+        self.set_arm_joints([0, 0], force)
+        self.set_gripper_position(100, force)
+
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
     # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
