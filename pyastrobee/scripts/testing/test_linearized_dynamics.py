@@ -1,4 +1,4 @@
-"""Test to see if our state space models track the ground truth error with minimal linearization error
+"""Test to see if our linearized dynamics models track the ground truth state with minimal error
 
 Right now it seems that using the "true" inertia tensor (the one based on the actual configuration of the robot,
 including the arm positioning) does reduce the tracking error for the angular velocity
@@ -6,7 +6,6 @@ including the arm positioning) does reduce the tracking error for the angular ve
 However, the angular velocity error does still seem a little high... Maybe this is acceptable given good values for
 the other parameters
 """
-
 
 import pybullet
 import numpy as np
@@ -17,7 +16,6 @@ from pyastrobee.trajectories.planner import plan_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
-from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
 def test_state_space(use_sim_inertial_props: bool = False):
@@ -27,6 +25,9 @@ def test_state_space(use_sim_inertial_props: bool = False):
         use_sim_inertial_props (bool, optional): Whether to recompute the mass/inertia properties based on the
             current Astrobee state in simulation. Defaults to False (use NASA's constant values)
     """
+    # TODO: Does making the control open-loop (just based on the traj acceleration values) significantly
+    # change this comparison?
+
     np.random.seed(0)
     client = initialize_pybullet()
     robot = Astrobee(client=client)
@@ -60,9 +61,7 @@ def test_state_space(use_sim_inertial_props: bool = False):
     control_dim = 6
     x_log = np.zeros((traj.num_timesteps, state_dim))
     u_log = np.zeros((traj.num_timesteps, control_dim))
-    x_dot_log = np.zeros((traj.num_timesteps, state_dim))
-    # TODO: try try making the controls just based on the acceleration, rather than the CL error?
-
+    dx_model_log = np.zeros((traj.num_timesteps, state_dim))
     for i in range(traj.num_timesteps):
         x = robot.state_vector
         x_log[i] = x
@@ -90,30 +89,55 @@ def test_state_space(use_sim_inertial_props: bool = False):
         client.stepSimulation()
         u = np.concatenate((F, T))
         u_log[i] = u
-        x_dot_log[i] = A @ x + B @ u
+        dx_model_log[i] = A @ x + B @ u
 
     client.disconnect()
-    eval_state_space(x_log, x_dot_log, dt)
+
+    dx_true = np.gradient(x_log, dt, axis=0)
+    plot_dynamics_comparison(dx_true, dx_model_log, dt)
 
 
-def eval_state_space(x_log, x_dot_log, dt):
-    # Compare if the state space model for the derivative actually matches up with what we'd expect
-    # TODO: clean this up a bit and improve the plot partitioning
+def _plot(
+    axes: np.ndarray[plt.Axes],
+    true_data: np.ndarray,
+    ss_data: np.ndarray,
+    titles: list[str],
+    x_axis: np.ndarray,
+    *args,
+    **kwargs,
+):
+    """Plotting helper function"""
+    for i, ax in enumerate(axes):
+        ax.plot(x_axis, true_data[:, i], "k--", label="True", *args, **kwargs)
+        ax.plot(x_axis, ss_data[:, i], "r", label="S.S.", *args, **kwargs)
+        ax.set_title(titles[i])
 
-    x_dot_true = np.gradient(x_log, dt, axis=0)
-    times = np.arange(x_log.shape[0]) * dt
-    state_dim = 13
-    subplot_shape = num_subplots_to_shape(state_dim)
+
+def plot_dynamics_comparison(dx_true: np.ndarray, dx_linearized: np.ndarray, dt: float):
+    """Plot a comparison of the true state derivatives to what we predict based on the linearized dynamics model
+
+    Args:
+        dx_true (np.ndarray): True derivative of the robot state data, shape (n_timesteps, state_dim)
+        dx_linearized (np.ndarray): Derivatives predicted by the linearized dynamics, shape (n_timesteps, state_dim)
+        dt (float): Timestep
+    """
+    times = np.arange(dx_true.shape[0]) * dt
+    fig = plt.figure()
+    subfigs = fig.subfigures(4, 1)
+    pos_fig = subfigs[0].subplots(1, 3)
+    orn_fig = subfigs[1].subplots(1, 4)
+    vel_fig = subfigs[2].subplots(1, 3)
+    omega_fig = subfigs[3].subplots(1, 3)
+
     # fmt: off
-    labels = ["dx", "dy", "dz", "dvx", "dvy", "dvz", "dqx", "dqy", "dqz", "dqw", "dwx", "dwy", "dwz"]
+    _plot(pos_fig, dx_true[:, :3], dx_linearized[:, :3], ["dx", "dy", "dz"], times)
+    _plot(orn_fig, dx_true[:, 3:7], dx_linearized[:, 3:7], ["dqx", "dqy", "dqz", "dqw"], times)
+    _plot(vel_fig, dx_true[:, 7:10], dx_linearized[:, 7:10], ["dvx", "dvy", "dvz"], times)
+    _plot(omega_fig, dx_true[:, 10:], dx_linearized[:, 10:], ["dwx", "dwy", "dwz"], times)
     # fmt: on
-    for i in range(state_dim):
-        plt.subplot(*subplot_shape, i + 1)
-        plt.plot(times, x_dot_log[:, i], "b", label="ss")
-        plt.plot(times, x_dot_true[:, i], "r", label="true")
-        plt.title(labels[i])
 
-    plt.legend()
+    # Put the legend in roughly the correct location outside the plots
+    pos_fig[-1].legend(bbox_to_anchor=(1.1, 0.5), loc="center left")
     plt.show()
 
 
