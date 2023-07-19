@@ -108,9 +108,10 @@ This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into
 
 This will add `decomp.obj`, `decomp.mtl`, and `decomp.stl` to the `obj/(module)` folder.
 
-Note: To double-check that things look correct, import the OBJ into MeshLab just to visualize the results. If it looks like it doesn't match up the source mesh, try changing some of the additional parameters mentioned in the [vhacd readme](https://github.com/kmammou/v-hacd). Note: the default parameters seemed to work fine for a first attempt
-
 ## 5. Final adjustments
+
+Refine VHACD
+- The VHACD output will most likely *not* be perfect. There seems to be no exact combination of parameters that leads to an exact decomposition of the ISS (see the [vhacd readme](https://github.com/kmammou/v-hacd) for more info on these). In particular, VHACD tends to poorly represent the corridors between the modules, leading to a very tight pathway. So, to fix this, open the `decomp.obj` VHACD result for each module in Blender and update the file manually (as in, replace any "bad" convex hulls with simple objects in Blender, like rectangular prisms).
 
 Update the paths
 - The paths at the top of the OBJ/MTL files from this output (`part0`, `part1`, ...) will be *absolute* paths, but pybullet works best with these as *relative* paths. These will need to be manually modified with a quick directory search/replace. For MTL files especially, ensure that these are pointing to files inside the `obj/textures` directory
