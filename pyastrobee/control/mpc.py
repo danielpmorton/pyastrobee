@@ -24,7 +24,7 @@ import numpy.typing as npt
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.cargo_bag import CargoBag
-from pyastrobee.core.iss import load_iss
+from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
@@ -50,7 +50,7 @@ def init(
             CargoBag: The Cargo Bag object
     """
     client = initialize_pybullet(use_gui)
-    load_iss(client=client)
+    iss = ISS(client=client)
     robot = Astrobee(robot_pose, client=client)
     bag = CargoBag("top_handle", client=client)
     bag.attach_to(robot, object_to_move="bag")

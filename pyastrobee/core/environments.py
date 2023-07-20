@@ -28,7 +28,7 @@ from stable_baselines3.common.vec_env.patch_gym import _patch_env
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.iss import load_iss
+from pyastrobee.core.iss import ISS
 from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
 from pyastrobee.trajectories.sampling import generate_trajs
@@ -49,7 +49,7 @@ class AstrobeeEnv(gym.Env):
         # TODO: make more of these parameters variables to pass in
         # e.g. initial bag/robot position, number of robots, type of bag, ...
         self.client = initialize_pybullet(use_gui)
-        self.iss_ids = load_iss(client=self.client)
+        self.iss = ISS(client=self.client)
         self.robot = Astrobee(client=self.client)
         self.bag = CargoBag("top_handle", client=self.client)
         self.bag.reset_to_handle_pose(self.robot.ee_pose)

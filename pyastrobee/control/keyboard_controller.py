@@ -50,7 +50,7 @@ from pyastrobee.utils.poses import (
     add_local_pose_delta,
     add_global_pose_delta,
 )
-from pyastrobee.core.iss import load_iss
+from pyastrobee.core.iss import ISS
 from pyastrobee.utils.debug_visualizer import get_viz_camera_params
 from pyastrobee.utils.python_utils import print_green, print_red
 
@@ -290,7 +290,7 @@ def _main():
     pybullet.connect(pybullet.GUI)
     # Turn off additional GUI windows
     pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
-    load_iss()
+    iss = ISS(debug=False)
     robot = Astrobee()
     robot.store_arm(force=True)
     controller = KeyboardController(robot, pov=True)

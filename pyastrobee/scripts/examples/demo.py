@@ -14,7 +14,7 @@ import pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.control.controller import PoseController
 from pyastrobee.archive.plan_control_traj import plan_control_traj
-from pyastrobee.core.iss import load_iss
+from pyastrobee.core.iss import ISS
 from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
@@ -118,7 +118,7 @@ def demo_with_iss():
     # pybullet.connect(pybullet.GUI)  # a simple version without deformables
     # Bring the camera close to the action (another just random hardcoded position I found)
     pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0])
-    load_iss()
+    iss = ISS()
     robot = Astrobee()
     load_bag(robot.id)
     controller = PoseController(robot)
