@@ -29,19 +29,13 @@ Usage:
 
 Motions are only recorded on a button release to prevent over-queueing actions
 
-NOTE
-- Should this incorporate any of the motion planning things? Or just change the constraint directly?
-- World frame control may not be very useful. Should we toggle between gripper frame and robot frame?
-
 TODO
 - Unify the coarse control toggling between the position and the arm control
 - Add force control, velocity control, and a toggle between methods
 - Add back finer control of the gripper rather than just an open/close toggle?
-- Add back sshkeyboard? (This likely won't work with threading?)
 - Velocity / force control
 - Angle snapping?
-- Make it possible to control the debug viz camera independently? (This may be unnecessary)
-- Allow for switching between certain fixed camera positions 
+- Toggle between gripper frame and robot frame?
 """
 
 import time
@@ -68,27 +62,27 @@ class KeyboardController:
 
     Args:
         robot (Astrobee): The Astrobee to control
+        pov (bool, optional): Whether to use a "third person point of view" perspective that follows the
+            robot around. Defaults to True.
     """
 
-    def __init__(
-        self,
-        robot: Astrobee,
-    ):
+    def __init__(self, robot: Astrobee, pov: bool = True):
+        if not pybullet.isConnected():
+            raise ConnectionError(
+                "Connect to pybullet before starting the keyboard controller"
+            )
         # Disable keyboard shortcuts in pybullet so it doesn't do anything weird while we're controlling it
-        if pybullet.isConnected():
-            pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_KEYBOARD_SHORTCUTS, 0)
+        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_KEYBOARD_SHORTCUTS, 0)
 
         self.robot = robot
+        self.pov = pov
         self.gripper_is_open = robot.gripper_position >= 90
-
         # Copying over the original constraint from the Astrobee class (and the position controller)
         # TODO remove this when we switch over to velocity control for this controller
         self.constraint_id = pybullet.createConstraint(
             self.robot.id, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
         )
 
-        # self.linear_speed (todo?)
-        # self.angular_speed
         self.dx = 0.05  # m
         self.dy = 0.05  # m
         self.dz = 0.05  # m
@@ -276,8 +270,9 @@ class KeyboardController:
     def step(self):
         """Updates one step of the simulation"""
         pybullet.stepSimulation()
-        # Update the camera view so we maintain our same perspective on the robot as it moves
-        pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
+        if self.pov:
+            # Update the camera view so we maintain our same perspective on the robot as it moves
+            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))
         time.sleep(self.dt)
 
     def run(self):
@@ -291,11 +286,16 @@ class KeyboardController:
             self.listener.stop()
 
 
-if __name__ == "__main__":
+def _main():
     pybullet.connect(pybullet.GUI)
-    # pybullet.resetDebugVisualizerCamera(1.6, 206, -26.2, [0, 0, 0]) # Camera in node 1
-    # Loading the ISS and then the astrobee at the origin is totally fine right now (collision free, inside node 1)
+    # Turn off additional GUI windows
+    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
     load_iss()
-    bee = Astrobee()
-    controller = KeyboardController(bee)
+    robot = Astrobee()
+    robot.store_arm(force=True)
+    controller = KeyboardController(robot, pov=True)
     controller.run()
+
+
+if __name__ == "__main__":
+    _main()
