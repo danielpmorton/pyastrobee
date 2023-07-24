@@ -14,12 +14,11 @@ import pybullet
 from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 
-from pyastrobee.utils.bullet_utils import (
-    initialize_pybullet,
-    run_sim,
-)
+from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.errors import PybulletError
 from pyastrobee.utils.python_utils import print_green
+from pyastrobee.config.iss_safe_boxes import ALL_BOXES, compute_iss_graph
+from pyastrobee.utils.boxes import visualize_3D_box
 
 
 class ISS:
@@ -50,10 +49,35 @@ class ISS:
         self.client: pybullet = pybullet if client is None else client
         # The meshes have a weird orientation so we need to use this orientation to rotate them to lay flat
         self.mesh_orn = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2)
+        self.safe_boxes = ALL_BOXES
+        self.graph = compute_iss_graph()
+        self._debug_box_ids = []
         self.ids = []
         for module in ISS.Modules:
             self.ids.append(self._load_module(module))
         print_green("ISS is ready")
+
+    def show_safe_set(self, show_padding: bool = True) -> None:
+        """Visualizes the collision-free regions inside the ISS
+
+        Args:
+            show_padding (bool, optional): Whether or not to pad the safe set by the half-widths of the Astrobee. If
+                False, it will show just the safe area where the *center* of the Astrobee can travel. Defaults to True.
+        """
+        if show_padding:
+            # Half of the Astrobee dimensions from the base link in the Astrobee URDF
+            padding = np.array([0.290513, 0.151942, 0.281129]) / 2
+        else:
+            padding = None
+        for box in self.safe_boxes.values():
+            self._debug_box_ids.append(visualize_3D_box(box, padding))
+
+    def hide_safe_set(self) -> None:
+        """Removes the visualization of the collision-free regions"""
+
+        for box_id in self._debug_box_ids:
+            self.client.removeBody(box_id)
+        self._debug_box_ids = []
 
     def _load_module(self, module: Modules) -> int:
         """Loads a single ISS module. For example, US_LAB
@@ -176,7 +200,11 @@ class ISS:
 def _main():
     client = initialize_pybullet()
     iss = ISS(debug=False, client=client)
-    run_sim()
+    iss.show_safe_set(show_padding=True)
+    input("Press Enter to hide the safe set visualization")
+    iss.hide_safe_set()
+    input("Press Enter to exit")
+    client.disconnect()
 
 
 if __name__ == "__main__":
