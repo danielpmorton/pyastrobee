@@ -6,9 +6,6 @@ TODO determine if this should be separated into more specific files - e.g. debug
 from typing import Any
 from enum import Enum
 
-import numpy as np
-import numpy.typing as npt
-
 
 class ExtendedEnum(Enum):
     """Add the ability to easily extract values of an Enum
@@ -21,6 +18,11 @@ class ExtendedEnum(Enum):
     def get_values(cls):
         """Values of members in the Enum"""
         return list(map(lambda c: c.value, cls))
+
+    @classmethod
+    def get_names(cls):
+        """Names of members in the Enum"""
+        return list(map(lambda c: c.name, cls))
 
 
 def print_red(message: Any):
