@@ -64,7 +64,7 @@ def plan_trajectory(
     # Min-jerk position traj
     n_control_pts = 8
     pos, vel, accel, _ = bezier_trajectory(
-        p0, pf, t0, tf, n_control_pts, n, v0, vf, a0, af, 1, 0
+        p0, pf, t0, tf, n_control_pts, n, v0, vf, a0, af, jerk_weight=1
     )
     quats = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
     omega = quats_to_angular_velocities(quats, dt)

@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 from pyastrobee.trajectories.trajectory import Trajectory
+from pyastrobee.utils.boxes import Box
 
 
 class BezierCurve:
@@ -187,6 +188,9 @@ def bezier_trajectory(
     vf: Optional[npt.ArrayLike] = None,
     a0: Optional[npt.ArrayLike] = None,
     af: Optional[npt.ArrayLike] = None,
+    box: Optional[Box] = None,
+    v_max: Optional[float] = None,
+    a_max: Optional[float] = None,
     jerk_weight: float = 1.0,
     pathlength_weight: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -210,6 +214,9 @@ def bezier_trajectory(
         vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
         a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
         af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
+        box (Optional[Box]): Box constraint on (lower, upper) position bounds. Defaults to None (unconstrained)
+        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
+        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
         jerk_weight (float, optional): Objective function weight corresponding to jerk. Defaults to 1.0.
         pathlength_weight (float, optional): Objective function weight corresponding to pathlength . Defaults to 0.0.
 
@@ -249,6 +256,14 @@ def bezier_trajectory(
         constraints.append(accel_pts[0] == a0)
     if af is not None:
         constraints.append(accel_pts[-1] == af)
+    if box is not None:
+        lower, upper = box
+        constraints.append(pos_pts >= lower)
+        constraints.append(pos_pts <= upper)
+    if v_max is not None:
+        constraints.append(cp.norm2(vel_pts, axis=1) <= v_max)
+    if a_max is not None:
+        constraints.append(cp.norm2(accel_pts, axis=1) <= a_max)
     # Objective function criteria
     jerk = jerk_curve.l2_squared
     pathlength = pos_curve.control_points_pathlength
@@ -258,6 +273,11 @@ def bezier_trajectory(
     # Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
+    if prob.status != cp.OPTIMAL:
+        raise cp.error.SolverError(
+            f"Unable to generate the trajectory (solver status: {prob.status}).\n"
+            + "Check on the feasibility of the constraints"
+        )
     # Construct the Bezier curves from the solved control points, and return their evaluations at each time
     solved_pos_curve = BezierCurve(pos_pts.value, t0, tf)
     solved_vel_curve = solved_pos_curve.derivative
