@@ -10,20 +10,22 @@ Reference:
 https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/smooth.py
 """
 
-
 from typing import Optional, Union
+
 import cvxpy as cp
 import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
+import pybullet
 
-from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.bezier import (
     BezierCurve,
     plot_2d_bezier_curve,
     plot_2d_bezier_pts,
     plot_2d_bezier_hull,
 )
+from pyastrobee.utils.boxes import Box, visualize_3D_box
+from pyastrobee.utils.debug_visualizer import visualize_path, visualize_points
 
 
 class CompositeBezierCurve:
@@ -63,7 +65,7 @@ class CompositeBezierCurve:
         Returns:
             np.ndarray: Points along the composite curve, shape (n_pts, dimension)
         """
-        seg_map = self.find_segment(t)  # CHECK IF THIS WORKS WITH T AS AN ARRAY
+        seg_map = self.find_segment(t)
         evals = []
         for i in range(self.N):
             evals.append(self.beziers[i](t[seg_map == i]))
@@ -85,14 +87,8 @@ class CompositeBezierCurve:
         return CompositeBezierCurve([b.derivative for b in self.beziers])
 
 
-# TODO should we be able to specify the knot locations?
-# ^^ This might be useful since otherwise the trajectory will probably look similar to if we just had a bezier curve with more control points
-# TODO: add these notes to the docstring
-# First curve should enforce the starting boundary conditions and continuity to later curves
-# Last curve should enforce the ending boundary conditions and continuity to earlier curves
-# Middle curves should just enforce continuity
-# I decided to make the curves continuous up to 2 derivatives (velocity and acceleration)
-# So, each curve should essentially have at least 6 control points
+# TODO: knot times should NOT just be evenly spaced out...
+# See if we can make a heuristic for the timing so that we don't need to have to do the retiming
 def spline_trajectory(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
@@ -100,11 +96,13 @@ def spline_trajectory(
     tf: float,
     pts_per_curve: Union[int, npt.ArrayLike],
     n_timesteps: int,
-    n_curves: int,  # UPDATE THIS
     v0: Optional[npt.ArrayLike] = None,
     vf: Optional[npt.ArrayLike] = None,
     a0: Optional[npt.ArrayLike] = None,
     af: Optional[npt.ArrayLike] = None,
+    boxes: Optional[list[Box]] = None,
+    v_max: Optional[float] = None,
+    a_max: Optional[float] = None,
     jerk_weight: float = 1.0,
     pathlength_weight: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -123,11 +121,13 @@ def spline_trajectory(
             Int if using the same number of control points for each curve, or a list/tuple/
             array specifying the number for each curve. Generally, should be around 6-10 per curve
         n_timesteps (int): Number of timesteps to evaluate
-        n_curves (int): Number of child Bezier curves within the composite curve
         v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
         vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
         a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
         af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
+        boxes (Optional[list[Box]]): Sequential list of safe box regions pass through. Defaults to None (unconstrained)
+        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
+        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
         jerk_weight (float, optional): Objective function weight corresponding to jerk. Defaults to 1.0.
         pathlength_weight (float, optional): Objective function weight corresponding to pathlength . Defaults to 0.0.
 
@@ -136,13 +136,14 @@ def spline_trajectory(
             np.ndarray: Trajectory positions, shape (n_timesteps, 3)
             np.ndarray: Trajectory velocities, shape (n_timesteps, 3)
             np.ndarray: Trajectory accelerations, shape (n_timesteps, 3)
-            np.ndarray: Trajectory times, shape (n_timesteps,)"""
+            np.ndarray: Trajectory times, shape (n_timesteps,)
+    """
 
     if tf <= t0:
         raise ValueError(f"Invalid time interval: ({t0}, {tf})")
     dim = len(p0)
     times = np.linspace(t0, tf, n_timesteps, endpoint=True)
-
+    n_curves = 1 if boxes is None else len(boxes)
     # Form an array specifying the number of control points for each curve
     if np.ndim(pts_per_curve) == 0:
         # Integer input, assume same number of control points for each curve
@@ -195,8 +196,24 @@ def spline_trajectory(
         bc_constraints.append(vel_pt_sets[-1][-1] == vf)
     if af is not None:
         bc_constraints.append(accel_pt_sets[-1][-1] == af)
+    box_constraints = []
+    if boxes is not None:
+        for i, box in enumerate(boxes):
+            lower, upper = box
+            n = pos_pt_sets[i].shape[0]  # Number of control points in ith curve
+            box_constraints.append(pos_pt_sets[i] >= np.tile(lower, (n, 1)))
+            box_constraints.append(pos_pt_sets[i] <= np.tile(upper, (n, 1)))
+    dyn_constraints = []
+    if v_max is not None:
+        for i in range(n_curves):
+            dyn_constraints.append(cp.norm2(vel_pt_sets[i], axis=1) <= v_max)
+    if a_max is not None:
+        for i in range(n_curves):
+            dyn_constraints.append(cp.norm2(accel_pt_sets[i], axis=1) <= a_max)
     # Merge the lists of constraints together
-    constraints = continuity_constraints + bc_constraints
+    constraints = (
+        continuity_constraints + bc_constraints + box_constraints + dyn_constraints
+    )
     # Complete the problem formulation and solve it
     objective = cp.Minimize(
         jerk_weight * sum(jc.l2_squared for jc in jerk_curves)
@@ -204,6 +221,11 @@ def spline_trajectory(
     )
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
+    if prob.status != cp.OPTIMAL:
+        raise cp.error.SolverError(
+            f"Unable to generate the trajectory (solver status: {prob.status}).\n"
+            + "Check on the feasibility of the constraints"
+        )
     # Construct the Bezier curves from the solved control points, and return their evaluations at each time
     solved_pos_curves = [
         BezierCurve(pos_pt_sets[i].value, knot_times[i], knot_times[i + 1])
@@ -331,23 +353,31 @@ def _test_plotting_spline():
 
 
 def _test_spline_trajectory():
-    p0 = [1, 2, 3]
-    pf = [2, 3, 4]
+    """Construct and visualize an optimal trajectory composed of three curves between safe sets"""
+    p0 = [0.1, 0.2, 0.3]
+    pf = [1.5, 5, 1.7]
     t0 = 0
     tf = 5
     pts_per_curve = 8
     n_timesteps = 50
-    v0 = [-0.1, -0.2, -0.3]
-    vf = [-0.2, -0.2, -0.2]
-    a0 = [0, 0, 0]
-    af = [0.1, 0.1, 0.1]
-    n_curves = 3
-    pos, vel, accel, times = spline_trajectory(
-        p0, pf, t0, tf, pts_per_curve, n_timesteps, n_curves, v0, vf, a0, af
+    v0 = np.zeros(3)
+    vf = np.zeros(3)
+    a0 = np.zeros(3)
+    af = np.zeros(3)
+    safe_boxes = [
+        Box((0, 0, 0), (1, 1, 1)),
+        Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
+        Box((1, 4.5, 1), (2, 5.5, 2)),
+    ]
+    pos, _, _, _ = spline_trajectory(
+        p0, pf, t0, tf, pts_per_curve, n_timesteps, v0, vf, a0, af, safe_boxes
     )
-    # Leaving out any rotational info for now
-    traj = Trajectory(pos, None, vel, None, accel, None, times)
-    traj.plot()
+    pybullet.connect(pybullet.GUI)
+    visualize_points(np.vstack([p0, pf]), (0, 0, 1))
+    for box in safe_boxes:
+        visualize_3D_box(box)
+    visualize_path(pos, 10, (0, 0, 1))
+    input()
 
 
 if __name__ == "__main__":
