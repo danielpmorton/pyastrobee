@@ -20,6 +20,7 @@ TOP_HANDLE_TRANSFORM = make_transform_mat(Ry(-np.pi / 2), [0, 0, 0.245])
 BOTTOM_HANDLE_TRANSFORM = make_transform_mat(Ry(np.pi / 2) @ Rx(np.pi), [0, 0, -0.245])
 
 # Softbody parameters (TODO: these may need to be refined)
+# Note: setting bending/elastic stiffness to 100 seems to work well too
 MASS = 1.0
 BENDING_STIFFNESS = 50.0
 DAMPING_STIFFNESS = 0.1
