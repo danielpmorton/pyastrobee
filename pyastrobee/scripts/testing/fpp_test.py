@@ -32,7 +32,7 @@ def fpp_method(p0, pf):
     S = fpp.SafeSet(L, U, verbose=False)
 
     T = 1
-    alpha = [1, 1, 5]
+    alpha = [0, 0, 1]  # [1, 1, 5]
     p = fpp.plan(S, p0, pf, T, alpha, verbose=False)
     t = np.linspace(0, 1, 50, endpoint=True)
     p_t = p(t)
@@ -51,7 +51,7 @@ def my_method(p0, pf):
     graph = compute_iss_graph()
     path = dfs(graph, names[start_id], names[end_id])
     box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
-    pos, vel, accel, times = spline_trajectory(
+    pos, *_ = spline_trajectory(
         p0,
         pf,
         0,
@@ -64,6 +64,38 @@ def my_method(p0, pf):
         np.zeros(3),
         box_path,
     )
+    return pos
+
+
+def my_sequential_method(p0, pf):
+    from pyastrobee.trajectories.splines import sequential_optimization
+
+    names = []
+    boxes = []
+    for name, box in ALL_BOXES.items():
+        names.append(name)
+        boxes.append(box)
+    start_id = find_containing_box(p0, boxes)
+    end_id = find_containing_box(pf, boxes)
+    graph = compute_iss_graph()
+    path = dfs(graph, names[start_id], names[end_id])
+    box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
+    n_boxes = len(box_path)
+    curve_kwargs = dict(
+        p0=p0,
+        pf=pf,
+        t0=0,
+        tf=1,
+        pts_per_curve=6,
+        n_timesteps=50,
+        v0=np.zeros(3),
+        vf=np.zeros(3),
+        a0=np.zeros(3),
+        af=np.zeros(3),
+        boxes=box_path,
+        durations=((1 - 0) / n_boxes) * np.ones(n_boxes),
+    )
+    pos, *_ = sequential_optimization(curve_kwargs)
     return pos
 
 
@@ -83,15 +115,41 @@ def main():
     time_b = time.time()
     pos_mine = my_method(jpm_midpt, cupola_midpt)
     time_c = time.time()
+    pos_my_seq = my_sequential_method(jpm_midpt, cupola_midpt)
+    time_d = time.time()
     print("Time for Tobia's method: ", time_b - time_a)
     print("Time for my method (with graph computation): ", time_c - time_b)
+    print("Time for my sequential method: ", time_d - time_c)
 
     client = initialize_pybullet()
     iss = ISS()
     iss.show_safe_set()
     visualize_path(pos_fpp, color=(0, 0, 1))
     visualize_path(pos_mine, color=(0, 1, 0))
-    input()
+    visualize_path(pos_my_seq, color=(1, 0, 0))
+    input("Press Enter to animate path")
+    animate_path(pos_fpp)
+    animate_path(pos_mine)
+    animate_path(pos_my_seq)
+
+
+def animate_path(positions):
+    import pybullet
+    from pyastrobee.utils.bullet_utils import create_sphere
+    from pyastrobee.utils.debug_visualizer import visualize_points
+
+    # sphere = create_sphere(positions[0], 1, 0.2, False, (1, 1, 1, 1))
+    # cid = pybullet.createConstraint(
+    #     sphere, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
+    # )
+    dt = 1 / 30
+    for position in positions:
+        visualize_points([position], (1, 1, 1), lifetime=2 * dt)
+        # pybullet.changeConstraint(cid, position, (0, 0, 0, 1))
+        pybullet.stepSimulation()
+        time.sleep(dt)
+    # pybullet.removeConstraint(cid)
+    # pybullet.removeBody(sphere)
 
 
 if __name__ == "__main__":
