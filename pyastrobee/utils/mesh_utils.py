@@ -48,9 +48,46 @@ def get_closest_mesh_vertex(
         pos (npt.ArrayLike): The given XYZ position to search for nearby mesh vertices, shape (3,)
         mesh (npt.ArrayLike): Mesh vertices, stored in a (num_verts, 3) array, or a tuple of tuples.
             See get_mesh_data() for more details
+
+    Returns:
+        tuple of:
+            np.ndarray: The world-frame position of the closest vertex, shape (3,)
+            int: The index of the closest vertex in the mesh
     """
     pos = np.array(pos).reshape(1, -1)
     mesh = np.array(mesh)
     dists = np.linalg.norm(mesh - pos, axis=1)
     closest_vert = np.argmin(dists)
     return mesh[closest_vert], closest_vert
+
+
+def get_tet_mesh_data(
+    object_id: int, client: Optional[BulletClient] = None
+) -> tuple[int, np.ndarray]:
+    """Determines the state of all of the tetrahedral elements in a tet mesh
+
+    Args:
+        object_id (int): ID of the tet mesh loaded into Pybullet
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+
+    Raises:
+        AttributeError: If the Pybullet version does not support this functionality
+
+    Returns:
+        tuple of:
+            int: Number of tetrahedrons in the mesh
+            np.ndarray: The xyz positions of all of the vertices of the tetrahedrons, shape (num_tets, 4, 3)
+    """
+    client: pybullet = pybullet if client is None else client
+    try:
+        data = client.getTetraMeshData(object_id)
+    except AttributeError as e:
+        raise AttributeError(
+            "Cannot get tet mesh data. Check that you are using the most recent "
+            + "locally-built version of Pybullet, as this is a recent feature"
+        ) from e
+    n, verts = data
+    n_tets = n // 4
+    verts = np.reshape(verts, (n_tets, 4, 3))
+    return n_tets, verts
