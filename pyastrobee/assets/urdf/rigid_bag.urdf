@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<!-- Rigid version of the cargo bag -->
+
+<!-- All dimensions match the original deformable cargo bag (50 x 42 x 25 cm) -->
+<!-- We connect the handle and the main compartment with a few "dummy" links/joints -->
+<!--   to mimic how the deformable handle should behave -->
+<!-- Three revolute joints allows us to mimic a ball joint while allowing us to set limits -->
+<!--   on the motion for certain axes, and add friction -->
+
+<!-- NOTE: to edit this file, ensure the following: -->
+<!-- 1) Update the visual and collision dimensions together -->
+<!-- 2) All dummy links should have the same properties (like inertia) -->
+<!-- 3) If updating the mass, also update the inertia! However, in general, we should load this -->
+<!--    into pybullet NOT using the USE_INERTIA_FROM_FILE flag since these values might be wrong -->
+
+<!-- TODO: decide if there should be a prismatic link as well -->
+
+<robot name="cargo_bag">
+    <link name="main_compartment_link">
+        <self_collide>false</self_collide>
+        <visual name="main_compartment_visual">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.50 0.25 0.42"/>
+            </geometry>
+            <material name="bag_material">
+                <!-- White -->
+                <color rgba="1 1 1 1"/>
+            </material>
+        </visual>
+        <collision name="main_compartment_collision">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.50 0.25 0.42"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <!-- Set the mass so that the whole bag has a total mass of 5kg -->
+            <mass value="4.885"/>
+            <inertia ixx="0.09725221" ixy="0" ixz="0" iyy="0.17358033" iyz="0" izz="0.12721354"/>
+        </inertial>
+    </link>
+
+    <link name="handle_link">
+        <self_collide>false</self_collide>
+        <visual name="handle_visual">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.15 0.05 0.02"/>
+            </geometry>
+            <material name="handle_material">
+                <!-- Gray -->
+                <color rgba="0.6 0.6 0.6 1"/>
+            </material>
+        </visual>
+        <collision name="handle_collision">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.15 0.05 0.02"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0.1"/>
+            <inertia ixx="2.41667e-5" ixy="0" ixz="0" iyy="1.90833e-4" iyz="0" izz="2.08333e-4"/>
+        </inertial>
+    </link>
+
+    <joint name="pitch_joint" type="revolute">
+        <parent link="main_compartment_link"/>
+        <child link="pitch_link"/>
+        <axis xyz="0 1 0" />
+        <!-- Origin specifies the ball joint location -->
+        <origin rpy="0 0 0" xyz="0 0 0.21"/>
+        <limit effort="1.0" lower="-0.7" upper="0.7" velocity="1.0"/>
+    </joint>
+
+    <link name="pitch_link">
+        <!-- Small dummy mass/inertia values so this link is not ignored -->
+        <inertial>
+            <mass value="0.005" />
+            <inertia ixx="5.0e-5" ixy="0" ixz="0" iyy="5.0e-5" iyz="0" izz="5.0e-5" />
+        </inertial>
+    </link>
+
+    <joint name="yaw_joint" type="revolute">
+        <parent link="pitch_link"/>
+        <child link="yaw_link"/>
+        <axis xyz="0 0 1" />
+        <limit effort="1.0" lower="-0.52360" upper="0.52360" velocity="1.0"/>
+    </joint>
+
+    <link name="yaw_link">
+        <!-- Small dummy mass/inertia values so this link is not ignored -->
+        <inertial>
+            <mass value="0.005" />
+            <inertia ixx="5.0e-5" ixy="0" ixz="0" iyy="5.0e-5" iyz="0" izz="5.0e-5" />
+        </inertial>
+    </link>
+
+    <joint name="roll_joint" type="revolute">
+        <parent link="yaw_link"/>
+        <child link="roll_link"/>
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" lower="-0.52360" upper="0.52360" velocity="1.0"/>
+    </joint>
+
+    <link name="roll_link">
+        <!-- Small dummy mass/inertia values so this link is not ignored -->
+        <inertial>
+            <mass value="0.005" />
+            <inertia ixx="5.0e-5" ixy="0" ixz="0" iyy="5.0e-5" iyz="0" izz="5.0e-5" />
+        </inertial>
+    </link>
+
+    <joint name="handle_joint" type="fixed">
+        <!-- Origin specifies the handle's offset from ball joint location -->
+        <origin xyz="0 0 0.025" />
+        <parent link="roll_link"/>
+        <child link="handle_link"/>
+    </joint>
+
+</robot>
