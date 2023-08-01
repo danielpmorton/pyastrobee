@@ -18,12 +18,7 @@ from pyastrobee.trajectories.trajectory import stopping_criteria, visualize_traj
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.bullet_utils import create_box
-
-
-# Helper function to get the moment of inertia of our debugging box
-def box_inertia(m, l, w, h):
-    return (1 / 12) * m * np.diag([w**2 + h**2, l**2 + h**2, l**2 + w**2])
-
+from pyastrobee.utils.dynamics import box_inertia
 
 # Matrix for relating the angular velocity to the quaternion derivative
 # Check the math here? Somewhat confident that it's correct

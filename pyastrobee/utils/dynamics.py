@@ -135,3 +135,18 @@ def _jac_w_of_wxIw(I: np.ndarray, w: npt.ArrayLike) -> np.ndarray:
             ],
         ]
     )
+
+
+def box_inertia(m: float, l: float, w: float, h: float) -> np.ndarray:
+    """Inertia tensor for a solid, uniform-material box
+
+    Args:
+        m (float): Mass, kg
+        l (float): Length (x-axis dimension), meters
+        w (float): Width (y-axis dimension), meters
+        h (float): Height (z-axis dimension), meters
+
+    Returns:
+        np.ndarray: Inertia tensor, shape (3, 3)
+    """
+    return (1 / 12) * m * np.diag([w**2 + h**2, l**2 + h**2, l**2 + w**2])

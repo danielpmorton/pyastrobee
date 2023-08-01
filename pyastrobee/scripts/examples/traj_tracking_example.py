@@ -18,10 +18,7 @@ from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.trajectories.trajectory import visualize_traj, compare_trajs
-
-
-def box_inertia(m, l, w, h):
-    return (1 / 12) * m * np.diag([w**2 + h**2, l**2 + h**2, l**2 + w**2])
+from pyastrobee.utils.dynamics import box_inertia
 
 
 def unit_mass_cube_example():
