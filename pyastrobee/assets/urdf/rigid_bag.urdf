@@ -117,7 +117,7 @@
 
     <joint name="handle_joint" type="fixed">
         <!-- Origin specifies the handle's offset from ball joint location -->
-        <origin xyz="0 0 0.025" />
+        <origin xyz="0 0 0.035" />
         <parent link="roll_link"/>
         <child link="handle_link"/>
     </joint>
