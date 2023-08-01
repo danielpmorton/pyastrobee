@@ -29,10 +29,23 @@
                 <color rgba="1 1 1 1"/>
             </material>
         </visual>
-        <collision name="main_compartment_collision">
-            <origin rpy="0 0 0" xyz="0 0 0"/>
+        <!-- Split the collision body into 3 parts to allow for collision-free space around the handle -->
+        <collision name="center_collision">
+            <origin rpy="0 0 0" xyz="0 0 -0.03"/>
             <geometry>
-                <box size="0.50 0.25 0.42"/>
+                <box size="0.20 0.25 0.36"/>
+            </geometry>
+        </collision>
+        <collision name="left_collision">
+            <origin rpy="0 0 0" xyz="-0.175 0 0"/>
+            <geometry>
+                <box size="0.15 0.25 0.42"/>
+            </geometry>
+        </collision>
+        <collision name="right_collision">
+            <origin rpy="0 0 0" xyz="0.175 0 0"/>
+            <geometry>
+                <box size="0.15 0.25 0.42"/>
             </geometry>
         </collision>
         <inertial>
