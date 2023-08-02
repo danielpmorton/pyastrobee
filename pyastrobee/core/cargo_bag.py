@@ -95,7 +95,6 @@ class CargoBag:
         self._mesh_vertices = None
         self._num_mesh_vertices = None
         self._attached = []
-        self._id = None
         # Get the simulator timestep (used for calculating the velocity of the bag)
         self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self._load(pos, orn)
