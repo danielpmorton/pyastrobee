@@ -4,7 +4,6 @@ In general, we assume that we're working with Honey. Multiple astrobees can be l
 we assume that they all have the exact same configuration
 
 TODO
-- Figure out the sleep time in the while loops. What value should we use?
 - Get step sizes worked out!!
 - I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future, 
   make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping track
@@ -13,7 +12,6 @@ TODO
 - Check on if the known Astrobee inertia matches what Pybullet thinks the inertia is
 """
 
-import time
 from typing import Optional, Union
 
 import pybullet
@@ -543,14 +541,15 @@ class Astrobee:
         if force:
             for ind, angle in zip(indices, angles):
                 self.client.resetJointState(self.id, ind, angle)
-        else:
-            self.client.setJointMotorControlArray(
-                self.id, indices, self.client.POSITION_CONTROL, angles
-            )
+        # Set the position control for the arm so Pybullet will correct for disturbances
+        self.client.setJointMotorControlArray(
+            self.id, indices, self.client.POSITION_CONTROL, angles
+        )
+        # If not force-resetting the joint positions, allow for some time to get to that position
+        if not force:
             tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
             while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
                 self.client.stepSimulation()
-                time.sleep(self._dt)  # TODO determine timestep
 
     def get_joint_angles(self, indices: Optional[npt.ArrayLike] = None) -> np.ndarray:
         """Gives the current joint angles for the Astrobee
