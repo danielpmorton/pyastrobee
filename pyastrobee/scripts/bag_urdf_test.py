@@ -12,7 +12,7 @@ def main():
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
 
     bag_id = pybullet.loadURDF(
-        "pyastrobee/assets/urdf/rigid_bag.urdf",
+        "pyastrobee/assets/urdf/top_handle_rigid_bag.urdf",
         basePosition=[0, 0, 1],
         useFixedBase=False,
     )

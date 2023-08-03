@@ -23,7 +23,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.poses import pos_quat_to_tmat, tmat_to_pos_quat
 from pyastrobee.utils.python_utils import print_green
 from pyastrobee.utils.transformations import invert_transform_mat, make_transform_mat
-from pyastrobee.utils.rotations import quat_to_rmat, Ry, rmat_to_quat
+from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.dynamics import box_inertia
 
 # Constants. TODO Move these to class attributes?
@@ -38,6 +38,9 @@ HANDLE_TRANSFORMS = {
     "top": bag_props.TOP_HANDLE_TRANSFORM,
     "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
 }
+URDF_DIR = "pyastrobee/assets/urdf/"
+_urdfs = [URDF_DIR + name + "_rigid_bag.urdf" for name in BAG_NAMES]
+URDFS = dict(zip(BAG_NAMES, _urdfs))
 
 
 class RigidCargoBag:
@@ -52,7 +55,6 @@ class RigidCargoBag:
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
 
-    URDF = "pyastrobee/assets/urdf/rigid_bag.urdf"
     LINKS_PER_HANDLE = 4  # 3 dummy links for roll/pitch/yaw, plus the handle itself
     LENGTH = 0.50  # meters
     WIDTH = 0.25  # meters
@@ -72,7 +74,7 @@ class RigidCargoBag:
             raise ValueError(
                 f"Invalid bag name: {bag_name}. Must be one of {BAG_NAMES}"
             )
-        self.id = self.client.loadURDF(RigidCargoBag.URDF, pos, orn)
+        self.id = self.client.loadURDF(URDFS[bag_name], pos, orn)
         self._dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         self.mass = 5  # kg
         # This inertia is slightly approximate because some mass is in the handle and dummy links
@@ -291,9 +293,6 @@ class RigidCargoBag:
             [0, 0, 1],
             robot.TRANSFORMS.GRIPPER_TO_ARM_DISTAL[:3, 3],
             [0, 0, 0],
-            # These frame orientations (below) align the grasp frame to the handle link frame
-            [0, 0, 0, 1],  # Robot link frame orientation
-            rmat_to_quat(Ry(-np.pi / 2)),  # Bag handle frame orientation
         )
         self._constraints.update({robot.id: cid})
         self._attached.append(robot.id)
@@ -365,7 +364,6 @@ def _main():
     robot = Astrobee()
     bag = RigidCargoBag("top_handle")
     bag.attach_to(robot)
-    input("Press Enter to run the simulation")
     while True:
         client.stepSimulation()
         time.sleep(1 / 120)
