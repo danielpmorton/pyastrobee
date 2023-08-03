@@ -49,7 +49,7 @@ class Astrobee:
         ConnectionError: If a pybullet server is not connected before initialization
     """
 
-    URDF = "pyastrobee/assets/urdf/astrobee.urdf"
+    URDF = "pyastrobee/assets/urdf/astrobee/astrobee.urdf"
     NUM_JOINTS = 7
     NUM_LINKS = 8
     TRANSFORMS = astrobee_transforms  # TODO figure out if this is the best way to store this info

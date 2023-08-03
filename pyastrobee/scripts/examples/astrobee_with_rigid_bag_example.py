@@ -8,7 +8,9 @@ pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
 # Zoom in on Astrobee
 pybullet.resetDebugVisualizerCamera(1, -60, -12.2, [-0.05, 0.03, -0.17])
 # Load the URDF with the bag included
-robot = pybullet.loadURDF("pyastrobee/assets/urdf/astrobee_with_rigid_bag.urdf")
+robot = pybullet.loadURDF(
+    "pyastrobee/assets/urdf/astrobee/astrobee_with_rigid_bag.urdf"
+)
 # Loop sim
 while True:
     pybullet.stepSimulation()

@@ -38,7 +38,7 @@ HANDLE_TRANSFORMS = {
     "top": bag_props.TOP_HANDLE_TRANSFORM,
     "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
 }
-URDF_DIR = "pyastrobee/assets/urdf/"
+URDF_DIR = "pyastrobee/assets/urdf/bags/"
 _urdfs = [URDF_DIR + name + "_rigid_bag.urdf" for name in BAG_NAMES]
 URDFS = dict(zip(BAG_NAMES, _urdfs))
 
