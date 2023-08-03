@@ -246,7 +246,7 @@ class RigidCargoBag:
                 robot.reset_to_ee_pose(handle_pose)
             else:  # Move the bag to the robot
                 self.reset_to_handle_pose(robot.ee_pose)
-            self._attach(robot)
+            self._attach(robot, 0)
         elif num_robots == 2:
             robot_1, robot_2 = robot_or_robots  # Unpack list
             if object_to_move == "robot":
@@ -257,8 +257,8 @@ class RigidCargoBag:
                 handle_2_to_world = bag_to_world @ handle_2_to_bag
                 robot_1.reset_to_ee_pose(tmat_to_pos_quat(handle_1_to_world))
                 robot_2.reset_to_ee_pose(tmat_to_pos_quat(handle_2_to_world))
-                self._attach(robot_1)
-                self._attach(robot_2)
+                self._attach(robot_1, 0)
+                self._attach(robot_2, 1)
             else:  # Move the bag while leaving the robots static
                 raise NotImplementedError(
                     "Attaching the bag to multiple robots requires moving at least 1 robot"
@@ -274,7 +274,7 @@ class RigidCargoBag:
                 "The multi-robot case is only implemented for 2 Astrobees"
             )
 
-    def _attach(self, robot: Astrobee) -> None:
+    def _attach(self, robot: Astrobee, handle_index: int) -> None:
         """Helper function: Connects a single robot to a handle at a specified pose
 
         This function assumes that the robot and the bag are already correctly positioned for a grasp, which is why
@@ -282,8 +282,9 @@ class RigidCargoBag:
 
         Args:
             robot (Astrobee): Robot to attach
+            handle_index (int): Index of the handle on the bag
         """
-        handle_link_index = self.num_handles * self.LINKS_PER_HANDLE - 1
+        handle_link_index = (handle_index + 1) * self.LINKS_PER_HANDLE - 1
         cid = self.client.createConstraint(
             robot.id,
             robot.Links.ARM_DISTAL.value,
@@ -358,16 +359,29 @@ class RigidCargoBag:
         self.client.resetBasePositionAndOrientation(self.id, bag_pose[:3], bag_pose[3:])
 
 
-def _main():
+def _single_handle_test(bag_name: str):
     # Very simple example of loading the bag and attaching a robot
     client = initialize_pybullet(bg_color=(0.8, 0.8, 1))
     robot = Astrobee()
-    bag = RigidCargoBag("top_handle")
+    bag = RigidCargoBag(bag_name)
     bag.attach_to(robot)
     while True:
         client.stepSimulation()
         time.sleep(1 / 120)
 
 
+def _two_handle_test(bag_name: str):
+    # Load the bag and attach to two robots
+    client = initialize_pybullet(bg_color=(0.8, 0.8, 1))
+    robot_1 = Astrobee()
+    robot_2 = Astrobee()
+    bag = RigidCargoBag(bag_name)
+    bag.attach_to([robot_1, robot_2])
+    while True:
+        client.stepSimulation()
+        time.sleep(1 / 120)
+
+
 if __name__ == "__main__":
-    _main()
+    # _single_handle_test("top_handle")
+    _two_handle_test("top_bottom_handle")
