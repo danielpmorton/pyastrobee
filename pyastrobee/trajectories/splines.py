@@ -36,7 +36,6 @@ class CompositeBezierCurve:
     """
 
     def __init__(self, beziers: list[BezierCurve]):
-
         for bez1, bez2 in zip(beziers[:-1], beziers[1:]):
             assert bez1.b == bez2.a
             assert bez1.d == bez2.d
@@ -109,7 +108,6 @@ def timing_estimate(
 
 
 def sequential_optimization(curve_kwargs, kappa_min=1e-2, omega=3, max_iters=10):
-
     # Solve a preliminary trajectory
     *best_traj, info = spline_trajectory(**curve_kwargs)
 
@@ -146,7 +144,6 @@ def sequential_optimization(curve_kwargs, kappa_min=1e-2, omega=3, max_iters=10)
 
 
 def retiming(kappa, costs, durations, retiming_weights):
-
     # Decision variables.
     n_boxes = max(costs) + 1
     eta = cp.Variable(n_boxes)
@@ -418,14 +415,32 @@ def spline_trajectory(
         bez = pos_curves[k]
         cost_breakdown[k][3] = jerk_curves[k].l2_squared.value  # CHECK THIS!!!
         # I think the rest of the for loop he used doesn't matter because we're just doing min jerk
+
+    # Simplification of "cost_breakdown"
+    # TODO update the function to use this
+    costs_per_curve = [jerk_curves[i].l2_squared.value for i in range(n_curves)]
+
     retiming_weights = {}
     for k in range(n_curves - 1):
         retiming_weights[k] = {}
 
-        D = 3
-        primal = accel_curves[k].points[-1].value
-        dual = accel_continuity[k].dual_value
-        retiming_weights[k][2] = primal.dot(dual)
+        # D = 3
+
+        # Tobia DOESN'T use position
+        # The indexing (1/2/3) define the 1st, 2nd, and 3rd derivatives
+        # pos_primal = pos_curves[k].points[-1].value
+        # pos_dual = pos_continuity[k].dual_value
+        # retiming_weights[k][1] = pos_primal.dot(pos_dual)
+
+        vel_primal = vel_curves[k].points[-1].value
+        vel_dual = vel_continuity[k].dual_value
+        retiming_weights[k][1] = vel_primal.dot(vel_dual)
+
+        accel_primal = accel_curves[k].points[-1].value
+        accel_dual = accel_continuity[k].dual_value
+        retiming_weights[k][2] = accel_primal.dot(accel_dual)
+
+        # We don't enforce continuity in jerk... should we??
 
         # for i in range(1, D + 1):
         #     # TODO figure out the indexing into my array here
