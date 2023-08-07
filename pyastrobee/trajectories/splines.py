@@ -276,7 +276,10 @@ def retiming(
 
     # Solve SOCP and get new durarations.
     prob = cp.Problem(cp.Minimize(cost), constr)
-    prob.solve(solver="CLARABEL")
+    prob.solve(solver=cp.CLARABEL)
+    if prob.status != cp.OPTIMAL:
+        print("Clarabel failed to solve the retiming problem. Retrying with MOSEK")
+        prob.solve(solver=cp.MOSEK)
     if prob.status != cp.OPTIMAL:
         raise cp.error.SolverError("Unable to solve the retiming problem")
     new_durations = np.multiply(eta.value, durations)
