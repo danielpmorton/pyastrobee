@@ -5,6 +5,7 @@ These are currently used as the definition of the safe sets in the trajectory op
 Based on: https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/boxes.py
 """
 
+from collections import defaultdict
 from typing import Optional, Union
 
 import numpy as np
@@ -129,3 +130,21 @@ def visualize_3D_box(
         use_collision=False,
         rgba=rgba,
     )
+
+
+def compute_graph(boxes: dict[str, Box]) -> dict[str, list[str]]:
+    """Computes the graph between a set of boxes
+
+    Returns:
+        dict[str, list[str]]: Adjacency list / graph dictating safe paths within the boxes. Key/value pair is:
+            (name of the box) -> (list of names of all neighbors of that box)
+    """
+    names = list(boxes.keys())
+    n = len(names)
+    adj = defaultdict(list)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if check_box_intersection(boxes[names[i]], boxes[names[j]]):
+                adj[names[i]].append(names[j])
+                adj[names[j]].append(names[i])
+    return adj

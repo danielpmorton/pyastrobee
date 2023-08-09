@@ -1,8 +1,6 @@
 """Description of the free space within the ISS as a collection of safe boxes"""
 
-from collections import defaultdict
-
-from pyastrobee.utils.boxes import Box, visualize_3D_box, check_box_intersection
+from pyastrobee.utils.boxes import Box, visualize_3D_box, compute_graph
 from pyastrobee.utils.algos import dfs
 
 # Names of the safe boxes in the ISS
@@ -48,17 +46,10 @@ def compute_iss_graph() -> dict[str, list[str]]:
     """Computes the graph between the safe sets in the ISS based on intersecting safe boxes
 
     Returns:
-        dict[str, list[str]]: Adjacency list / graph dictating safe paths in the ISS
+        dict[str, list[str]]: Adjacency list / graph dictating safe paths in the ISS. Key/value pair is:
+            (name of the module) -> (list of names of all neighbors of that module)
     """
-    names = list(ALL_BOXES.keys())
-    n = len(names)
-    adj = defaultdict(list)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if check_box_intersection(ALL_BOXES[names[i]], ALL_BOXES[names[j]]):
-                adj[names[i]].append(names[j])
-                adj[names[j]].append(names[i])
-    return adj
+    return compute_graph(ALL_BOXES)
 
 
 def _show_iss_boxes():
