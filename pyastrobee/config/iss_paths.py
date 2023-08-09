@@ -32,11 +32,33 @@ def _dp_dfs(graph: dict[str, list[str]]) -> dict[str, dict[str, list[str]]]:
     return dp
 
 
-def create_path_lookup_table():
-    m = compute_iss_graph()
-    all_paths = _dp_dfs(m)
+def print_path_lookup_table():
+    graph = compute_iss_graph()
+    all_paths = _dp_dfs(graph)
     pprint(dict(all_paths), indent=0, compact=True, width=200)
 
+
+def print_graph():
+    graph = compute_iss_graph()
+    pprint(graph, indent=0, compact=True, width=200)
+
+
+GRAPH = {
+    "cupola": ["n3_cupola_corridor"],
+    "eu_lab": ["n2_eu_corridor"],
+    "jpm": ["jpm_n2_corridor"],
+    "jpm_n2_corridor": ["jpm", "node_2"],
+    "n1_n3_corridor": ["node_1", "node_3_a"],
+    "n2_eu_corridor": ["node_2", "eu_lab"],
+    "n2_us_corridor": ["node_2", "us_lab"],
+    "n3_cupola_corridor": ["node_3_b", "cupola"],
+    "node_1": ["us_n1_corridor", "n1_n3_corridor"],
+    "node_2": ["jpm_n2_corridor", "n2_eu_corridor", "n2_us_corridor"],
+    "node_3_a": ["node_3_b", "n1_n3_corridor"],
+    "node_3_b": ["node_3_a", "n3_cupola_corridor"],
+    "us_lab": ["n2_us_corridor", "us_n1_corridor"],
+    "us_n1_corridor": ["us_lab", "node_1"],
+}
 
 PATHS = {
     "cupola": {
@@ -1112,4 +1134,6 @@ PATHS = {
 }
 
 if __name__ == "__main__":
-    create_path_lookup_table()
+    print_path_lookup_table()
+    print("\n--------------------------\n")
+    print_graph()
