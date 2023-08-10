@@ -34,6 +34,14 @@ class Box:
     def __iter__(self):
         return iter([self.lower, self.upper])
 
+    def __str__(self):
+        return f"Lower: {list(self.lower)}, Upper: {list(self.upper)}"
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(lower={list(self.lower)}, upper={list(self.upper)})"
+        )
+
     def _validate(self):
         if len(self.lower) != len(self.upper):
             raise ValueError("Invalid input dimensions")
@@ -99,6 +107,21 @@ def find_containing_box(
         lower, upper = box
         if np.all(point >= lower) and np.all(point <= upper):
             return i
+    return None
+
+
+def find_containing_box_name(point: npt.ArrayLike, boxes: dict[str, Box]) -> str | None:
+    """Find the name of the first box which contains a certain point
+
+    Args:
+        point (npt.ArrayLike): Point to evaluate
+        boxes (dict[str, Box]): Boxes to search. Key/value: (box name) -> box
+    Returns:
+        str | None: Name of the first box which contains the point. None if the point is not in any box
+    """
+    for name, box in boxes.items():
+        if np.all(point >= box.lower) and np.all(point <= box.upper):
+            return name
     return None
 
 
