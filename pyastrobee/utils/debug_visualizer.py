@@ -40,7 +40,8 @@ def visualize_points(
 
     Args:
         position (npt.ArrayLike): 3D point(s) in the simulation to visualize. Shape (n, 3)
-        color (npt.ArrayLike): RGB values, each in range [0, 1]. Shape (n, 3)
+        color (npt.ArrayLike): RGB values, each in range [0, 1]. Shape (3,) if specifying the same color for all points,
+            or (n, 3) to individually specify the colors per-point
         size (float): Size of the points on the GUI, in pixels. Defaults to 20
         lifetime (float, optional): Amount of time to keep the points on the GUI, in seconds.
             Defaults to 0 (keep them on-screen permanently until deleted)
@@ -219,6 +220,57 @@ def visualize_path(
             )
         )
     return ids
+
+
+def animate_path(
+    positions: npt.ArrayLike,
+    freq: float = 30,
+    color: npt.ArrayLike = (1, 1, 1),
+    size: float = 20,
+    client: Optional[BulletClient] = None,
+):
+    """Animates a point moving along a sequence of positions
+
+    Args:
+        positions (npt.ArrayLike): Path to animate, shape (n, 3)
+        freq (float, optional): Frequency to view the animation (Larger values -> shorter animation). Defaults to 30
+        color (npt.ArrayLike): RGB values, each in range [0, 1]. Shape (3,) if specifying the same color for all points,
+            or (n, 3) to individually specify the colors per-point
+        size (float): Size of the points on the GUI, in pixels. Defaults to 20
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+    client: pybullet = pybullet if client is None else client
+    # Pybullet will crash if you try to visualize one point without packing it into a 2D array
+    positions = np.atleast_2d(positions)
+    color = np.atleast_2d(color)
+    if positions.shape[-1] != 3:
+        raise ValueError(
+            f"Invalid shape of the point positions. Expected (n, 3), got: {positions.shape}"
+        )
+    if color.shape[-1] != 3:
+        raise ValueError(
+            f"Invalid shape of the colors. Expected (n, 3), got: {color.shape}"
+        )
+    n = positions.shape[0]
+    if color.shape[0] != n:
+        if color.shape[0] == 1:
+            # Map the same color to all of the points
+            color = color * np.ones_like(positions)
+        else:
+            raise ValueError(
+                f"Number of colors ({color.shape[0]}) does not match the number of points ({n})."
+            )
+    uid = None
+    for i in range(n):
+        if uid is None:
+            uid = client.addUserDebugPoints([positions[i]], [color[i]], size, 0)
+        else:
+            uid = client.addUserDebugPoints(
+                [positions[i]], [color[i]], size, 0, replaceItemUniqueId=uid
+            )
+        client.stepSimulation()
+        time.sleep(1 / freq)
 
 
 def remove_debug_objects(
