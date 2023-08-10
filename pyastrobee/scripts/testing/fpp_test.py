@@ -1,4 +1,4 @@
-"""Script to directly test out Tobia's code (which includes knot retiming)"""
+"""Script to directly test out Tobia's Fast Path Planning code and see how it compares to ours"""
 
 import time
 
@@ -11,10 +11,10 @@ import fastpathplanning as fpp
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.config.iss_safe_boxes import ALL_BOXES, compute_iss_graph
-from pyastrobee.utils.boxes import find_containing_box
-from pyastrobee.utils.debug_visualizer import visualize_path
+from pyastrobee.utils.boxes import find_containing_box_name
+from pyastrobee.utils.debug_visualizer import visualize_path, animate_path
 from pyastrobee.utils.algos import dfs
-from pyastrobee.trajectories.splines import optimal_spline_trajectory
+from pyastrobee.trajectories.splines import spline_trajectory_with_retiming
 
 
 def fpp_method(p0, pf, T):
@@ -47,58 +47,31 @@ def fpp_method(p0, pf, T):
     return p_t  # Positions in the trajectory
 
 
-def my_method(p0, pf, T):
-    names = []
-    boxes = []
-    for name, box in ALL_BOXES.items():
-        names.append(name)
-        boxes.append(box)
-    start_id = find_containing_box(p0, boxes)
-    end_id = find_containing_box(pf, boxes)
+def my_method(p0, pf, T, max_retiming_iters):
+    """Create a trajectory using my own trajectory generation method
+
+    We can set the maximum retiming iterations to 0 if we want to see how the retiming
+    afects the path shape
+    """
+    start = find_containing_box_name(p0, ALL_BOXES)
+    end = find_containing_box_name(pf, ALL_BOXES)
     graph = compute_iss_graph()
-    path = dfs(graph, names[start_id], names[end_id])
-    box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
-    pos, *_ = optimal_spline_trajectory(
+    path = dfs(graph, start, end)
+    box_path = [ALL_BOXES[p] for p in path]
+    pos, *_ = spline_trajectory_with_retiming(
         p0,
         pf,
         0,
         T,
-        8,
         50,
-        box_path,
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        max_iters=0,
-    )
-    return pos
-
-
-def my_sequential_method(p0, pf, T):
-    names = []
-    boxes = []
-    for name, box in ALL_BOXES.items():
-        names.append(name)
-        boxes.append(box)
-    start_id = find_containing_box(p0, boxes)
-    end_id = find_containing_box(pf, boxes)
-    graph = compute_iss_graph()
-    path = dfs(graph, names[start_id], names[end_id])
-    box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
-    pos, *_ = optimal_spline_trajectory(
-        p0,
-        pf,
-        0,
-        T,
         8,
-        50,
         box_path,
+        np.ones(len(box_path)) * (T / len(box_path)),
         np.zeros(3),
         np.zeros(3),
         np.zeros(3),
         np.zeros(3),
-        # max_iters=0,
+        max_iters=max_retiming_iters,
     )
     return pos
 
@@ -114,10 +87,10 @@ def main():
     pos_fpp = fpp_method(start_pt, end_pt, T)
     time_b = time.time()
     print("Time for Tobia's method: ", time_b - time_a)
-    pos_mine = my_method(start_pt, end_pt, T)
+    pos_mine_no_retiming = my_method(start_pt, end_pt, T, 0)
     time_c = time.time()
     print("Time for my method (with graph computation): ", time_c - time_b)
-    pos_my_seq = my_sequential_method(start_pt, end_pt, T)
+    pos_mine_retimed = my_method(start_pt, end_pt, T, 10)
     time_d = time.time()
     print("Time for my sequential method: ", time_d - time_c)
 
@@ -125,31 +98,14 @@ def main():
     iss = ISS()
     iss.show_safe_set()
     visualize_path(pos_fpp, color=(0, 0, 1))
-    visualize_path(pos_mine, color=(0, 1, 0))
-    visualize_path(pos_my_seq, color=(1, 0, 0))
+    visualize_path(pos_mine_no_retiming, color=(0, 1, 0))
+    visualize_path(pos_mine_retimed, color=(1, 0, 0))
     input("Press Enter to animate path")
     animate_path(pos_fpp)
-    animate_path(pos_mine)
-    animate_path(pos_my_seq)
-
-
-def animate_path(positions):
-    import pybullet
-    from pyastrobee.utils.bullet_utils import create_sphere
-    from pyastrobee.utils.debug_visualizer import visualize_points
-
-    # sphere = create_sphere(positions[0], 1, 0.2, False, (1, 1, 1, 1))
-    # cid = pybullet.createConstraint(
-    #     sphere, -1, -1, -1, pybullet.JOINT_FIXED, None, (0, 0, 0), (0, 0, 0)
-    # )
-    dt = 1 / 30
-    for position in positions:
-        visualize_points([position], (1, 1, 1), lifetime=2 * dt)
-        # pybullet.changeConstraint(cid, position, (0, 0, 0, 1))
-        pybullet.stepSimulation()
-        time.sleep(dt)
-    # pybullet.removeConstraint(cid)
-    # pybullet.removeBody(sphere)
+    animate_path(pos_mine_no_retiming)
+    animate_path(pos_mine_retimed)
+    input("Press Enter to finish")
+    client.disconnect()
 
 
 if __name__ == "__main__":
