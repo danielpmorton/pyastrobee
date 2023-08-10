@@ -4,7 +4,7 @@ Initial boundary conditions are imposed on the start of the first curve, final B
 the third curve, and we enforce C2 derivative continuity at the knot points
 
 TODO
-- Determine if we can specify the locations of the knot points
+- Return Trajectory class, or just the positions/velocites/accels/times....?
 
 Reference:
 Fast Path Planning Through Large Collections of Safe Boxes
@@ -28,6 +28,8 @@ from pyastrobee.trajectories.bezier import (
 )
 from pyastrobee.utils.boxes import Box, visualize_3D_box
 from pyastrobee.utils.debug_visualizer import visualize_path, visualize_points
+from pyastrobee.utils.python_utils import print_red
+from pyastrobee.trajectories.timing import retiming
 
 
 class CompositeBezierCurve:
@@ -93,46 +95,15 @@ class CompositeBezierCurve:
         return sum(bez.l2_squared for bez in self.beziers)
 
 
-def timing_estimate(
-    start_pt: npt.ArrayLike, end_pt: npt.ArrayLike, boxes: list[Box], total_time: float
-) -> np.ndarray:
-    """Calculate a preliminary estimate for the time allocated to each curve based on a straight-line (min-length) path
-    through the boxes. Each duration will correspond to that path's fraction of the total trajectory length
-
-    Args:
-        start_pt (npt.ArrayLike): Starting XYZ position, shape (3,)
-        end_pt (npt.ArrayLike): Ending XYZ position, shape (3,)
-        boxes (list[Box]): Sequence of safe boxes that will be traveled through (Not the entire free space)
-        total_time (float): Total duration of the trajectory
-
-    Returns:
-        np.ndarray: Durations for each trajectory segment, shape (num_boxes,)
-    """
-    n_boxes = len(boxes)
-    points = cp.Variable((n_boxes + 1, 3))
-    pathlength = cp.sum(cp.norm2(cp.diff(points, axis=0), axis=1))
-    objective = cp.Minimize(pathlength)
-    constraints = [points[0] == start_pt, points[-1] == end_pt]
-    for i, box in enumerate(boxes):
-        lower, upper = box
-        constraints.append(points[i] >= lower)
-        constraints.append(points[i] <= upper)
-        constraints.append(points[i + 1] >= lower)
-        constraints.append(points[i + 1] <= upper)
-    prob = cp.Problem(objective, constraints)
-    prob.solve()
-    distances = np.linalg.norm(np.diff(points.value, axis=0), axis=1)
-    return (distances / np.sum(distances)) * total_time
-
-
-def optimal_spline_trajectory(
+def spline_trajectory_with_retiming(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
     t0: float,
     tf: float,
-    pts_per_curve: Union[int, npt.ArrayLike],
     n_timesteps: int,
+    pts_per_curve: int,
     boxes: list[Box],
+    initial_durations: npt.ArrayLike,
     v0: Optional[npt.ArrayLike] = None,
     vf: Optional[npt.ArrayLike] = None,
     a0: Optional[npt.ArrayLike] = None,
@@ -142,22 +113,52 @@ def optimal_spline_trajectory(
     kappa_min: float = 1e-2,
     omega: float = 3,
     max_iters: int = 10,
-):
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time
+    interval. Use an iterative retiming method to refine the durations for each segment of the trajectory
+
+    We enforce continuity between curves up to the second derivative
+
+    Note: if position is unconstrained (no need for safe boxes), you should instead use a single Bezier curve
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        t0 (float): Starting time
+        tf (float): Ending time
+        n_timesteps (int): Number of timesteps to evaluate
+        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10
+        boxes (list[Box]): Sequential list of safe box regions pass through
+        initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These
+            will be refined during the retiming process. Shape (num_boxes,)
+        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
+        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
+        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
+        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
+        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
+        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
+        kappa_min (float, optional): Retiming trust region parameter: Defines the maximum change in adjacent scaling
+            factors. Defaults to 1e-2.
+        omega (float, optional): Retiming parameter: Defines the rate at which kappa decays after each iteration.
+            Must be > 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)
+            are more effective otherwise. Defaults to 3.
+        max_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
+
+    Returns:
+        Tuple of:
+            np.ndarray: Trajectory positions, shape (n_timesteps, 3)
+            np.ndarray: Trajectory velocities, shape (n_timesteps, 3)
+            np.ndarray: Trajectory accelerations, shape (n_timesteps, 3)
+            np.ndarray: Trajectory times, shape (n_timesteps,)
+    """
     # Handle inputs
     if tf <= t0:
         raise ValueError(f"Invalid time interval: ({t0}, {tf})")
-    n_curves = len(boxes)
-    # Form an array specifying the number of control points for each curve
-    if np.ndim(pts_per_curve) == 0:
-        # Integer input, assume same number of control points for each curve
-        pts_per_curve = (pts_per_curve * np.ones(n_curves)).astype(int)
-    else:
-        # ArrayLike input, size should correspond to the number of curves
-        pts_per_curve = np.ravel(pts_per_curve).astype(int)
-        assert len(pts_per_curve) == n_curves
-    if np.any(pts_per_curve < 6):
-        print(
-            "WARNING: A segment with less thant 6 control points may lead to infeasible constraints"
+    if omega <= 1:
+        raise ValueError("The retiming parameter omega must be > 1")
+    if pts_per_curve < 6:
+        print_red(
+            "WARNING: Curves with less than 6 control points may lead to infeasible constraints"
         )
 
     # Store the curve parameters so that we can reuse these in the repeated calls to the spline function
@@ -175,16 +176,10 @@ def optimal_spline_trajectory(
         v_max=v_max,
         a_max=a_max,
     )
-    # Form an intial estimate for the durations
-    # TODO MESS AROUND WITH THESE HEURISTICS
-    # Right now trying to average the heuristics because going around a corner might result in a short path length
-    # but it might need more time allocated because of the time associated with turning and slowing down
-    straight_durations = timing_estimate(p0, pf, boxes, tf - t0)
-    uniform_durations = ((tf - t0) / n_curves) * np.ones(n_curves)
-    durations = (straight_durations + uniform_durations) / 2
-    curve_kwargs["durations"] = durations
     # Solve a preliminary trajectory for this initial guess at the durations
-    best_curve, best_info = _fixed_duration_spline_trajectory(**curve_kwargs)
+    durations = initial_durations
+    curve_kwargs["durations"] = durations
+    best_curve, best_info = _fixed_timing_spline(**curve_kwargs)
 
     kappa = 1  # Initialize the trust region parameter
     for _ in range(max_iters):
@@ -197,13 +192,16 @@ def optimal_spline_trajectory(
                 best_info["retiming_weights"],
             )
         except cp.error.SolverError:
-            # This seems to sometimes happen if the initial guess for durations is not good
-            print("Terminated due to failure to solve the retiming problem")
+            print_red(
+                "Spline trajectory generation terminated due to failure to solve the retiming problem.\n"
+                + "This can sometimes be due to a poor initialization of the curve durations, "
+                + "or having a time horizon that is too short"
+            )
             break
 
         # Improve Bezier curves based on the retiming
         curve_kwargs["durations"] = new_durations
-        new_curve, new_info = _fixed_duration_spline_trajectory(**curve_kwargs)
+        new_curve, new_info = _fixed_timing_spline(**curve_kwargs)
         print("Cost: ", new_info["cost"])
         if new_info["cost"] < best_info["cost"]:  # Accept trajectory with new durations
             durations = new_durations
@@ -215,87 +213,23 @@ def optimal_spline_trajectory(
             break
         kappa = kappa_max / omega
     else:
-        print("Terminated due to reaching the maximum number of iterations")
+        print_red(
+            "Spline trajectory generation terminated due to reaching the maximum number of iterations"
+        )
 
     # Evaluate the optimal curve and its derivatives at each time
     times = np.linspace(t0, tf, n_timesteps, endpoint=True)
     vel_curve = best_curve.derivative
     accel_curve = vel_curve.derivative
-    print("COST: ", best_curve.derivative.derivative.derivative.l2_squared_sum)
     return best_curve(times), vel_curve(times), accel_curve(times), times
 
 
-def retiming(
-    kappa: float,
-    costs: dict[int, dict[int, float]],
-    durations: npt.ArrayLike,
-    retiming_weights: dict[int, dict[int, float]],
-) -> tuple[np.ndarray, float]:
-    """Run the retiming trust-region-based optimization to generate an improved set of curve durations
-
-    This code is essentially straight from Fast Path Planning with minimal modification since the retiming method
-    is a bit complex, and we know that this works
-
-    Args:
-        kappa (float): Trust region parameter: Defines the maximum change in adjacent scaling factors
-        costs (dict[int, dict[int, float]]): Breakdown of costs per curve and per derivative. Costs[i] gives the info
-            for curve i, and costs[i][j] gives the cost associated with the jth derivative curve. Since we deal only
-            with min-jerk, we only evaluate the j=3 case. The cost is the squared L2 norm of the jerk
-        durations (npt.ArrayLike): Current best known value of the curve durations, shape (n_curves,)
-        retiming_weights (dict[int, dict[int, float]]): A combination of Lagrangian multipliers and the last solved
-            path. Weights[i] gives the weights associated with the ith differentiability (continuity) constraint, and
-            weights[i][j] gives the weight associated with the jth derivative curve continuity. We enforce continuity
-            up to the second derivative (j = 1 and 2)
-
-    Returns:
-        Tuple of:
-            np.ndarray: The updated curve durations
-            float: The new trust region parameter
-    """
-    # Decision variables.
-    n_boxes = max(costs) + 1
-    eta = cp.Variable(n_boxes)
-    eta.value = np.ones(n_boxes)
-    constr = [durations @ eta == sum(durations)]
-
-    # Scale costs from previous trajectory.
-    cost = 0
-    for i, ci in costs.items():
-        for j, cij in ci.items():
-            cost += cij * cp.power(eta[i], 1 - 2 * j)
-
-    # Retiming weights.
-    for k in range(n_boxes - 1):
-        for i, w in retiming_weights[k].items():
-            cost += i * retiming_weights[k][i] * (eta[k + 1] - eta[k])
-
-    # Trust region.
-    if not np.isinf(kappa):
-        constr.append(eta[1:] - eta[:-1] <= kappa)
-        constr.append(eta[:-1] - eta[1:] <= kappa)
-
-    # Solve SOCP and get new durarations.
-    prob = cp.Problem(cp.Minimize(cost), constr)
-    prob.solve(solver=cp.CLARABEL)
-    if prob.status != cp.OPTIMAL:
-        print("Clarabel failed to solve the retiming problem. Retrying with MOSEK")
-        prob.solve(solver=cp.MOSEK)
-    if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError("Unable to solve the retiming problem")
-    new_durations = np.multiply(eta.value, durations)
-
-    # New candidate for kappa.
-    kappa_max = max(np.abs(eta.value[1:] - eta.value[:-1]))
-
-    return new_durations, kappa_max
-
-
-def _fixed_duration_spline_trajectory(
+def _fixed_timing_spline(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
     t0: float,
     tf: float,
-    pts_per_curve: npt.ArrayLike,
+    pts_per_curve: int,
     boxes: list[Box],
     durations: npt.ArrayLike,
     v0: Optional[npt.ArrayLike] = None,
@@ -305,28 +239,20 @@ def _fixed_duration_spline_trajectory(
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
 ) -> tuple[CompositeBezierCurve, dict[str, Any]]:
-    """Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes
+    """Generate a min-jerk spline based on chained Bezier curves through a set of safe boxes, for a fixed time
+    interval and fixed durations within each box
 
-    We enforce continuity between curves up to the second derivative
-
-    Note: if position is unconstrained (no need for safe boxes), you should instead use a single Bezier curve
+    NOTE: This is NOT globally optimal if we don't use the retiming process to refine the time breakdown, which is
+    why this is a helper function that gets called within the trajectory-with-retiming function
 
     Args:
         p0 (npt.ArrayLike): Initial position, shape (3,)
         pf (npt.ArrayLike): Final position, shape (3,)
         t0 (float): Starting time
         tf (float): Ending time
-        pts_per_curve (Union[int, npt.ArrayLike]): Number of control points per Bezier curve.
-            Int if using the same number of control points for each curve, or a list/tuple/
-            array specifying the number for each curve. Generally, should be around 6-10 per curve
-
-        ^^ TODO update pts per curve!
-
+        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10
         boxes (list[Box]): Sequential list of safe box regions pass through
-        durations (Optional[npt.ArrayLike]): Durations for each segment of the trajectory, shape (num_boxes,)
-
-        ^^ TODO Update durations!
-
+        durations (npt.ArrayLike): Durations for each segment of the trajectory, shape (num_boxes,)
         v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
         vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
         a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
@@ -341,19 +267,19 @@ def _fixed_duration_spline_trajectory(
     """
     dim = len(p0)
     n_curves = len(boxes)
-    total_num_pts = sum(pts_per_curve)
     # Construct our main optimization variable
-    all_control_points = cp.Variable((total_num_pts, dim))
+    all_control_points = cp.Variable((n_curves * pts_per_curve, dim))
 
     # Determine the knot times between trajectory segments
     # Includes start/end times as knots too, for ease of indexing
     knot_times = np.concatenate([[t0], np.cumsum(durations)])
-    knot_times[-1] = tf
+    knot_times[-1] = tf  # Fix floating pt issue with cumsum
 
     # Indexing from the main cvxpy variable containing all of the control points
-    end_idxs = np.cumsum(pts_per_curve)
-    start_idxs = end_idxs - pts_per_curve[0]
-    pos_pt_sets = [all_control_points[a:b] for a, b in zip(start_idxs, end_idxs)]
+    pos_pt_sets = [
+        all_control_points[pts_per_curve * i : pts_per_curve * (i + 1)]
+        for i in range(n_curves)
+    ]
     pos_curves = [
         BezierCurve(pos_pt_sets[i], knot_times[i], knot_times[i + 1])
         for i in range(n_curves)
@@ -556,106 +482,41 @@ def _test_spline_trajectory():
     t0 = 0
     tf = 5
     pts_per_curve = 8
-    n_timesteps = 50
     v0 = np.zeros(3)
     vf = np.zeros(3)
     a0 = np.zeros(3)
     af = np.zeros(3)
-    safe_boxes = [
-        Box((0, 0, 0), (1, 1, 1)),
-        Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
-        Box((1, 4.5, 1), (2, 5.5, 2)),
-    ]
-    pos, *_ = spline_trajectory(
-        p0, pf, t0, tf, pts_per_curve, n_timesteps, v0, vf, a0, af, safe_boxes
-    )
-    pybullet.connect(pybullet.GUI)
-    visualize_points(np.vstack([p0, pf]), (0, 0, 1))
-    for box in safe_boxes:
-        visualize_3D_box(box)
-    visualize_path(pos, 10, (0, 0, 1))
-    input()
-
-
-def _test_timing_estimate():
-    p0 = [0.1, 0.2, 0.3]
-    pf = [1.5, 5, 1.7]
-    T = 5
-    safe_boxes = [
-        Box((0, 0, 0), (1, 1, 1)),
-        Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
-        Box((1, 4.5, 1), (2, 5.5, 2)),
-    ]
-    durations = timing_estimate(p0, pf, safe_boxes, T)
-    print(durations)
-
-
-def _test_sequential_opt():
-    curve_kwargs = dict(
-        p0=[0.1, 0.2, 0.3],
-        pf=[1.5, 5, 1.7],
-        t0=0,
-        tf=5,
-        pts_per_curve=8,
-        n_timesteps=50,
-        v0=np.zeros(3),
-        vf=np.zeros(3),
-        a0=np.zeros(3),
-        af=np.zeros(3),
-        boxes=[
-            Box((0, 0, 0), (1, 1, 1)),
-            Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
-            Box((1, 4.5, 1), (2, 5.5, 2)),
-        ],
-        durations=((5 - 0) / 3) * np.ones(3),
-    )
-    traj = sequential_optimization(curve_kwargs)
-    pos = traj[0]
-
-    pybullet.connect(pybullet.GUI)
-    visualize_points(np.vstack([curve_kwargs["p0"], curve_kwargs["pf"]]), (0, 0, 1))
-    for box in curve_kwargs["boxes"]:
-        visualize_3D_box(box)
-    visualize_path(pos, 10, (0, 0, 1))
-    input()
-
-
-def _test_timing_estimate_with_path():
-    start_pt = [0.1, 0.2, 0.3]
-    end_pt = [1.5, 5, 1.7]
-    total_time = 5
     boxes = [
         Box((0, 0, 0), (1, 1, 1)),
         Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
         Box((1, 4.5, 1), (2, 5.5, 2)),
     ]
+    n_curves = len(boxes)
+    durations = np.ones(n_curves) * (tf - t0) / n_curves
+    n_timesteps = 50
+    times = np.linspace(t0, tf, n_timesteps, endpoint=True)
+    pos_curve, *_ = _fixed_timing_spline(
+        p0, pf, t0, tf, pts_per_curve, boxes, durations, v0, vf, a0, af
+    )
+    pos_pts = pos_curve(times)
 
-    n_boxes = len(boxes)
-    points = cp.Variable((n_boxes + 1, 3))
-    pathlength = cp.sum(cp.norm2(cp.diff(points, axis=0), axis=1))
-    objective = cp.Minimize(pathlength)
-    constraints = [points[0] == start_pt, points[-1] == end_pt]
-    for i, box in enumerate(boxes):
-        lower, upper = box
-        constraints.append(points[i] >= lower)
-        constraints.append(points[i] <= upper)
-        constraints.append(points[i + 1] >= lower)
-        constraints.append(points[i + 1] <= upper)
-    prob = cp.Problem(objective, constraints)
-    prob.solve()
-    distances = np.linalg.norm(np.diff(points.value, axis=0), axis=1)
-    print((distances / np.sum(distances)) * total_time)
+    pos_retimed, *_ = spline_trajectory_with_retiming(
+        p0, pf, t0, tf, n_timesteps, pts_per_curve, boxes, durations, v0, vf, a0, af
+    )
+
     pybullet.connect(pybullet.GUI)
-    visualize_path(points.value, color=(0, 0, 1))
-    visualize_points(points.value, (1, 1, 1))
+    visualize_points(np.vstack([p0, pf]), (0, 0, 1))
     for box in boxes:
         visualize_3D_box(box)
-    input("Press Enter to close")
+    simple_traj_color = (0, 0, 1)
+    retimed_traj_color = (0, 1, 0)
+    visualize_path(pos_pts, 10, simple_traj_color)
+    visualize_path(pos_retimed, 10, retimed_traj_color)
+    pybullet.addUserDebugText("Original curve", [0, 0, -0.2], simple_traj_color)
+    pybullet.addUserDebugText("Retimed curve", [0, 0, -0.4], retimed_traj_color)
+    input()
 
 
 if __name__ == "__main__":
-    # _test_plotting_spline()
-    # _test_spline_trajectory()
-    # _test_timing_estimate()
-    # _test_sequential_opt()
-    _test_timing_estimate_with_path()
+    _test_plotting_spline()
+    _test_spline_trajectory()
