@@ -293,23 +293,47 @@ def bezier_trajectory(
 # Below: Plotting functions
 
 
-def plot_2d_bezier_pts(
-    curve: BezierCurve, ax: Optional[plt.Axes] = None, show: bool = True, **kwargs
+def plot_1d_bezier_curve(
+    curve: BezierCurve,
+    n_pts: int,
+    plot_pts: bool = True,
+    plot_hull: bool = True,
+    ax: Optional[plt.Axes] = None,
+    show: bool = True,
+    **kwargs,
 ) -> plt.Axes:
-    """Plots the control points of a 2D Bezier curve
+    """Plots a 1D Bezier curve assuming the control points are evenly spaced in time
 
     Args:
-        curve (BezierCurve): Bezier curve of interest
+        curve (BezierCurve): Bezier curve to plot
+        n_pts (int): Number of points to evaluate the curve
+        plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
+        plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
         ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
         show (bool, optional): Whether or not to show the plot. Defaults to True.
 
     Returns:
         plt.Axes: The plot
     """
-    assert curve.d == 2
+    assert curve.d == 1
+    points = np.ravel(curve.points)
+    # Times to evaluate the curve
+    t = np.linspace(curve.a, curve.b, n_pts, endpoint=True)
+    # "Times" at which we assign the control points along the x axis
+    x = np.linspace(curve.a, curve.b, len(points), endpoint=True)
     if ax is None:
         ax = plt.gca()
-    ax.scatter(*curve.points.T, **kwargs)
+    ax.plot(t, curve(t), **kwargs)
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Variable")
+    color = ax.lines[-1].get_color()
+    if plot_pts:
+        ax.scatter(x, points, c=color, **kwargs)
+    if plot_hull:
+        hull = ConvexHull(np.column_stack([x, points]))
+        ordered_points = hull.points[hull.vertices]
+        poly = Polygon(ordered_points, fc=color, alpha=0.5, **kwargs)
+        ax.add_patch(poly)
     if show:
         plt.show()
     return ax
@@ -318,6 +342,8 @@ def plot_2d_bezier_pts(
 def plot_2d_bezier_curve(
     curve: BezierCurve,
     n_pts: int,
+    plot_pts: bool = True,
+    plot_hull: bool = True,
     ax: Optional[plt.Axes] = None,
     show: bool = True,
     **kwargs,
@@ -327,6 +353,8 @@ def plot_2d_bezier_curve(
     Args:
         curve (BezierCurve): Bezier curve to plot
         n_pts (int): Number of points to evaluate the curve
+        plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
+        plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
         ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
         show (bool, optional): Whether or not to show the plot. Defaults to True.
 
@@ -338,31 +366,16 @@ def plot_2d_bezier_curve(
     if ax is None:
         ax = plt.gca()
     ax.plot(*curve(t).T, **kwargs)
-    if show:
-        plt.show()
-    return ax
-
-
-def plot_2d_bezier_hull(
-    curve: BezierCurve, ax: Optional[plt.Axes] = None, show: bool = True, **kwargs
-) -> plt.Axes:
-    """Plots the convex hull of the Bezier curve's control points
-
-    Args:
-        curve (BezierCurve): Bezier curve of interest
-        ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
-        show (bool, optional): Whether or not to show the plot. Defaults to True.
-
-    Returns:
-        plt.Axes: The plot
-    """
-    assert curve.d == 2
-    hull = ConvexHull(curve.points)
-    ordered_points = hull.points[hull.vertices]
-    poly = Polygon(ordered_points, **kwargs)
-    if ax is None:
-        ax = plt.gca()
-    ax.add_patch(poly)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    color = ax.lines[-1].get_color()
+    if plot_pts:
+        ax.scatter(*curve.points.T, c=color, **kwargs)
+    if plot_hull:
+        hull = ConvexHull(curve.points)
+        ordered_points = hull.points[hull.vertices]
+        poly = Polygon(ordered_points, fc=color, alpha=0.5, **kwargs)
+        ax.add_patch(poly)
     if show:
         plt.show()
     return ax

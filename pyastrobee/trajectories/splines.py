@@ -22,9 +22,8 @@ import pybullet
 
 from pyastrobee.trajectories.bezier import (
     BezierCurve,
+    plot_1d_bezier_curve,
     plot_2d_bezier_curve,
-    plot_2d_bezier_pts,
-    plot_2d_bezier_hull,
 )
 from pyastrobee.utils.boxes import Box, visualize_3D_box
 from pyastrobee.utils.debug_visualizer import visualize_path, visualize_points
@@ -368,26 +367,36 @@ def _fixed_timing_spline(
 # Below: plotting functions
 
 
-def plot_2d_composite_bezier_pts(
+def plot_1d_composite_bezier_curve(
     curve: CompositeBezierCurve,
+    n_pts: int,
+    plot_pts: bool = True,
+    plot_hull: bool = True,
     ax: Optional[plt.Axes] = None,
     show: bool = True,
     **kwargs,
 ) -> plt.Axes:
-    """Plots the control points of a 2D composite Bezier curve
+    """Plots a 1D composite Bezier curve
 
     Args:
-        curve (CompositeBezierCurve): Composite Bezier curve of interest
-        ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None.
+        curve (BezierCurve): Composite Bezier curve to plot
+        n_pts (int): Number of points to evaluate the curve
+        plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
+        plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
+        ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
         show (bool, optional): Whether or not to show the plot. Defaults to True.
 
     Returns:
         plt.Axes: The plot
     """
+    assert curve.d == 1
     if ax is None:
         ax = plt.gca()
     for bez in curve.beziers:
-        ax = plot_2d_bezier_pts(bez, ax, show=False, **kwargs)
+        # Assign the number of points to plot based on the fraction of the total interval
+        # for a single bezier curve within the whole composite curve
+        n = round((bez.duration / curve.duration) * n_pts)
+        ax = plot_1d_bezier_curve(bez, n, plot_pts, plot_hull, ax, show=False, **kwargs)
     if show:
         plt.show()
     return ax
@@ -396,6 +405,8 @@ def plot_2d_composite_bezier_pts(
 def plot_2d_composite_bezier_curve(
     curve: CompositeBezierCurve,
     n_pts: int,
+    plot_pts: bool = True,
+    plot_hull: bool = True,
     ax: Optional[plt.Axes] = None,
     show: bool = True,
     **kwargs,
@@ -405,44 +416,22 @@ def plot_2d_composite_bezier_curve(
     Args:
         curve (BezierCurve): Composite Bezier curve to plot
         n_pts (int): Number of points to evaluate the curve
+        plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
+        plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
         ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
         show (bool, optional): Whether or not to show the plot. Defaults to True.
 
     Returns:
         plt.Axes: The plot
     """
+    assert curve.d == 2
     if ax is None:
         ax = plt.gca()
     for bez in curve.beziers:
         # Assign the number of points to plot based on the fraction of the total interval
         # for a single bezier curve within the whole composite curve
         n = round((bez.duration / curve.duration) * n_pts)
-        ax = plot_2d_bezier_curve(bez, n, ax, show=False, **kwargs)
-    if show:
-        plt.show()
-    return ax
-
-
-def plot_2d_composite_bezier_hull(
-    curve: CompositeBezierCurve,
-    ax: Optional[plt.Axes] = None,
-    show: bool = True,
-    **kwargs,
-) -> plt.Axes:
-    """Plots the convex hull of each of the composite Bezier curve's child curves
-
-    Args:
-        curve (BezierCurve): Composite Bezier curve of interest
-        ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
-        show (bool, optional): Whether or not to show the plot. Defaults to True.
-
-    Returns:
-        plt.Axes: The plot
-    """
-    if ax is None:
-        ax = plt.gca()
-    for bez in curve.beziers:
-        ax = plot_2d_bezier_hull(bez, ax, show=False, **kwargs)
+        ax = plot_2d_bezier_curve(bez, n, plot_pts, plot_hull, ax, show=False, **kwargs)
     if show:
         plt.show()
     return ax
@@ -462,16 +451,7 @@ def _test_plotting_spline():
     curve_c = BezierCurve(pts_c, 3, 5)
     curves = [curve_a, curve_b, curve_c]
     spline = CompositeBezierCurve(curves)
-    ax = plot_2d_composite_bezier_hull(spline, show=False, fc="lightcoral", alpha=0.5)
-    ax = plot_2d_composite_bezier_curve(spline, 30, show=False)
-    ax = plot_2d_composite_bezier_pts(spline, ax, show=False)
-    # Create a new plot where we manually evaluate the points of the full composite curve
-    # The curve should effectively look the same as the one that was just plotted
-    times = np.linspace(spline.a, spline.b, endpoint=True)
-    curve_evals = spline(times)
-    plt.figure()
-    plt.plot(curve_evals[:, 0], curve_evals[:, 1])
-    # Show both plots at once
+    ax = plot_2d_composite_bezier_curve(spline, 30, True, True, show=False)
     plt.show()
 
 
