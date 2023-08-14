@@ -17,7 +17,8 @@ import numpy as np
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.errors import PybulletError
 from pyastrobee.utils.python_utils import print_green
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES, compute_iss_graph
+from pyastrobee.config.iss_safe_boxes import ALL_BOXES
+from pyastrobee.config.iss_paths import GRAPH
 from pyastrobee.utils.boxes import visualize_3D_box
 
 
@@ -50,7 +51,7 @@ class ISS:
         # The meshes have a weird orientation so we need to use this orientation to rotate them to lay flat
         self.mesh_orn = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2)
         self.safe_boxes = ALL_BOXES
-        self.graph = compute_iss_graph()
+        self.graph = GRAPH  # Precomputed
         self._debug_box_ids = []
         self.ids = []
         for module in ISS.Modules:
