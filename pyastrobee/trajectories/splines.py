@@ -369,7 +369,7 @@ def _fixed_timing_spline(
 
 def plot_1d_composite_bezier_curve(
     curve: CompositeBezierCurve,
-    n_pts: int,
+    n_pts: int = 50,
     plot_pts: bool = True,
     plot_hull: bool = True,
     ax: Optional[plt.Axes] = None,
@@ -380,7 +380,7 @@ def plot_1d_composite_bezier_curve(
 
     Args:
         curve (BezierCurve): Composite Bezier curve to plot
-        n_pts (int): Number of points to evaluate the curve
+        n_pts (int): Number of points to evaluate the curve. Defaults to 50.
         plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
         plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
         ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
@@ -404,7 +404,7 @@ def plot_1d_composite_bezier_curve(
 
 def plot_2d_composite_bezier_curve(
     curve: CompositeBezierCurve,
-    n_pts: int,
+    n_pts: int = 50,
     plot_pts: bool = True,
     plot_hull: bool = True,
     ax: Optional[plt.Axes] = None,
@@ -415,7 +415,7 @@ def plot_2d_composite_bezier_curve(
 
     Args:
         curve (BezierCurve): Composite Bezier curve to plot
-        n_pts (int): Number of points to evaluate the curve
+        n_pts (int): Number of points to evaluate the curve. Defaults to 50.
         plot_pts (bool, optional): Whether or not to display the curve's control points. Defaults to True.
         plot_hull (bool, optional): Whether or not to display the convex hull of the control points. Defaults to True.
         ax (Optional[plt.Axes]): Axes for plotting, if re-using an existing plot. Defaults to None (create new plot).
