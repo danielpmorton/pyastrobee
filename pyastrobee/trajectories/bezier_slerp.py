@@ -15,6 +15,23 @@ from pyastrobee.utils.quaternions import (
     quats_to_angular_velocities,
 )
 from pyastrobee.trajectories.bezier import BezierCurve, plot_1d_bezier_curve
+from pyastrobee.trajectories.trajectory import Trajectory
+
+
+# WORK IN PROGRESS
+def cubic_decasteljau_slerp(q0, q1, q2, q3, t):
+    # Based on splines python package
+    if not np.isscalar(t):
+        # If t is a list, return a list of unit quaternions
+        return [cubic_decasteljau_slerp(q0, q1, q2, q3, t_i) for t_i in t]
+    slerp_0_1 = quaternion_slerp(q0, q1, t)
+    slerp_1_2 = quaternion_slerp(q1, q2, t)
+    slerp_2_3 = quaternion_slerp(q2, q3, t)
+    return quaternion_slerp(
+        quaternion_slerp(slerp_0_1, slerp_1_2, t),
+        quaternion_slerp(slerp_1_2, slerp_2_3, t),
+        t,
+    )
 
 
 def bezier_slerp(
@@ -181,6 +198,32 @@ def _test_1d_interpolation():
     plt.show()
 
 
+def _test_decasteljau():
+    from pyastrobee.utils.bullet_utils import create_box
+    import pybullet
+    import time
+
+    pybullet.connect(pybullet.GUI)
+    np.random.seed(1)
+    q0 = random_quaternion()
+    q1 = random_quaternion()
+    q2 = random_quaternion()
+    q3 = random_quaternion()
+    t = np.linspace(0, 1, 100)
+    dt = t[1] - t[0]
+    quats = cubic_decasteljau_slerp(q0, q1, q2, q3, t)
+    omega = quats_to_angular_velocities(quats, dt)
+    alpha = np.gradient(omega, dt, axis=0)
+    traj = Trajectory(None, quats, None, omega, None, alpha)
+    cube = create_box((0, 0, 0), (0, 0, 0, 1), 1, (1, 1, 1), True)
+    for quat in quats:
+        pybullet.resetBasePositionAndOrientation(cube, (0, 0, 0), quat)
+        pybullet.stepSimulation()
+        time.sleep(1 / 30)
+    traj.plot()
+
+
 if __name__ == "__main__":
     _test_constraint_example()
     _test_1d_interpolation()
+    _test_decasteljau()
