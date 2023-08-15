@@ -1,4 +1,13 @@
-"""Functions associated with determining timing parameters for trajectories"""
+"""Functions associated with determining timing parameters for trajectories
+
+- Timing heuristics help us estimate the amount of time allocated to trajectories
+- Note: These heuristics are astrobee-specific
+- The retiming optimization refines transition timing of spline trajectories
+
+TODO
+- Some of these heuristics will be relatively poor. Try to figure out better estimates that are
+  not too computationally intensive to solve
+"""
 
 import numpy as np
 import numpy.typing as npt
@@ -6,7 +15,8 @@ import cvxpy as cp
 
 from pyastrobee.utils.boxes import Box
 from pyastrobee.trajectories.box_paths import intersection_path
-from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT
+from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, ANGULAR_SPEED_LIMIT
+from pyastrobee.utils.quaternions import quaternion_angular_error
 
 
 def bezier_duration_heuristic(start_pt: npt.ArrayLike, end_pt: npt.ArrayLike) -> float:
@@ -55,6 +65,21 @@ def spline_duration_heuristic(
     total_time = total_length / constant_speed
     durations = fractional_lengths * total_time
     return total_time, durations
+
+
+def rotation_duration_heuristic(q0: npt.ArrayLike, qf: npt.ArrayLike) -> float:
+    """Calculate an estimate of how long a rotation will take
+
+    Args:
+        q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
+        qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
+
+    Returns:
+        float: Time estimate, seconds
+    """
+    err = quaternion_angular_error(q0, qf)
+    err_mag = np.linalg.norm(err)
+    return err_mag / (0.5 * ANGULAR_SPEED_LIMIT)
 
 
 def retiming(
