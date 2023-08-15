@@ -58,6 +58,7 @@ class Trajectory:
         self._times = times if times is not None else []
         self._poses = None  # Init
         self._tmats = None  # Init
+        self._num_timesteps = None  # Init
 
     @property
     def positions(self) -> np.ndarray:
@@ -89,7 +90,13 @@ class Trajectory:
 
     @property
     def num_timesteps(self) -> int:
-        return self.positions.shape[0]
+        if self._num_timesteps is None:
+            if np.size(self.positions) > 0:
+                self._num_timesteps = self.positions.shape[0]
+            elif np.size(self.quaternions) > 0:
+                self._num_timesteps = self.quaternions.shape[0]
+        # If there is no position or orientation info, trajectory is empty (None)
+        return self._num_timesteps
 
     @property
     def duration(self) -> float:
