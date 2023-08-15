@@ -26,6 +26,10 @@ Safe motion:
 Stephen Boyd and Tobia Marcucci recommended using these. 
 Refer to "Fast Path Planning Through Large Collections of Safe Boxes" for more info, as well as Tobia's repository
 https://github.com/cvxgrp/fastpathplanning/
+
+TODO
+- The L2 squared metric seems to be nonconvex if the total duration of the curve is also an optimization variable...
+  See if there is a better way to formulate this
 """
 
 
@@ -54,13 +58,17 @@ class BezierCurve:
         points (Union[cp.Variable, cp.Expression, np.ndarray]): Control points, or a cvxpy Variable/Expression of the
             control points. Shape (n_pts, dimension)
         a (float): Lower limit of the curve interval
-        b (float): Upper limit of the curve interval
+        b (Union[float, cp.Variable, cp.Expression]): Upper limit of the curve interval. Variable if we are also
+            optimizing the duration of the curve
     """
 
     def __init__(
-        self, points: Union[cp.Variable, cp.Expression, np.ndarray], a: float, b: float
+        self,
+        points: Union[cp.Variable, cp.Expression, np.ndarray],
+        a: float,
+        b: Union[float, cp.Variable, cp.Expression],
     ):
-        if b < a:
+        if not isinstance(b, (cp.Variable, cp.Expression)) and b < a:
             raise ValueError(f"Invalid interval limits: ({a}, {b})")
         self.points = points
         self.h = points.shape[0] - 1  # Degree of the curve (AKA M in Tobia's paper)
@@ -117,8 +125,12 @@ class BezierCurve:
         for m in range(self.h + 1):
             for n in range(self.h + 1):
                 A[m, n] = binom(self.h, m) * binom(self.h, n) / binom(2 * self.h, m + n)
-        A *= self.duration / (2 * self.h + 1)
-        A = np.kron(A, np.eye(self.d))
+        if isinstance(self.duration, (cp.Variable, cp.Expression)):
+            A = cp.multiply(A, self.duration / (2 * self.h + 1))
+            A = cp.kron(A, np.eye(self.d))
+        else:
+            A *= self.duration / (2 * self.h + 1)
+            A = np.kron(A, np.eye(self.d))
         if isinstance(self.points, (cp.Variable, cp.Expression)):
             # Note: CVXPY flattens matrices by columns rather than rows (opposite of numpy)
             # So, flatten based on the transpose to make the math consistent
@@ -149,7 +161,11 @@ class BezierCurve:
 
 
 def bernstein(
-    h: int, n: int, a: float, b: float, t: Union[float, npt.ArrayLike]
+    h: int,
+    n: int,
+    a: float,
+    b: Union[float, cp.Variable, cp.Expression],
+    t: Union[float, npt.ArrayLike],
 ) -> npt.ArrayLike:
     """Evaluate the nth Bernstein polynomial of degree h at a point (points) t
 
@@ -168,12 +184,15 @@ def bernstein(
         raise ValueError(
             "Bernstein polynomial index cannot be larger than the degree of the basis"
         )
-    if b <= a:
-        raise ValueError(f"Invalid interval limits: ({a}, {b})")
     if np.ndim(t) >= 0:
         t = np.asarray(t)
-    if not (np.all(a <= t) and np.all(t <= b)):
-        raise ValueError("Cannot evaluate at points outside of the specified interval")
+    if not isinstance(b, (cp.Variable, cp.Expression)):
+        if b <= a:
+            raise ValueError(f"Invalid interval limits: ({a}, {b})")
+        if not (np.all(a <= t) and np.all(t <= b)):
+            raise ValueError(
+                "Cannot evaluate at points outside of the specified interval"
+            )
     return binom(h, n) * ((t - a) / (b - a)) ** n * ((b - t) / (b - a)) ** (h - n)
 
 
