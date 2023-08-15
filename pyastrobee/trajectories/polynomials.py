@@ -1,24 +1,16 @@
-"""Generating trajectories via cubic polynomials
+"""Generating trajectories via polynomials
 
-TODO
+Assorted ideas
 - Add a "glide" section to the trajectory? e.g. reach the max velocity and then glide until we need to decelerate
 - Enforce actuator limits - make sure that the trajectory doesn't exceed the max velocity values.
   If so, increase the duration
-- Merge this file with planner.py?
-
-TODO BEFORE NEXT COMMIT
-- Make it clearer which functions are third order vs fifth order
-- Don't mix third and fifth order
-- Make a third order version of the quaternion interpolation?
-- Don't arbitrarily assign boundary conditions of 0, make them inputs
-- Change the BC example so that it doesn't make such a weird motion
-- See if we can work in the nullspace of the 5th order poly
 """
 
 from typing import Union
 
 import numpy as np
 import numpy.typing as npt
+from numpy.polynomial.polynomial import Polynomial
 
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.quaternion_class import Quaternion
@@ -55,13 +47,18 @@ def polynomial_slerp(
     # Generate our evaluation points for SLERP so that:
     # - We evaluate over a domain of [0, 1] with n steps
     # - We want to start at 0 and end at 1 with 0 derivative at either end
-    pcts = third_order_poly(0, 1, 0, 1, 0, 0, n)[0]
+    pcts = third_order_poly(0, 1, 0, 1, 0, 0)(np.linspace(0, 1, n, endpoint=True))
     return quaternion_slerp(q1, q2, pcts)
 
 
 def third_order_poly(
-    t0: float, tf: float, x0: float, xf: float, v0: float, vf: float, n: int
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    t0: float,
+    tf: float,
+    x0: float,
+    xf: float,
+    v0: float,
+    vf: float,
+) -> Polynomial:
     """Generate a third-order polynomial over a time domain based on boundary conditions
 
     We will refer to the variables in terms of position and velocity, but in general, this
@@ -74,14 +71,10 @@ def third_order_poly(
         xf (float): Final position
         v0 (float): Initial velocity
         vf (float): Final velocity
-        n (int): Number of discretizations in time
 
     Returns:
-        Tuple of:
-            np.ndarray: The third-order polynomial function evaluated from t0->tf over n timesteps, shape (n,)
-            np.ndarray: The first derivative of the polynomial, shape (n,)
-            np.ndarray: The second derivative of the polynomial, shape (n,)
-            np.ndarray: The times associated with the polynomial, shape (n,)
+        Polynomial: The polynomial which satisfies the boundary conditions. Evaluate the polynomial by
+            calling it with the evaluation times. e.g. xs = solved_polynomial(times)
     """
     # Form linear system of equations: we have four polynomial coefficients for a third-order poly
     # and have four constraints on the endpoints (initial/final position/velocity)
@@ -95,14 +88,7 @@ def third_order_poly(
     )
     b = np.array([x0, xf, v0, vf])
     coeffs = np.linalg.solve(A, b)
-    # Form a linear discretization in time
-    times = np.linspace(t0, tf, n, endpoint=True)
-    # Use this to calculate the polynomial based on the coefficients
-    f = coeffs.T @ np.row_stack([np.ones(n), times, times**2, times**3])
-    # Also calculate the derivatives of the function (for instance, velocity/acceleration)
-    df = coeffs.T @ np.row_stack([np.zeros(n), np.ones(n), 2 * times, 3 * times**2])
-    d2f = coeffs.T @ np.row_stack([np.zeros((2, n)), 2 * np.ones(n), 6 * times])
-    return f, df, d2f, times
+    return Polynomial(coeffs)
 
 
 def fifth_order_poly(
@@ -114,8 +100,7 @@ def fifth_order_poly(
     vf: float,
     a0: float,
     af: float,
-    n: int,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> Polynomial:
     """Generate a fifth-order polynomial over a time domain based on boundary conditions
 
     We will refer to the variables in terms of position and velocity, but in general, this
@@ -130,14 +115,10 @@ def fifth_order_poly(
         vf (float): Final velocity
         a0 (float): Initial acceleration
         af (float): Final acceleration
-        n (int): Number of discretizations in time
 
     Returns:
-        Tuple of:
-            np.ndarray: The fifth-order polynomial function evaluated from t0->tf over n timesteps, shape (n,)
-            np.ndarray: The first derivative of the polynomial, shape (n,)
-            np.ndarray: The second derivative of the polynomial, shape (n,)
-            np.ndarray: The times associated with the polynomial, shape (n,)
+        Polynomial: The polynomial which satisfies the boundary conditions. Evaluate the polynomial by
+            calling it with the evaluation times. e.g. xs = solved_polynomial(times)
     """
     # Form linear system of equations: we have six polynomial coefficients for a fifth-order poly
     # and have six constraints on the endpoints (initial/final position/velocity/acceleration)
@@ -153,27 +134,7 @@ def fifth_order_poly(
     )
     b = np.array([x0, xf, v0, vf, a0, af])
     coeffs = np.linalg.solve(A, b)
-    # Form a linear discretization in time
-    times = np.linspace(t0, tf, n, endpoint=True)
-    # Use this to calculate the polynomial based on the coefficients
-    f = coeffs.T @ np.row_stack(
-        [np.ones(n), times, times**2, times**3, times**4, times**5]
-    )
-    # Also calculate the derivatives of the function (for instance, velocity/acceleration)
-    df = coeffs.T @ np.row_stack(
-        [
-            np.zeros(n),
-            np.ones(n),
-            2 * times,
-            3 * times**2,
-            4 * times**3,
-            5 * times**4,
-        ]
-    )
-    d2f = coeffs.T @ np.row_stack(
-        [np.zeros((2, n)), 2 * np.ones(n), 6 * times, 12 * times**2, 20 * times**3]
-    )
-    return f, df, d2f, times
+    return Polynomial(coeffs)
 
 
 def polynomial_trajectory(
@@ -200,18 +161,24 @@ def polynomial_trajectory(
     tf = times[-1]
     v0 = 0
     vf = 0
-    x, vx, ax, _ = third_order_poly(t0, tf, x0, xf, v0, vf, n)
-    y, vy, ay, _ = third_order_poly(t0, tf, y0, yf, v0, vf, n)
-    z, vz, az, _ = third_order_poly(t0, tf, z0, zf, v0, vf, n)
+    f_x = third_order_poly(t0, tf, x0, xf, v0, vf)
+    f_y = third_order_poly(t0, tf, y0, yf, v0, vf)
+    f_z = third_order_poly(t0, tf, z0, zf, v0, vf)
+    f_vx: Polynomial = f_x.deriv()
+    f_vy: Polynomial = f_y.deriv()
+    f_vz: Polynomial = f_z.deriv()
+    f_ax: Polynomial = f_vx.deriv()
+    f_ay: Polynomial = f_vy.deriv()
+    f_az: Polynomial = f_vz.deriv()
     q = polynomial_slerp(q0, qf, n)
     omega = quats_to_angular_velocities(q, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
-        positions=np.column_stack([x, y, z]),
+        positions=np.column_stack([f_x(times), f_y(times), f_z(times)]),
         quats=q,
-        lin_vels=np.column_stack([vx, vy, vz]),
+        lin_vels=np.column_stack([f_vx(times), f_vy(times), f_vz(times)]),
         ang_vels=omega,
-        lin_accels=np.column_stack([ax, ay, az]),
+        lin_accels=np.column_stack([f_ax(times), f_ay(times), f_az(times)]),
         ang_accels=alpha,
         times=times,
     )
@@ -254,9 +221,15 @@ def polynomial_traj_with_velocity_bcs(
     tf = times[-1]
     vx0, vy0, vz0 = v0
     vxf, vyf, vzf = vf
-    x, vx, ax, _ = third_order_poly(t0, tf, x0, xf, vx0, vxf, n)
-    y, vy, ay, _ = third_order_poly(t0, tf, y0, yf, vy0, vyf, n)
-    z, vz, az, _ = third_order_poly(t0, tf, z0, zf, vz0, vzf, n)
+    f_x = third_order_poly(t0, tf, x0, xf, vx0, vxf)
+    f_y = third_order_poly(t0, tf, y0, yf, vy0, vyf)
+    f_z = third_order_poly(t0, tf, z0, zf, vz0, vzf)
+    f_vx: Polynomial = f_x.deriv()
+    f_vy: Polynomial = f_y.deriv()
+    f_vz: Polynomial = f_z.deriv()
+    f_ax: Polynomial = f_vx.deriv()
+    f_ay: Polynomial = f_vy.deriv()
+    f_az: Polynomial = f_vz.deriv()
     # TODO make these an input. It's a bit weird that we don't have the acceleration constraint though
     # since we're using the third-order poly on the position traj... Figure this out
     dw0 = np.zeros(3)
@@ -265,11 +238,11 @@ def polynomial_traj_with_velocity_bcs(
     omega = quats_to_angular_velocities(q, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
-        positions=np.column_stack([x, y, z]),
+        positions=np.column_stack([f_x(times), f_y(times), f_z(times)]),
         quats=q,
-        lin_vels=np.column_stack([vx, vy, vz]),
+        lin_vels=np.column_stack([f_vx(times), f_vy(times), f_vz(times)]),
         ang_vels=omega,
-        lin_accels=np.column_stack([ax, ay, az]),
+        lin_accels=np.column_stack([f_ax(times), f_ay(times), f_az(times)]),
         ang_accels=alpha,
         times=times,
     )
@@ -322,18 +295,24 @@ def fifth_order_polynomial_traj_with_velocity_bcs(
     vxf, vyf, vzf = vf
     ax0, ay0, az0 = a0
     axf, ayf, azf = af
-    x, vx, ax, _ = fifth_order_poly(t0, tf, x0, xf, vx0, vxf, ax0, axf, n)
-    y, vy, ay, _ = fifth_order_poly(t0, tf, y0, yf, vy0, vyf, ay0, ayf, n)
-    z, vz, az, _ = fifth_order_poly(t0, tf, z0, zf, vz0, vzf, az0, azf, n)
+    f_x = fifth_order_poly(t0, tf, x0, xf, vx0, vxf, ax0, axf)
+    f_y = fifth_order_poly(t0, tf, y0, yf, vy0, vyf, ay0, ayf)
+    f_z = fifth_order_poly(t0, tf, z0, zf, vz0, vzf, az0, azf)
+    f_vx: Polynomial = f_x.deriv()
+    f_vy: Polynomial = f_y.deriv()
+    f_vz: Polynomial = f_z.deriv()
+    f_ax: Polynomial = f_vx.deriv()
+    f_ay: Polynomial = f_vy.deriv()
+    f_az: Polynomial = f_vz.deriv()
     q = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
     omega = quats_to_angular_velocities(q, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
-        positions=np.column_stack([x, y, z]),
+        positions=np.column_stack([f_x(times), f_y(times), f_z(times)]),
         quats=q,
-        lin_vels=np.column_stack([vx, vy, vz]),
+        lin_vels=np.column_stack([f_vx(times), f_vy(times), f_vz(times)]),
         ang_vels=omega,
-        lin_accels=np.column_stack([ax, ay, az]),
+        lin_accels=np.column_stack([f_ax(times), f_ay(times), f_az(times)]),
         ang_accels=alpha,
         times=times,
     )
@@ -343,7 +322,7 @@ def main():
     # TODO add the astrobee following the trajectory??
 
     # Update these values depending on what examples you want to run
-    RUN_NO_BC_EXAMPLE = False
+    RUN_NO_BC_EXAMPLE = True
     RUN_BC_EXAMPLE = True
 
     # Example with no boundary conditions
@@ -372,9 +351,6 @@ def main():
         traj = polynomial_traj_with_velocity_bcs(
             p0, q0, v0, w0, pf, qf, vf, wf, duration, dt
         )
-        # traj = fifth_order_polynomial_traj_with_velocity_bcs(
-        #     p0, q0, v0, w0, pf, qf, vf, wf, duration, dt
-        # )
         traj.plot()
         traj.visualize()
 
