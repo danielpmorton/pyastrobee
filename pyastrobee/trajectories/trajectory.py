@@ -18,7 +18,7 @@ from matplotlib.figure import Figure
 
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
 from pyastrobee.utils.debug_visualizer import visualize_frame
-from pyastrobee.utils.quaternions import quaternion_dist
+from pyastrobee.utils.quaternions import quaternion_dist, quats_to_angular_velocities
 
 
 class Trajectory:
@@ -86,6 +86,12 @@ class Trajectory:
     @property
     def times(self) -> np.ndarray:
         return np.asarray(self._times)
+
+    @property
+    def timestep(self) -> float | None:
+        if np.size(self._times) == 0:
+            return None
+        return self._times[1] - self._times[0]
 
     @property
     def num_timesteps(self) -> int:
@@ -477,3 +483,56 @@ def stopping_criteria(
     w_check = np.linalg.norm(ang_vel) <= dw
     checks = [p_check, q_check, v_check, w_check]
     return np.all(checks)
+
+
+def merge_trajs(pos_traj: Trajectory, orn_traj: Trajectory) -> Trajectory:
+    """Merge the position component from one trajectory with the orientation component from another
+
+    Args:
+        pos_traj (Trajectory): Trajectory with desired position component
+        orn_traj (Trajectory): Trajectory with desired orientation component
+
+    Returns:
+        Trajectory: Merged trajectory with both position + orientation info
+    """
+    assert np.size(pos_traj.positions) > 0
+    assert np.size(orn_traj.quaternions) > 0
+    positions = pos_traj.positions
+    quaternions = pos_traj.quaternions
+    # Time
+    # If both trajectories have time info, make sure they match up
+    if np.size(pos_traj.times) > 0:
+        if np.size(orn_traj.times) > 0:
+            if not np.allclose(pos_traj.times, orn_traj.times):
+                raise ValueError("Mismatched time information")
+        times = pos_traj.times
+        dt = pos_traj.timestep
+    elif np.size(orn_traj.times) > 0:
+        times = orn_traj.times
+        dt = orn_traj.timestep
+    else:
+        times = None
+        dt = None
+    # If either trajectory is missing derivative info, compute it if we can
+    # Position
+    if np.size(pos_traj.linear_velocities) == 0 and dt is not None:
+        lin_vels = np.gradient(pos_traj.positions, dt, axis=0)
+    else:
+        lin_vels = pos_traj.linear_velocities
+    if np.size(pos_traj.linear_accels) == 0 and dt is not None:
+        lin_accels = np.gradient(lin_vels, dt, axis=0)
+    else:
+        lin_accels = pos_traj.linear_accels
+    # Orientation
+    if np.size(orn_traj.angular_velocities) == 0 and dt is not None:
+        ang_vels = quats_to_angular_velocities(orn_traj.quaternions, dt)
+    else:
+        ang_vels = orn_traj.angular_velocities
+    if np.size(orn_traj.angular_accels) == 0 and dt is not None:
+        ang_accels = np.gradient(ang_vels, dt, axis=0)
+    else:
+        ang_accels = orn_traj.angular_accels
+
+    return Trajectory(
+        positions, quaternions, lin_vels, ang_vels, lin_accels, ang_accels, times
+    )
