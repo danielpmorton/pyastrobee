@@ -48,7 +48,7 @@ def spline_duration_heuristic(
     Returns:
         Tuple of:
             float: Total duration estimate for the entire curve
-            np.ndarray: Durations for each trajectory segment, shape (num_boxes,)
+            np.ndarray: Fractions of the total duration allocated to each box, shape (num_boxes,)
     """
     # Approximate the lengths of each path segment
     path_points = intersection_path(start_pt, end_pt, boxes)
@@ -63,8 +63,7 @@ def spline_duration_heuristic(
     # Assume constant speed along each segment of half of the speed limit
     constant_speed = 0.5 * LINEAR_SPEED_LIMIT
     total_time = total_length / constant_speed
-    durations = fractional_lengths * total_time
-    return total_time, durations
+    return total_time, fractional_lengths
 
 
 def rotation_duration_heuristic(q0: npt.ArrayLike, qf: npt.ArrayLike) -> float:
@@ -155,9 +154,10 @@ def _test_timing_estimate():
         Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
         Box((1, 4.5, 1), (2, 5.5, 2)),
     ]
-    total_time, durations = spline_duration_heuristic(p0, pf, safe_boxes)
+    total_time, time_fractions = spline_duration_heuristic(p0, pf, safe_boxes)
     print("Time estimate: ", total_time)
-    print("Breakdown per box: ", durations)
+    print("Fractional breakdown per box: ", time_fractions)
+    print("Time per box: ", total_time * time_fractions)
 
 
 if __name__ == "__main__":

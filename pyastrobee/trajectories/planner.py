@@ -136,11 +136,12 @@ def global_planner(
         # like bezier_trajector_with_retiming
         pass
     init_angular_duration = rotation_duration_heuristic(q0, qf)
-    init_pos_duration, init_curve_durations = spline_duration_heuristic(
+    init_pos_duration, init_timing_fractions = spline_duration_heuristic(
         p0, pf, box_path
     )
-
     duration = max(init_pos_duration, init_angular_duration)
+    init_curve_durations = duration * init_timing_fractions
+
     # times_ = np.arange(0, duration + dt, dt)  # DO WE NEED THIS?
     # n_timesteps = len(times_)
     n_timesteps = int(np.ceil((duration + dt) / dt))
