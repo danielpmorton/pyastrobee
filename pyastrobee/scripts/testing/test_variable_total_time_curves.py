@@ -83,6 +83,12 @@ def fix_time_optimize_points(
     return solved_pos_curve, prob.value
 
 
+def _get_points(curve):
+    if isinstance(curve.points, (cp.Variable, cp.Expression)):
+        return curve.points.value
+    return curve.points
+
+
 def fix_points_optimize_time(
     init_curve: BezierCurve,
     v0: Optional[npt.ArrayLike] = None,
@@ -95,32 +101,12 @@ def fix_points_optimize_time(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     t0 = init_curve.a
     tf = cp.Variable(1)
-    # tf.value = init_curve.b  # Initialize with the time from the initial solution
-    if isinstance(init_curve.points, (cp.Variable, cp.Expression)):
-        points = init_curve.points.value
-    else:
-        points = init_curve.points
-    pos_curve = BezierCurve(points, t0, tf)
-    vel_curve = pos_curve.derivative
-    vel_pts = vel_curve.points
-    accel_curve = vel_curve.derivative
-    accel_pts = accel_curve.points
-    jerk_curve = accel_curve.derivative
+    jerk_curve = BezierCurve(
+        _get_points(init_curve.derivative.derivative.derivative), t0, tf
+    )
     # Form the constraint list depending on what was specified in the inputs
     # NOTE: since the initial position points are fixed, we don't need to constrain p0, pf
-    constraints = []
-    if v0 is not None:
-        constraints.append(vel_pts[0] == v0)
-    if vf is not None:
-        constraints.append(vel_pts[-1] == vf)
-    if a0 is not None:
-        constraints.append(accel_pts[0] == a0)
-    if af is not None:
-        constraints.append(accel_pts[-1] == af)
-    if v_max is not None:
-        constraints.append(cp.norm2(vel_pts, axis=1) <= v_max)
-    if a_max is not None:
-        constraints.append(cp.norm2(accel_pts, axis=1) <= a_max)
+    constraints = [tf >= t0]
     # Objective function criteria
     jerk = jerk_curve.l2_squared
     # Form the objective function based on the relative weighting between the criteria
@@ -135,7 +121,7 @@ def fix_points_optimize_time(
             + "Check on the feasibility of the constraints"
         )
     # Construct the Bezier curves from the solved control points, and return their evaluations at each time
-    solved_pos_curve = BezierCurve(points, t0, tf)
+    solved_pos_curve = BezierCurve(_get_points(init_curve), t0, tf.value)
     return solved_pos_curve, prob.value
 
 
