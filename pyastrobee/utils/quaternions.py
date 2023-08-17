@@ -327,3 +327,78 @@ def quaternion_angular_error(
 
     x, y, z, w = q
     return 2 * np.array([[-w, z, -y, x], [-z, -w, x, y], [y, -x, -w, z]]) @ q_des
+
+
+def exponential_map(v: npt.ArrayLike) -> np.ndarray:
+    """Exponential map: Lie algebra to quaternion
+
+    Args:
+        v (npt.ArrayLike): Vector on the Lie algebra, shape (3,)
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    q = Quaternion(wxyz=rt.quaternion_from_compact_axis_angle(v))
+    return q.xyzw
+
+
+def log_map(q: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+    """Logarithmic map: XYZW quaternion to Lie algebra
+
+    Args:
+        q (Union[Quaternion, npt.ArrayLike]): XYZW quaternion to map
+
+    Returns:
+        np.ndarray: Vector on the Lie algebra, shape (3,)
+    """
+    if not isinstance(q, Quaternion):
+        q = Quaternion(xyzw=q)
+    return rt.compact_axis_angle_from_quaternion(q.wxyz)
+
+
+def pure(v: npt.ArrayLike) -> np.ndarray:
+    """Convert a vector component into a pure XYZW quaternion (no scalar component)
+
+    NOTE: The quaternion returned WILL NOT be normalized in general. But, it is often useful
+    to use this construction so that we can compose multiplications with angular velocity, for instance
+
+    Args:
+        v (npt.ArrayLike): Vector component, shape (3,)
+
+    Returns:
+        np.ndarray: XYZW quaternion (NOT NORMALIZED), shape (4,)
+    """
+    if len(v) != 3:
+        raise ValueError(
+            "Invalid vector component of pure quaternion. Must be shape (3,)"
+        )
+    return np.array([*v, 0])
+
+
+# Alternatively, can implement this with pytransform's concatenate_quaternions function
+def multiply(
+    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
+) -> np.ndarray:
+    """Multiply two XYZW quaternions
+
+    Args:
+        q1 (Union[Quaternion, npt.ArrayLike]): First XYZW quaternion
+        q2 (Union[Quaternion, npt.ArrayLike]): Second XYZW quaternion
+
+    Returns:
+        np.ndarray: XYZW quaternion, shape (4,)
+    """
+    if isinstance(q1, Quaternion):
+        q1 = q1.xyzw
+    if isinstance(q2, Quaternion):
+        q2 = q2.xyzw
+    x1, y1, z1, w1 = q1
+    x2, y2, z2, w2 = q2
+    return np.array(
+        [
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+            w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+        ]
+    )
