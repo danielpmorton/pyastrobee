@@ -27,6 +27,7 @@ from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.utils.coordinates import cartesian_to_spherical
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
 from pyastrobee.control.controller import PoseController
+from pyastrobee.utils.bullet_utils import create_box
 
 
 def visualize_points(
@@ -270,6 +271,34 @@ def animate_path(
                 [positions[i]], [color[i]], size, 0, replaceItemUniqueId=uid
             )
         client.stepSimulation()
+        time.sleep(1 / freq)
+
+
+def animate_rotation(
+    quats: npt.ArrayLike,
+    object_id: Optional[int] = None,
+    freq: float = 30,
+    client: Optional[BulletClient] = None,
+):
+    """Animates an object rotating via a sequence of quaternions
+
+    Args:
+        quats (npt.ArrayLike): Quaternions to animate, shape (n, 4)
+        object_id (Optional[int]): If you would like to animate the rotation using a specific object, pass in its
+            Pybullet ID here. Defaults to None (use a cube as the default object).
+        freq (float, optional): Frequency to view the animation (Larger values -> shorter animation). Defaults to 30
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+    client: pybullet = pybullet if client is None else client
+    if object_id is None:
+        object_id = create_box(
+            (0, 0, 0), (0, 0, 0, 1), 1, (1, 1, 1), True, client=client
+        )
+    pos = client.getBasePositionAndOrientation(object_id)[0]
+    for quat in quats:
+        pybullet.resetBasePositionAndOrientation(object_id, pos, quat)
+        pybullet.stepSimulation()
         time.sleep(1 / freq)
 
 
