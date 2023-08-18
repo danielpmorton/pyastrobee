@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
-from pyastrobee.utils.debug_visualizer import visualize_frame
+from pyastrobee.utils.debug_visualizer import visualize_frame, visualize_path
 from pyastrobee.utils.quaternions import quaternion_dist, quats_to_angular_velocities
 
 
@@ -112,9 +112,9 @@ class Trajectory:
         """Pose array (position + xyzw quaternion), shape (n, 7)"""
         # if self._poses is not None:
         #     return self._poses  # Only calculate this once
-        if self._positions is None:
+        if self.positions.size == 0:
             raise ValueError("No position information available")
-        if self._quats is None:
+        if self.quaternions.size == 0:
             raise ValueError("No orientation information available")
         self._poses = np.column_stack([self.positions, self.quaternions])
         return self._poses
@@ -126,6 +126,26 @@ class Trajectory:
         #     return self._tmats  # Only calculate this once
         self._tmats = batched_pos_quats_to_tmats(self.poses)
         return self._tmats
+
+    @property
+    def contains_pos_only(self) -> bool:
+        """Whether the trajectory contains only position info"""
+        return self.positions.size > 0 and self.quaternions.size == 0
+
+    @property
+    def contains_orn_only(self) -> bool:
+        """Whether the trajectory contains only orientation info"""
+        return self.positions.size == 0 and self.quaternions.size > 0
+
+    @property
+    def contains_pos_and_orn(self) -> bool:
+        """Whether the trajectory contains both position and orientation info"""
+        return self.positions.size > 0 and self.quaternions.size > 0
+
+    @property
+    def is_empty(self) -> bool:
+        """Whether the trajectory contains no position/orientation info"""
+        return self.positions.size == 0 and self.quaternions.size == 0
 
     def visualize(
         self, n: Optional[int] = None, client: Optional[BulletClient] = None
@@ -146,7 +166,17 @@ class Trajectory:
         # Bring up the Pybullet GUI if needed
         if not connection_status:
             client.connect(pybullet.GUI)
-        ids = visualize_traj(self, n, client)
+        if self.contains_pos_and_orn:
+            ids = visualize_traj(self, n, client)
+        elif self.contains_pos_only:
+            print("Trajectory only contains position info. Showing path instead")
+            ids = visualize_path(self.positions, n, client=client)
+        elif self.contains_orn_only:
+            raise NotImplementedError(
+                "Visualizing a sequence of purely orientations is not implemented yet"
+            )
+        else:  # Empty trajectory
+            raise ValueError("No trajectory information to visualize")
         # Disconnect Pybullet if we originally weren't connected
         if not connection_status:
             input("Press Enter to disconnect Pybullet")
