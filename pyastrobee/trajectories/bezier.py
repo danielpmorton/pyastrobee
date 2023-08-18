@@ -135,10 +135,10 @@ class BezierCurve:
             # Note: CVXPY flattens matrices by columns rather than rows (opposite of numpy)
             # So, flatten based on the transpose to make the math consistent
             p = self.points.T.flatten()
-            return cp.quad_form(p, A)
+            return cp.quad_form(p, cp.psd_wrap(A))
         elif isinstance(A, (cp.Variable, cp.Expression)):
             p = self.points.flatten()
-            return cp.quad_form(p, A)
+            return cp.quad_form(p, cp.psd_wrap(A))
         else:  # Numpy
             p = self.points.flatten()
             return p.dot(A.dot(p))
