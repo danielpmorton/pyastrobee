@@ -14,6 +14,75 @@ from pyastrobee.utils.boxes import Box
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT
 
 
+def bezier_with_retiming(
+    p0: npt.ArrayLike,
+    pf: npt.ArrayLike,
+    t0: float,
+    tf: float,
+    n_control_pts: int,
+    v0: Optional[npt.ArrayLike] = None,
+    vf: Optional[npt.ArrayLike] = None,
+    a0: Optional[npt.ArrayLike] = None,
+    af: Optional[npt.ArrayLike] = None,
+    box: Optional[Box] = None,
+    v_max: Optional[float] = None,
+    a_max: Optional[float] = None,
+    time_weight: float = 1,  # FIGURE THIS OUT:
+):
+    max_iters = 10
+
+    curve_kwargs = dict(
+        p0=p0,
+        pf=pf,
+        t0=t0,
+        tf=tf,
+        n_control_pts=n_control_pts,
+        v0=v0,
+        vf=vf,
+        a0=a0,
+        af=af,
+        box=box,
+        v_max=v_max,
+        a_max=a_max,
+        time_weight=time_weight,
+    )
+
+    infeasibility_bound = None
+    best_tf = None
+    best_cost = np.inf
+    best_curve = None
+    cur_tf = tf
+    for i in range(max_iters):
+        # Solve for a curve (if possible) with the current final time
+        curve_kwargs["tf"] = cur_tf
+        try:
+            curve, cost = fix_time_optimize_points(**curve_kwargs)
+        except cp.error.SolverError as e:
+            curve, cost = None, np.inf
+        # Binary search on the lowest final time based on the cost of the curve
+        print("Cost: ", cost, " for time: ", cur_tf)
+        if cost < best_cost:
+            best_cost = cost
+            best_curve = curve
+            best_tf = cur_tf
+            cur_tf = (
+                cur_tf / 2
+                if infeasibility_bound is None
+                else (cur_tf + infeasibility_bound) / 2
+            )
+        else:  # Worse cost (assume this must be because we went so low it's infeasible)
+            infeasibility_bound = (
+                cur_tf
+                if infeasibility_bound is None
+                else max(infeasibility_bound, cur_tf)
+            )
+            if best_tf is not None:
+                cur_tf = (best_tf + cur_tf) / 2
+            else:
+                cur_tf *= 2
+    return best_curve
+
+
 def fix_time_optimize_points(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
@@ -160,7 +229,7 @@ def optimal_bezier(
 def traj_from_bezier(curve: BezierCurve, dt: float) -> Trajectory:
     t0 = curve.a
     tf = curve.b.value if isinstance(curve.b, (cp.Variable, cp.Expression)) else curve.b
-    times = np.arange(t0, tf + dt, dt)
+    times = np.linspace(t0, tf, round((tf - t0) / dt))
     pos = curve(times)
     vel = curve.derivative(times)
     accel = curve.derivative.derivative(times)
@@ -181,7 +250,8 @@ def main():
     time_weight = 1
     print("Speed limit: ", LINEAR_SPEED_LIMIT)
     print("Accel limit: ", LINEAR_ACCEL_LIMIT)
-    curve = optimal_bezier(
+    # curve = optimal_bezier(
+    curve = bezier_with_retiming(
         p0,
         pf,
         t0,
