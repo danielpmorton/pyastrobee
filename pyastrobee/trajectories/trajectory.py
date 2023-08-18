@@ -19,6 +19,7 @@ from matplotlib.figure import Figure
 from pyastrobee.utils.poses import batched_pos_quats_to_tmats
 from pyastrobee.utils.debug_visualizer import visualize_frame, visualize_path
 from pyastrobee.utils.quaternions import quaternion_dist, quats_to_angular_velocities
+from pyastrobee.utils.boxes import Box
 
 
 class Trajectory:
@@ -269,6 +270,101 @@ class TrajectoryLogger(Trajectory):
             self._times.append(0.0)
         elif dt is not None:
             self._times.append(self._times[-1] + dt)
+
+
+def plot_traj_constraints(
+    traj: Trajectory,
+    pos_lims: Optional[Union[Box, npt.ArrayLike]] = None,
+    max_vel: Optional[float] = None,
+    max_accel: Optional[float] = None,
+    max_omega: Optional[float] = None,
+    max_alpha: Optional[float] = None,
+    show: bool = True,
+) -> Figure:
+    """Plot trajectory info to visualize how it satisfies constraints
+
+    TODO see if we can incorporate a sequence of Boxes for the position constraints
+    on a spline trajectory (rather than just a single Box constraint for a single curve)
+
+    Args:
+        traj (Trajectory): Trajectory to plot
+        pos_lims (Optional[Union[Box, npt.ArrayLike]]): Lower and upper limits on the XYZ position. Defaults to None.
+        max_vel (Optional[float]): Maximum velocity magnitude. Defaults to None.
+        max_accel (Optional[float]): Maximum acceleration magnitude. Defaults to None.
+        max_omega (Optional[float]): Maximum angular velocity magnitude. Defaults to None.
+        max_alpha (Optional[float]): Maximum angular acceleration magnitude. Defaults to None.
+        show (bool, optional): Whether or not to display the plot. Defaults to True.
+
+    Returns:
+        Figure: The plot
+    """
+    fig = plt.figure()
+    if traj.times is None or np.size(traj.times) == 0:
+        x_axis = range(traj.num_timesteps)
+        x_label = "Timesteps"
+    else:
+        x_axis = traj.times
+        x_label = "Time, s"
+
+    fmt = "k-"
+    lim_fmt = "r--"
+    # Top row is position info, bottom row is orientation info
+    # Columns give derivative info
+    subfigs = fig.subfigures(2, 3)
+    # Position
+    top_left = subfigs[0, 0].subplots(1, 3)
+    if traj.positions.size > 0:
+        for i, ax in enumerate(top_left):
+            ax.plot(x_axis, traj.positions[:, i], fmt)
+            ax.set_title(["x", "y", "z"][i])
+            ax.set_xlabel(x_label)
+        if pos_lims is not None:
+            lower_pos_lim, upper_pos_lim = pos_lims
+            for i, ax in enumerate(top_left):
+                ax.plot(x_axis, lower_pos_lim[i] * np.ones_like(x_axis), lim_fmt)
+                ax.plot(x_axis, upper_pos_lim[i] * np.ones_like(x_axis), lim_fmt)
+    # Linear velocity
+    if traj.linear_velocities.size > 0:
+        top_middle = subfigs[0, 1].subplots(1, 1)
+        top_middle.plot(x_axis, np.linalg.norm(traj.linear_velocities, axis=1), fmt)
+        top_middle.set_title("||vel||")
+        top_middle.set_xlabel(x_label)
+        if max_vel is not None:
+            top_middle.plot(x_axis, max_vel * np.ones_like(x_axis), lim_fmt)
+    # Linear acceleration
+    if traj.linear_accels.size > 0:
+        top_right = subfigs[0, 2].subplots(1, 1)
+        top_right.plot(x_axis, np.linalg.norm(traj.linear_accels, axis=1), fmt)
+        top_right.set_title("||accel||")
+        top_right.set_xlabel(x_label)
+        if max_accel is not None:
+            top_right.plot(x_axis, max_accel * np.ones_like(x_axis), lim_fmt)
+    # Quaternions
+    # These are unconstrained so it's the same plotting method as in the standard plot traj function
+    bot_left = subfigs[1, 0].subplots(1, 4)
+    if traj.quaternions.size > 0:
+        _plot(
+            bot_left, traj.quaternions, ["qx", "qy", "qz", "qw"], x_axis, x_label, fmt
+        )
+    # Angular velocity
+    bot_middle = subfigs[1, 1].subplots(1, 1)
+    if traj.angular_velocities.size > 0:
+        bot_middle.plot(x_axis, np.linalg.norm(traj.angular_velocities, axis=1), fmt)
+        bot_middle.set_title("||omega||")
+        bot_middle.set_xlabel(x_label)
+        if max_omega is not None:
+            bot_middle.plot(x_axis, max_omega * np.ones_like(x_axis), lim_fmt)
+    # Angular acceleration
+    bot_right = subfigs[1, 2].subplots(1, 1)
+    if traj.angular_accels.size > 0:
+        bot_right.plot(x_axis, np.linalg.norm(traj.angular_accels, axis=1), fmt)
+        bot_right.set_title("||alpha||")
+        bot_right.set_xlabel(x_label)
+        if max_alpha is not None:
+            bot_right.plot(x_axis, max_alpha * np.ones_like(x_axis), lim_fmt)
+    if show:
+        plt.show()
+    return fig
 
 
 def plot_traj(traj: Trajectory, show: bool = True, fmt: str = "k-") -> Figure:
