@@ -13,6 +13,7 @@ import pybullet
 
 from pyastrobee.utils.boxes import Box, intersect_boxes, visualize_3D_box
 from pyastrobee.utils.debug_visualizer import visualize_path, visualize_points
+from pyastrobee.utils.errors import OptimizationError
 
 
 def min_length_path(
@@ -42,7 +43,7 @@ def min_length_path(
     prob = cp.Problem(objective, constraints)
     prob.solve()
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError(
+        raise OptimizationError(
             "Unable to find a solution.\n"
             + "Check that the set of boxes is connected and that the start/end points are contained in the boxes"
         )

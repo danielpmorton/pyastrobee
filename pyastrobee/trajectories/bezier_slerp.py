@@ -7,6 +7,7 @@ import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
 
+from pyastrobee.utils.errors import OptimizationError
 from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternions import (
     quaternion_slerp,
@@ -97,7 +98,7 @@ def bezier_interpolation_curve(
         d2_max (Optional[float]): Maximum second derivative. Defaults to None (unconstrained).
 
     Raises:
-        cp.error.SolverError: If a solution cannot be found. If this happens, try increasing the number of control
+        OptimizationError: If a solution cannot be found. If this happens, try increasing the number of control
             points, which may lead to a more feasible constraints. Otherwise, the problem may have no solution
 
     Returns:
@@ -133,7 +134,7 @@ def bezier_interpolation_curve(
     # Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)
     prob.solve(solver=cp.CLARABEL)
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError(
+        raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
             + "Check on the feasibility of the constraints"
         )

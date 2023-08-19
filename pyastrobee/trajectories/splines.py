@@ -29,6 +29,7 @@ from pyastrobee.utils.boxes import Box, visualize_3D_box
 from pyastrobee.utils.debug_visualizer import visualize_path, visualize_points
 from pyastrobee.utils.python_utils import print_red
 from pyastrobee.trajectories.timing import retiming
+from pyastrobee.utils.errors import OptimizationError
 
 
 class CompositeBezierCurve:
@@ -190,7 +191,7 @@ def spline_trajectory_with_retiming(
                 durations,
                 best_info["retiming_weights"],
             )
-        except cp.error.SolverError:
+        except OptimizationError:
             print_red(
                 "Spline trajectory generation terminated due to failure to solve the retiming problem.\n"
                 + "This can sometimes be due to a poor initialization of the curve durations, "
@@ -331,7 +332,7 @@ def _fixed_timing_spline(
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError(
+        raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
             + "Check on the feasibility of the constraints"
         )

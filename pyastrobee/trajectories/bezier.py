@@ -45,6 +45,7 @@ from matplotlib.patches import Polygon
 
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.boxes import Box
+from pyastrobee.utils.errors import OptimizationError
 
 
 class BezierCurve:
@@ -296,7 +297,7 @@ def bezier_trajectory(
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError(
+        raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
             + "Check on the feasibility of the constraints"
         )

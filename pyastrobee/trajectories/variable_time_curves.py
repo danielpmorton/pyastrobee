@@ -16,6 +16,7 @@ from pyastrobee.trajectories.splines import CompositeBezierCurve
 from pyastrobee.utils.boxes import Box
 from pyastrobee.utils.debug_visualizer import animate_path
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT
+from pyastrobee.utils.errors import OptimizationError
 
 
 # TODO can we separate out the binary search mechanic so that we can use this for the spline as well?
@@ -64,7 +65,7 @@ def bezier_with_retiming(
         curve_kwargs["tf"] = cur_tf
         try:
             curve, cost = fix_time_optimize_points(**curve_kwargs)
-        except cp.error.SolverError:
+        except OptimizationError:
             curve, cost = None, np.inf
         # Binary search on the lowest final time based on the cost of the curve
         print("Cost: ", cost, " for time: ", cur_tf, end="")
@@ -159,7 +160,7 @@ def fix_time_optimize_points(
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError(
+        raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
             + "Check on the feasibility of the constraints"
         )

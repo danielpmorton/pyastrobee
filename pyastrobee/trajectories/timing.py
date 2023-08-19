@@ -17,6 +17,7 @@ from pyastrobee.utils.boxes import Box
 from pyastrobee.trajectories.box_paths import intersection_path
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, ANGULAR_SPEED_LIMIT
 from pyastrobee.utils.quaternions import quaternion_angular_error
+from pyastrobee.utils.errors import OptimizationError
 
 
 def bezier_duration_heuristic(start_pt: npt.ArrayLike, end_pt: npt.ArrayLike) -> float:
@@ -137,7 +138,7 @@ def retiming(
         print("Clarabel failed to solve the retiming problem. Retrying with MOSEK")
         prob.solve(solver=cp.MOSEK)
     if prob.status != cp.OPTIMAL:
-        raise cp.error.SolverError("Unable to solve the retiming problem")
+        raise OptimizationError("Unable to solve the retiming problem")
     new_durations = np.multiply(eta.value, durations)
 
     # New candidate for kappa.
