@@ -116,7 +116,14 @@ class BezierCurve:
     @property
     def derivative(self) -> "BezierCurve":
         """Derivative of the Bezier curve (A Bezier curve of degree h-1)"""
-        points = (self.points[1:] - self.points[:-1]) * (self.h / self.duration)
+        if isinstance(self.duration, (cp.Variable, cp.Expression)):
+            points = (
+                (self.points[1:] - self.points[:-1])
+                * self.h
+                * cp.inv_pos(self.duration)
+            )
+        else:
+            points = (self.points[1:] - self.points[:-1]) * (self.h / self.duration)
         return BezierCurve(points, self.a, self.b)
 
     @property
