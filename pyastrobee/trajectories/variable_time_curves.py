@@ -19,7 +19,96 @@ from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_L
 from pyastrobee.utils.errors import OptimizationError
 
 
-# TODO can we separate out the binary search mechanic so that we can use this for the spline as well?
+# This search will make some assumptions about the function
+# Namely, that we'll generally want to shrink the time interval
+# I also don't think this will guarantee that we find the minimum...
+# TODO why can't we just solve the QP with T???
+# Should just be a univariate QP with constraints....
+def bisection_search(f, l, u, eps, maxiter):
+    # Mutable dicts to keep track of the optimization process
+    best = {"x": None, "cost": np.inf, "out": None}  # init
+    log = {"iters": 0}  # init
+
+    # Create wrapper around the function to handle if it has multiple outputs
+    def _f(x):
+        fx = f(x)
+        log["iters"] += 1
+        if isinstance(fx, tuple):
+            cost, *out = fx
+            if out == []:
+                out = None
+        else:
+            cost = fx
+            out = None
+        # Check to see if this is the best so far - if so, update
+        if cost <= best["cost"] and cost != np.inf:
+            best["x"] = x
+            best["cost"] = cost
+            best["out"] = out
+        return cost
+
+    # Note that this will assume that x is a positive value and that the only infeasible
+    # region occurs when x is too small
+    def _find_init_interval(x):
+        fx = _f(x)
+        # Assume that the only infeasible region is when x is too small
+        # If the initial evaluation is infeasible, increase x until we are feasible
+        if fx == np.inf:
+            l = None
+            while fx == np.inf and log["iters"] <= maxiter:
+                l = x
+                x *= 2
+                fx = _f(x)
+            u = x
+            return l, u
+        # If the initial evaluation is feasible, decrease x until infeasible
+        else:
+            u = None
+            while fx != np.inf and log["iters"] <= maxiter:
+                u = x
+                x /= 2
+                fx = _f(x)
+            l = x
+            return l, u
+
+    # Input validation
+    num_lims = sum(lim is None for lim in [l, u])
+    if num_lims == 0:
+        raise ValueError("Must provide at least one evaluation point")
+    # Handle if we only have a guess for one of the bounds
+    elif num_lims == 1:
+        l, u = _find_init_interval(l or u)
+    # Ensure that the bounds are in the correct order
+    if num_lims == 2 and l > u:
+        l, u = u, l  # Ensure correct order
+    # Initial evaluation of the bounds
+    yl, yu = _f(l), _f(u)
+    # If it happens that both are infeasible, expand the interval
+    # TODO decide if this the best way to do this?
+    while yl == np.inf and yu == np.inf and log["iters"] <= maxiter:
+        l /= 2
+        u /= 2
+        yl, yu = _f(l), _f(u)
+    while log["iters"] <= maxiter:
+        mid = (l + u) / 2
+        y_mid = _f(mid)
+        if y_mid <= yl:
+            l = mid
+            yl = y_mid
+        else:
+            u = mid
+            yu = y_mid
+        if u - l <= eps:
+            break
+    else:
+        pass
+    if best["x"] is None:
+        raise OptimizationError("Unable to find a feasible solution")
+    # TODO check on the output type of this "out" parameter... seems to be a list
+    return best["x"], best["cost"], best["out"]
+
+
+# TODO can we separate out the bisection mechanic so that we can use this for the spline as well?
 def bezier_with_retiming(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
@@ -53,48 +142,60 @@ def bezier_with_retiming(
         time_weight=time_weight,
     )
 
-    infeasibility_bound = None
-    best_tf = None
-    best_cost = np.inf
-    best_curve = None
-    prev_tf = np.inf
-    cur_tf = tf
-    for i in range(max_iters):
-        # Solve for a curve (if possible) with the current final time
-        prev_tf = cur_tf
-        curve_kwargs["tf"] = cur_tf
+    def _f(t):
+        kwargs = curve_kwargs | {"tf": t}
+        print("Evaluating time: ", t)
         try:
-            curve, cost = fix_time_optimize_points(**curve_kwargs)
+            cost, curve = fix_time_optimize_points(**kwargs)
         except OptimizationError:
-            curve, cost = None, np.inf
-        # Binary search on the lowest final time based on the cost of the curve
-        print("Cost: ", cost, " for time: ", cur_tf, end="")
-        if cost < best_cost:
-            best_cost = cost
-            best_curve = curve
-            best_tf = cur_tf
-            cur_tf = (
-                cur_tf / 2
-                if infeasibility_bound is None
-                else (cur_tf + infeasibility_bound) / 2
-            )
-        else:  # Worse cost (assume this must be because we went so low it's infeasible)
-            infeasibility_bound = (
-                cur_tf
-                if infeasibility_bound is None
-                else max(infeasibility_bound, cur_tf)
-            )
-            if best_tf is not None:
-                cur_tf = (best_tf + cur_tf) / 2
-            else:
-                cur_tf *= 2
-        reduction = abs(prev_tf - cur_tf) / cur_tf
-        print(". Percent time change: ", reduction)
-        if reduction < reduction_tol:
-            break
-    if best_curve is None:
-        # TODO use a different type of exception
-        raise ValueError("Unable to find a solution")
+            cost, curve = np.inf, None
+        return cost, curve
+
+    t, cost, out = bisection_search(_f, None, tf, 1e-1, 20)
+    best_curve = out[0]  # out seems to be a list
+
+    # infeasibility_bound = None
+    # best_tf = None
+    # best_cost = np.inf
+    # best_curve = None
+    # prev_tf = np.inf
+    # cur_tf = tf
+    # for i in range(max_iters):
+    #     # Solve for a curve (if possible) with the current final time
+    #     prev_tf = cur_tf
+    #     curve_kwargs["tf"] = cur_tf
+    #     try:
+    #         cost, curve = fix_time_optimize_points(**curve_kwargs)
+    #     except OptimizationError:
+    #         cost, curve = np.inf, None
+    #     # Bisection on the lowest final time based on the cost of the curve
+    #     print("Cost: ", cost, " for time: ", cur_tf, end="")
+    #     if cost < best_cost:
+    #         best_cost = cost
+    #         best_curve = curve
+    #         best_tf = cur_tf
+    #         cur_tf = (
+    #             cur_tf / 2
+    #             if infeasibility_bound is None
+    #             else (cur_tf + infeasibility_bound) / 2
+    #         )
+    #     else:  # Worse cost (assume this must be because we went so low it's infeasible)
+    #         infeasibility_bound = (
+    #             cur_tf
+    #             if infeasibility_bound is None
+    #             else max(infeasibility_bound, cur_tf)
+    #         )
+    #         if best_tf is not None:
+    #             cur_tf = (best_tf + cur_tf) / 2
+    #         else:
+    #             cur_tf *= 2
+    #     reduction = abs(prev_tf - cur_tf) / cur_tf
+    #     print(". Percent time change: ", reduction)
+    #     if reduction < reduction_tol:
+    #         break
+    # if best_curve is None:
+    #     # TODO use a different type of exception
+    #     raise ValueError("Unable to find a solution")
     return best_curve
 
 
@@ -114,7 +215,7 @@ def fix_time_optimize_points(
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
     time_weight: float = 1,  # FIGURE THIS OUT
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:  # TODO UPDATE OUTPUTS
     # Check inputs
     n_constraints = sum(c is not None for c in [p0, pf, v0, vf, a0, af])
     if n_constraints > n_control_pts:
@@ -166,7 +267,9 @@ def fix_time_optimize_points(
         )
     # Construct the Bezier curves from the solved control points, and return their evaluations at each time
     solved_pos_curve = BezierCurve(pos_pts.value, t0, tf)
-    return solved_pos_curve, prob.value
+
+    # TODO decide on order of outputs!!
+    return prob.value, solved_pos_curve
 
 
 # TODO move this to a better location
