@@ -9,6 +9,7 @@ import cvxpy as cp
 import numpy as np
 import numpy.typing as npt
 import pybullet
+import matplotlib.pyplot as plt
 
 from pyastrobee.trajectories.trajectory import Trajectory, plot_traj_constraints
 from pyastrobee.trajectories.bezier import BezierCurve
@@ -19,12 +20,143 @@ from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_L
 from pyastrobee.utils.errors import OptimizationError
 
 
+# Note: using this optimization method for now since it seems that the optimization over the time period
+# is nonconvex (or at least non-DCP). It might be the case that there's a good way to solve this with variable
+# T though, but it might require some reformulation of the problem
+
+
+def quadratic_fit_search(f, a, b, c, n):
+    ya, yb, yc = f(a), f(b), f(c)
+    for i in range(n - 3):
+        x = (
+            0.5
+            * (ya * (b**2 - c**2) + yb * (c**2 - a**2) + yc * (a**2 - b**2))
+            / (ya * (b - c) + yb * (c - a) + yc * (a - b))
+        )
+        yx = f(x)
+        if x > b:
+            if yx > yb:
+                c, yc = x, yx
+            else:
+                a, ya, b, yb = b, yb, x, yx
+        elif x < b:
+            if yx > yb:
+                a, ya = x, yx
+            else:
+                c, yc, b, yb = b, yb, x, yx
+    return (a, b, c)
+
+
+# We basically know that this is going to be a quadratic function with an infeasible region when the
+# time domain is set to be too small
+# The quadratic may look very linear if the weighting on the time component is much higher than the jerk
+# If it's close to linear, then this will push us right up against the boundary of feasibility
+# If the time weight low enough that the function looks quadratic, this will do a good job of finding the min
+
+
+# Based on Algorithms for Optimization
+def left_quadratic_fit_search(f, x_init, eps, maxiter):
+    best = {"x": None, "cost": np.inf, "out": None}  # init
+    log = {"iters": 0, "feasibility_bound": 0}  # init
+
+    # Create wrapper around the function to handle if it has multiple outputs
+    def _f(x):
+        fx = f(x)
+        log["iters"] += 1
+        if isinstance(fx, tuple):
+            cost, *out = fx
+            if out == []:
+                out = None
+        else:
+            cost = fx
+            out = None
+        # Check to see if this is the best so far - if so, update
+        if cost <= best["cost"] and cost != np.inf:
+            best["x"] = x
+            best["cost"] = cost
+            best["out"] = out
+        return cost
+
+    def _find_init_interval_from_guess(x):
+        # fx = _f(x)
+        # # Assume that the only infeasible region is when x is too small
+        # # If the initial evaluation is infeasible, increase x until we are feasible
+        # if fx == np.inf:
+        #     a, b, c = None, None, None
+        #     while fx == np.inf and log["iters"] <= maxiter - 1:
+        #         x *= 2
+        #         fx = _f(x)
+        # a = x
+        # b = x * 1.5
+        # c = x * 2
+        # ya, yb, yc = fx, _f(b), _f(c)
+        # return a, b, c, ya, yb, yc
+        b = x
+        fb = _f(b)
+        if fb == np.inf:
+            while fb == np.inf and log["iters"] <= maxiter - 1:
+                log["feasibility_bound"] = max(b, log["feasibility_bound"])
+                b *= 2
+                fb = _f(b)
+        a = (log["feasibility_bound"] + b) / 2
+        fa = _f(a)
+        if fa == np.inf:
+            while fa == np.inf and log["iters"] <= maxiter - 1:
+                log["feasibility_bound"] = max(a, log["feasibility_bound"])
+                a = (a + b) / 2
+                fa = _f(a)
+        # we know c will be valid
+        c = b + (b - a)
+        fc = _f(c)
+        return a, b, c, fa, fb, fc
+
+    a, b, c, ya, yb, yc = _find_init_interval_from_guess(x_init)
+    while log["iters"] <= maxiter:
+        x = (
+            0.5
+            * (ya * (b**2 - c**2) + yb * (c**2 - a**2) + yc * (a**2 - b**2))
+            / (ya * (b - c) + yb * (c - a) + yc * (a - b))
+        )
+        if x <= log["feasibility_bound"]:
+            x = (log["feasibility_bound"] + a) / 2
+        yx = _f(x)
+        if yx == np.inf:
+            log["feasibility_bound"] = max(log["feasibility_bound"], x)
+        else:
+            # Standard quadratic fit update
+            # NEW: added cases when x is not between a and c
+            if x < a:
+                if yx < ya:
+                    a, ya = x, yx
+            elif a <= x <= c:
+                if x > b:
+                    if yx > yb:
+                        c, yc = x, yx
+                    else:
+                        a, ya, b, yb = b, yb, x, yx
+                elif x < b:
+                    if yx > yb:
+                        a, ya = x, yx
+                    else:
+                        c, yc, b, yb = b, yb, x, yx
+            else:  # x > c
+                if yx < yc:
+                    c, yc = x, yx
+        # if something < eps:
+        #     break # TODO!!!!!!!!!!!!!!!!!!!!!!!!1
+    # return (a, b, c)
+    if best["x"] is None:
+        raise OptimizationError("Unable to find a feasible solution")
+    # TODO check on the output type of this "out" parameter... seems to be a list
+    return best["x"], best["cost"], best["out"]
+
+
 # This search will make some assumptions about the function
 # Namely, that we'll generally want to shrink the time interval
 # I also don't think this will guarantee that we find the minimum...
 # TODO why can't we just solve the QP with T???
 # Should just be a univariate QP with constraints....
-def bisection_search(f, l, u, eps, maxiter):
+def left_bisection_search(f, x_init, eps, maxiter):
     # Mutable dicts to keep track of the optimization process
     best = {"x": None, "cost": np.inf, "out": None}  # init
     log = {"iters": 0}  # init
@@ -47,52 +179,41 @@ def bisection_search(f, l, u, eps, maxiter):
             best["out"] = out
         return cost
 
-    # Note that this will assume that x is a positive value and that the only infeasible
-    # region occurs when x is too small
-    def _find_init_interval(x):
+    # Note that this will assume that x is a positive value and that the only
+    # infeasible region occurs when x is too small
+    def _find_init_interval_from_guess(x):
         fx = _f(x)
         # Assume that the only infeasible region is when x is too small
         # If the initial evaluation is infeasible, increase x until we are feasible
         if fx == np.inf:
             l = None
-            while fx == np.inf and log["iters"] <= maxiter:
+            while fx == np.inf and log["iters"] <= maxiter - 1:
                 l = x
+                fl = fx
                 x *= 2
                 fx = _f(x)
             u = x
-            return l, u
+            fu = fx
+            return l, u, fl, fu
         # If the initial evaluation is feasible, decrease x until infeasible
         else:
             u = None
-            while fx != np.inf and log["iters"] <= maxiter:
+            while fx != np.inf and log["iters"] <= maxiter - 1:
                 u = x
+                fu = fx
                 x /= 2
                 fx = _f(x)
             l = x
-            return l, u
+            fl = fx
+            return l, u, fl, fu
 
-    # Input validation
-    num_lims = sum(lim is None for lim in [l, u])
-    if num_lims == 0:
-        raise ValueError("Must provide at least one evaluation point")
-    # Handle if we only have a guess for one of the bounds
-    elif num_lims == 1:
-        l, u = _find_init_interval(l or u)
-    # Ensure that the bounds are in the correct order
-    if num_lims == 2 and l > u:
-        l, u = u, l  # Ensure correct order
-    # Initial evaluation of the bounds
-    yl, yu = _f(l), _f(u)
-    # If it happens that both are infeasible, expand the interval
-    # TODO decide if this the best way to do this?
-    while yl == np.inf and yu == np.inf and log["iters"] <= maxiter:
-        l /= 2
-        u /= 2
-        yl, yu = _f(l), _f(u)
+    l, u, yl, yu = _find_init_interval_from_guess(x_init)
     while log["iters"] <= maxiter:
         mid = (l + u) / 2
         y_mid = _f(mid)
-        if y_mid <= yl:
+        # if y_mid <= yl:
+        # make the left bound be tight against the infeasibility bound
+        if y_mid == np.inf:
             l = mid
             yl = y_mid
         else:
@@ -100,8 +221,6 @@ def bisection_search(f, l, u, eps, maxiter):
             yu = y_mid
         if u - l <= eps:
             break
-    else:
-        pass
     if best["x"] is None:
         raise OptimizationError("Unable to find a feasible solution")
     # TODO check on the output type of this "out" parameter... seems to be a list
@@ -142,6 +261,8 @@ def bezier_with_retiming(
         time_weight=time_weight,
     )
 
+    costs = {}
+
     def _f(t):
         kwargs = curve_kwargs | {"tf": t}
         print("Evaluating time: ", t)
@@ -149,10 +270,15 @@ def bezier_with_retiming(
             cost, curve = fix_time_optimize_points(**kwargs)
         except OptimizationError:
             cost, curve = np.inf, None
+        costs[t] = cost
         return cost, curve
 
-    t, cost, out = bisection_search(_f, None, tf, 1e-1, 20)
+    # t, cost, out = left_bisection_search(_f, tf, 1e-1, 20)
+    t, cost, out = left_quadratic_fit_search(_f, tf, 1e-1, 20)
     best_curve = out[0]  # out seems to be a list
+    fig = plt.figure()
+    ts, cs = zip(*costs.items())
+    plt.plot(ts, cs)
 
     # infeasibility_bound = None
     # best_tf = None
@@ -259,7 +385,11 @@ def fix_time_optimize_points(
     # Form the problem and solve it
     # Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)
     prob = cp.Problem(objective, constraints)
-    prob.solve(solver=cp.CLARABEL)
+    # TODO MAKE THIS EXCEPTION CAPTURE A PART OF THE MAIN BEZIER FUNCTION
+    try:
+        prob.solve(solver=cp.CLARABEL)
+    except cp.error.SolverError as e:
+        raise OptimizationError("Cannot generate the trajectory - Solver error!") from e
     if prob.status != cp.OPTIMAL:
         raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
@@ -300,14 +430,14 @@ def main():
     p0 = (0, 0, 0)
     pf = (1, 2, 3)
     t0 = 0
-    tf_init = 20
+    tf_init = 30
     n_control_pts = 30
     dt = 0.1
     v0 = (0.3, 0.2, 0.1)
     vf = (0, 0, 0)
     a0 = (0, 0, 0)
     af = (0, 0, 0)
-    time_weight = 0.1
+    time_weight = 0.01
     print("Speed limit: ", LINEAR_SPEED_LIMIT)
     print("Accel limit: ", LINEAR_ACCEL_LIMIT)
     # curve = optimal_bezier(
