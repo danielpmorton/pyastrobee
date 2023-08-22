@@ -36,6 +36,7 @@ setup(
         "clarabel",  # More optimization
         "stable-baselines3",  # Environments
         "gymnasium",  # Environments
+        "pdoc",  # Documentation
     ],
     description="Code for the IPRL Astrobee project",
     author="Daniel Morton",
