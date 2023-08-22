@@ -1,6 +1,21 @@
 """Preliminary test to see if we can call our planning method with a variable total duration
 
 WORK IN PROGRESS
+
+Notes on the search method for the duration:
+- We know that the jerk function is a quadratic, and if we add an affine factor based on the total duration
+  of the trajectory, it will still be a quadratic. So, a version of quadratic fit search will work well here
+- Depending on the weighting of this affine time component, the cost may look very linear. Even if this is the
+  case, the search method as implemented will work well, because we will continually approach the boundary
+  of feasibility until we stop within some tolerance
+- Speaking of this feasibility boundary, this is the main difference between the implemented method and standard
+  quadratic fit search. There is some T such that the trajectory is no longer feasible, given the constraints
+  on velocity/accel/BCs..., and so in general, we want to solve for a T which is small, yet feasible. So, this
+  search method incorporates this knowledge of this infeasible region for small time intervals.
+- Ideally, we'd just be able to plug this into CVXPY (since it should just be a quadratic program with some 
+  constraints anyways). However, I tried a bunch of formulations of the constraints and it didn't seem to be
+  convex or DCP (often leading to either quadratic forms of two variables, or equality constraints on convex 
+  functions). Maybe there is a better formulation out there...
 """
 
 from typing import Optional, Union, Callable, Any
@@ -18,18 +33,6 @@ from pyastrobee.utils.boxes import Box
 from pyastrobee.utils.debug_visualizer import animate_path
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT
 from pyastrobee.utils.errors import OptimizationError
-
-
-# Note: using this optimization method for now since it seems that the optimization over the time period
-# is nonconvex (or at least non-DCP). It might be the case that there's a good way to solve this with variable
-# T though, but it might require some reformulation of the problem
-
-
-# We basically know that this is going to be a quadratic function with an infeasible region when the
-# time domain is set to be too small
-# The quadratic may look very linear if the weighting on the time component is much higher than the jerk
-# If it's close to linear, then this will push us right up against the boundary of feasibility
-# If the time weight low enough that the function looks quadratic, this will do a good job of finding the min
 
 
 def left_quadratic_fit_search(
@@ -150,82 +153,6 @@ def left_quadratic_fit_search(
     return best["x"], best["cost"], best["out"]
 
 
-# This search will make some assumptions about the function
-# Namely, that we'll generally want to shrink the time interval
-# I also don't think this will guarantee that we find the minimum...
-# TODO why can't we just solve the QP with T???
-# Should just be a univariate QP with constraints....
-def left_bisection_search(f, x_init, eps, maxiter):
-    # Mutable dicts to keep track of the optimization process
-    best = {"x": None, "cost": np.inf, "out": None}  # init
-    log = {"iters": 0}  # init
-
-    # Create wrapper around the function to handle if it has multiple outputs
-    def _f(x):
-        fx = f(x)
-        log["iters"] += 1
-        if isinstance(fx, tuple):
-            cost, *out = fx
-            if out == []:
-                out = None
-        else:
-            cost = fx
-            out = None
-        # Check to see if this is the best so far - if so, update
-        if cost <= best["cost"] and cost != np.inf:
-            best["x"] = x
-            best["cost"] = cost
-            best["out"] = out
-        return cost
-
-    # Note that this will assume that x is a positive value and that the only
-    # infeasible region occurs when x is too small
-    def _find_init_interval_from_guess(x):
-        fx = _f(x)
-        # Assume that the only infeasible region is when x is too small
-        # If the initial evaluation is infeasible, increase x until we are feasible
-        if fx == np.inf:
-            l = None
-            while fx == np.inf and log["iters"] <= maxiter - 1:
-                l = x
-                fl = fx
-                x *= 2
-                fx = _f(x)
-            u = x
-            fu = fx
-            return l, u, fl, fu
-        # If the initial evaluation is feasible, decrease x until infeasible
-        else:
-            u = None
-            while fx != np.inf and log["iters"] <= maxiter - 1:
-                u = x
-                fu = fx
-                x /= 2
-                fx = _f(x)
-            l = x
-            fl = fx
-            return l, u, fl, fu
-
-    l, u, yl, yu = _find_init_interval_from_guess(x_init)
-    while log["iters"] <= maxiter:
-        mid = (l + u) / 2
-        y_mid = _f(mid)
-        # if y_mid <= yl:
-        # make the left bound be tight against the infeasibility bound
-        if y_mid == np.inf:
-            l = mid
-            yl = y_mid
-        else:
-            u = mid
-            yu = y_mid
-        if u - l <= eps:
-            break
-    if best["x"] is None:
-        raise OptimizationError("Unable to find a feasible solution")
-    # TODO check on the output type of this "out" parameter... seems to be a list
-    return best["x"], best["cost"], best["out"]
-
-
 # TODO can we separate out the bisection mechanic so that we can use this for the spline as well?
 def bezier_with_retiming(
     p0: npt.ArrayLike,
@@ -260,7 +187,7 @@ def bezier_with_retiming(
         time_weight=time_weight,
     )
 
-    costs = {}
+    costs = {}  # TODO remove the plotting code
 
     def _f(t):
         kwargs = curve_kwargs | {"tf": t}
@@ -272,55 +199,12 @@ def bezier_with_retiming(
         costs[t] = cost
         return cost, curve
 
-    # t, cost, out = left_bisection_search(_f, tf, 1e-1, 20)
     t, cost, out = left_quadratic_fit_search(_f, tf, 1e-1, 20)
-    best_curve = out[0]  # out seems to be a list
+    best_curve = out[0]
     fig = plt.figure()
     ts, cs = zip(*costs.items())
     plt.scatter(ts, cs)
 
-    # infeasibility_bound = None
-    # best_tf = None
-    # best_cost = np.inf
-    # best_curve = None
-    # prev_tf = np.inf
-    # cur_tf = tf
-    # for i in range(max_iters):
-    #     # Solve for a curve (if possible) with the current final time
-    #     prev_tf = cur_tf
-    #     curve_kwargs["tf"] = cur_tf
-    #     try:
-    #         cost, curve = fix_time_optimize_points(**curve_kwargs)
-    #     except OptimizationError:
-    #         cost, curve = np.inf, None
-    #     # Bisection on the lowest final time based on the cost of the curve
-    #     print("Cost: ", cost, " for time: ", cur_tf, end="")
-    #     if cost < best_cost:
-    #         best_cost = cost
-    #         best_curve = curve
-    #         best_tf = cur_tf
-    #         cur_tf = (
-    #             cur_tf / 2
-    #             if infeasibility_bound is None
-    #             else (cur_tf + infeasibility_bound) / 2
-    #         )
-    #     else:  # Worse cost (assume this must be because we went so low it's infeasible)
-    #         infeasibility_bound = (
-    #             cur_tf
-    #             if infeasibility_bound is None
-    #             else max(infeasibility_bound, cur_tf)
-    #         )
-    #         if best_tf is not None:
-    #             cur_tf = (best_tf + cur_tf) / 2
-    #         else:
-    #             cur_tf *= 2
-    #     reduction = abs(prev_tf - cur_tf) / cur_tf
-    #     print(". Percent time change: ", reduction)
-    #     if reduction < reduction_tol:
-    #         break
-    # if best_curve is None:
-    #     # TODO use a different type of exception
-    #     raise ValueError("Unable to find a solution")
     return best_curve
 
 
