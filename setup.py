@@ -14,7 +14,7 @@ TODO add mujoco back if needed
 TODO add slycot back in if the control package needs it. Seems to have installation problems
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="pyastrobee",
@@ -42,4 +42,5 @@ setup(
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
     url="https://github.com/danielpmorton/pyastrobee",
+    packages=find_packages(exclude=["artifacts"]),
 )
