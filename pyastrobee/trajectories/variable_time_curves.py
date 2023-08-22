@@ -3,7 +3,7 @@
 WORK IN PROGRESS
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, Callable, Any
 
 import cvxpy as cp
 import numpy as np
@@ -25,28 +25,6 @@ from pyastrobee.utils.errors import OptimizationError
 # T though, but it might require some reformulation of the problem
 
 
-def quadratic_fit_search(f, a, b, c, n):
-    ya, yb, yc = f(a), f(b), f(c)
-    for i in range(n - 3):
-        x = (
-            0.5
-            * (ya * (b**2 - c**2) + yb * (c**2 - a**2) + yc * (a**2 - b**2))
-            / (ya * (b - c) + yb * (c - a) + yc * (a - b))
-        )
-        yx = f(x)
-        if x > b:
-            if yx > yb:
-                c, yc = x, yx
-            else:
-                a, ya, b, yb = b, yb, x, yx
-        elif x < b:
-            if yx > yb:
-                a, ya = x, yx
-            else:
-                c, yc, b, yb = b, yb, x, yx
-    return (a, b, c)
-
-
 # We basically know that this is going to be a quadratic function with an infeasible region when the
 # time domain is set to be too small
 # The quadratic may look very linear if the weighting on the time component is much higher than the jerk
@@ -54,13 +32,41 @@ def quadratic_fit_search(f, a, b, c, n):
 # If the time weight low enough that the function looks quadratic, this will do a good job of finding the min
 
 
-# Based on Algorithms for Optimization
-def left_quadratic_fit_search(f, x_init, eps, maxiter):
+def left_quadratic_fit_search(
+    f: Callable[[float], float | tuple[float, Any]],
+    x_init: float,
+    dx_tol: float,
+    max_iters: int,
+) -> tuple[float, float, list[Any]]:
+    """A version of quadratic fit search that assumes we have an infeasible region for small x (x >= 0)
+
+    Reference: Algorithms for Optimization (Kochenderfer), Algorithm 3.4
+
+    Args:
+        f (Callable[[float], float  |  tuple[float, Any]]): Univariate function to optimize, callable as f(x).
+            The return must have the cost of the evaluation as the first output.
+        x_init (float): Initial location to start the search
+        dx_tol (float): Stopping tolerance on evaluation points: Terminate if the change between consecutive
+            evaluation points is less than this tolerance
+        max_iters (int): Maximum iterations of the algorithm (if the stopping tolerance is not achieved)
+
+    Raises:
+        OptimizationError: If no feasible solution is found in max_iters iterations
+
+    Returns:
+        Tuple of:
+            float: Best evaluation point x
+            float: Cost of the function evaluation at the best x value
+            list[Any]: Additional outputs of the function being optimized at the best x value
+    """
+    # Mutable dicts to keep track of the optimization process
     best = {"x": None, "cost": np.inf, "out": None}  # init
     log = {"iters": 0, "feasibility_bound": 0}  # init
 
     # Create wrapper around the function to handle if it has multiple outputs
-    def _f(x):
+    # Return will solely be the cost of the evaluation, but we store the other outputs
+    # in the dictionaries as needed
+    def _f(x: float) -> float:
         fx = f(x)
         log["iters"] += 1
         if isinstance(fx, tuple):
@@ -77,54 +83,46 @@ def left_quadratic_fit_search(f, x_init, eps, maxiter):
             best["out"] = out
         return cost
 
-    def _find_init_interval_from_guess(x):
-        # fx = _f(x)
-        # # Assume that the only infeasible region is when x is too small
-        # # If the initial evaluation is infeasible, increase x until we are feasible
-        # if fx == np.inf:
-        #     a, b, c = None, None, None
-        #     while fx == np.inf and log["iters"] <= maxiter - 1:
-        #         x *= 2
-        #         fx = _f(x)
-        # a = x
-        # b = x * 1.5
-        # c = x * 2
-        # ya, yb, yc = fx, _f(b), _f(c)
-        # return a, b, c, ya, yb, yc
+    # Find the quadratic fit search interval (a, b, c) given an initial search location
+    # This assumes that x is a positive value and that the only infeasible values occurs
+    # when x is too small
+    def _find_init_interval_from_guess(x: float):
         b = x
-        fb = _f(b)
-        if fb == np.inf:
-            while fb == np.inf and log["iters"] <= maxiter - 1:
+        yb = _f(b)
+        if yb == np.inf:
+            while yb == np.inf and log["iters"] <= max_iters - 1:
                 log["feasibility_bound"] = max(b, log["feasibility_bound"])
                 b *= 2
-                fb = _f(b)
+                yb = _f(b)
         a = (log["feasibility_bound"] + b) / 2
-        fa = _f(a)
-        if fa == np.inf:
-            while fa == np.inf and log["iters"] <= maxiter - 1:
+        ya = _f(a)
+        if ya == np.inf:
+            while ya == np.inf and log["iters"] <= max_iters - 1:
                 log["feasibility_bound"] = max(a, log["feasibility_bound"])
                 a = (a + b) / 2
-                fa = _f(a)
+                ya = _f(a)
         # we know c will be valid
         c = b + (b - a)
-        fc = _f(c)
-        return a, b, c, fa, fb, fc
+        yc = _f(c)
+        return a, b, c, ya, yb, yc
 
     a, b, c, ya, yb, yc = _find_init_interval_from_guess(x_init)
-    while log["iters"] <= maxiter:
+    x_prev = None  # init
+    while log["iters"] <= max_iters - 1:
+        # Quadratic fit for the next search location
         x = (
             0.5
             * (ya * (b**2 - c**2) + yb * (c**2 - a**2) + yc * (a**2 - b**2))
             / (ya * (b - c) + yb * (c - a) + yc * (a - b))
         )
+        # Handle if the fit location is known to be infeasible
         if x <= log["feasibility_bound"]:
             x = (log["feasibility_bound"] + a) / 2
         yx = _f(x)
-        if yx == np.inf:
+        if yx == np.inf:  # Infeasible
             log["feasibility_bound"] = max(log["feasibility_bound"], x)
         else:
-            # Standard quadratic fit update
-            # NEW: added cases when x is not between a and c
+            # Standard quadratic fit update, with extra cases when x is not between a and c
             if x < a:
                 if yx < ya:
                     a, ya = x, yx
@@ -142,12 +140,13 @@ def left_quadratic_fit_search(f, x_init, eps, maxiter):
             else:  # x > c
                 if yx < yc:
                     c, yc = x, yx
-        # if something < eps:
-        #     break # TODO!!!!!!!!!!!!!!!!!!!!!!!!1
-    # return (a, b, c)
+        # Termination criteria: if our evaluation point update has shrunk to within some tolerance
+        if x_prev is not None and abs(x - x_prev) < dx_tol:
+            break
+        x_prev = x
+
     if best["x"] is None:
         raise OptimizationError("Unable to find a feasible solution")
-    # TODO check on the output type of this "out" parameter... seems to be a list
     return best["x"], best["cost"], best["out"]
 
 
@@ -278,7 +277,7 @@ def bezier_with_retiming(
     best_curve = out[0]  # out seems to be a list
     fig = plt.figure()
     ts, cs = zip(*costs.items())
-    plt.plot(ts, cs)
+    plt.scatter(ts, cs)
 
     # infeasibility_bound = None
     # best_tf = None
@@ -437,7 +436,7 @@ def main():
     vf = (0, 0, 0)
     a0 = (0, 0, 0)
     af = (0, 0, 0)
-    time_weight = 0.01
+    time_weight = 0  # 0.01
     print("Speed limit: ", LINEAR_SPEED_LIMIT)
     print("Accel limit: ", LINEAR_ACCEL_LIMIT)
     # curve = optimal_bezier(
