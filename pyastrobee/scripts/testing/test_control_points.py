@@ -13,7 +13,8 @@ import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyastrobee.trajectories.bezier import BezierCurve, plot_1d_bezier_curve
+from pyastrobee.trajectories.bezier import BezierCurve
+from pyastrobee.trajectories.curve_utils import plot_1d_bezier_curve
 
 # Some parameters to tune and see how it affects the curve / hull / solution validity
 dim = 1

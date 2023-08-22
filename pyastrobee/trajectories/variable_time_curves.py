@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 from pyastrobee.trajectories.trajectory import Trajectory, plot_traj_constraints
 from pyastrobee.trajectories.bezier import BezierCurve
 from pyastrobee.trajectories.splines import CompositeBezierCurve
+from pyastrobee.trajectories.curve_utils import traj_from_curve
 from pyastrobee.utils.boxes import Box
 from pyastrobee.utils.debug_visualizer import animate_path
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT
@@ -283,30 +284,6 @@ def fix_time_optimize_points(
 
     # TODO decide on order of outputs!!
     return prob.value, solved_pos_curve
-
-
-# TODO move this to a better location
-# NOTE: Don't make a circular import since this imports both Bezier and CompositeBezier
-def traj_from_curve(
-    curve: Union[BezierCurve, CompositeBezierCurve], dt: float
-) -> Trajectory:
-    """Construct a position-only trajectory from a Bezier curve or spline
-
-    Args:
-        curve (Union[BezierCurve, CompositeBezierCurve]): Curve for the position motion
-        dt (float): Timestep
-
-    Returns:
-        Trajectory: Position (and derivatives) trajectory information
-    """
-    t0 = curve.a
-    tf = curve.b.value if isinstance(curve.b, (cp.Variable, cp.Expression)) else curve.b
-    # TODO see if we can refine how this time works... The spacing isn't going to be exactly dt
-    times = np.linspace(t0, tf, round((tf - t0) / dt))
-    pos = curve(times)
-    vel = curve.derivative(times)
-    accel = curve.derivative.derivative(times)
-    return Trajectory(pos, None, vel, None, accel, None, times)
 
 
 def main():

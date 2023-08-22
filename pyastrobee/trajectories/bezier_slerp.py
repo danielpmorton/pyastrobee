@@ -15,7 +15,8 @@ from pyastrobee.utils.quaternions import (
     random_quaternion,
     quats_to_angular_velocities,
 )
-from pyastrobee.trajectories.bezier import BezierCurve, plot_1d_bezier_curve
+from pyastrobee.trajectories.bezier import BezierCurve
+from pyastrobee.trajectories.curve_utils import plot_1d_bezier_curve
 from pyastrobee.trajectories.trajectory import Trajectory
 
 
