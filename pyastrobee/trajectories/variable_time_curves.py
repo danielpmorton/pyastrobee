@@ -61,10 +61,11 @@ def left_quadratic_fit_search(
         Tuple of:
             float: Best evaluation point x
             float: Cost of the function evaluation at the best x value
-            list[Any]: Additional outputs of the function being optimized at the best x value
+            list[Any]: Additional outputs of the function being optimized at the best x value. Empty list if there
+                are no additional outputs
     """
     # Mutable dicts to keep track of the optimization process
-    best = {"x": None, "cost": np.inf, "out": None}  # init
+    best = {"x": None, "cost": np.inf, "out": []}  # init
     log = {"iters": 0, "feasibility_bound": 0}  # init
 
     # Create wrapper around the function to handle if it has multiple outputs
@@ -75,11 +76,10 @@ def left_quadratic_fit_search(
         log["iters"] += 1
         if isinstance(fx, tuple):
             cost, *out = fx
-            if out == []:
-                out = None
+            # Out will by default be packed into a list
         else:
             cost = fx
-            out = None
+            out = []
         # Check to see if this is the best so far - if so, update
         if cost <= best["cost"] and cost != np.inf:
             best["x"] = x
@@ -200,8 +200,8 @@ def bezier_with_retiming(
         costs[t] = cost
         return cost, curve
 
-    t, cost, out = left_quadratic_fit_search(_f, tf, 1e-1, 20)
-    best_curve = out[0]
+    t, cost, output = left_quadratic_fit_search(_f, tf, 1e-1, 20)
+    best_curve = output[0]
     fig = plt.figure()
     ts, cs = zip(*costs.items())
     plt.scatter(ts, cs)
