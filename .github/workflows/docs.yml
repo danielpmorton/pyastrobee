@@ -32,7 +32,10 @@ jobs:
           pip install -e .
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: pdoc pyastrobee -o docs/pdoc/ -d google
+      - name: setup-xvfb # Fake display for headless build
+        uses: coactions/setup-xvfb@v1.0.1
+        with:
+          run: pdoc pyastrobee -o docs/pdoc/ -d google
 
       - uses: actions/upload-pages-artifact@v2
         with:
