@@ -9,7 +9,7 @@ from scipy.spatial import ConvexHull
 from matplotlib.patches import Polygon
 
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.trajectories.bezier import BezierCurve
+from pyastrobee.trajectories.bezier import BezierCurve, bezier_trajectory
 from pyastrobee.trajectories.splines import CompositeBezierCurve
 
 
@@ -244,5 +244,23 @@ def _test_plotting_spline():
     plt.show()
 
 
+def _test_bezier_traj():
+    p0 = [1, 2, 3]
+    pf = [2, 3, 4]
+    t0 = 0
+    tf = 5
+    n_control_pts = 10
+    dt = 0.1
+    v0 = [-0.1, -0.2, -0.3]
+    vf = [-0.2, -0.2, -0.2]
+    a0 = [0, 0, 0]
+    af = [0.1, 0.1, 0.1]
+    curve = bezier_trajectory(p0, pf, t0, tf, n_control_pts, v0, vf, a0, af)
+    # Leaving out any rotational info for now
+    traj = traj_from_curve(curve, dt)
+    traj.plot()
+
+
 if __name__ == "__main__":
     _test_plotting_spline()
+    _test_bezier_traj()

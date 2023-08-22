@@ -27,7 +27,7 @@ import pybullet
 import matplotlib.pyplot as plt
 
 from pyastrobee.trajectories.trajectory import Trajectory, plot_traj_constraints
-from pyastrobee.trajectories.bezier import BezierCurve
+from pyastrobee.trajectories.bezier import BezierCurve, bezier_trajectory
 from pyastrobee.trajectories.splines import CompositeBezierCurve
 from pyastrobee.trajectories.curve_utils import traj_from_curve
 from pyastrobee.utils.boxes import Box
@@ -194,10 +194,11 @@ def bezier_with_retiming(
         kwargs = curve_kwargs | {"tf": t}
         print("Evaluating time: ", t)
         try:
-            cost, curve = fix_time_optimize_points(**kwargs)
+            curve, cost = bezier_trajectory(**kwargs)
         except OptimizationError:
-            cost, curve = np.inf, None
+            curve, cost = None, np.inf
         costs[t] = cost
+        # The quadratic search assumes that cost is the first output
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(_f, tf, 1e-1, 20)
@@ -207,83 +208,6 @@ def bezier_with_retiming(
     plt.scatter(ts, cs)
 
     return best_curve
-
-
-# TODO this is basically the same we the main bezier trajectory function
-# So, merge these
-def fix_time_optimize_points(
-    p0: npt.ArrayLike,
-    pf: npt.ArrayLike,
-    t0: float,
-    tf: float,
-    n_control_pts: int,
-    v0: Optional[npt.ArrayLike] = None,
-    vf: Optional[npt.ArrayLike] = None,
-    a0: Optional[npt.ArrayLike] = None,
-    af: Optional[npt.ArrayLike] = None,
-    box: Optional[Box] = None,
-    v_max: Optional[float] = None,
-    a_max: Optional[float] = None,
-    time_weight: float = 1,  # FIGURE THIS OUT
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:  # TODO UPDATE OUTPUTS
-    # Check inputs
-    n_constraints = sum(c is not None for c in [p0, pf, v0, vf, a0, af])
-    if n_constraints > n_control_pts:
-        raise ValueError(
-            "Number of control points must be at least the number of constraints"
-        )
-    if tf <= t0:
-        raise ValueError(f"Invalid time interval: ({t0}, {tf})")
-    dim = len(p0)
-    # Form the main Variable (the control points for the position curve) and get the Expressions
-    # for the control points of the derivative curves
-    pos_pts = cp.Variable((n_control_pts, dim))
-    pos_curve = BezierCurve(pos_pts, t0, tf)
-    vel_curve = pos_curve.derivative
-    vel_pts = vel_curve.points
-    accel_curve = vel_curve.derivative
-    accel_pts = accel_curve.points
-    jerk_curve = accel_curve.derivative
-    # Form the constraint list depending on what was specified in the inputs
-    constraints = [pos_pts[0] == p0, pos_pts[-1] == pf]
-    if v0 is not None:
-        constraints.append(vel_pts[0] == v0)
-    if vf is not None:
-        constraints.append(vel_pts[-1] == vf)
-    if a0 is not None:
-        constraints.append(accel_pts[0] == a0)
-    if af is not None:
-        constraints.append(accel_pts[-1] == af)
-    if box is not None:
-        lower, upper = box
-        constraints.append(pos_pts >= lower)
-        constraints.append(pos_pts <= upper)
-    if v_max is not None:
-        constraints.append(cp.norm2(vel_pts, axis=1) <= v_max)
-    if a_max is not None:
-        constraints.append(cp.norm2(accel_pts, axis=1) <= a_max)
-    # Objective function criteria
-    jerk = jerk_curve.l2_squared
-    # Form the objective function based on the relative weighting between the criteria
-    objective = cp.Minimize(jerk + time_weight * (tf - t0))
-    # Form the problem and solve it
-    # Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)
-    prob = cp.Problem(objective, constraints)
-    # TODO MAKE THIS EXCEPTION CAPTURE A PART OF THE MAIN BEZIER FUNCTION
-    try:
-        prob.solve(solver=cp.CLARABEL)
-    except cp.error.SolverError as e:
-        raise OptimizationError("Cannot generate the trajectory - Solver error!") from e
-    if prob.status != cp.OPTIMAL:
-        raise OptimizationError(
-            f"Unable to generate the trajectory (solver status: {prob.status}).\n"
-            + "Check on the feasibility of the constraints"
-        )
-    # Construct the Bezier curves from the solved control points, and return their evaluations at each time
-    solved_pos_curve = BezierCurve(pos_pts.value, t0, tf)
-
-    # TODO decide on order of outputs!!
-    return prob.value, solved_pos_curve
 
 
 def main():

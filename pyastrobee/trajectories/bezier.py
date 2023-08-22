@@ -41,7 +41,6 @@ import cvxpy as cp
 from scipy.special import binom
 import matplotlib.pyplot as plt
 
-from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.boxes import Box
 from pyastrobee.utils.errors import OptimizationError
 
@@ -211,7 +210,6 @@ def bezier_trajectory(
     t0: float,
     tf: float,
     n_control_pts: int,
-    n_timesteps: int,
     v0: Optional[npt.ArrayLike] = None,
     vf: Optional[npt.ArrayLike] = None,
     a0: Optional[npt.ArrayLike] = None,
@@ -219,16 +217,9 @@ def bezier_trajectory(
     box: Optional[Box] = None,
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
-    jerk_weight: float = 1.0,
-    pathlength_weight: float = 0.0,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Evaluate an optimal trajectory based on Bezier curves which meets the specified constraints
-
-    Optimality is currently with respect to two values: jerk and pathlength. We can evaluate a minimum-jerk
-    trajectory, or a minimum-length trajectory, or any balance between these parameters by varying the
-    relative objective function weights between them
-
-    The default weighting of these objective function parameters is set to minimize jerk only
+    time_weight: float = 0,
+) -> tuple[BezierCurve, float]:
+    """Evaluate an optimal min-jerk trajectory based on Bezier curves which meets the specified constraints
 
     Args:
         p0 (npt.ArrayLike): Initial position, shape (3,)
@@ -237,7 +228,6 @@ def bezier_trajectory(
         tf (float): Ending time
         n_control_pts (int): Number of control points for the Bezier curve. Must be >= to the number of constraints,
             and should not be too large (>15ish) as this can reduce optimization performance. 6-10 is usually good
-        n_timesteps (int): Number of timesteps to evaluate
         v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
         vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
         a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
@@ -245,15 +235,18 @@ def bezier_trajectory(
         box (Optional[Box]): Box constraint on (lower, upper) position bounds. Defaults to None (unconstrained)
         v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
         a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
-        jerk_weight (float, optional): Objective function weight corresponding to jerk. Defaults to 1.0.
-        pathlength_weight (float, optional): Objective function weight corresponding to pathlength . Defaults to 0.0.
+        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
+            Defaults to 0 (minimize jerk only)
+
+    Raises:
+        OptimizationError: If the optimization failed to find a valid solution (typically this is due to constraints
+            which are too restrictive)
 
     Returns:
         Tuple of:
-            np.ndarray: Trajectory positions, shape (n_timesteps, 3)
-            np.ndarray: Trajectory velocities, shape (n_timesteps, 3)
-            np.ndarray: Trajectory accelerations, shape (n_timesteps, 3)
-            np.ndarray: Trajectory times, shape (n_timesteps,)
+            BezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives
+                can be evaluated using the curve.derivative property
+            float: The optimal cost of the objective function
     """
     # Check inputs
     n_constraints = sum(c is not None for c in [p0, pf, v0, vf, a0, af])
@@ -264,7 +257,6 @@ def bezier_trajectory(
     if tf <= t0:
         raise ValueError(f"Invalid time interval: ({t0}, {tf})")
     dim = len(p0)
-    times = np.linspace(t0, tf, n_timesteps, endpoint=True)
     # Form the main Variable (the control points for the position curve) and get the Expressions
     # for the control points of the derivative curves
     pos_pts = cp.Variable((n_control_pts, dim))
@@ -294,31 +286,22 @@ def bezier_trajectory(
         constraints.append(cp.norm2(accel_pts, axis=1) <= a_max)
     # Objective function criteria
     jerk = jerk_curve.l2_squared
-    pathlength = pos_curve.control_points_pathlength
     # Form the objective function based on the relative weighting between the criteria
-    objective = cp.Minimize(jerk_weight * jerk + pathlength_weight * pathlength)
+    objective = cp.Minimize(jerk + time_weight * (tf - t0))
     # Form the problem and solve it
     # Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)
     prob = cp.Problem(objective, constraints)
-    prob.solve(solver=cp.CLARABEL)
+    try:
+        prob.solve(solver=cp.CLARABEL)
+    except cp.error.SolverError as e:
+        raise OptimizationError("Cannot generate the trajectory - Solver error!") from e
     if prob.status != cp.OPTIMAL:
         raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
             + "Check on the feasibility of the constraints"
         )
-    # Construct the Bezier curves from the solved control points, and return their evaluations at each time
-    solved_pos_curve = BezierCurve(pos_pts.value, t0, tf)
-    solved_vel_curve = solved_pos_curve.derivative
-    solved_accel_curve = solved_vel_curve.derivative
-    return (
-        solved_pos_curve(times),
-        solved_vel_curve(times),
-        solved_accel_curve(times),
-        times,
-    )
-
-
-# Below: Examples of using the functions above to generate polynomials/curves
+    # Construct the Bezier curve from the solved control points
+    return BezierCurve(pos_pts.value, t0, tf), prob.value
 
 
 def _test_plot_bernstein_polys():
@@ -337,25 +320,5 @@ def _test_plot_bernstein_polys():
     plt.show()
 
 
-def _test_bezier_traj():
-    p0 = [1, 2, 3]
-    pf = [2, 3, 4]
-    t0 = 0
-    tf = 5
-    n_control_pts = 10
-    n_timesteps = 50
-    v0 = [-0.1, -0.2, -0.3]
-    vf = [-0.2, -0.2, -0.2]
-    a0 = [0, 0, 0]
-    af = [0.1, 0.1, 0.1]
-    pos, vel, accel, times = bezier_trajectory(
-        p0, pf, t0, tf, n_control_pts, n_timesteps, v0, vf, a0, af
-    )
-    # Leaving out any rotational info for now
-    traj = Trajectory(pos, None, vel, None, accel, None, times)
-    traj.plot()
-
-
 if __name__ == "__main__":
     _test_plot_bernstein_polys()
-    _test_bezier_traj()

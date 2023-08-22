@@ -28,6 +28,7 @@ from pyastrobee.config.iss_paths import GRAPH, PATHS
 from pyastrobee.utils.boxes import Box, find_containing_box_name, compute_graph
 from pyastrobee.utils.algos import dfs
 from pyastrobee.trajectories.splines import spline_trajectory_with_retiming
+from pyastrobee.trajectories.curve_utils import traj_from_curve
 
 
 def plan_trajectory(
@@ -67,26 +68,26 @@ def plan_trajectory(
     Returns:
         Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
     """
-    times = np.arange(0, duration + dt, dt)
-    n = len(times)
-    t0 = times[0]
-    tf = times[-1]
     # Min-jerk position traj
     n_control_pts = 8
-    pos, vel, accel, _ = bezier_trajectory(
-        p0, pf, t0, tf, n_control_pts, n, v0, vf, a0, af, jerk_weight=1
+    curve, _ = bezier_trajectory(
+        p0, pf, 0, duration, n_control_pts, v0, vf, a0, af, time_weight=0
     )
-    quats = quaternion_interpolation_with_bcs(q0, qf, w0, wf, dw0, dwf, duration, n)
+    pos_traj = traj_from_curve(curve, dt)
+    n_timesteps = len(pos_traj.times)
+    quats = quaternion_interpolation_with_bcs(
+        q0, qf, w0, wf, dw0, dwf, duration, n_timesteps
+    )
     omega = quats_to_angular_velocities(quats, dt)
     alpha = np.gradient(omega, dt, axis=0)
     return Trajectory(
-        positions=pos,
+        positions=pos_traj.positions,
         quats=quats,
-        lin_vels=vel,
+        lin_vels=pos_traj.linear_velocities,
         ang_vels=omega,
-        lin_accels=accel,
+        lin_accels=pos_traj.linear_accels,
         ang_accels=alpha,
-        times=times,
+        times=pos_traj.times,
     )
 
 
