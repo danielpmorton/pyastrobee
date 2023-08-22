@@ -1,14 +1,11 @@
-name: website
+name: build-documentation
 
-# Manually build the site
-on: workflow_dispatch
-  # build the documentation whenever there are new commits on master
-  # push:
-  #   branches:
-  #     - master
-  #   # Alternative: only build for tags.
-  #   # tags:
-  #   #   - '*'
+on: 
+  # Allow us to manually build the documentation when desired
+  workflow_dispatch:
+  # Schedule the documentation to automatically build weekly if we forget to update it
+  schedule:
+    - cron: '32 13 * * 1' # Mondays at 9:32 AM Eastern (13:32 UTC) (launch time for Apollo 11 :D)
 
 # security: restrict permissions for CI jobs.
 permissions:
@@ -24,14 +21,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      # ADJUST THIS: install all dependencies (including pdoc)
+      # Install all dependencies (including pdoc)
       - run: |
           pip install numpy
           pip install wheel
           pip install pybullet
           pip install -e .
-      # ADJUST THIS: build your documentation into docs/.
-      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
+      # Build documentation
+      # NOTE: we'll wrap this run with XVFB because without it we get an error from an import
+      # since there is no x server connection
       - name: setup-xvfb # Fake display for headless build
         uses: coactions/setup-xvfb@v1.0.1
         with:
