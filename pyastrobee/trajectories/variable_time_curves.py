@@ -164,7 +164,7 @@ def free_final_time_bezier(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
     t0: float,
-    tf: float,
+    tf_init: float,
     n_control_pts: int,
     v0: Optional[npt.ArrayLike] = None,
     vf: Optional[npt.ArrayLike] = None,
@@ -184,7 +184,7 @@ def free_final_time_bezier(
         p0 (npt.ArrayLike): Initial position, shape (3,)
         pf (npt.ArrayLike): Final position, shape (3,)
         t0 (float): Starting time
-        tf (float): Initial guess at the final time
+        tf_init (float): Initial estimate of the final time
         n_control_pts (int): Number of control points for the Bezier curve. Must be >= to the number of constraints,
             and should not be too large (>15ish) as this can reduce optimization performance. 6-10 is usually good
         v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
@@ -208,7 +208,7 @@ def free_final_time_bezier(
         p0=p0,
         pf=pf,
         t0=t0,
-        tf=tf,
+        tf=tf_init,
         n_control_pts=n_control_pts,
         v0=v0,
         vf=vf,
@@ -249,7 +249,7 @@ def free_final_time_bezier(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        _curve_wrapper, tf, timing_atol, max_iters
+        _curve_wrapper, tf_init, timing_atol, max_iters
     )
     best_curve = output[0]
     if debug:
@@ -263,7 +263,7 @@ def free_final_time_spline(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
     t0: float,
-    tf: float,
+    tf_init: float,
     pts_per_curve: int,
     boxes: list[Box],
     initial_durations: npt.ArrayLike,
@@ -287,7 +287,7 @@ def free_final_time_spline(
         p0 (npt.ArrayLike): Initial position, shape (3,)
         pf (npt.ArrayLike): Final position, shape (3,)
         t0 (float): Starting time
-        tf (float): Ending time
+        tf_init (float): Initial estimate of the final time
         pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10
         boxes (list[Box]): Sequential list of safe box regions pass through
         initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These
@@ -318,7 +318,7 @@ def free_final_time_spline(
         p0=p0,
         pf=pf,
         t0=t0,
-        tf=tf,
+        tf=tf_init,
         pts_per_curve=pts_per_curve,
         boxes=boxes,
         initial_durations=initial_durations,
@@ -336,7 +336,7 @@ def free_final_time_spline(
 
     # As we vary the final time, we need to make sure that the durations per box
     # also get updated. So, use the fractional durations and rescale based on the total time
-    init_duration_fractions = initial_durations / (tf - t0)
+    init_duration_fractions = initial_durations / (tf_init - t0)
 
     if debug:
         # Keep track of the costs per time to plot afterwards
@@ -370,7 +370,7 @@ def free_final_time_spline(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        _curve_wrapper, tf, timing_atol, max_iters
+        _curve_wrapper, tf_init, timing_atol, max_iters
     )
     best_curve = output[0]
     if debug:
