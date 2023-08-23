@@ -236,7 +236,7 @@ def bezier_trajectory(
         v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
         a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
-            Defaults to 0 (minimize jerk only)
+            Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
     Raises:
         OptimizationError: If the optimization failed to find a valid solution (typically this is due to constraints

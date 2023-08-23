@@ -28,7 +28,10 @@ import matplotlib.pyplot as plt
 
 from pyastrobee.trajectories.trajectory import Trajectory, plot_traj_constraints
 from pyastrobee.trajectories.bezier import BezierCurve, bezier_trajectory
-from pyastrobee.trajectories.splines import CompositeBezierCurve
+from pyastrobee.trajectories.splines import (
+    CompositeBezierCurve,
+    spline_trajectory_with_retiming,
+)
 from pyastrobee.trajectories.curve_utils import traj_from_curve
 from pyastrobee.utils.boxes import Box
 from pyastrobee.utils.debug_visualizer import animate_path
@@ -154,7 +157,7 @@ def left_quadratic_fit_search(
     return best["x"], best["cost"], best["out"]
 
 
-def bezier_with_retiming(
+def free_final_time_bezier(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
     t0: float,
@@ -222,6 +225,89 @@ def bezier_with_retiming(
     return best_curve
 
 
+def free_final_time_spline(
+    p0: npt.ArrayLike,
+    pf: npt.ArrayLike,
+    t0: float,
+    tf: float,
+    pts_per_curve: int,
+    boxes: list[Box],
+    initial_durations: npt.ArrayLike,
+    v0: Optional[npt.ArrayLike] = None,
+    vf: Optional[npt.ArrayLike] = None,
+    a0: Optional[npt.ArrayLike] = None,
+    af: Optional[npt.ArrayLike] = None,
+    v_max: Optional[float] = None,
+    a_max: Optional[float] = None,
+    kappa_min: float = 1e-2,
+    omega: float = 3,
+    max_retiming_iters: int = 10,
+    time_weight: float = 1e-4,
+    timing_atol: float = 1e-2,
+    max_iters: int = 15,
+    debug: bool = False,
+):
+    curve_kwargs = dict(
+        p0=p0,
+        pf=pf,
+        t0=t0,
+        tf=tf,
+        pts_per_curve=pts_per_curve,
+        boxes=boxes,
+        initial_durations=initial_durations,
+        v0=v0,
+        vf=vf,
+        a0=a0,
+        af=af,
+        v_max=v_max,
+        a_max=a_max,
+        kappa_min=kappa_min,
+        omega=omega,
+        max_iters=max_retiming_iters,  # improve this
+        time_weight=time_weight,
+    )
+
+    # TODO improve this
+    init_duration_fractions = initial_durations / (tf - t0)
+
+    if debug:
+        # Keep track of the costs per time to plot afterwards
+        costs_log: dict[float, float] = {}
+
+    def curve_wrapper(t: float) -> tuple[float, CompositeBezierCurve]:
+        kwargs = curve_kwargs | {
+            "tf": t,
+            "initial_durations": t * init_duration_fractions,
+        }
+
+        print("Evaluating time: ", t)
+        try:
+            curve, cost = spline_trajectory_with_retiming(**kwargs)
+        except OptimizationError:
+            curve, cost = None, np.inf
+        if debug:
+            print(
+                "Cost: ",
+                cost,
+                " Jerk: ",
+                cost - time_weight * t,
+                " Time: ",
+                time_weight * t,
+            )
+            costs_log[t] = cost
+        # The quadratic search assumes that cost is the first output
+        return cost, curve
+
+    t, cost, output = left_quadratic_fit_search(
+        curve_wrapper, tf, timing_atol, max_iters
+    )
+    best_curve = output[0]
+    if debug:
+        _plot_optimization_data(costs_log)
+
+    return best_curve
+
+
 def _plot_optimization_data(cost_log: dict[float, float], show: bool = True):
     """Helper function to plot the time optimization results when debugging
 
@@ -250,7 +336,7 @@ def _plot_optimization_data(cost_log: dict[float, float], show: bool = True):
         plt.show()
 
 
-def main():
+def _bezier_main():
     p0 = (0, 0, 0)
     pf = (1, 2, 3)
     t0 = 0
@@ -263,8 +349,7 @@ def main():
     af = (0, 0, 0)
     print("Speed limit: ", LINEAR_SPEED_LIMIT)
     print("Accel limit: ", LINEAR_ACCEL_LIMIT)
-    # curve = optimal_bezier(
-    curve = bezier_with_retiming(
+    curve = free_final_time_bezier(
         p0,
         pf,
         t0,
@@ -292,5 +377,52 @@ def main():
     input("Animation complete, press Enter to finish")
 
 
+def _spline_main():
+    p0 = [0.1, 0.2, 0.3]
+    pf = [1.5, 5, 1.7]
+    t0 = 0
+    tf_init = 30
+    pts_per_curve = 20  # 8
+    v0 = np.zeros(3)
+    vf = np.zeros(3)
+    a0 = np.zeros(3)
+    af = np.zeros(3)
+    dt = 0.1
+    boxes = [
+        Box((0, 0, 0), (1, 1, 1)),
+        Box((0.5, 0.5, 0.5), (1.5, 5, 1.5)),
+        Box((1, 4.5, 1), (2, 5.5, 2)),
+    ]
+    n_curves = len(boxes)
+    durations = np.ones(n_curves) * (tf_init - t0) / n_curves
+    curve = free_final_time_spline(
+        p0,
+        pf,
+        t0,
+        tf_init,
+        pts_per_curve,
+        boxes,
+        durations,
+        v0,
+        vf,
+        a0,
+        af,
+        LINEAR_SPEED_LIMIT,
+        LINEAR_ACCEL_LIMIT,
+        timing_atol=0.5,  # Within half a second of optimal
+        debug=True,
+    )
+    traj = traj_from_curve(curve, dt)
+    traj.plot()
+    plot_traj_constraints(
+        traj, None, LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT, None, None
+    )
+    pybullet.connect(pybullet.GUI)
+    traj.visualize(30)
+    animate_path(traj.positions, traj.num_timesteps // 5)
+    input("Animation complete, press Enter to finish")
+
+
 if __name__ == "__main__":
-    main()
+    # _bezier_main()
+    _spline_main()

@@ -107,6 +107,7 @@ def spline_trajectory_with_retiming(
     kappa_min: float = 1e-2,
     omega: float = 3,
     max_iters: int = 10,
+    time_weight: float = 0,
 ) -> tuple[CompositeBezierCurve, float]:
     """Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time
     interval. Use an iterative retiming method to refine the durations for each segment of the trajectory
@@ -136,6 +137,8 @@ def spline_trajectory_with_retiming(
             Must be > 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)
             are more effective otherwise. Defaults to 3.
         max_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
+        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
+            Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
     Returns:
         Tuple of:
@@ -167,6 +170,7 @@ def spline_trajectory_with_retiming(
         af=af,
         v_max=v_max,
         a_max=a_max,
+        time_weight=time_weight,
     )
     # Solve a preliminary trajectory for this initial guess at the durations
     durations = initial_durations
@@ -226,6 +230,7 @@ def _fixed_timing_spline(
     af: Optional[npt.ArrayLike] = None,
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
+    time_weight: float = 0,
 ) -> tuple[CompositeBezierCurve, dict[str, Any]]:
     """Generate a min-jerk spline based on chained Bezier curves through a set of safe boxes, for a fixed time
     interval and fixed durations within each box
@@ -247,6 +252,8 @@ def _fixed_timing_spline(
         af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
         v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
         a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
+        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
+            Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
     Returns:
         Tuple of:
@@ -316,7 +323,8 @@ def _fixed_timing_spline(
         continuity_constraints + bc_constraints + box_constraints + dyn_constraints
     )
     # Complete the problem formulation and solve it
-    objective = cp.Minimize(sum(jc.l2_squared for jc in jerk_curves))
+    jerk = sum(jc.l2_squared for jc in jerk_curves)
+    objective = cp.Minimize(jerk + time_weight * (tf - t0))
     prob = cp.Problem(objective, constraints)
     prob.solve(solver=cp.CLARABEL)
     if prob.status != cp.OPTIMAL:
