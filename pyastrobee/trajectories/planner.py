@@ -143,16 +143,11 @@ def global_planner(
     duration = max(init_pos_duration, init_angular_duration)
     init_curve_durations = duration * init_timing_fractions
 
-    # times_ = np.arange(0, duration + dt, dt)  # DO WE NEED THIS?
-    # n_timesteps = len(times_)
-    n_timesteps = int(np.ceil((duration + dt) / dt))
-
-    pos, vel, accel, times = spline_trajectory_with_retiming(
+    curve, cost = spline_trajectory_with_retiming(
         p0,
         pf,
         t0,
         duration,
-        n_timesteps,
         pts_per_curve,
         box_path,
         init_curve_durations,
@@ -166,12 +161,22 @@ def global_planner(
         omega,
         max_retiming_iters,
     )
+    pos_traj = traj_from_curve(curve, dt)
+    n_timesteps = pos_traj.num_timesteps
     quats = quaternion_interpolation_with_bcs(
         q0, qf, w0, wf, dw0, dwf, duration, n_timesteps
     )
     omega = quats_to_angular_velocities(quats, dt)
     alpha = np.gradient(omega, dt, axis=0)
-    return Trajectory(pos, quats, vel, omega, accel, alpha, times)
+    return Trajectory(
+        pos_traj.positions,
+        quats,
+        pos_traj.linear_velocities,
+        omega,
+        pos_traj.linear_accels,
+        alpha,
+        pos_traj.times,
+    )
 
 
 def local_planner():

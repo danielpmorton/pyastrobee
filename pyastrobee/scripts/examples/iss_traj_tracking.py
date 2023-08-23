@@ -36,12 +36,11 @@ def plan_path(p0, pf, T, n_timesteps):
     path = dfs(graph, names[start_id], names[end_id])
     box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
     init_durations = T / len(box_path) * np.ones(len(box_path))
-    pos, *_ = spline_trajectory_with_retiming(
+    curve, cost = spline_trajectory_with_retiming(
         p0,
         pf,
         0,
         T,
-        n_timesteps,
         8,
         box_path,
         init_durations,
@@ -50,7 +49,7 @@ def plan_path(p0, pf, T, n_timesteps):
         np.zeros(3),
         np.zeros(3),
     )
-    return pos
+    return curve(np.linspace(0, T, n_timesteps))
 
 
 def face_forward_test(record_video: bool = False):

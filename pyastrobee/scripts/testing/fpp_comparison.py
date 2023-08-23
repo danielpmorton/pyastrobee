@@ -58,12 +58,11 @@ def my_method(p0, pf, T, max_retiming_iters):
     graph = compute_iss_graph()
     path = dfs(graph, start, end)
     box_path = [ALL_BOXES[p] for p in path]
-    pos, *_ = spline_trajectory_with_retiming(
+    curve, cost = spline_trajectory_with_retiming(
         p0,
         pf,
         0,
         T,
-        50,
         8,
         box_path,
         np.ones(len(box_path)) * (T / len(box_path)),
@@ -73,7 +72,7 @@ def my_method(p0, pf, T, max_retiming_iters):
         np.zeros(3),
         max_iters=max_retiming_iters,
     )
-    return pos
+    return curve(np.linspace(0, T, 50))
 
 
 def main():

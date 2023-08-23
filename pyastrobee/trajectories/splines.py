@@ -95,7 +95,6 @@ def spline_trajectory_with_retiming(
     pf: npt.ArrayLike,
     t0: float,
     tf: float,
-    n_timesteps: int,
     pts_per_curve: int,
     boxes: list[Box],
     initial_durations: npt.ArrayLike,
@@ -108,7 +107,7 @@ def spline_trajectory_with_retiming(
     kappa_min: float = 1e-2,
     omega: float = 3,
     max_iters: int = 10,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[CompositeBezierCurve, float]:
     """Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time
     interval. Use an iterative retiming method to refine the durations for each segment of the trajectory
 
@@ -121,7 +120,6 @@ def spline_trajectory_with_retiming(
         pf (npt.ArrayLike): Final position, shape (3,)
         t0 (float): Starting time
         tf (float): Ending time
-        n_timesteps (int): Number of timesteps to evaluate
         pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10
         boxes (list[Box]): Sequential list of safe box regions pass through
         initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These
@@ -141,10 +139,9 @@ def spline_trajectory_with_retiming(
 
     Returns:
         Tuple of:
-            np.ndarray: Trajectory positions, shape (n_timesteps, 3)
-            np.ndarray: Trajectory velocities, shape (n_timesteps, 3)
-            np.ndarray: Trajectory accelerations, shape (n_timesteps, 3)
-            np.ndarray: Trajectory times, shape (n_timesteps,)
+            CompositeBezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives
+                can be evaluated using the curve.derivative property
+            float: The optimal cost of the objective function
     """
     # Handle inputs
     if tf <= t0:
@@ -212,11 +209,7 @@ def spline_trajectory_with_retiming(
             "Spline trajectory generation terminated due to reaching the maximum number of iterations"
         )
 
-    # Evaluate the optimal curve and its derivatives at each time
-    times = np.linspace(t0, tf, n_timesteps, endpoint=True)
-    vel_curve = best_curve.derivative
-    accel_curve = vel_curve.derivative
-    return best_curve(times), vel_curve(times), accel_curve(times), times
+    return best_curve, best_info["cost"]
 
 
 def _fixed_timing_spline(
@@ -385,9 +378,10 @@ def _test_spline_trajectory():
     )
     pos_pts = pos_curve(times)
 
-    pos_retimed, *_ = spline_trajectory_with_retiming(
-        p0, pf, t0, tf, n_timesteps, pts_per_curve, boxes, durations, v0, vf, a0, af
+    pos_curve_retimed, cost = spline_trajectory_with_retiming(
+        p0, pf, t0, tf, pts_per_curve, boxes, durations, v0, vf, a0, af
     )
+    pos = pos_curve_retimed(np.linspace(t0, tf, n_timesteps))
 
     pybullet.connect(pybullet.GUI)
     visualize_points(np.vstack([p0, pf]), (0, 0, 1))
@@ -396,12 +390,12 @@ def _test_spline_trajectory():
     simple_traj_color = (0, 0, 1)
     retimed_traj_color = (0, 1, 0)
     visualize_path(pos_pts, 10, simple_traj_color)
-    visualize_path(pos_retimed, 10, retimed_traj_color)
+    visualize_path(pos, 10, retimed_traj_color)
     pybullet.addUserDebugText("Original curve", [0, 0, -0.2], simple_traj_color)
     pybullet.addUserDebugText("Retimed curve", [0, 0, -0.4], retimed_traj_color)
     input()
 
 
 if __name__ == "__main__":
-    _test_plotting_spline()
+    # _test_plotting_spline()
     _test_spline_trajectory()
