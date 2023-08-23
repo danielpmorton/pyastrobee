@@ -70,7 +70,7 @@ def my_method(p0, pf, T, max_retiming_iters):
         np.zeros(3),
         np.zeros(3),
         np.zeros(3),
-        max_iters=max_retiming_iters,
+        max_retiming_iters=max_retiming_iters,
     )
     return curve(np.linspace(0, T, 50))
 

@@ -1,6 +1,9 @@
-"""Preliminary test to see if we can call our planning method with a variable total duration
+"""Generating trajectories with a free final time
 
-WORK IN PROGRESS
+We optimize using the following cost function: (integral of jerk l2 norm) + (time weight parameter) * (total duration)
+
+The weighting on the time component of this cost can be adjusted based on what component matters more. In general, 
+a value of 1e-4 appears to put the two components of the cost (jerk and time) on the same order of magnitude
 
 Notes on the search method for the duration:
 - We know that the jerk function is a quadratic, and if we add an affine factor based on the total duration
@@ -18,15 +21,14 @@ Notes on the search method for the duration:
   functions). Maybe there is a better formulation out there...
 """
 
-from typing import Optional, Union, Callable, Any
+from typing import Optional, Callable, Any
 
-import cvxpy as cp
 import numpy as np
 import numpy.typing as npt
 import pybullet
 import matplotlib.pyplot as plt
 
-from pyastrobee.trajectories.trajectory import Trajectory, plot_traj_constraints
+from pyastrobee.trajectories.trajectory import plot_traj_constraints
 from pyastrobee.trajectories.bezier import BezierCurve, bezier_trajectory
 from pyastrobee.trajectories.splines import (
     CompositeBezierCurve,
@@ -51,7 +53,8 @@ def left_quadratic_fit_search(
 
     Args:
         f (Callable[[float], float  |  tuple[float, Any]]): Univariate function to optimize, callable as f(x).
-            The return must have the cost of the evaluation as the first output.
+            The return must have the cost of the evaluation as the first output. Any additional outputs will be stored
+            and the best will be returned at the end of the search
         x_init (float): Initial location to start the search
         dx_tol (float): Stopping tolerance on evaluation points: Terminate if the change between consecutive
             evaluation points is less than this tolerance
@@ -171,10 +174,36 @@ def free_final_time_bezier(
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
     time_weight: float = 1e-4,
-    timing_atol: float = 1e-2,
+    timing_atol: float = 0.1,
     max_iters: int = 15,
     debug: bool = False,
-):
+) -> BezierCurve:
+    """Optimize a Bezier curve trajectory to balance minimizing jerk with minimizing the total duration
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        t0 (float): Starting time
+        tf (float): Initial guess at the final time
+        n_control_pts (int): Number of control points for the Bezier curve. Must be >= to the number of constraints,
+            and should not be too large (>15ish) as this can reduce optimization performance. 6-10 is usually good
+        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
+        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
+        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
+        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
+        box (Optional[Box]): Box constraint on (lower, upper) position bounds. Defaults to None (unconstrained)
+        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
+        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
+        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
+            Defaults to 1e-4. (this was observed to give duration roughly the same weighting as jerk)
+        timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
+            Defaults to 0.1.
+        max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
+        debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
+
+    Returns:
+        BezierCurve: The optimal curve
+    """
     curve_kwargs = dict(
         p0=p0,
         pf=pf,
@@ -195,7 +224,10 @@ def free_final_time_bezier(
         # Keep track of the costs per time to plot afterwards
         costs_log: dict[float, float] = {}
 
-    def curve_wrapper(t: float) -> tuple[float, BezierCurve]:
+    # Wrapper around the bezier trajectory function so that we can pop this into our quadratic fit search
+    # method with the expected inputs/outputs, and handle when we can't solve for the curve
+    # e.g. time as the input, and output the cost and the solved curve
+    def _curve_wrapper(t: float) -> tuple[float, BezierCurve]:
         kwargs = curve_kwargs | {"tf": t}
         print("Evaluating time: ", t)
         try:
@@ -203,6 +235,7 @@ def free_final_time_bezier(
         except OptimizationError:
             curve, cost = None, np.inf
         if debug:
+            # Print info on the breakdown of the cost between jerk and time
             print(
                 "Cost: ",
                 cost,
@@ -216,10 +249,11 @@ def free_final_time_bezier(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        curve_wrapper, tf, timing_atol, max_iters
+        _curve_wrapper, tf, timing_atol, max_iters
     )
     best_curve = output[0]
     if debug:
+        print("Optimal time: ", t, " yields cost: ", cost)
         _plot_optimization_data(costs_log)
 
     return best_curve
@@ -243,10 +277,43 @@ def free_final_time_spline(
     omega: float = 3,
     max_retiming_iters: int = 10,
     time_weight: float = 1e-4,
-    timing_atol: float = 1e-2,
+    timing_atol: float = 0.1,
     max_iters: int = 15,
     debug: bool = False,
-):
+) -> CompositeBezierCurve:
+    """Optimize a spline trajectory to balance minimizing jerk with minimizing the total duration
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        t0 (float): Starting time
+        tf (float): Ending time
+        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10
+        boxes (list[Box]): Sequential list of safe box regions pass through
+        initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These
+            will be refined during the retiming process. Shape (num_boxes,)
+        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)
+        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)
+        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)
+        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)
+        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)
+        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
+        kappa_min (float, optional): Retiming trust region parameter: Defines the maximum change in adjacent scaling
+            factors. Defaults to 1e-2.
+        omega (float, optional): Retiming parameter: Defines the rate at which kappa decays after each iteration.
+            Must be > 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)
+            are more effective otherwise. Defaults to 3.
+        max_retiming_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
+        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
+            Defaults to 1e-4 (this was observed to give duration roughly the same weighting as jerk)
+        timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
+            Defaults to 0.1.
+        max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
+        debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
+
+    Returns:
+        CompositeBezierCurve: The optimal curve
+    """
     curve_kwargs = dict(
         p0=p0,
         pf=pf,
@@ -263,29 +330,33 @@ def free_final_time_spline(
         a_max=a_max,
         kappa_min=kappa_min,
         omega=omega,
-        max_iters=max_retiming_iters,  # improve this
+        max_retiming_iters=max_retiming_iters,
         time_weight=time_weight,
     )
 
-    # TODO improve this
+    # As we vary the final time, we need to make sure that the durations per box
+    # also get updated. So, use the fractional durations and rescale based on the total time
     init_duration_fractions = initial_durations / (tf - t0)
 
     if debug:
         # Keep track of the costs per time to plot afterwards
         costs_log: dict[float, float] = {}
 
-    def curve_wrapper(t: float) -> tuple[float, CompositeBezierCurve]:
+    # Wrapper around the spline trajectory function so that we can pop this into our quadratic fit search
+    # method with the expected inputs/outputs, and handle when we can't solve for the curve
+    # e.g. time as the input, and output the cost and the solved curve
+    def _curve_wrapper(t: float) -> tuple[float, CompositeBezierCurve]:
         kwargs = curve_kwargs | {
             "tf": t,
             "initial_durations": t * init_duration_fractions,
         }
-
-        print("Evaluating time: ", t)
+        print("Evaluating duration: ", t)
         try:
             curve, cost = spline_trajectory_with_retiming(**kwargs)
         except OptimizationError:
             curve, cost = None, np.inf
         if debug:
+            # Print info on the breakdown of the cost between jerk and time
             print(
                 "Cost: ",
                 cost,
@@ -299,10 +370,11 @@ def free_final_time_spline(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        curve_wrapper, tf, timing_atol, max_iters
+        _curve_wrapper, tf, timing_atol, max_iters
     )
     best_curve = output[0]
     if debug:
+        print("Optimal time: ", t, " yields cost: ", cost)
         _plot_optimization_data(costs_log)
 
     return best_curve

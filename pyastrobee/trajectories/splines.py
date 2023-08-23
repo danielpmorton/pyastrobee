@@ -106,7 +106,7 @@ def spline_trajectory_with_retiming(
     a_max: Optional[float] = None,
     kappa_min: float = 1e-2,
     omega: float = 3,
-    max_iters: int = 10,
+    max_retiming_iters: int = 10,
     time_weight: float = 0,
 ) -> tuple[CompositeBezierCurve, float]:
     """Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time
@@ -136,7 +136,7 @@ def spline_trajectory_with_retiming(
         omega (float, optional): Retiming parameter: Defines the rate at which kappa decays after each iteration.
             Must be > 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)
             are more effective otherwise. Defaults to 3.
-        max_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
+        max_retiming_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
             Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
@@ -178,7 +178,7 @@ def spline_trajectory_with_retiming(
     best_curve, best_info = _fixed_timing_spline(**curve_kwargs)
 
     kappa = 1  # Initialize the trust region parameter
-    for _ in range(max_iters):
+    for _ in range(max_retiming_iters):
         # Retime.
         try:
             new_durations, kappa_max = retiming(
@@ -198,7 +198,7 @@ def spline_trajectory_with_retiming(
         # Improve Bezier curves based on the retiming
         curve_kwargs["durations"] = new_durations
         new_curve, new_info = _fixed_timing_spline(**curve_kwargs)
-        print("Cost: ", new_info["cost"])
+        print("Retiming cost: ", new_info["cost"])
         if new_info["cost"] < best_info["cost"]:  # Accept trajectory with new durations
             durations = new_durations
             best_info = new_info
@@ -326,7 +326,10 @@ def _fixed_timing_spline(
     jerk = sum(jc.l2_squared for jc in jerk_curves)
     objective = cp.Minimize(jerk + time_weight * (tf - t0))
     prob = cp.Problem(objective, constraints)
-    prob.solve(solver=cp.CLARABEL)
+    try:
+        prob.solve(solver=cp.CLARABEL)
+    except cp.error.SolverError as e:
+        raise OptimizationError("Cannot generate the trajectory - Solver error!") from e
     if prob.status != cp.OPTIMAL:
         raise OptimizationError(
             f"Unable to generate the trajectory (solver status: {prob.status}).\n"
