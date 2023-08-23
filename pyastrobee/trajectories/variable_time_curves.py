@@ -154,7 +154,6 @@ def left_quadratic_fit_search(
     return best["x"], best["cost"], best["out"]
 
 
-# TODO can we separate out the bisection mechanic so that we can use this for the spline as well?
 def bezier_with_retiming(
     p0: npt.ArrayLike,
     pf: npt.ArrayLike,
@@ -168,9 +167,10 @@ def bezier_with_retiming(
     box: Optional[Box] = None,
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
-    time_weight: float = 0.1,  # FIGURE THIS OUT
-    reduction_tol: float = 1e-2,
+    time_weight: float = 1e-4,
+    timing_atol: float = 1e-2,
     max_iters: int = 15,
+    debug: bool = False,
 ):
     curve_kwargs = dict(
         p0=p0,
@@ -188,26 +188,66 @@ def bezier_with_retiming(
         time_weight=time_weight,
     )
 
-    costs = {}  # TODO remove the plotting code
+    if debug:
+        # Keep track of the costs per time to plot afterwards
+        costs_log: dict[float, float] = {}
 
-    def _f(t):
+    def curve_wrapper(t: float) -> tuple[float, BezierCurve]:
         kwargs = curve_kwargs | {"tf": t}
         print("Evaluating time: ", t)
         try:
             curve, cost = bezier_trajectory(**kwargs)
         except OptimizationError:
             curve, cost = None, np.inf
-        costs[t] = cost
+        if debug:
+            print(
+                "Cost: ",
+                cost,
+                " Jerk: ",
+                cost - time_weight * t,
+                " Time: ",
+                time_weight * t,
+            )
+            costs_log[t] = cost
         # The quadratic search assumes that cost is the first output
         return cost, curve
 
-    t, cost, output = left_quadratic_fit_search(_f, tf, 1e-1, 20)
+    t, cost, output = left_quadratic_fit_search(
+        curve_wrapper, tf, timing_atol, max_iters
+    )
     best_curve = output[0]
-    fig = plt.figure()
-    ts, cs = zip(*costs.items())
-    plt.scatter(ts, cs)
+    if debug:
+        _plot_optimization_data(costs_log)
 
     return best_curve
+
+
+def _plot_optimization_data(cost_log: dict[float, float], show: bool = True):
+    """Helper function to plot the time optimization results when debugging
+
+    Args:
+        cost_log (dict[float, float]): Costs for each duration. Keys: times, Values: costs
+        show (bool, optional): Whether or not to show the plot. Defaults to True.
+    """
+    fig = plt.figure()
+    times, costs = zip(*cost_log.items())
+    plt.subplot(1, 2, 1)
+    plt.scatter(times, costs)
+    sort_idxs = np.argsort(times)
+    times_sorted = np.array(times)[sort_idxs]
+    costs_sorted = np.array(costs)[sort_idxs]
+    plt.plot(times_sorted, costs_sorted, "--")
+    plt.xlabel("Time")
+    plt.ylabel("Cost")
+    plt.title("Cost vs duration")
+    plt.subplot(1, 2, 2)
+    plt.plot(range(len(costs)), costs)
+    plt.scatter(range(len(costs)), costs)
+    plt.xlabel("Iteration")
+    plt.ylabel("Cost")
+    plt.title("Convergence")
+    if show:
+        plt.show()
 
 
 def main():
@@ -221,7 +261,6 @@ def main():
     vf = (0, 0, 0)
     a0 = (0, 0, 0)
     af = (0, 0, 0)
-    time_weight = 0  # 0.01
     print("Speed limit: ", LINEAR_SPEED_LIMIT)
     print("Accel limit: ", LINEAR_ACCEL_LIMIT)
     # curve = optimal_bezier(
@@ -238,7 +277,9 @@ def main():
         None,
         LINEAR_SPEED_LIMIT,
         LINEAR_ACCEL_LIMIT,
-        time_weight,
+        # time_weight,
+        timing_atol=0.5,  # Within half a second of optimal
+        debug=True,
     )
     traj = traj_from_curve(curve, dt)
     traj.plot()
