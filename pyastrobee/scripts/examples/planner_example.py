@@ -17,12 +17,8 @@ from pyastrobee.config.astrobee_motion import (
 )
 
 
-def main():
-    """Generate trajectories between the same two points using Tobia's method and mine"""
-
+def _run_test(p0, pf):
     np.random.seed(0)
-    p0 = ALL_BOXES["jpm"].center
-    pf = ALL_BOXES["cupola"].center
     q0 = np.array([0, 0, 0, 1])
     qf = random_quaternion()
     dt = 0.1  # Just for testing purposes
@@ -53,5 +49,26 @@ def main():
     client.disconnect()
 
 
+def long_traj_test():
+    """Plan a long trajectory across the entirety of the ISS"""
+
+    p0 = ALL_BOXES["jpm"].center
+    pf = ALL_BOXES["cupola"].center
+    _run_test(p0, pf)
+
+
+def short_traj_test():
+    """Plan a short trajectory within a single module of the ISS"""
+
+    p0 = ALL_BOXES["jpm"].center + 0.75 * (
+        ALL_BOXES["jpm"].lower - ALL_BOXES["jpm"].center
+    )
+    pf = ALL_BOXES["jpm"].center + 0.75 * (
+        ALL_BOXES["jpm"].upper - ALL_BOXES["jpm"].center
+    )
+    _run_test(p0, pf)
+
+
 if __name__ == "__main__":
-    main()
+    long_traj_test()
+    # short_traj_test()
