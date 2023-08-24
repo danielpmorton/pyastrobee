@@ -28,7 +28,7 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
-from pyastrobee.trajectories.planner import plan_trajectory
+from pyastrobee.trajectories.planner import local_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
@@ -100,7 +100,7 @@ def mpc_main(
     tracking_controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, client=client
     )
-    nominal_traj = plan_trajectory(
+    nominal_traj = local_planner(
         start_pose[:3],
         start_pose[3:],
         np.zeros(3),

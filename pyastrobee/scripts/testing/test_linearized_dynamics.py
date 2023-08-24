@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.trajectories.planner import plan_trajectory
+from pyastrobee.trajectories.planner import local_planner
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
@@ -41,7 +41,7 @@ def test_state_space(use_sim_inertial_props: bool = False):
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     pos, orn, vel, omega = robot.dynamics_state
-    traj = plan_trajectory(
+    traj = local_planner(
         pos,
         orn,
         vel,

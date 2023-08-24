@@ -5,7 +5,7 @@ import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.cargo_bag import CargoBag
-from pyastrobee.trajectories.planner import plan_trajectory
+from pyastrobee.trajectories.planner import local_planner
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.rotations import Rx, rmat_to_quat
 from pyastrobee.utils.bullet_utils import initialize_pybullet
@@ -53,7 +53,7 @@ def independent_example():
     controller_2 = ForceTorqueController(
         robot_2.id, robot_2.mass, robot_2.inertia, kp, kv, kq, kw, dt
     )
-    traj_1 = plan_trajectory(
+    traj_1 = local_planner(
         start_pose_1[:3],
         start_pose_1[3:],
         start_vel_1,
@@ -69,7 +69,7 @@ def independent_example():
         duration,
         dt,
     )
-    traj_2 = plan_trajectory(
+    traj_2 = local_planner(
         start_pose_2[:3],
         start_pose_2[3:],
         start_vel_1,
@@ -132,7 +132,7 @@ def bag_example():
     controller_2 = ForceTorqueController(
         robot_2.id, robot_2.mass, robot_2.inertia, kp, kv, kq, kw, dt
     )
-    traj_1 = plan_trajectory(
+    traj_1 = local_planner(
         start_pose_1[:3],
         start_pose_1[3:],
         start_vel_1,
@@ -148,7 +148,7 @@ def bag_example():
         duration,
         dt,
     )
-    traj_2 = plan_trajectory(
+    traj_2 = local_planner(
         start_pose_2[:3],
         start_pose_2[3:],
         start_vel_1,
@@ -192,7 +192,7 @@ def leader_follower_example():
     end_accel_1 = np.zeros(3)
     end_alpha_1 = np.zeros(3)
 
-    leader_traj = plan_trajectory(
+    leader_traj = local_planner(
         start_pose_1[:3],
         start_pose_1[3:],
         start_vel_1,
@@ -254,7 +254,7 @@ def dual_trajectory_example():
     end_accel_1 = np.zeros(3)
     end_alpha_1 = np.zeros(3)
 
-    reference_traj = plan_trajectory(
+    reference_traj = local_planner(
         start_pose_1[:3],
         start_pose_1[3:],
         start_vel_1,

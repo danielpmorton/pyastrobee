@@ -9,7 +9,7 @@ import numpy.typing as npt
 
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.trajectories.planner import plan_trajectory
+from pyastrobee.trajectories.planner import local_planner
 
 
 def generate_trajs(
@@ -67,7 +67,7 @@ def generate_trajs(
     if include_nominal_traj:
         # Let the first generated trajectory use the mean of all of the distributions
         trajs.append(
-            plan_trajectory(
+            local_planner(
                 cur_pos,
                 cur_orn,
                 cur_vel,
@@ -114,7 +114,7 @@ def generate_trajs(
     )
     for i in range(n_samples):
         trajs.append(
-            plan_trajectory(
+            local_planner(
                 cur_pos,
                 cur_orn,
                 cur_vel,

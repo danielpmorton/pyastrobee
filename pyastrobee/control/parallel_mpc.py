@@ -19,7 +19,7 @@ from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.trajectories.planner import plan_trajectory
+from pyastrobee.trajectories.planner import local_planner
 
 
 def parallel_mpc_main(
@@ -48,7 +48,7 @@ def parallel_mpc_main(
 
     # Generate nominal trajectory
     dt = main_env.client.getPhysicsEngineParameters()["fixedTimeStep"]
-    nominal_traj = plan_trajectory(
+    nominal_traj = local_planner(
         start_pose[:3],
         start_pose[3:],
         np.zeros(3),

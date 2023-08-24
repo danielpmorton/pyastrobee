@@ -34,7 +34,7 @@ from pyastrobee.trajectories.variable_time_curves import (
 )
 
 
-def plan_trajectory(
+def local_planner(
     p0: npt.ArrayLike,
     q0: npt.ArrayLike,
     v0: Optional[npt.ArrayLike],
@@ -72,6 +72,7 @@ def plan_trajectory(
         Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
     """
     # Min-jerk position traj
+    # Don't need a ton of control points because we're not enforcing constraints
     n_control_pts = 8
     curve, _ = bezier_trajectory(
         p0, pf, 0, duration, n_control_pts, v0, vf, a0, af, time_weight=0
@@ -202,7 +203,3 @@ def global_planner(
         alpha,
         pos_traj.times,
     )
-
-
-def local_planner():
-    pass
