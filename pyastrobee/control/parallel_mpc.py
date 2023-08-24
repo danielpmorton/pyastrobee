@@ -19,13 +19,12 @@ from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.trajectories.planner import local_planner
+from pyastrobee.trajectories.planner import local_planner, global_planner
 
 
 def parallel_mpc_main(
     start_pose: npt.ArrayLike,
     goal_pose: npt.ArrayLike,
-    duration: float,
     n_vec_envs: int,
     debug: bool = False,
 ):
@@ -48,20 +47,11 @@ def parallel_mpc_main(
 
     # Generate nominal trajectory
     dt = main_env.client.getPhysicsEngineParameters()["fixedTimeStep"]
-    nominal_traj = local_planner(
+    nominal_traj = global_planner(
         start_pose[:3],
         start_pose[3:],
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
         goal_pose[:3],
         goal_pose[3:],
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        duration,
         dt,
     )
 
@@ -70,7 +60,7 @@ def parallel_mpc_main(
     traj_end_time = nominal_traj.times[-1]
     max_stopping_time = 3  # seconds
     max_time = traj_end_time + max_stopping_time
-    target_rollout_duration = 1 / 3  # seconds
+    target_rollout_duration = 1  # seconds
 
     # Init stopping mode for when we get to the end of the trajectory
     stopping = False
@@ -155,10 +145,9 @@ def _test_parallel_mpc():
     """Quick function to test that the parallel MPC is working as expected"""
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
-    duration = 5
     n_vec_envs = 5
     debug = True
-    parallel_mpc_main(start_pose, end_pose, duration, n_vec_envs, debug)
+    parallel_mpc_main(start_pose, end_pose, n_vec_envs, debug)
 
 
 if __name__ == "__main__":

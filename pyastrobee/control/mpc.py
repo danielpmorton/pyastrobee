@@ -28,7 +28,7 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
-from pyastrobee.trajectories.planner import local_planner
+from pyastrobee.trajectories.planner import local_planner, global_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
@@ -60,7 +60,6 @@ def init(
 def mpc_main(
     start_pose: npt.ArrayLike,
     goal_pose: npt.ArrayLike,
-    duration: float,
     debug: bool = False,
 ):
     # Assign constants (TODO decide which of these should be inputs, if any)
@@ -86,7 +85,7 @@ def mpc_main(
     # Timestep (based on pybullet physics)
     dt = 1 / 350
     # Number of steps to execute in a rollout
-    n_rollout_steps = 20
+    n_rollout_steps = 350
     # Number of trajectories to consider within an MPC iteration
     n_candidate_trajs = 5
     # Tolerance on dynamics errors for determining if we've stopped the Astrobee
@@ -100,20 +99,11 @@ def mpc_main(
     tracking_controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, client=client
     )
-    nominal_traj = local_planner(
+    nominal_traj = global_planner(
         start_pose[:3],
         start_pose[3:],
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
         goal_pose[:3],
         goal_pose[3:],
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        np.zeros(3),
-        duration,
         dt,
     )
     if debug:
@@ -221,8 +211,7 @@ def mpc_main(
 def _test_mpc(debug=False):
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
-    duration = 5
-    mpc_main(start_pose, end_pose, duration, debug)
+    mpc_main(start_pose, end_pose, debug)
 
 
 if __name__ == "__main__":
