@@ -17,6 +17,7 @@ So, instead we'll need to use a tetrahedral mesh in `.VTK` format
 9. File -> Export -> Specify the filename with a .VTK extension. If a VTK options window shows up, keep it in ASCII format. The "save all elements" checkbox does not seem to make a difference
 
 This `.VTK` file will look something like:
+
 ```
 # vtk DataFile Version 2.0
 bag_remesh, Created by Gmsh 4.11.1 
@@ -54,6 +55,7 @@ CELL_TYPES 2577
 Pybullet will not be able to load this file right now, because it is a combination of surface (triangle) meshes and volume (tetrahedral) meshes. But, it is not too difficult to modify this file to remove the surface mesh and just leave behind the tet mesh. 
 
 Before this, we need to understand the file format:
+
 - The line starting with `CELLS` has two values corresponding to
   - `NUM_CELLS`: The total number of (surface + volume) cells in the mesh
   - `LIST_SIZE`: The number of values in the `CELLS` list. This is equal to `4*NUM_TRIS + 5*NUM_TETS`
@@ -61,8 +63,8 @@ Before this, we need to understand the file format:
 - The `CELL_TYPES` line contains the same value (`NUM_CELLS`) as was seen in `CELLS`
 - Each line in `CELL_TYPES` is a `5` for a triangular cell and `10` for a tetrahedral cell.
 
-
 To delete the surface (triangular) mesh, 
+
 1. Count the number of triangular cells (`NUM_TRIS`)
 2. Update the counts:
    1. `NUM_CELLS -= NUM_TRIS`
@@ -75,6 +77,7 @@ After these modifications, Pybullet should be able to successfully import the me
 ## Texturing
 
 To texture a tetrahedral mesh, there are two options:
+
 1. Generate the tetrahedral mesh from an OBJ which already has the correct UV mapping for a specified texture file, then apply the texture with `loadTexture` / `changeVisualShape`
   -  This *should* work given some preliminary tests with a VTK with a random UV mapping. But, this hasn't been fully tested yet (as of 4/10/23)
 2. Use the texture from an OBJ by loading both the OBJ and VTK together

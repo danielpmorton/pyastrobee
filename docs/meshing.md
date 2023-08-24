@@ -3,6 +3,7 @@
 This document will refer mainly to triangular meshes (OBJ), as opposed to tetrahedral meshes (VTK). For more info on tet meshes, see [here](../docs/tet_meshing.md). 
 
 ## Steps
+
 1. Create CAD model (in whatever software works best)
    1. If round corners are desired over a purely rectangular body, use Fusion (they have a simple freeform modeler that works well for cargo-bag-like bodies)
    2. Try to design the part so that the center of mass lies at the origin. This is because if you load a (rigid) OBJ into Pybullet, it will specify its center of mass wherever the origin of the mesh is (which may be undesirable behavior depending on the part's geometry).
@@ -22,6 +23,7 @@ This document will refer mainly to triangular meshes (OBJ), as opposed to tetrah
 ## Debugging
 
 Does the mesh...
+
 - Seem to be collapsing/shrinking in on itself?
   - This could be an issue with self-collision. Try turning this to `False`
 - Look like it's vibrating all over the place?

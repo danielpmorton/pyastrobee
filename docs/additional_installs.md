@@ -1,6 +1,7 @@
 # Installing additional software
 
 ## Prerequisites:
+
 - Ubuntu 20.04
   - WSL2 seems to work for some of the general pybullet functionality but the full Gazebo/ROS setup with NASA's astrobee code is (currently) untested
 - No non-Noetic versions of ROS installed
@@ -21,7 +22,9 @@ Root access is required for both the ROS install and the Astrobee install.
 ```
 curl https://pyenv.run | bash
 ```
+
 Then, set up `~/.bashrc` -- Make sure the following lines are included
+
 ```
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
@@ -30,6 +33,7 @@ eval "$(pyenv virtualenv-init -)"
 ```
 
 If the Pyenv Python install fails and warns about things not being installed, run this command to make sure the dependencies are up to date. (Then, retry the command that failed)
+
 ```
 sudo apt-get update; sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```
@@ -39,6 +43,7 @@ sudo apt-get update; sudo apt-get install --no-install-recommends make build-ess
 ```
 wget -c https://raw.githubusercontent.com/qboticslabs/ros_install_noetic/master/ros_install_noetic.sh && chmod +x ./ros_install_noetic.sh && ./ros_install_noetic.sh
 ```
+
 Refer to http://wiki.ros.org/noetic/Installation/Ubuntu for more info
 
 ## OpenGL
@@ -48,7 +53,9 @@ sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 ```
 
 ## Bullet
+
 Make sure numpy and OpenGL are installed first!
+
 ```
 cd $HOME/software
 git clone https://github.com/bulletphysics/bullet3
@@ -67,11 +74,11 @@ sudo snap install blender --classic
 ```
 
 If snap is not available, 
+
 1. Go to https://www.blender.org/download/
 2. Download the Linux file
 3. Extract the file to `$HOME/software`
 4. Run via the `blender` executable file in the blender folder (`chmod u+x blender` if it's not executable)
-
 
 ## V-HACD
 
@@ -90,7 +97,6 @@ cmake --build build
 3. Move the file to `$HOME/software`
 4. `chmod u+x` the AppImage to make it executable
 
-
 ## Mujoco
 
 Download the source code (mostly just to use as a reference for now):
@@ -104,7 +110,6 @@ Get the pre-built binaries:
 
 1. Download the latest `linux-x86_64.tar.gz` file from  https://github.com/deepmind/mujoco/releases
 2. Extract the contents to `$HOME/software`
-
 
 ## Assimp
 
@@ -127,6 +132,7 @@ sudo snap install --classic code
 ```
 
 If snap is not available:
+
 ```
 sudo apt-get install wget gpg
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg

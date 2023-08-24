@@ -56,6 +56,7 @@ Certain texture PNG images are unable to be loaded into pybullet. After some deb
 To do so, import each problematic PNG into Gimp and then export/overwrite the image to the same location, with the `pixelformat` dropdown set to `8bpc RGBA`
 
 Problematic images:
+
 - `Generic_Intersection.png`
 - `Node2_Interior_Racks.png`
 - `Node2_Bulkheads.png`
@@ -94,8 +95,8 @@ If you use this script, and it runs without issue, you can safely skip steps 3 a
     cd ~/pyastrobee/pyastrobee/assets/meshes/iss/obj/cupola
     ./../../../software/bullet3/build_cmake/Extras/obj2sdf/App_obj2sdf --fileName="cupola.obj"
     ```
-This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into the `obj/(module)` folder.
 
+This will add `newsdf.sdf` and multiple `part*.obj` files, one per texture, into the `obj/(module)` folder.
 
 ## 4. VHACD
 
@@ -114,11 +115,13 @@ Refine VHACD
 - The VHACD output will most likely *not* be perfect. There seems to be no exact combination of parameters that leads to an exact decomposition of the ISS (see the [vhacd readme](https://github.com/kmammou/v-hacd) for more info on these). In particular, VHACD tends to poorly represent the corridors between the modules, leading to a very tight pathway. So, to fix this, open the `decomp.obj` VHACD result for each module in Blender and update the file manually (as in, replace any "bad" convex hulls with simple objects in Blender, like rectangular prisms).
 
 Update the paths
+
 - The paths at the top of the OBJ/MTL files from this output (`part0`, `part1`, ...) will be *absolute* paths, but pybullet works best with these as *relative* paths. These will need to be manually modified with a quick directory search/replace. For MTL files especially, ensure that these are pointing to files inside the `obj/textures` directory
 
 ## 6. Importing into Pybullet
 
 For each module, 
+
 - For the first OBJ file, load it as a visual shape. Pybullet will see the associated MTL file in the same directory and apply the texture. For the collision body, load the full VHACD result for the entire module.
 - For each other OBJ file, load the visual shape as before, but set the collision body to `-1`, so that it doesn't load any collision info
 

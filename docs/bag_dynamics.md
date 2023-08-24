@@ -16,6 +16,7 @@ H  |  .+--+---+
 ```
 
 The CAD model (and the mesh) has the following dimensions:
+
 ```
 L = 50 cm (0.50 m)
 W = 25 cm (0.25 m)
