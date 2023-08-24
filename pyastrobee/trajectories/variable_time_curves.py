@@ -336,7 +336,7 @@ def free_final_time_spline(
 
     # As we vary the final time, we need to make sure that the durations per box
     # also get updated. So, use the fractional durations and rescale based on the total time
-    init_duration_fractions = initial_durations / (tf_init - t0)
+    duration_fractions = initial_durations / (tf_init - t0)
 
     if debug:
         # Keep track of the costs per time to plot afterwards
@@ -346,13 +346,16 @@ def free_final_time_spline(
     # method with the expected inputs/outputs, and handle when we can't solve for the curve
     # e.g. time as the input, and output the cost and the solved curve
     def _curve_wrapper(t: float) -> tuple[float, CompositeBezierCurve]:
+        nonlocal duration_fractions
         kwargs = curve_kwargs | {
             "tf": t,
-            "initial_durations": t * init_duration_fractions,
+            "initial_durations": t * duration_fractions,
         }
         print("Evaluating duration: ", t)
         try:
             curve, cost = spline_trajectory_with_retiming(**kwargs)
+            # Update our understanding of the best curve durations based on the retiming process
+            duration_fractions = curve.segment_durations / curve.duration
         except OptimizationError:
             curve, cost = None, np.inf
         if debug:

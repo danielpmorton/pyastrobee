@@ -45,7 +45,8 @@ class CompositeBezierCurve:
         self.a = beziers[0].a
         self.b = beziers[-1].b
         self.duration = self.b - self.a
-        self.transition_times = [self.a] + [bez.b for bez in beziers]
+        self.transition_times = np.array([self.a] + [bez.b for bez in beziers])
+        self.segment_durations = np.array([bez.duration for bez in beziers])
 
     def find_segment(self, t):
         # return min(bisect(self.transition_times, t) - 1, self.N - 1)
