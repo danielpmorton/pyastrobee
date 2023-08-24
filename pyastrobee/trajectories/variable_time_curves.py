@@ -56,7 +56,7 @@ def left_quadratic_fit_search(
             The return must have the cost of the evaluation as the first output. Any additional outputs will be stored
             and the best will be returned at the end of the search
         x_init (float): Initial location to start the search
-        dx_tol (float): Stopping tolerance on evaluation points: Terminate if the change between consecutive
+        dx_tol (float): Stopping tolerance on evaluation points: Terminate if the percent change between consecutive
             evaluation points is less than this tolerance
         max_iters (int): Maximum iterations of the algorithm (if the stopping tolerance is not achieved)
 
@@ -151,7 +151,7 @@ def left_quadratic_fit_search(
                 if yx < yc:
                     c, yc = x, yx
         # Termination criteria: if our evaluation point update has shrunk to within some tolerance
-        if x_prev is not None and abs(x - x_prev) < dx_tol:
+        if x_prev is not None and abs((x - x_prev) / x_prev) < dx_tol:
             break
         x_prev = x
 
@@ -174,7 +174,7 @@ def free_final_time_bezier(
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
     time_weight: float = 1e-4,
-    timing_atol: float = 0.5,
+    timing_rtol: float = 0.01,
     max_iters: int = 15,
     debug: bool = False,
 ) -> BezierCurve:
@@ -196,8 +196,8 @@ def free_final_time_bezier(
         a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
             Defaults to 1e-4. (this was observed to give duration roughly the same weighting as jerk)
-        timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
-            Defaults to 0.5. (within half a second of optimality)
+        timing_rtol (float, optional): Tolerance on the free-final-time optimization. Defaults to 0.01
+            (within 1% of the optimal time)
         max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
         debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
 
@@ -249,7 +249,7 @@ def free_final_time_bezier(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        _curve_wrapper, tf_init, timing_atol, max_iters
+        _curve_wrapper, tf_init, timing_rtol, max_iters
     )
     best_curve = output[0]
     if debug:
@@ -277,7 +277,7 @@ def free_final_time_spline(
     omega: float = 3,
     max_retiming_iters: int = 10,
     time_weight: float = 1e-4,
-    timing_atol: float = 0.5,
+    timing_rtol: float = 0.01,
     max_iters: int = 15,
     debug: bool = False,
 ) -> CompositeBezierCurve:
@@ -306,8 +306,8 @@ def free_final_time_spline(
         max_retiming_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
             Defaults to 1e-4 (this was observed to give duration roughly the same weighting as jerk)
-        timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
-            Defaults to 0.5. (within half a second of optimality)
+        timing_rtol (float, optional): Tolerance on the free-final-time optimization. Defaults to 0.01
+            (within 1% of the optimal time)
         max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
         debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
 
@@ -373,7 +373,7 @@ def free_final_time_spline(
         return cost, curve
 
     t, cost, output = left_quadratic_fit_search(
-        _curve_wrapper, tf_init, timing_atol, max_iters
+        _curve_wrapper, tf_init, timing_rtol, max_iters
     )
     best_curve = output[0]
     if debug:

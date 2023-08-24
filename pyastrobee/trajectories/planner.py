@@ -95,17 +95,6 @@ def local_planner(
     )
 
 
-# WORK IN PROGRESS
-
-# TODO it doesn't really make a ton of sense to worry about the retiming process when we're trying to figure
-# out what time scales are feasible with the constraints...
-# Can we only retime once we're within some tolerance of the optimal final time?
-
-# TODO use rtol instead of atol with the timing... half of a second makes sense for short bezier curve trajs
-# but for long splines it doesn't make any sense
-# Note that the longest curves through the ISS seem to take about 200 seconds to complete
-
-
 def global_planner(
     p0: npt.ArrayLike,
     q0: npt.ArrayLike,
