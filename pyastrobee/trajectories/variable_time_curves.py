@@ -174,7 +174,7 @@ def free_final_time_bezier(
     v_max: Optional[float] = None,
     a_max: Optional[float] = None,
     time_weight: float = 1e-4,
-    timing_atol: float = 0.1,
+    timing_atol: float = 0.5,
     max_iters: int = 15,
     debug: bool = False,
 ) -> BezierCurve:
@@ -197,7 +197,7 @@ def free_final_time_bezier(
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
             Defaults to 1e-4. (this was observed to give duration roughly the same weighting as jerk)
         timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
-            Defaults to 0.1.
+            Defaults to 0.5. (within half a second of optimality)
         max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
         debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
 
@@ -277,7 +277,7 @@ def free_final_time_spline(
     omega: float = 3,
     max_retiming_iters: int = 10,
     time_weight: float = 1e-4,
-    timing_atol: float = 0.1,
+    timing_atol: float = 0.5,
     max_iters: int = 15,
     debug: bool = False,
 ) -> CompositeBezierCurve:
@@ -307,7 +307,7 @@ def free_final_time_spline(
         time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.
             Defaults to 1e-4 (this was observed to give duration roughly the same weighting as jerk)
         timing_atol (float, optional): Absolute tolerance on the free-final-time optimization, in seconds.
-            Defaults to 0.1.
+            Defaults to 0.5. (within half a second of optimality)
         max_iters (int, optional): Maximum number of iterations for the free-final-time optimization. Defaults to 15.
         debug (bool, optional): Whether to print/plot details on the free-final-time optimization. Defaults to False.
 
@@ -434,8 +434,6 @@ def _bezier_main():
         None,
         LINEAR_SPEED_LIMIT,
         LINEAR_ACCEL_LIMIT,
-        # time_weight,
-        timing_atol=0.5,  # Within half a second of optimal
         debug=True,
     )
     traj = traj_from_curve(curve, dt)
@@ -481,7 +479,6 @@ def _spline_main():
         af,
         LINEAR_SPEED_LIMIT,
         LINEAR_ACCEL_LIMIT,
-        timing_atol=0.5,  # Within half a second of optimal
         debug=True,
     )
     traj = traj_from_curve(curve, dt)

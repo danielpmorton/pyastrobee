@@ -27,8 +27,11 @@ from pyastrobee.config.iss_safe_boxes import ALL_BOXES
 from pyastrobee.config.iss_paths import GRAPH, PATHS
 from pyastrobee.utils.boxes import Box, find_containing_box_name, compute_graph
 from pyastrobee.utils.algos import dfs
-from pyastrobee.trajectories.splines import spline_trajectory_with_retiming
 from pyastrobee.trajectories.curve_utils import traj_from_curve
+from pyastrobee.trajectories.variable_time_curves import (
+    free_final_time_bezier,
+    free_final_time_spline,
+)
 
 
 def plan_trajectory(
@@ -92,7 +95,16 @@ def plan_trajectory(
 
 
 # WORK IN PROGRESS
-# TODO handle the timing better...
+
+# TODO it doesn't really make a ton of sense to worry about the retiming process when we're trying to figure
+# out what time scales are feasible with the constraints...
+# Can we only retime once we're within some tolerance of the optimal final time?
+
+# TODO use rtol instead of atol with the timing... half of a second makes sense for short bezier curve trajs
+# but for long splines it doesn't make any sense
+# Note that the longest curves through the ISS seem to take about 200 seconds to complete
+
+
 def global_planner(
     p0: npt.ArrayLike,
     q0: npt.ArrayLike,
@@ -114,13 +126,8 @@ def global_planner(
     dwf = np.zeros(3)
     v_max = LINEAR_SPEED_LIMIT
     a_max = LINEAR_ACCEL_LIMIT
-    # TODO add some way to know that we enforce angular speed/accel limits
-    # Retiming parameters (These are currently the same as the default)
-    kappa_min = 0.01
-    omega = 3
-    max_retiming_iters = 10
-    # Curve parameters
-    pts_per_curve = 7
+    # Parameters associated with the retiming optimization or the free-final-time optimization
+    # will be left at the default values for now
 
     # Determine the path through the safe-space graph
     start = find_containing_box_name(p0, all_boxes)
@@ -130,37 +137,55 @@ def global_planner(
     path = dfs(graph, start, end)
     box_path = [all_boxes[p] for p in path]
 
-    if len(box_path) == 1:
-        # Construct from a single bezier curve
-        # Can probably use the local planner here
-        # Use iterative method for retiming?? or make another function
-        # like bezier_trajector_with_retiming
-        pass
     init_angular_duration = rotation_duration_heuristic(q0, qf)
     init_pos_duration, init_timing_fractions = spline_duration_heuristic(
         p0, pf, box_path
     )
+    # TODO enforce a minimum final time in the free-final-time optimization
+    # to make sure that the rotation plan still has enough time to execute
     duration = max(init_pos_duration, init_angular_duration)
     init_curve_durations = duration * init_timing_fractions
 
-    curve, cost = spline_trajectory_with_retiming(
-        p0,
-        pf,
-        t0,
-        duration,
-        pts_per_curve,
-        box_path,
-        init_curve_durations,
-        v0,
-        vf,
-        a0,
-        af,
-        v_max,
-        a_max,
-        kappa_min,
-        omega,
-        max_retiming_iters,
-    )
+    if len(box_path) == 1:
+        # Crank up the control points for a single Bezier curve so that we can be nice and tight
+        # against the velocity/accel constraints
+        n_control_pts = 20
+
+        # If our start and end positions are contained within the same free box,
+        # we can construct the trajectory from a single Bezier curve
+        curve = free_final_time_bezier(
+            p0,
+            pf,
+            t0,
+            duration,
+            n_control_pts,
+            v0,
+            vf,
+            a0,
+            af,
+            box_path[0],
+            v_max,
+            a_max,
+        )
+    else:
+        # Our start/end positions are not in the same box, so use a spline between boxes
+        # Use less control points for the spline for optimization stability
+        n_control_pts = 10
+        curve = free_final_time_spline(
+            p0,
+            pf,
+            t0,
+            duration,
+            n_control_pts,
+            box_path,
+            init_curve_durations,
+            v0,
+            vf,
+            a0,
+            af,
+            v_max,
+            a_max,
+        )
     pos_traj = traj_from_curve(curve, dt)
     n_timesteps = pos_traj.num_timesteps
     quats = quaternion_interpolation_with_bcs(
