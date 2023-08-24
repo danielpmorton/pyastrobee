@@ -278,8 +278,8 @@ def bezier_trajectory(
         constraints.append(accel_pts[-1] == af)
     if box is not None:
         lower, upper = box
-        constraints.append(pos_pts >= lower)
-        constraints.append(pos_pts <= upper)
+        constraints.append(pos_pts >= np.tile(lower, (n_control_pts, 1)))
+        constraints.append(pos_pts <= np.tile(upper, (n_control_pts, 1)))
     if v_max is not None:
         constraints.append(cp.norm2(vel_pts, axis=1) <= v_max)
     if a_max is not None:
