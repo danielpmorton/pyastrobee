@@ -1,11 +1,13 @@
 ![Pyastrobee](images/banner.png)
 # Pyastrobee: A space robotics simulation environment in Python
 
-## Documentation Overview
+## Documentation
 
-**[Code Documentation](https://danielpmorton.github.io/pyastrobee)**
+[The full documentation can be accessed here](https://danielpmorton.github.io/pyastrobee)
 
-Helpful notes:
+We use Portray to build the documentation. Note: if you'd like a local copy of the documentation with the most up-to-date information, run `portray in_browser` in the main repo folder.
+
+## Helpful notes:
 
 [Getting Started](docs/getting_started.md): Setting up the repository
 
