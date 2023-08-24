@@ -7,10 +7,6 @@ on:
   schedule:
     - cron: '32 13 * * 1' # Mondays at 9:32 AM Eastern (13:32 UTC) (launch time for Apollo 11 :D)
 
-# security: restrict permissions for CI jobs.
-permissions:
-  contents: read
-
 jobs:
   # Build the documentation and upload the static HTML files as an artifact.
   build:
@@ -21,7 +17,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      # Install all dependencies (including pdoc)
+      # Install all dependencies
       - run: |
           pip install numpy
           pip install wheel
@@ -33,23 +29,5 @@ jobs:
       - name: setup-xvfb # Fake display for headless build
         uses: coactions/setup-xvfb@v1.0.1
         with:
-          run: pdoc pyastrobee -o docs/pdoc/ -d google
-
-      - uses: actions/upload-pages-artifact@v2
-        with:
-          path: docs/pdoc/
-
-  # Deploy the artifact to GitHub pages.
-  # This is a separate job so that only actions/deploy-pages has the necessary permissions.
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v2
+          # Deploy docs
+          run: portray on_github_pages
