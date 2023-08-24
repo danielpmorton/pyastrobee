@@ -1,4 +1,4 @@
-![Pyastrobee](pyastrobee/assets/imgs/banner.png)
+![Pyastrobee](images/banner.png)
 # Pyastrobee: A space robotics simulation environment in Python
 
 ## Documentation Overview

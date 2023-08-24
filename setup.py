@@ -42,5 +42,5 @@ setup(
     author="Daniel Morton",
     author_email="danielpmorton@gmail.com",
     url="https://github.com/danielpmorton/pyastrobee",
-    packages=find_packages(exclude=["artifacts"]),
+    packages=find_packages(exclude=["artifacts", "images"]),
 )

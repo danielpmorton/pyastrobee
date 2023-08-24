@@ -1,0 +1,8 @@
+[tool.portray.mkdocs.theme]
+favicon = "images/favicon.png"
+logo = "images/favicon_large.png"
+name = "material"
+palette = {primary = "blue grey", accent = "pink"}
+
+[tool.portray]
+extra_dirs = ["images"]

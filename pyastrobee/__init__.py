@@ -1,3 +1,3 @@
 """
-.. include:: ../readme.md
+.. include:: ../README.md
 """
