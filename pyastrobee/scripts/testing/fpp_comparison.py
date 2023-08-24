@@ -100,9 +100,9 @@ def main():
     visualize_path(pos_mine_no_retiming, color=(0, 1, 0))
     visualize_path(pos_mine_retimed, color=(1, 0, 0))
     input("Press Enter to animate path")
-    animate_path(pos_fpp)
-    animate_path(pos_mine_no_retiming)
-    animate_path(pos_mine_retimed)
+    animate_path(pos_fpp, 5)
+    animate_path(pos_mine_no_retiming, 5)
+    animate_path(pos_mine_retimed, 5)
     input("Press Enter to finish")
     client.disconnect()
 

@@ -445,7 +445,7 @@ def _bezier_main():
     )
     pybullet.connect(pybullet.GUI)
     traj.visualize(30)
-    animate_path(traj.positions, traj.num_timesteps // 5)
+    animate_path(traj.positions, 5)
     input("Animation complete, press Enter to finish")
 
 
@@ -491,7 +491,7 @@ def _spline_main():
     )
     pybullet.connect(pybullet.GUI)
     traj.visualize(30)
-    animate_path(traj.positions, traj.num_timesteps // 5)
+    animate_path(traj.positions, 5)
     input("Animation complete, press Enter to finish")
 
 

@@ -225,7 +225,8 @@ def visualize_path(
 
 def animate_path(
     positions: npt.ArrayLike,
-    freq: float = 30,
+    duration: float,
+    n: Optional[int] = None,
     color: npt.ArrayLike = (1, 1, 1),
     size: float = 20,
     client: Optional[BulletClient] = None,
@@ -234,7 +235,9 @@ def animate_path(
 
     Args:
         positions (npt.ArrayLike): Path to animate, shape (n, 3)
-        freq (float, optional): Frequency to view the animation (Larger values -> shorter animation). Defaults to 30
+        duration (float): Desired duration of the animation
+        n (Optional[int]): Number of points to use in the animation, if using all of the provided positions will be too
+            slow. Defaults to None (animate all points)
         color (npt.ArrayLike): RGB values, each in range [0, 1]. Shape (3,) if specifying the same color for all points,
             or (n, 3) to individually specify the colors per-point
         size (float): Size of the points on the GUI, in pixels. Defaults to 20
@@ -244,26 +247,34 @@ def animate_path(
     client: pybullet = pybullet if client is None else client
     # Pybullet will crash if you try to visualize one point without packing it into a 2D array
     positions = np.atleast_2d(positions)
-    color = np.atleast_2d(color)
-    if positions.shape[-1] != 3:
+    n_positions, dim = positions.shape
+    if dim != 3:
         raise ValueError(
             f"Invalid shape of the point positions. Expected (n, 3), got: {positions.shape}"
         )
+    color = np.atleast_2d(color)
     if color.shape[-1] != 3:
         raise ValueError(
             f"Invalid shape of the colors. Expected (n, 3), got: {color.shape}"
         )
-    n = positions.shape[0]
-    if color.shape[0] != n:
+    if color.shape[0] != n_positions:
         if color.shape[0] == 1:
             # Map the same color to all of the points
             color = color * np.ones_like(positions)
         else:
             raise ValueError(
-                f"Number of colors ({color.shape[0]}) does not match the number of points ({n})."
+                f"Number of colors ({color.shape[0]}) does not match the number of points ({n_positions})."
             )
+    # Downsample the points if desired
+    if n is not None and n < n_positions:
+        # This indexing ensures that the first and last frames are plotted
+        idx = np.round(np.linspace(0, n_positions - 1, n, endpoint=True)).astype(int)
+        positions = positions[idx, :]
+        color = color[idx, :]
+        n_positions = n
     uid = None
-    for i in range(n):
+    for i in range(n_positions):
+        start_time = time.time()
         if uid is None:
             uid = client.addUserDebugPoints([positions[i]], [color[i]], size, 0)
         else:
@@ -271,22 +282,23 @@ def animate_path(
                 [positions[i]], [color[i]], size, 0, replaceItemUniqueId=uid
             )
         client.stepSimulation()
-        time.sleep(1 / freq)
+        elapsed_time = time.time() - start_time
+        time.sleep(max(0, duration / n_positions - elapsed_time))
 
 
 def animate_rotation(
     quats: npt.ArrayLike,
+    duration: float,
     object_id: Optional[int] = None,
-    freq: float = 30,
     client: Optional[BulletClient] = None,
 ):
     """Animates an object rotating via a sequence of quaternions
 
     Args:
         quats (npt.ArrayLike): Quaternions to animate, shape (n, 4)
+        duration (float): Desired duration of the animation
         object_id (Optional[int]): If you would like to animate the rotation using a specific object, pass in its
             Pybullet ID here. Defaults to None (use a cube as the default object).
-        freq (float, optional): Frequency to view the animation (Larger values -> shorter animation). Defaults to 30
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
@@ -296,10 +308,14 @@ def animate_rotation(
             (0, 0, 0), (0, 0, 0, 1), 1, (1, 1, 1), True, client=client
         )
     pos = client.getBasePositionAndOrientation(object_id)[0]
+    quats = np.atleast_2d(quats)
+    n = quats.shape[0]
     for quat in quats:
+        start_time = time.time()
         pybullet.resetBasePositionAndOrientation(object_id, pos, quat)
         pybullet.stepSimulation()
-        time.sleep(1 / freq)
+        elapsed_time = time.time() - start_time
+        time.sleep(max(0, duration / n - elapsed_time))
 
 
 def remove_debug_objects(
