@@ -19,7 +19,7 @@ from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.trajectories.planner import local_planner, global_planner
+from pyastrobee.trajectories.planner import global_planner
 
 
 def parallel_mpc_main(
@@ -28,6 +28,18 @@ def parallel_mpc_main(
     n_vec_envs: int,
     debug: bool = False,
 ):
+    """Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between
+    two poses while carrying a cargo bag
+
+    Args:
+        start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)
+        goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)
+        n_vec_envs (int): Number of vectorized environments to launch in parallel (>= 1)
+        debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize
+            some of the rollouts being evaluated. Defaults to False.
+    """
+    if n_vec_envs < 1:
+        raise ValueError("Must have at least one environment for evaluating rollouts")
     # Set up main environment
     main_env = AstrobeeMPCEnv(use_gui=True, is_primary=True)
     # Set up vectorized environments

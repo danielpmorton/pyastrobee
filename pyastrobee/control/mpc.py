@@ -1,5 +1,7 @@
 """Model predictive control
 
+NOTE: This is effectively obsolete since we have the parallelized version of this, but I'll keep this file for now
+
 NOTES
 - This implementation really just considers the dynamics/control of the astrobee base
   rather than focusing on the operational space point or the bag
@@ -17,7 +19,6 @@ QUESTIONS
   need multiple control modes
 """
 
-import pybullet
 from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
@@ -28,7 +29,7 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
-from pyastrobee.trajectories.planner import local_planner, global_planner
+from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
@@ -62,6 +63,14 @@ def mpc_main(
     goal_pose: npt.ArrayLike,
     debug: bool = False,
 ):
+    """Launches the environment and runs a model-predictive-controller to move Astrobee between two poses
+    while carrying a cargo bag
+
+    Args:
+        start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)
+        goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)
+        debug (bool, optional): Whether to visualize the trajectories and rollouts during execution. Defaults to False.
+    """
     # Assign constants (TODO decide which of these should be inputs, if any)
     # Tracking controller gains
     kp = 20
