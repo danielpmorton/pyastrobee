@@ -5,6 +5,8 @@
 
 [The full documentation can be accessed here](https://danielpmorton.github.io/pyastrobee)
 
+The "helpful notes" pages can be found on the sidebar of this site, as well as in this readme. For the code documentation, expand the **Reference** section in the sidebar and explore each module in the drop-down menus. Alternatively, search for a specific keyword with the searchbar above.
+
 We use Portray to build the documentation. Note: if you'd like a local copy of the documentation with the most up-to-date information, run `portray in_browser` in the main repo folder.
 
 ## Helpful notes:
