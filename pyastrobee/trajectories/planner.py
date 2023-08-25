@@ -1,10 +1,18 @@
-"""Current trajectory generation method
+"""The main trajectory planning structure for Astrobee
 
-We have different methods for generating trajectories (position / orientation), but
-this will combine the current best position + orientation methods
+We use a global/local hierarchy where: 
 
-This specific method (bezier curves for position, and quaternion polynomials for orientation)
-is not "optimal" in the orientation component, so if I figure this out, I'll update the function
+- The global planner computes a reference trajectory which enforces all of the required constraints, such as Astrobee's
+  speed/acceleration limits, as well as collision avoidance
+- The local planner handles very fast trajectory generation between states with arbitrary boundary conditions on 
+  dynamics, but does not enforce some of the more computationally intensive optimizations and constraints
+
+This also assumes decoupled dynamics between the position and orientation components
+
+Note: the orientation component of the trajectories technically isn't "optimal", but it works
+
+TODO add the max-angular-velocity-constrained rotation planner into the global planner (would only really be needed if
+we have a very short time horizon on the position component, i.e. if we're not moving much but rotating a lot)
 """
 
 from typing import Optional
@@ -52,6 +60,14 @@ def local_planner(
 ) -> Trajectory:
     """Generate an optimal Bezier-curve-based position trajectory with a polynomial orientation component
 
+    Note that this planner prioritizes solve time over constraint enforcement. This will plan with boundary conditions
+    in mind, but other than that, it does not enforce things like speed/acceleration limits or collision avoidance. This
+    allows us to use this in very fast online applications.
+
+    In general, this should be paired with the global planner, so that we can precompute a reference trajectory which
+    does enforce all constraints (and takes a bit longer to solve), and use this local planner to evaluate different
+    rollouts between states along this reference trajectory
+
     Args:
         p0 (npt.ArrayLike): Initial position, shape (3,)
         q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
@@ -69,7 +85,7 @@ def local_planner(
         dt (float): Sampling period (seconds)
 
     Returns:
-        Trajectory: Trajectory with position, orientation, lin/ang velocity, lin/ang acceleration, and time info
+        Trajectory: The optimal local trajectory plan
     """
     # Min-jerk position traj
     # Don't need a ton of control points because we're not enforcing constraints
@@ -103,7 +119,30 @@ def global_planner(
     dt: float,
     all_boxes: dict[str, Box] = ALL_BOXES,
     graph: Optional[dict[str, list[str]]] = GRAPH,
-):
+) -> Trajectory:
+    """Generate an optimal spline-based position trajectory with a polynomial orientation component
+
+    This will enforce all of the Astrobee's constraints (such as maximum velocity/acceleration and collision avoidance).
+    It will also be time-optimal in the sense that 1) The total duration of the curve is minimized, and 2) each Bezier
+    curve in the spline will have its relative duration (w.r.t. the total duration) optimized to minimize jerk
+
+    Note that this can take on the order of 10 seconds to compute, so it is not something that should be called online
+
+    Args:
+        p0 (npt.ArrayLike): Initial position, shape (3,)
+        q0 (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
+        pf (npt.ArrayLike): Final position, shape (3,)
+        qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
+        dt (float): Sampling period (seconds)
+        all_boxes (dict[str, Box], optional): Description of the safe set of the environment. Defaults to ALL_BOXES
+            (the precomputed safe-set decomposition for the ISS)
+        graph (Optional[dict[str, list[str]]], optional): The graph defining the connections between the safe boxes in
+            the environment. Defaults to GRAPH (the precomputed safe-set graph for the ISS). Note: if set to None, this
+            graph will be recomputed from the all_boxes parameter
+
+    Returns:
+        Trajectory: The optimal global trajectory plan
+    """
     # Dynamics parameters: Assume start and end from rest, satisfy operating limits
     t0 = 0
     v0 = np.zeros(3)
