@@ -26,6 +26,7 @@ def parallel_mpc_main(
     start_pose: npt.ArrayLike,
     goal_pose: npt.ArrayLike,
     n_vec_envs: int,
+    use_deformable_bag: bool = True,
     debug: bool = False,
 ):
     """Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between
@@ -35,15 +36,23 @@ def parallel_mpc_main(
         start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)
         goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)
         n_vec_envs (int): Number of vectorized environments to launch in parallel (>= 1)
+        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
+            Defaults to True (load the deformable version)
         debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize
             some of the rollouts being evaluated. Defaults to False.
     """
     if n_vec_envs < 1:
         raise ValueError("Must have at least one environment for evaluating rollouts")
     # Set up main environment
-    main_env = AstrobeeMPCEnv(use_gui=True, is_primary=True)
+    main_env = AstrobeeMPCEnv(
+        use_gui=True, is_primary=True, use_deformable_bag=use_deformable_bag
+    )
     # Set up vectorized environments
-    env_kwargs = {"use_gui": False, "is_primary": False}
+    env_kwargs = {
+        "use_gui": False,
+        "is_primary": False,
+        "use_deformable_bag": use_deformable_bag,
+    }
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs
     per_env_kwargs = {debug_env_idx: {"use_gui": debug, "nominal_rollouts": True}}
@@ -159,7 +168,8 @@ def _test_parallel_mpc():
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
     n_vec_envs = 5
     debug = True
-    parallel_mpc_main(start_pose, end_pose, n_vec_envs, debug)
+    use_deformable_bag = False
+    parallel_mpc_main(start_pose, end_pose, n_vec_envs, use_deformable_bag, debug)
 
 
 if __name__ == "__main__":
