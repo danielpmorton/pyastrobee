@@ -6,6 +6,7 @@ NOTE:
   You'd have to explicitly call the set_attr method for that)
 
 TODO
+- See if there is a faster way to save/restore state in the case that we're using the rigid bag
 - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
 - Use terminated/truncated as a stopping parameter
 - Should the reset() function reset the simulation back to an initial saved state?
@@ -30,6 +31,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
 from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
@@ -40,18 +42,29 @@ class AstrobeeEnv(gym.Env):
 
     Args:
         use_gui (bool): Whether or not to use the GUI as opposed to headless.
+        robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
+        bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
+        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
+            Defaults to True (load the deformable version)
     """
 
     SAVE_STATE_DIR = "artifacts/saved_states/"
     SAVE_STATE_PATHS = []
 
-    def __init__(self, use_gui: bool):
-        # TODO: make more of these parameters variables to pass in
-        # e.g. initial bag/robot position, number of robots, type of bag, ...
+    def __init__(
+        self,
+        use_gui: bool,
+        robot_pose: npt.ArrayLike = (0, 0, 0, 0, 0, 0, 1),
+        bag_name: str = "top_handle",
+        use_deformable_bag: bool = True,
+    ):
         self.client = initialize_pybullet(use_gui)
         self.iss = ISS(client=self.client)
-        self.robot = Astrobee(client=self.client)
-        self.bag = CargoBag("top_handle", client=self.client)
+        self.robot = Astrobee(robot_pose, client=self.client)
+        if use_deformable_bag:
+            self.bag = CargoBag(bag_name, client=self.client)
+        else:
+            self.bag = RigidCargoBag(bag_name, client=self.client)
         self.bag.reset_to_handle_pose(self.robot.ee_pose)
         self.bag.attach_to(self.robot, object_to_move="bag")
         self.dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
@@ -167,6 +180,10 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         use_gui (bool): Whether or not to use the GUI as opposed to headless.
         is_primary (bool): Whether or not this environment is the main simulation (True) or if it is one of the
             vectorized environments for evaluating a rollout (False)
+        robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
+        bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
+        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
+            Defaults to True (load the deformable version)
         nominal_rollouts (bool, optional): If True, will roll-out a trajectory based on the nominal target.
             If False, will sample a trajectory about the nominal target. Defaults to False.
         cleanup (bool, optional): Whether or not to delete all saved states when the simulation ends. Defaults to True.
@@ -176,10 +193,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self,
         use_gui: bool,
         is_primary: bool,
+        robot_pose: npt.ArrayLike = (0, 0, 0, 0, 0, 0, 1),
+        bag_name: str = "top_handle",
+        use_deformable_bag: bool = True,
         nominal_rollouts: bool = False,
         cleanup: bool = True,
     ):
-        super().__init__(use_gui)
+        super().__init__(use_gui, robot_pose, bag_name, use_deformable_bag)
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
         kp, kv, kq, kw = 20, 5, 1, 0.1  # TODO make parameters
