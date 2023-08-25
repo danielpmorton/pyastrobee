@@ -147,7 +147,7 @@ def rmat_to_axis_angle(rmat: np.ndarray) -> tuple[np.ndarray, float]:
         rmat (np.ndarray): (3, 3) rotation matrix
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, float]:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle, in radians
     """
@@ -383,7 +383,7 @@ def axis_angle_between_two_vectors(
         v2 (npt.ArrayLike): (3,) Ending vector/direction
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, float]:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle, in radians
     """
@@ -415,7 +415,7 @@ def quat_to_axis_angle(
         quat (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,) if passing in an array
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, float]:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle, in radians
     """

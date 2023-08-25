@@ -496,7 +496,7 @@ def create_anchor(
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
-        tuple of:
+        tuple[int, Optional[int]]:
             int: The Pybullet ID for the anchor
             Optional[int]: The Pybullet ID for the geometry (if add_geom is False, this is None)
     """

@@ -164,7 +164,7 @@ class ISS:
             FileNotFoundError: If either the vhacd obj file or the obj2sdf objs cannot be found in the mesh directory
 
         Returns:
-            Tuple of:
+            tuple[str, list[str]]:
                 str: The path to the VHACD collision mesh for the module
                 list[str]: Paths to all of the decomposed visual meshes for the module
         """

@@ -142,7 +142,7 @@ def spline_trajectory_with_retiming(
             Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
     Returns:
-        Tuple of:
+        tuple[CompositeBezierCurve, float]:
             CompositeBezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives
                 can be evaluated using the curve.derivative property
             float: The optimal cost of the objective function
@@ -257,7 +257,7 @@ def _fixed_timing_spline(
             Defaults to 0 (minimize jerk only). Note: this should be > 0 if evaluating the free-final-time case
 
     Returns:
-        Tuple of:
+        tuple[CompositeBezierCurve, dict[str, Any]]:
             CompositeBezierCurve: The solved position curve
             dict[str, Any]: Solution info to use for retiming optimization
     """

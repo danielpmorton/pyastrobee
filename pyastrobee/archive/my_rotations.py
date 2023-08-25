@@ -96,7 +96,7 @@ def rmat_to_axis_angle(rmat: np.ndarray) -> tuple[np.ndarray, float]:
             when represented in axis-angle form
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, float]:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle
     """

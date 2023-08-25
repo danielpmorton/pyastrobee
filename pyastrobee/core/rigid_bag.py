@@ -173,7 +173,7 @@ class RigidCargoBag:
         """Current state of the bag dynamics: Position, orientation, linear vel, and angular vel
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
                 np.ndarray: Position, shape (3,)
                 np.ndarray: XYZW quaternion orientation, shape (4,)
                 np.ndarray: Linear velocity, shape (3,)

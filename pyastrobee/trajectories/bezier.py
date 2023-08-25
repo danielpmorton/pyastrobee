@@ -243,7 +243,7 @@ def bezier_trajectory(
             which are too restrictive)
 
     Returns:
-        Tuple of:
+        tuple[BezierCurve, float]:
             BezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives
                 can be evaluated using the curve.derivative property
             float: The optimal cost of the objective function

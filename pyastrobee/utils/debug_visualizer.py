@@ -348,7 +348,7 @@ def get_viz_camera_params(
             the perspective from which we observe the robot. Defaults to the OBSERVATION_CAM constant
 
     Returns:
-        tuple of:
+        tuple[float, float, float, np.ndarray]:
             float: Distance: The distance to the camera's focus point
             float: Yaw: The rotation angle about the Z axis
             float: Pitch: The angle of the camera as measured above/below the XY plane

@@ -237,7 +237,7 @@ class CargoBag:
           the sim in this call to do our own calculations
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
                 np.ndarray: Position, shape (3,)
                 np.ndarray: XYZW quaternion orientation, shape (4,)
                 np.ndarray: Linear velocity, shape (3,)

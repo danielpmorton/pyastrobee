@@ -257,7 +257,7 @@ class ForceTorqueController:
         """Determines the current dynamics state of the robot
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
                 np.ndarray: Current position, shape (3,)
                 np.ndarray: Current orientation (XYZW quaternion), shape (4,)
                 np.ndarray: Current linear velocity, shape (3,)

@@ -314,7 +314,7 @@ class Astrobee:
         return self._mass
 
     @property
-    def state_space_matrices(self):
+    def state_space_matrices(self) -> tuple[np.ndarray, np.ndarray]:
         """The state and control matrices A and B, such that x_dot = Ax + Bu
 
         We assume that the state x = [position, velocity, quaternion, angular velocity] ∈ R13
@@ -325,7 +325,7 @@ class Astrobee:
         - The B matrix is generally a constant *unless* the inertia tensor is computed as a function of the joint angles
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray]:
                 np.ndarray: A: State matrix, shape (13, 13)
                 np.ndarray: B: Control matrix, shape (13, 6)
         """
@@ -337,7 +337,7 @@ class Astrobee:
         )
 
     @property
-    def state_vector(self):
+    def state_vector(self) -> np.ndarray:
         """The state vector x, such that x_dot = Ax + Bu
 
         We compose the state as [position, velocity, quaternion, angular velocity] ∈ R13
@@ -351,7 +351,7 @@ class Astrobee:
         """Current state of the Astrobee's dynamics: Position, orientation, linear vel, and angular vel
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
                 np.ndarray: Position, shape (3,)
                 np.ndarray: XYZW quaternion orientation, shape (4,)
                 np.ndarray: Linear velocity, shape (3,)
@@ -392,7 +392,7 @@ class Astrobee:
                 For the grasp point, use the position from the calibrated distal/grasp transformation
 
         Returns:
-            Tuple of:
+            tuple[np.ndarray, np.ndarray]:
                 np.ndarray: Jv: Linear jacobian, shape (3, 12)
                 np.ndarray: Jw: Angular jacobian, shape (3, 12)
         """
@@ -483,7 +483,9 @@ class Astrobee:
         self.set_gripper_position(0)
 
     # TODO rework this?
-    def _get_gripper_joint_ranges(self) -> tuple[np.ndarray, ...]:
+    def _get_gripper_joint_ranges(
+        self,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Helper function to determine the range of motion (closed -> open) of the gripper joints
 
         - This is a bit confusing because of how the URDF specifies joint min/max and how this translates
@@ -492,7 +494,7 @@ class Astrobee:
         - Likewise, for a fully-open gripper, the right side is at the joint min, and the left at joint max
 
         Returns:
-            tuple of:
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
                 np.ndarray: Left-side gripper finger angles when closed. Shape (2,)
                 np.ndarray: Left-side gripper finger angles when open. Shape (2,)
                 np.ndarray: Right-side gripper finger angles when closed. Shape (2,)

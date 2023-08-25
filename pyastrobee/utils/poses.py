@@ -368,7 +368,7 @@ def pose_derivatives(
         dt (float): Timestep between poses, in seconds
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
             np.ndarray: Linear velocities, shape (n, 3)
             np.ndarray: Angular velocities, shape (n, 3)
             np.ndarray: Linear accelerations, shape (n, 3)

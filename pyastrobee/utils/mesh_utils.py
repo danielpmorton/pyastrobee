@@ -22,7 +22,7 @@ def get_mesh_data(
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
-        tuple of:
+        tuple[int, np.ndarray]:
             int: Number of vertices in the mesh
             np.ndarray: Mesh vertex positions, shape (num_verts, 3)
     """
@@ -50,7 +50,7 @@ def get_closest_mesh_vertex(
             See get_mesh_data() for more details
 
     Returns:
-        tuple of:
+        tuple[np.ndarray, int]:
             np.ndarray: The world-frame position of the closest vertex, shape (3,)
             int: The index of the closest vertex in the mesh
     """
@@ -75,7 +75,7 @@ def get_tet_mesh_data(
         AttributeError: If the Pybullet version does not support this functionality
 
     Returns:
-        tuple of:
+        tuple[int, np.ndarray]:
             int: Number of tetrahedrons in the mesh
             np.ndarray: The xyz positions of all of the vertices of the tetrahedrons, shape (num_tets, 4, 3)
     """

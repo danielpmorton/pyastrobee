@@ -30,7 +30,7 @@ def generate_samples(
         n (int): Number of samples
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, np.ndarray]:
             np.ndarray: Sampled positions, shape (n, 3)
             np.ndarray: Sampled quaternions, shape (n, 4)
     """

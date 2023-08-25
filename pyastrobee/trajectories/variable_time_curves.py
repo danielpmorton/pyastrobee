@@ -64,7 +64,7 @@ def left_quadratic_fit_search(
         OptimizationError: If no feasible solution is found in max_iters iterations
 
     Returns:
-        Tuple of:
+        tuple[float, float, list[Any]]:
             float: Best evaluation point x
             float: Cost of the function evaluation at the best x value
             list[Any]: Additional outputs of the function being optimized at the best x value. Empty list if there

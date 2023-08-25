@@ -45,7 +45,7 @@ def init(
         use_gui (bool, optional): Whether or not to launch the simulation in a GUI window. Defaults to True.
 
     Returns:
-        Tuple of:
+        tuple[BulletClient, Astrobee, CargoBag]:
             BulletClient: The Pybullet client
             Astrobee: The Astrobee object
             CargoBag: The Cargo Bag object

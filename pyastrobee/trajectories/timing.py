@@ -47,7 +47,7 @@ def spline_duration_heuristic(
         boxes (list[Box]): Sequence of safe boxes that will be traveled through (Not the entire free space)
 
     Returns:
-        Tuple of:
+        tuple[float, np.ndarray]:
             float: Total duration estimate for the entire curve
             np.ndarray: Fractions of the total duration allocated to each box, shape (num_boxes,)
     """
@@ -105,7 +105,7 @@ def retiming(
             up to the second derivative (j = 1 and 2)
 
     Returns:
-        Tuple of:
+        tuple[np.ndarray, float]:
             np.ndarray: The updated curve durations
             float: The new trust region parameter
     """
