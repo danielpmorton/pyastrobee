@@ -255,7 +255,7 @@ def _test_bezier_traj():
     vf = [-0.2, -0.2, -0.2]
     a0 = [0, 0, 0]
     af = [0.1, 0.1, 0.1]
-    curve = bezier_trajectory(p0, pf, t0, tf, n_control_pts, v0, vf, a0, af)
+    curve, _ = bezier_trajectory(p0, pf, t0, tf, n_control_pts, v0, vf, a0, af)
     # Leaving out any rotational info for now
     traj = traj_from_curve(curve, dt)
     traj.plot()
