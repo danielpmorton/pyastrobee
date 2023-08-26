@@ -8,7 +8,8 @@ TODO:
 
 import os
 import time
-from typing import Optional
+from typing import Optional, Any
+import struct
 
 import numpy as np
 import numpy.typing as npt
@@ -569,3 +570,106 @@ def create_box(
         baseVisualShapeIndex=visual_id,
     )
     return box_id
+
+
+def read_log_file(filename: str, verbose: bool = False) -> list[list[int | float]]:
+    """Reads a Pybullet state log for generic robots and objects
+
+    We assume that when generating the log:
+    - The loggingType was set to STATE_LOGGING_GENERIC_ROBOT
+    - No softbodies were included in the logged items
+    - The maxLogDof is left at the default value (12)
+
+    This code is modified from bullet3/examples/pybullet/examples/kuka_with_cube_playback.py
+
+    Args:
+        filename (str): Filename for the saved log
+        verbose (bool, optional): Whether to print info about the log when reading. Defaults to False.
+
+    Returns:
+        list[list[int | float]]: The Pybullet log.
+            Length is (number of timesteps) * (number of objects logged)
+            If multiple objects are logged, there will be multiple consecutive log entries for the same timestep
+            Each record in the log contains the following info:
+                step_count = record[0]
+                timestamp = record[1]
+                unique_id = record[2]
+                position = record[3:6]
+                orientation = record[6:10]
+                velocity = record[10:13]
+                angular_velocity = record[13:16]
+                num_joints = record[16]
+                joint_positions = record[17 : 17 + max_log_dof]
+                joint_torques = record[17 + max_log_dof :]
+    """
+    with open(filename, "rb") as f:
+        keys = f.readline().decode("utf8").rstrip("\n").split(",")
+        fmt = f.readline().decode("utf8").rstrip("\n")
+        # The byte number of one record
+        sz = struct.calcsize(fmt)
+        # The type number of one record
+        ncols = len(fmt)
+        info = {
+            "filename": filename,
+            "keys": keys,
+            "format": fmt,
+            "size": sz,
+            "columns": ncols,
+        }
+        if verbose:
+            print(info)
+        # Read data
+        whole_file = f.read()
+    # split by alignment word
+    chunks = whole_file.split(b"\xaa\xbb")
+    log = []
+    for chunk in chunks:
+        if len(chunk) == sz:
+            values = struct.unpack(fmt, chunk)
+            record = []
+            for i in range(ncols):
+                record.append(values[i])
+            log.append(record)
+    return log
+
+
+# TODO determine if this really is real time or if it's sim time during the original run...
+def playback_from_log(
+    log_file: str,
+    real_time: bool = True,
+    client: Optional[BulletClient] = None,
+) -> None:
+    """Reads a log file and then replays that logged simulation
+
+    We assume that the environment has been set up the same way as the original environment
+    when the logging occurred. If this is not the case, it can lead to odd results
+
+    The logs also contain a lot more info like velocities and torques, but we don't really need
+    this information to play things back (simply resetting pose will appear correct)
+
+    This code is modified from bullet3/examples/pybullet/examples/kuka_with_cube_playback.py
+
+    Args:
+        log_file (str): Filename for the saved log
+        real_time (bool, optional): Whether to play back the log in real time (according to the timestamps saved in
+            the log). Defaults to True. If False, things will be very speedy
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+    client: pybullet = pybullet if client is None else client
+    log = read_log_file(log_file)
+    start_time = time.time()
+    for record in log:
+        timestamp = record[1]
+        uid = record[2]
+        pos = record[3:6]
+        orn = record[6:10]
+        client.resetBasePositionAndOrientation(uid, pos, orn)
+        num_joints = client.getNumJoints(uid)
+        for i in range(num_joints):
+            joint_info = client.getJointInfo(uid, i)
+            q_index = joint_info[3]
+            if q_index > -1:
+                client.resetJointState(uid, i, record[q_index - 7 + 17])
+        if real_time:
+            time.sleep(max(0, timestamp - time.time() + start_time))
