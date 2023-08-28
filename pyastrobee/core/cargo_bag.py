@@ -47,19 +47,14 @@ HANDLE_TRANSFORMS = {
     "top": bag_props.TOP_HANDLE_TRANSFORM,
     "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
 }
-BAG_CORNERS = dict(
-    zip(
-        BAG_NAMES,
-        [
-            bag_props.FRONT_HANDLE_BAG_CORNERS,
-            bag_props.RIGHT_HANDLE_BAG_CORNERS,
-            bag_props.TOP_HANDLE_BAG_CORNERS,
-            bag_props.FRONT_BACK_HANDLE_BAG_CORNERS,
-            bag_props.RIGHT_LEFT_HANDLE_BAG_CORNERS,
-            bag_props.TOP_BOTTOM_HANDLE_BAG_CORNERS,
-        ],
-    )
-)
+BAG_CORNERS = {
+    "front_handle": bag_props.FRONT_HANDLE_BAG_CORNERS,
+    "right_handle": bag_props.RIGHT_HANDLE_BAG_CORNERS,
+    "top_handle": bag_props.TOP_HANDLE_BAG_CORNERS,
+    "front_back_handle": bag_props.FRONT_BACK_HANDLE_BAG_CORNERS,
+    "right_left_handle": bag_props.RIGHT_LEFT_HANDLE_BAG_CORNERS,
+    "top_bottom_handle": bag_props.TOP_BOTTOM_HANDLE_BAG_CORNERS,
+}
 
 
 class CargoBag:
@@ -271,6 +266,11 @@ class CargoBag:
             return 2
         else:
             return 0  # This may have an application in the future
+
+    @property
+    def corner_positions(self) -> list[np.ndarray]:
+        """Positions of the 8 corners of the main compartment of the bag, shape (8, 3)"""
+        return self.mesh_vertices[BAG_CORNERS[self.name]]
 
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> None:
         """Loads a cargo bag at the specified position/orientation

@@ -198,6 +198,30 @@ class RigidCargoBag:
         else:
             return 0  # This may have an application in the future
 
+    @property
+    def corner_positions(self) -> list[np.ndarray]:
+        """Positions of the 8 corners of the main compartment of the bag, shape (8, 3)"""
+        # The main compartment is the base link in all URDFs
+        pos, quat = pybullet.getBasePositionAndOrientation(self.id)
+        rmat = quat_to_rmat(quat)
+        l, w, h = bag_props.BOX_LENGTH, bag_props.BOX_WIDTH, bag_props.BOX_HEIGHT
+        return (
+            pos
+            + np.array(
+                [
+                    [l / 2, w / 2, h / 2],
+                    [l / 2, w / 2, -h / 2],
+                    [l / 2, -w / 2, h / 2],
+                    [l / 2, -w / 2, -h / 2],
+                    [-l / 2, w / 2, h / 2],
+                    [-l / 2, w / 2, -h / 2],
+                    [-l / 2, -w / 2, h / 2],
+                    [-l / 2, -w / 2, -h / 2],
+                ]
+            )
+            @ rmat.T
+        )
+
     def attach_to(
         self,
         robot_or_robots: Union[Astrobee, list[Astrobee], tuple[Astrobee]],
