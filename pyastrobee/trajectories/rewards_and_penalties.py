@@ -4,10 +4,13 @@ Currently, we just compare terminal states in the penalty function and don't con
 (TODO make this a separate method)
 """
 
+from typing import Union
 
 import numpy as np
 import numpy.typing as npt
 
+from pyastrobee.utils.boxes import Box
+from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.quaternions import quaternion_angular_error
 
 
@@ -55,3 +58,24 @@ def deviation_penalty(
         + vel_penalty * np.linalg.norm(vel_err)
         + ang_vel_penalty * np.linalg.norm(ang_vel_err)
     )
+
+
+def integrated_deviation(
+    des_traj: Trajectory,
+    recorded_traj: Trajectory,
+    pos_penalty: float,
+    orn_penalty: float,
+    vel_penalty: float,
+    ang_vel_penalty: float,
+):
+    pass
+
+
+def safe_set_deviation(position: npt.ArrayLike, box_or_boxes: Union[Box, list[Box]]):
+    pass
+
+
+def integrated_safe_set_deviation(
+    positions: npt.ArrayLike, box_or_boxes: Union[Box, list[Box]]
+):
+    pass
