@@ -87,6 +87,11 @@ class Astrobee:
         0.12,  # gripper right distal joint
     ]
 
+    # Bounding sphere for collision modeling. Based on URDF collision geometry
+    COLLISION_RADIUS = np.linalg.norm(
+        [0.319199 / 2, 0.117546 + 0.083962 / 2, 0.319588 / 2]
+    )
+
     class Joints(ExtendedEnum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""
 
