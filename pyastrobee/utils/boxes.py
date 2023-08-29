@@ -10,6 +10,7 @@ from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+import matplotlib.pyplot as plt
 
 from pyastrobee.utils.bullet_utils import create_box
 
@@ -25,8 +26,8 @@ class Box:
     """
 
     def __init__(self, lower: npt.ArrayLike, upper: npt.ArrayLike):
-        self.lower = np.ravel(lower)
-        self.upper = np.ravel(upper)
+        self.lower = np.ravel(lower).astype(np.float64)
+        self.upper = np.ravel(upper).astype(np.float64)
         self._validate()
         self.center = (self.lower + self.upper) / 2
         self.dim = len(self.lower)
@@ -153,6 +154,37 @@ def visualize_3D_box(
         use_collision=False,
         rgba=rgba,
     )
+
+
+def plot_2D_box(
+    box: Box, ax: Optional[plt.Axes] = None, show: bool = True, *args, **kwargs
+) -> plt.Axes:
+    """Plots the boundary of a 2D box
+
+    Args:
+        box (Box): 2D box to plot
+        ax (Optional[plt.Axes]): If re-using existing plotting axes, include them here. Defaults to None.
+        show (bool, optional): Whether or not to show the plot. Defaults to True.
+
+    Returns:
+        plt.Axes: The plotting axes
+    """
+    assert box.dim == 2
+    if ax is None:
+        ax = plt.gca()
+    pts = np.array(
+        [
+            box.lower,
+            [box.lower[0], box.upper[1]],
+            box.upper,
+            [box.upper[0], box.lower[1]],
+            box.lower,
+        ]
+    )
+    ax.plot(*pts.T, *args, **kwargs)
+    if show:
+        plt.show()
+    return ax
 
 
 def compute_graph(boxes: dict[str, Box]) -> dict[str, list[str]]:
