@@ -75,52 +75,74 @@ def integrated_deviation(
 
 def safe_set_deviation(
     position: npt.ArrayLike,
-    box_or_boxes: Union[Box, list[Box]],
+    boxes: Union[Box, list[Box]],
     padding: Optional[npt.ArrayLike] = None,
     collision_penalty: float = 0,
-):
-    # TODO clean up some of this weird input handling...
-    dim = len(position)
-    if isinstance(box_or_boxes, Box):
-        box_or_boxes = [box_or_boxes]
-    boxes = []
-    if padding is None:
-        boxes = box_or_boxes
-    else:
-        padding = np.ravel(padding).astype(np.float64)
-        assert len(padding) == dim
-        for box in box_or_boxes:
-            boxes.append(Box(box.lower + padding, box.upper - padding))
+) -> float:
+    """Evaluate the cost function for a given position within an environment composed of safe boxes
 
+    In general, the cost function rewards being centrally located within the safe set, with the cost increasing as the
+    position approaches the wall. Costs are negative for being inside the safe set, and positive outside (in collision).
+    We can add an additional large penalty for being in collision, to help ensure collision avoidance
+
+    This essentially works out to be an L1 signed distance field
+
+    Args:
+        position (npt.ArrayLike): Position to evaluate the cost function
+        boxes (Union[Box, list[Box]]): Local description of the safe set. This does NOT need to be every box in the
+            environment, just the ones in the proximity of the position being evaluated
+        padding (Optional[npt.ArrayLike]): Distance(s) to pad the safe set by (for instance, if we evaluate the central
+            point of a spherical robot). Defaults to None.
+        collision_penalty (float, optional): Additional penalty to increase the cost function if collision occurs.
+            Defaults to 0.
+
+    Returns:
+        float: Cost function evaluation
+    """
+    dim = len(position)
+    if isinstance(boxes, Box):
+        boxes = [boxes]
+    # If we're padding the boxes, go through each one and reduce their size by the padding amount
+    if padding is not None:
+        if isinstance(padding, (float, int)):
+            padding = padding * np.ones(dim)
+        else:
+            padding = np.ravel(padding).astype(np.float64)
+            assert len(padding) == dim
+        for i, box in enumerate(boxes):
+            boxes[i] = Box(box.lower + padding, box.upper - padding)
+    # Keep track of which boxes we're inside, since the penalty depends on if we're in the safe set or not
     boxes_inside: list[Box] = []
     for box in boxes:
         if is_in_box(position, box):
             boxes_inside.append(box)
-
-    # If we are in the safe set, don't penalize for being outside of another box in the safe set
-    # (just base this on how close we are to the boundary of the box we are in)
+    # If we are not in collision, we only consider the boxes that we're inside
     if len(boxes_inside) != 0:
-        # TODO check if this is better as a sum(max()) or a min(max())
-        # NOTE sum(max()) seems to be a bit better since we can gurantee the function is continuous across boxes?
         return sum(
             max([*(position - box.upper), *(box.lower - position)])
             for box in boxes_inside
         )
-
+    # If we are in collision, the collision depth is based on the nearest wall, which considers all boxes
     else:
-        # If we are in collision,... TODO explain better
         return collision_penalty + min(
             max([*(position - box.upper), *(box.lower - position)]) for box in boxes
         )
 
 
 def integrated_safe_set_deviation(
-    positions: npt.ArrayLike, box_or_boxes: Union[Box, list[Box]]
+    positions: npt.ArrayLike,
+    box_or_boxes: Union[Box, list[Box]],
+    padding: Optional[npt.ArrayLike] = None,
+    collision_penalty: float = 0,
 ):
+    dev = 0
+    for pos in positions:
+        dev += safe_set_deviation(pos, box_or_boxes, padding, collision_penalty)
     pass
 
 
 def _visualize_penalty_test():
+    """Create a 2D example of two safe-set boxes and visualize a heatmap of the penalty function"""
     n = 50
     X, Y = np.meshgrid(np.linspace(-1, 1, n), np.linspace(-1, 1, n))
     Z = np.empty_like(X)
@@ -129,7 +151,7 @@ def _visualize_penalty_test():
     plt.figure()
 
     padding = np.array([0.1, 0.1])
-    penalty = 0
+    penalty = 0.5
     new_boxes = [
         Box(box_1.lower + padding, box_1.upper - padding),
         Box(box_2.lower + padding, box_2.upper - padding),
