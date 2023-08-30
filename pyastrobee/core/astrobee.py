@@ -664,6 +664,62 @@ class Astrobee:
         self.set_arm_joints([0, 0], force)
         self.set_gripper_position(100, force)
 
+    @property
+    def full_state(self) -> tuple[np.ndarray, ...]:
+        """All information required to fully reset the state of the Astrobee
+
+        Returns:
+            tuple[np.ndarray, ...]:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: Orientation (XYZW quaternion), shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+                np.ndarray: Joint positions, shape (NUM_JOINTS,)
+                np.ndarray: Joint velocities, shape (NUM_JOINTS,)
+        """
+        pos, orn = self.client.getBasePositionAndOrientation(self.id)
+        vel, ang_vel = self.client.getBaseVelocity(self.id)
+        joint_states = self.client.getJointStates(
+            self.id, list(range(Astrobee.NUM_JOINTS))
+        )
+        joint_positions = np.empty(Astrobee.NUM_JOINTS)
+        joint_vels = np.empty(Astrobee.NUM_JOINTS)
+        for i in range(Astrobee.NUM_JOINTS):
+            joint_positions[i] = joint_states[i][0]
+            joint_vels[i] = joint_states[i][1]
+        return (
+            np.array(pos),
+            np.array(orn),
+            np.array(vel),
+            np.array(ang_vel),
+            joint_positions,
+            joint_vels,
+        )
+
+    def reset_full_state(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        vel: npt.ArrayLike,
+        omega: npt.ArrayLike,
+        q: npt.ArrayLike,
+        qdot: npt.ArrayLike,
+    ):
+        """Fully resets the state of the Astrobee
+
+        Args:
+            pos (npt.ArrayLike): Position, shape (3,)
+            orn (npt.ArrayLike): Orientation (XYZW quaternion), shape (4,)
+            vel (npt.ArrayLike): Linear velocity, shape (3,)
+            omega (npt.ArrayLike): Angular velocity, shape (3,)
+            q (npt.ArrayLike): Joint positions, shape (NUM_JOINTS,)
+            qdot (npt.ArrayLike): Joint velocities, shape (NUM_JOINTS,)
+        """
+        self.client.resetBasePositionAndOrientation(self.id, pos, orn)
+        self.client.resetBaseVelocity(self.id, vel, omega)
+        for i in range(Astrobee.NUM_JOINTS):
+            self.client.resetJointState(self.id, i, q[i], qdot[i])
+
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
     # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
