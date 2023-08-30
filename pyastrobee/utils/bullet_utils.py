@@ -7,7 +7,7 @@
 
 import os
 import time
-from typing import Optional, Any
+from typing import Optional, Union
 import struct
 
 import numpy as np
@@ -568,7 +568,9 @@ def create_box(
     return box_id
 
 
-def read_log_file(filename: str, verbose: bool = False) -> list[list[int | float]]:
+def read_log_file(
+    filename: str, verbose: bool = False
+) -> list[list[Union[int, float]]]:
     """Reads a Pybullet state log for generic robots and objects
 
     We assume that when generating the log:
@@ -583,7 +585,7 @@ def read_log_file(filename: str, verbose: bool = False) -> list[list[int | float
         verbose (bool, optional): Whether to print info about the log when reading. Defaults to False.
 
     Returns:
-        list[list[int | float]]: The Pybullet log.
+        list[list[Union[int, float]]]: The Pybullet log.
             Length is (number of timesteps) * (number of objects logged)
             If multiple objects are logged, there will be multiple consecutive log entries for the same timestep
             Each record in the log contains the following info:
