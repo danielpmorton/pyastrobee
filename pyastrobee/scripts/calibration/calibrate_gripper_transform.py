@@ -1,7 +1,4 @@
-"""Calibrates the transformation between the arm_distal link and the the gripper point
-
-TODO fix the physics for the visualization of the point
-"""
+"""Calibrates the transformation between the arm_distal link and the the gripper point"""
 
 import numpy as np
 import pybullet
@@ -37,8 +34,6 @@ T_G2AD = make_transform_mat(np.eye(3), ad_to_grip_in_ad)
 print(f"Transform:\n{T_G2AD}")
 
 # To confirm that this is the correct transformation, add an object to help view this grasp point
-# Right now, this sphere is acting really strangely (physics-wise at least), BUT the position looks good
-# (TODO) - fix the physics for this. But, it isn't totally necessary because we really just want the transform
 
 T_G2W = T_AD2W @ T_G2AD
 p_grip_in_world = T_G2W[:3, 3]
@@ -49,7 +44,7 @@ pybullet.createConstraint(
     ad_id,
     sphere,
     -1,
-    pybullet.JOINT_FIXED,
+    pybullet.JOINT_POINT2POINT,
     [0, 0, 0],
     ad_to_grip_in_ad,
     [0, 0, 0],
