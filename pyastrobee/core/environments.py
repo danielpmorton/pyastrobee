@@ -32,7 +32,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
 from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.core.rigid_bag import RigidCargoBag
-from pyastrobee.trajectories.rewards_and_penalties import state_tracking_cost
+from pyastrobee.trajectories.cost_functions import state_tracking_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 

@@ -1,8 +1,4 @@
-"""Methods for defining rewards / penalties based on how well a trajectory is tracked
-
-Currently, we just compare terminal states in the penalty function and don't consider integrated tracking error
-(TODO make this a separate method)
-"""
+"""Cost functions: For defining how well we track trajectorues, remain in collision-free regions, and more"""
 
 from typing import Union, Optional
 
