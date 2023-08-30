@@ -28,15 +28,14 @@ Usage:
 - Press Esc to exit
 
 Motions are only recorded on a button release to prevent over-queueing actions
-
-TODO
-- Unify the coarse control toggling between the position and the arm control
-- Add force control, velocity control, and a toggle between methods
-- Add back finer control of the gripper rather than just an open/close toggle?
-- Velocity / force control
-- Angle snapping?
-- Toggle between gripper frame and robot frame?
 """
+# TODO
+# - Unify the coarse control toggling between the position and the arm control
+# - Add force control, velocity control, and a toggle between methods
+# - Add back finer control of the gripper rather than just an open/close toggle?
+# - Velocity / force control
+# - Angle snapping?
+# - Toggle between gripper frame and robot frame?
 
 import time
 
@@ -55,10 +54,9 @@ from pyastrobee.utils.debug_visualizer import get_viz_camera_params
 from pyastrobee.utils.python_utils import print_green, print_red
 
 
+# TODO add linear and angular speeds to the inputs?
 class KeyboardController:
     """Class to encompass the keyboard listening and corresponding robot actions
-
-    TODO add linear and angular speeds to the inputs?
 
     Args:
         robot (Astrobee): The Astrobee to control

@@ -75,8 +75,6 @@ def transform_point(
     As an operator: Moves a point within the same frame
         Example: new_point = transform_point(transform, orig_point)
 
-    TODO: validate inputs?
-
     NOTE: pytransform3d has a function for this but it handles the dimensions of the point strangely
 
     Args:
@@ -86,5 +84,6 @@ def transform_point(
     Returns:
         np.ndarray: (3,) transformed point
     """
+    # TODO: validate inputs?
     p = np.append(point, 1)  # Convert to (4,) array
     return (tmat @ p)[:3]

@@ -1,11 +1,10 @@
-"""Trajectory class for Astrobee control, and trajectory-associated helpers
+"""Trajectory class for Astrobee control, and trajectory-associated helpers"""
 
-TODO decide if trajectory attributes should be read-only? (properties)
-TODO make a subclass of Trajectory with the log() method
-TODO make it clearer what happens if some of the traj components are None
-     (Numerically calculate the gradient? Remove the option to set these as None?)
-TODO add max vel/accel lines into the plots?
-"""
+# TODO decide if trajectory attributes should be read-only? (properties)
+# TODO make a subclass of Trajectory with the log() method
+# TODO make it clearer what happens if some of the traj components are None
+#      (Numerically calculate the gradient? Remove the option to set these as None?)
+# TODO add max vel/accel lines into the plots?
 
 from typing import Optional, Union
 
@@ -272,6 +271,8 @@ class TrajectoryLogger(Trajectory):
             self._times.append(self._times[-1] + dt)
 
 
+# TODO see if we can incorporate a sequence of Boxes for the position constraints
+# on a spline trajectory (rather than just a single Box constraint for a single curve)
 def plot_traj_constraints(
     traj: Trajectory,
     pos_lims: Optional[Union[Box, npt.ArrayLike]] = None,
@@ -282,9 +283,6 @@ def plot_traj_constraints(
     show: bool = True,
 ) -> Figure:
     """Plot trajectory info to visualize how it satisfies constraints
-
-    TODO see if we can incorporate a sequence of Boxes for the position constraints
-    on a spline trajectory (rather than just a single Box constraint for a single curve)
 
     Args:
         traj (Trajectory): Trajectory to plot

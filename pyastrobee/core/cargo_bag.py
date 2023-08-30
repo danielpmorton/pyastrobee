@@ -1,14 +1,14 @@
-"""Class for handling loading the cargo bag and managing attributes such as physical properties
+"""Class for handling loading the cargo bag and managing attributes such as physical properties"""
 
-TODO !! Fix the softbody velocity issue
-TODO ! the unloading mechanic is currently broken since it only removes the softbody and not the visual
-TODO If the reliability of the softbody position/orientation is not good, use the get_bag_frame() function I made
-TODO decide if the bag_props import can be handled better
-TODO decide if the constants should be moved to class attributes
-TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
-TODO decide if we should set up the class attributes to handle multiple bags loaded in sim
-    (Like the Astrobee class)
-"""
+# TODO !! Fix the softbody velocity issue
+# TODO ! the unloading mechanic is currently broken since it only removes the softbody and not the visual
+# TODO If the reliability of the softbody position/orientation is not good, use the get_bag_frame() function I made
+# TODO decide if the bag_props import can be handled better
+# TODO decide if the constants should be moved to class attributes
+# TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
+# TODO decide if we should set up the class attributes to handle multiple bags loaded in sim
+#     (Like the Astrobee class)
+
 import time
 from typing import Union, Optional
 
@@ -442,7 +442,7 @@ class CargoBag:
     def unload(self) -> None:
         """Removes the cargo bag from the simulation
 
-        TODO this is kinda broken since it only removes the simulated body rather than the visual
+        NOTE/TODO this is kinda broken since it only removes the simulated body rather than the visual
         (if we update how we load the texture for the softbody this might be fixed)
         """
         self.client.removeBody(self.id)

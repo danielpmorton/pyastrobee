@@ -1,7 +1,6 @@
-"""Functions for plotting various data or debugging info
+"""Functions for plotting various data or debugging info"""
 
-TODO look into pytransform3d.plot_utils
-"""
+# TODO look into pytransform3d.plot_utils
 
 from typing import Union
 
@@ -10,6 +9,7 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 
+# TODO: add names of the variables? Actual times rather than timesteps?
 def plot_controller_history(
     history: np.ndarray,
     target: Union[npt.ArrayLike, float],
@@ -18,8 +18,6 @@ def plot_controller_history(
     d_gain: Union[npt.ArrayLike, float, None] = None,
 ):
     """Plots the state history of variables controlled by a PID controller
-
-    TODO: add names of the variables? Actual times rather than timesteps?
 
     Args:
         history (np.ndarray): History of the variables through the duration of the control process,

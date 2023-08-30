@@ -172,11 +172,10 @@ def bag_example():
     )
 
 
+# TODO tracking seems like it could be improved
 def leader_follower_example():
     """Example with one astrobee following a set 'leader' trajectory, and a second astrobee following at a fixed
     offset from the leader
-
-    TODO tracking seems like it could be improved
     """
     pybullet.connect(pybullet.GUI)
     duration = 5

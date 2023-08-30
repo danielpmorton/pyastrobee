@@ -15,9 +15,6 @@ from pyastrobee.archive.my_rotations import check_rotation_mat
 def make_transform_mat(rot: np.ndarray, trans: np.ndarray) -> np.ndarray:
     """Creates a transformation matrix from a rotation matrix and translation vector
 
-    TODO add checks that the rotation matrix is valid, and that the translation
-    is the correct size
-
     Args:
         rot (np.ndarray): (3,3) rotation matrix
         trans (np.ndarray): (3,) translation vector
@@ -25,6 +22,7 @@ def make_transform_mat(rot: np.ndarray, trans: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: Transformation matrix, shape (4, 4)
     """
+    # TODO add checks that the rotation matrix is valid, and that the translation is the correct size?
     T = np.eye(4, 4)
     T[:3, :3] = rot
     T[:3, 3] = trans
@@ -78,8 +76,6 @@ def transform_point(
     As an operator: Moves a point within the same frame
         Example: new_point = transform_point(transform, orig_point)
 
-    TODO: validate inputs?
-
     Args:
         tmat (np.ndarray): (4, 4) transformation matrix
         point (Union[list[float], np.ndarray]): (3,) point to transform
@@ -87,5 +83,6 @@ def transform_point(
     Returns:
         np.ndarray: (3,) transformed point
     """
+    # TODO: validate inputs?
     p = np.append(point, 1)  # Convert to (4,) array
     return (tmat @ p)[:3]

@@ -1,13 +1,12 @@
 """Test cases for rotations
 
 All quaternion-associated tests will be in a separate test script because there's a lot to test there
-
-TODO
-Add test cases for:
-- Quaternion distance
-- Quaternion interpolation
-- Pretty much a lot more quaternion stuff, there aren't many cases here
 """
+# TODO
+# Add test cases for:
+# - Quaternion distance
+# - Quaternion interpolation
+# - Pretty much a lot more quaternion stuff, there aren't many cases here
 
 import unittest
 import numpy as np

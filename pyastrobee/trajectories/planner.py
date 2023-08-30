@@ -10,10 +10,9 @@ We use a global/local hierarchy where:
 This also assumes decoupled dynamics between the position and orientation components
 
 Note: the orientation component of the trajectories technically isn't "optimal", but it works
-
-TODO add the max-angular-velocity-constrained rotation planner into the global planner (would only really be needed if
-we have a very short time horizon on the position component, i.e. if we're not moving much but rotating a lot)
 """
+# TODO add the max-angular-velocity-constrained rotation planner into the global planner (would only really be needed if
+# we have a very short time horizon on the position component, i.e. if we're not moving much but rotating a lot)
 
 from typing import Optional
 

@@ -2,9 +2,8 @@
 
 This was made so that we could record an face-forward visualization of this motion. It's a bit
 hacky, but it worked well enough to get the video we needed.
-
-TODO switch out all of the planning stuff with the unified function once this is done
 """
+# TODO switch out all of the planning stuff with the unified function once this is done
 
 import time
 

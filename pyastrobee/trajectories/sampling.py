@@ -1,8 +1,7 @@
-"""Methods for sampling candidate trajectories about a reference state or trajectory
+"""Methods for sampling candidate trajectories about a reference state or trajectory"""
 
-TODO make a method that uses different reward weighting in the trajectory optimization (e.g. different weighting
-between minimizing jerk and minimizing pathlength)
-"""
+# TODO make a method that uses different reward weighting in the trajectory optimization (e.g. different weighting
+# between minimizing jerk and minimizing pathlength)
 
 import numpy as np
 import numpy.typing as npt
@@ -12,6 +11,9 @@ from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import local_planner
 
 
+# TODO
+# - Decide if we should be passing in covariance matrices or arrays instead of scalars
+# - Decide if the "orientation stdev" should be replaced by the von Mises kappa parameter
 def generate_trajs(
     cur_pos: npt.ArrayLike,
     cur_orn: npt.ArrayLike,
@@ -37,10 +39,6 @@ def generate_trajs(
     include_nominal_traj: bool,
 ) -> list[Trajectory]:
     """Generate a number of trajectories from the current state to a sampled state about a nominal target
-
-    TODO
-    - Decide if we should be passing in covariance matrices or arrays instead of scalars
-    - Decide if the "orientation stdev" should be replaced by the von Mises kappa parameter
 
     Args:
         cur_pos (npt.ArrayLike): Current position, shape (3,)

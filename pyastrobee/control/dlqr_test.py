@@ -1,12 +1,11 @@
-"""
-TODO
+"""Testing discretized LQR
+
+NOTE
 This isn't exactly working right now - it says that there is no finite solution
 I think this is probably because I formulated this based on the dynamics of the robot 
 rather than the error dynamics? But, then we might expect that the robot would just be driven
 directly to [0, 0, 0, 0, 0, 0, 0]? Which doesn't make sense by itself because the quaternion is invalid
-
 """
-
 
 import time
 
@@ -19,6 +18,7 @@ from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.dynamics import box_inertia
+
 
 # Matrix for relating the angular velocity to the quaternion derivative
 # Check the math here? Somewhat confident that it's correct

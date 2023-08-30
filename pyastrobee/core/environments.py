@@ -4,14 +4,13 @@ NOTE:
 - Class variables DO NOT get updated in vectorized environments (for instance, modifying the value in a
   non-vectorized environment will be reflected in all non-vectorized environments, but not the vectorized ones.
   You'd have to explicitly call the set_attr method for that)
-
-TODO
-- See if there is a faster way to save/restore state in the case that we're using the rigid bag
-- Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
-- Use terminated/truncated as a stopping parameter
-- Should the reset() function reset the simulation back to an initial saved state?
-- Decide if the base AstrobeeEnv should have cleanup functionality
 """
+# TODO
+# - See if there is a faster way to save/restore state in the case that we're using the rigid bag
+# - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
+# - Use terminated/truncated as a stopping parameter
+# - Should the reset() function reset the simulation back to an initial saved state?
+# - Decide if the base AstrobeeEnv should have cleanup functionality
 
 import os
 from pathlib import Path

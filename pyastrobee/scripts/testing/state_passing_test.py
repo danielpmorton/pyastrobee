@@ -1,7 +1,6 @@
-"""Testing to see if we can use pybullet's shared memory to pass saved states between sims
+"""Testing to see if we can use pybullet's shared memory to pass saved states between sims"""
 
-TODO add test between vectorized environments
-"""
+# TODO add test between vectorized environments
 
 import time
 

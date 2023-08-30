@@ -35,14 +35,13 @@ def get_mesh_data(
     return num_verts, np.array(mesh_vert_positions)
 
 
+# TODO: If we need to average over multiple vertices, revert to the version in dedo/anchor_utils.
+# But, if the new pybullet works best with 1 vertex per anchor, this is a simpler implementation
 def get_closest_mesh_vertex(
     pos: npt.ArrayLike,
     mesh: Union[npt.ArrayLike, tuple[tuple[float, float, float], ...]],
 ) -> tuple[np.ndarray, int]:
     """Finds the vertex in a mesh closest to the given point
-
-    TODO: If we need to average over multiple vertices, revert to the version in dedo/anchor_utils.
-    But, if the new pybullet works best with 1 vertex per anchor, this is a simpler implementation
 
     Args:
         pos (npt.ArrayLike): The given XYZ position to search for nearby mesh vertices, shape (3,)

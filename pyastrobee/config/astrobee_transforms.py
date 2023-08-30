@@ -7,11 +7,10 @@ We store these as transformation matrices
 Sourced from:
 - astrobee/config/geometry.config
 - astrobee/config/robots/honey.config
-
-TODO
-- Delete / comment any transforms that aren't used?
-- Deal with placeholder for gripper to arm distal !!!
 """
+# TODO
+# - Delete / comment any transforms that aren't used?
+# - Deal with placeholder for gripper to arm distal !!!
 
 import numpy as np
 

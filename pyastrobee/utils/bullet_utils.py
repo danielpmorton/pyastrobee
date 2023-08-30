@@ -1,10 +1,9 @@
-"""Pybullet-specific helper functions
+"""Pybullet-specific helper functions"""
 
-TODO:
-- Clear up URDF/OBJ method confusion
-- Decide if other connection methods (other than just GUI/DIRECT like SHARED_MEMORY, ...) should be included
-  in the initialize_pybullet function()
-"""
+# TODO:
+# - Clear up URDF/OBJ method confusion
+# - Decide if other connection methods (other than just GUI/DIRECT like SHARED_MEMORY, ...) should be included
+#   in the initialize_pybullet function()
 
 import os
 import time
@@ -21,6 +20,8 @@ from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.python_utils import print_red
 
 
+# TODO consider clearing up some of the confusion between which inputs apply to which import methods
+# (e.g. mass/fixed differs between these, and rgba only applies to obj)
 def load_rigid_object(
     filename: str,
     texture_filename: Optional[str] = None,
@@ -33,9 +34,6 @@ def load_rigid_object(
     client: Optional[BulletClient] = None,
 ) -> int:
     """Loads a rigid object from an OBJ or URDF file
-
-    TODO consider clearing up some of the confusion between which inputs apply to which import methods
-    (e.g. mass/fixed differs between these, and rgba only applies to obj)
 
     Args:
         filename (str): Path to the OBJ/URDF file to load
@@ -169,6 +167,8 @@ def add_texture_to_deformable(
     )
 
 
+# TODO add support for deformable URDF files!
+# TODO check if it makes any sense (or is even possible) to have a fixed deformable?
 def load_deformable_object(
     filename: str,
     texture_filename: Optional[str] = None,
@@ -185,9 +185,6 @@ def load_deformable_object(
     client: Optional[BulletClient] = None,
 ) -> int:
     """Loads a deformable object from an OBJ file
-
-    TODO add support for deformable URDF files!
-    TODO check if it makes any sense (or is even possible) to have a fixed deformable?
 
     Notes: bending and elastic stiffness >90 cause instabilities.
 
@@ -384,16 +381,15 @@ def load_floor(
     return floor_id
 
 
+# TODO:
+# - Add subprocessing so this can run separately?
+# - Add interrupt handling so we can pause this?
 def run_sim(
     viz_freq: float = 240,
     timeout: Optional[float] = None,
     client: Optional[BulletClient] = None,
 ):
     """Runs the pybullet simulation
-
-    TODO:
-    - Add subprocessing so this can run separately?
-    - Add interrupt handling so we can pause this?
 
     Args:
         viz_freq (float, optional): Frequency (Hz) to run the visualization (if connected via GUI). Defaults to 240.

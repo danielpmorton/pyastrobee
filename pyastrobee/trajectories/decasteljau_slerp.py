@@ -7,18 +7,17 @@ to SLERP for each point we're interpolating (due to the recursive nature of De C
 In most cases it will be better to use fast approximate methods to rotation planning, but this can serve as a good
 reference curve
 
-TODO
-- This file needs a lot of cleanup if we are in fact using some of these methods
-    - Move quaternion math operations to the main quaternions file?
-- Get nonzero angular acceleration vector BCs implemented (currently can only handle zero magnitude in accel)
-- Check out the SQUAD algorithm. This seems very similar to a cubic decasteljau spherical bezier curve but with a
-  different parameterization of the "t" interpolation value
-
 Reference:
 https://www.cs.cmu.edu/~kiranb/animation/p245-shoemake.pdf
 https://web.archive.org/web/20120915153625/http://courses.cms.caltech.edu/cs171/quatut.pdf
 https://splines.readthedocs.io/en/latest/rotation/index.html
 """
+# TODO
+# - This file needs a lot of cleanup if we are in fact using some of these methods
+#     - Move quaternion math operations to the main quaternions file?
+# - Get nonzero angular acceleration vector BCs implemented (currently can only handle zero magnitude in accel)
+# - Check out the SQUAD algorithm. This seems very similar to a cubic decasteljau spherical bezier curve but with a
+#   different parameterization of the "t" interpolation value
 
 import pybullet
 import numpy as np

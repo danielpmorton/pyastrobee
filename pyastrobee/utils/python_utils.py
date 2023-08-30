@@ -1,18 +1,15 @@
-"""Utility functions broadly related to python as a whole
+"""Utility functions broadly related to python as a whole"""
 
-TODO determine if this should be separated into more specific files - e.g. debug.py
-"""
+# TODO determine if this should be separated into more specific files - e.g. debug.py
 
 from typing import Any
 from enum import Enum
 
 
+# TODO add @property wrapping as well
+# (possibly buggy, see https://github.com/python/cpython/issues/89519)
 class ExtendedEnum(Enum):
-    """Add the ability to easily extract values of an Enum
-
-    TODO add @property wrapping as well
-    (possibly buggy, see https://github.com/python/cpython/issues/89519)
-    """
+    """Add the ability to easily extract values of an Enum"""
 
     @classmethod
     def get_values(cls):

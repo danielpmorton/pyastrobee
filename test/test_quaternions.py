@@ -1,9 +1,8 @@
-"""Test cases for quaternions
+"""Test cases for quaternions"""
 
-TODO
-- Quaternion distance
-- Quaternion interpolation
-"""
+# TODO
+# - Quaternion distance
+# - Quaternion interpolation
 
 import unittest
 import numpy as np

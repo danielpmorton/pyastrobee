@@ -1,11 +1,10 @@
 """An extended version of a PID controller compatible with multivariate systems
 
-TODO decide if negative gains could actually be possible in the coupled case
-TODO determine how to handle coupled gains in the integral case
-
 Based on pid.cpp (c) 2008, Willow Garage, Inc. (BSD License)
 as well as Nathan Sprague's Python translation
 """
+# TODO decide if negative gains could actually be possible in the coupled case
+# TODO determine how to handle coupled gains in the integral case
 
 from typing import Optional
 

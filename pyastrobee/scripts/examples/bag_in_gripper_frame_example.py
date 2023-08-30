@@ -2,15 +2,14 @@
 
 This was originally just supposed to be a temporary debugging script for the transformations but it
 is actually quite useful as an example of loading objects in relative locations to the Astrobee.
-
-TODO
-- There is some weird stuff happening with the collision between the Astrobee and the bag
-  on initialization. It seems like the collision info for the bag isn't perfect and thus the
-  Astrobee and the bag are colliding (and the bag is launching away). This behavior should be
-  figured out (possibly by updating the collision bodies of the bags, or changing the grasp point)
-  - An easy fix might be just inserting a bonus delta-x transform in the math in this script so that
-    the bag is slightly further from the gripper
 """
+# TODO
+# - There is some weird stuff happening with the collision between the Astrobee and the bag
+#   on initialization. It seems like the collision info for the bag isn't perfect and thus the
+#   Astrobee and the bag are colliding (and the bag is launching away). This behavior should be
+#   figured out (possibly by updating the collision bodies of the bags, or changing the grasp point)
+#   - An easy fix might be just inserting a bonus delta-x transform in the math in this script so that
+#     the bag is slightly further from the gripper
 
 import time
 import pybullet

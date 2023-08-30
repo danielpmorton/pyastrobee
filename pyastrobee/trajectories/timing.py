@@ -3,11 +3,10 @@
 - Timing heuristics help us estimate the amount of time allocated to trajectories
 - Note: These heuristics are astrobee-specific
 - The retiming optimization refines transition timing of spline trajectories
-
-TODO
-- Some of these heuristics will be relatively poor. Try to figure out better estimates that are
-  not too computationally intensive to solve
 """
+# TODO
+# - Some of these heuristics will be relatively poor. Try to figure out better estimates that are
+#   not too computationally intensive to solve
 
 import numpy as np
 import numpy.typing as npt

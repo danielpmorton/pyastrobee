@@ -26,11 +26,10 @@ Safe motion:
 Stephen Boyd and Tobia Marcucci recommended using these. 
 Refer to "Fast Path Planning Through Large Collections of Safe Boxes" for more info, as well as Tobia's repository
 https://github.com/cvxgrp/fastpathplanning/
-
-TODO
-- The L2 squared metric seems to be nonconvex if the total duration of the curve is also an optimization variable...
-  See if there is a better way to formulate this
 """
+# TODO
+# - The L2 squared metric seems to be nonconvex if the total duration of the curve is also an optimization variable...
+#   See if there is a better way to formulate this
 
 
 from typing import Optional, Union

@@ -1,11 +1,10 @@
 """Astrobee constants associated with motion planning and control
 
-TODO make flight mode an input somewhere, rather than a hardcoded variable here?
-
 Sourced from:
 - astrobee/gds_configs/AllOperatingLimitsConfig.json
 - A Brief Guide to Astrobee
 """
+# TODO make flight mode an input somewhere, rather than a hardcoded variable here?
 
 from enum import Enum
 import numpy as np

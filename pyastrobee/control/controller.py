@@ -1,19 +1,17 @@
 """Position, velocity, and force controllers for Astrobee motion
 
-TODO
-- !! Check on the 1/5 scaling issue with velocities?
-  https://github.com/bulletphysics/bullet3/issues/2237
-- Add ability to command deltas
-- Add logic/planning/PID to control more than just velocity with velocity, force with force, ...
-- Unify function between controllers with a follow_trajectory() function?
-
-TODO (Long-horizon)
-- Add support for multiple robots (maybe this is already viable if we just initialize another controller for robot #2)
-
 NOTE
 - Currently working with position control as "pose control", linking position + orientation
   IDK if it is valuable to control these two things separately, but we may want to include this
 """
+# TODO
+# - !! Check on the 1/5 scaling issue with velocities?
+#   https://github.com/bulletphysics/bullet3/issues/2237
+# - Add ability to command deltas
+# - Add logic/planning/PID to control more than just velocity with velocity, force with force, ...
+# - Unify function between controllers with a follow_trajectory() function?
+# TODO (Long-horizon)
+# - Add support for multiple robots (maybe this is already viable if we just initialize another controller for robot #2)
 
 import time
 from abc import ABC, abstractmethod
@@ -90,6 +88,7 @@ class Controller(ABC):
             self.step()
             time.sleep(self.dt)  # Should this be in step?
 
+    # TODO decide if this should be implemented in the inherited classes
     def _validate_cmds(
         self,
         pose: Optional[npt.ArrayLike] = None,
@@ -101,7 +100,6 @@ class Controller(ABC):
         """Confirms that inputs are the correct shape and within the Astrobee's force/speed limits
 
         - All commands are defined in world frame
-        - TODO decide if this should be implemented in the inherited classes
 
         Args:
             pose (Optional[npt.ArrayLike]): Pose command (position + XYZW quaternion). Defaults to None.
@@ -162,18 +160,17 @@ class Controller(ABC):
                 )
 
 
+# TODO
+# - This should be structured in the same way as the other controllers (Inherit from Controller(), and define the
+#   update() function), so that we can call the controllers in the same way
+# - This will likely require us to define states such as IDLE, ALIGNING, FOLLOWING, and do different things in
+#   the update() function based on the state and transitions
+# - Rename to ConstraintController?
 class PoseController:
     """Position control for the Astrobee
 
     Args:
         robot (Astrobee): The Astrobee being controlled
-
-    TODO
-    - This should be structured in the same way as the other controllers (Inherit from Controller(), and define the
-      update() function), so that we can call the controllers in the same way
-    - This will likely require us to define states such as IDLE, ALIGNING, FOLLOWING, and do different things in
-      the update() function based on the state and transitions
-    - Rename to ConstraintController?
     """
 
     def __init__(self, robot: Astrobee):
@@ -354,14 +351,12 @@ class ForceController(Controller):
         self._torque_command = cmd
 
     def update(self):
-        """Updates the forces on the robot for a single timestep
-
-        TODO
-        - Make sure we don't exceed the speed limit
-          (For the accel limit, we can assume that adhering to the maximum force limits are enough)
-        - Include torque effect of drag?
-        - Include more robust force model for the fan thrust
-        """
+        """Updates the forces on the robot for a single timestep"""
+        # TODO
+        # - Make sure we don't exceed the speed limit
+        #   (For the accel limit, we can assume that adhering to the maximum force limits are enough)
+        # - Include torque effect of drag?
+        # - Include more robust force model for the fan thrust
 
         cur_vel = self.robot.velocity
         drag_force = drag_force_model(cur_vel)

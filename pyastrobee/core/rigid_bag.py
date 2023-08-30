@@ -1,13 +1,11 @@
-"""Rigid version of the cargo bag, using joints in the URDF to mimic what we would see from a deformable
+"""Rigid version of the cargo bag, using joints in the URDF to mimic what we would see from a deformable"""
 
-TODO add support for more than just the top handle bag!!!
-TODO tune the position control force on the handle
-
-Additional relevant TODOs from the original CargoBag file:
-TODO decide if the bag_props import can be handled better
-TODO decide if the constants should be moved to class attributes
-TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
-"""
+# TODO add support for more than just the top handle bag!!!
+# TODO tune the position control force on the handle
+# Additional relevant TODOs from the original CargoBag file:
+# TODO decide if the bag_props import can be handled better
+# TODO decide if the constants should be moved to class attributes
+# TODO decide if we should anchor to the gripper fingers or the arm distal link (currently distal)
 
 import time
 from typing import Union, Optional

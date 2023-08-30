@@ -3,9 +3,6 @@
 Initial boundary conditions are imposed on the start of the first curve, final B.C.s are imposed at the end of
 the third curve, and we enforce C2 derivative continuity at the knot points
 
-TODO
-- Return Trajectory class, or just the positions/velocites/accels/times....?
-
 Reference:
 Fast Path Planning Through Large Collections of Safe Boxes
 https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/smooth.py

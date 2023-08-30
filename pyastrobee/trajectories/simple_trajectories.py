@@ -1,15 +1,14 @@
-"""Simple examples of position/orientation trajectories
+"""Simple examples of position/orientation trajectories"""
 
-TODO check out other motion planning libraries
-https://github.com/stanford-iprl-lab/mob-manip/blob/main/mob_manip/utils/common/plan_control_traj.py
-https://github.com/krishauser/Klampt
-https://github.com/caelan/pybullet-planning
-https://github.com/caelan/motion-planners
-https://arxiv.org/pdf/2205.04422.pdf
-https://ompl.kavrakilab.org/
-https://github.com/lyfkyle/pybullet_ompl
-https://github.com/schmrlng/MotionPlanning.jl/tree/master/src (convert to python?)
-"""
+# TODO check out other motion planning libraries
+# https://github.com/stanford-iprl-lab/mob-manip/blob/main/mob_manip/utils/common/plan_control_traj.py
+# https://github.com/krishauser/Klampt
+# https://github.com/caelan/pybullet-planning
+# https://github.com/caelan/motion-planners
+# https://arxiv.org/pdf/2205.04422.pdf
+# https://ompl.kavrakilab.org/
+# https://github.com/lyfkyle/pybullet_ompl
+# https://github.com/schmrlng/MotionPlanning.jl/tree/master/src (convert to python?)
 
 import numpy as np
 import numpy.typing as npt

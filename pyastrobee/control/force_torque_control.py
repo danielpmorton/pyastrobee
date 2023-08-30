@@ -1,14 +1,13 @@
-"""Force/torque control
+"""Force/torque control"""
 
-TODO integrate this with the PID class I made
-TODO update the way mass and inertia are handled (attributes of Astrobee?)
-TODO see if we can bring back the matrix forms of these gains
-TODO add stopping tolerances as inputs?
-TODO unify variable naming and argument positioning
-TODO enforce max force/torque limits, convert between frames
-TODO decide if the stopping tolerance parameters should be in a different location
-     (OR, figure out a way to define this for the bag as well)
-"""
+# TODO integrate this with the PID class I made
+# TODO update the way mass and inertia are handled (attributes of Astrobee?)
+# TODO see if we can bring back the matrix forms of these gains
+# TODO add stopping tolerances as inputs?
+# TODO unify variable naming and argument positioning
+# TODO enforce max force/torque limits, convert between frames
+# TODO decide if the stopping tolerance parameters should be in a different location
+#      (OR, figure out a way to define this for the bag as well)
 
 from typing import Optional
 
@@ -78,6 +77,7 @@ class ForceTorqueController:
         self.control_log = ControlLogger()
         self.client: pybullet = pybullet if client is None else client
 
+    # TODO figure out how world/robot frame should be handled
     def get_force(
         self,
         cur_pos: npt.ArrayLike,
@@ -87,8 +87,6 @@ class ForceTorqueController:
         des_accel: npt.ArrayLike,
     ) -> np.ndarray:
         """Calculates the required force to achieve a desired pos/vel/accel
-
-        TODO figure out how world/robot frame should be handled
 
         Args:
             cur_pos (npt.ArrayLike): Current position, shape (3,)

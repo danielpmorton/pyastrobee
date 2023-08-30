@@ -2,9 +2,8 @@
 
 This is mainly to evaluate how much the trajectory can change when we leave a parameter unconstrained
 and don't just evaluate the nominal solution we might get at first
-
-TODO: figure out how to quantify which one of these is "best" in a convex way so we can reliably optimize trajs
 """
+# TODO: figure out how to quantify which one of these is "best" in a convex way so we can reliably optimize trajs
 
 import numpy as np
 import matplotlib.pyplot as plt

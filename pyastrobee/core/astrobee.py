@@ -2,15 +2,14 @@
 
 In general, we assume that we're working with Honey. Multiple astrobees can be loaded, but
 we assume that they all have the exact same configuration
-
-TODO
-- Get step sizes worked out!!
-- I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future, 
-  make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping track
-  of all of the IDs together will cause a mess)
-- Determine off-diagonal inertia matrix values, and account for the arm in the inertia values?
-- Check on if the known Astrobee inertia matches what Pybullet thinks the inertia is
 """
+# TODO
+# - Get step sizes worked out!!
+# - I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future,
+#   make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping
+#   track of all of the IDs together will cause a mess)
+# - Determine off-diagonal inertia matrix values, and account for the arm in the inertia values?
+# - Check on if the known Astrobee inertia matches what Pybullet thinks the inertia is
 
 from typing import Optional, Union
 
@@ -215,8 +214,6 @@ class Astrobee:
     def velocity(self) -> np.ndarray:
         """Linear velocity of the Astrobee, with respect to the world frame xyz axes
 
-        TODO check if this has a (1/5) scaling issue with the commanded velocity
-
         Returns:
             np.ndarray: [vx, vy, vz] linear velocities, shape (3,)
         """
@@ -226,8 +223,6 @@ class Astrobee:
     @property
     def angular_velocity(self) -> np.ndarray:
         """Angular velocity of the Astrobee, about the world frame xyz axes
-
-        TODO check if this has a (1/5) scaling issue with the commanded velocity
 
         Returns:
             np.ndarray: [wx, wy, wz] angular velocities, shape (3,)
@@ -458,10 +453,9 @@ class Astrobee:
         r_pct = 100 * (r_angles - r_closed) / (r_open - r_closed)
         return np.round(np.average(np.concatenate([l_pct, r_pct]))).astype(int)
 
+    # TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
     def set_gripper_position(self, position: float, force: bool = False) -> None:
         """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
-
-        TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
 
         Args:
             position (float): Gripper position, in range [0, 100]
@@ -480,11 +474,9 @@ class Astrobee:
         """Fully opens the gripper"""
         self.set_gripper_position(100)
 
+    # TODO add force/torque control?
     def close_gripper(self) -> None:
-        """Fully closes the gripper
-
-        TODO add force/torque control?
-        """
+        """Fully closes the gripper"""
         self.set_gripper_position(0)
 
     # TODO rework this?

@@ -1,11 +1,11 @@
-"""Demo: Load an Astrobee holding a cargo bag in the ISS and move around
+"""Demo: Load an Astrobee holding a cargo bag in the ISS and move around"""
 
-TODO
-- Calibrate the GRIPPER_TO_ARM_DISTAL transformation in pyastrobee/config/astrobee_transforms.py
-  (This transform will dictate our offset between the last frame on the arm, and where we're holding the bag handle)
-- Find the orientation(s) to load the bag and astrobee together, initially connected
-- Attach an anchor to the bag handle
-"""
+# TODO
+# - Calibrate the GRIPPER_TO_ARM_DISTAL transformation in pyastrobee/config/astrobee_transforms.py
+#   (This transform will dictate our offset between the last frame on the arm, and where we're holding the bag handle)
+# - Find the orientation(s) to load the bag and astrobee together, initially connected
+# - Attach an anchor to the bag handle
+
 import os
 
 import numpy as np
@@ -100,12 +100,11 @@ def glide_to_pose(
 def demo_with_iss():
     """A simple demo of loading the astrobee in the ISS and moving it around in various ways
 
-    TODO: the WPs might need to be refined, there seems to be a lot of weird rotating going on
-    Or it could be a quaternion issue? Quaternion ambiguity?
-
     This could just in general be cleaned up and refined, but it works ok for now
     """
     # Hardcoded waypoints and positions found from keyboard-controlling the Astrobee
+    # TODO: the WPs might need to be refined, there seems to be a lot of weird rotating going on
+    # Or it could be a quaternion issue? Quaternion ambiguity?
     # fmt: off
     waypts = [
         [0, 0, 0, 0, 0, 0, 1],

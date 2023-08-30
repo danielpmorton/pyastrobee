@@ -6,12 +6,11 @@ We create three different types of environments:
 3: Other parallel environments which evaluate deviations on the nominal value
 
 When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan
-
-TODO:
-- Stopping criteria at end of trajectory (use the terminated/truncated parameters somehow)
-- Merge this with the main MPC file?
-- Turn this into a controller class, or just leave as a script?
 """
+# TODO:
+# - Stopping criteria at end of trajectory (use the terminated/truncated parameters somehow)
+# - Merge this with the main MPC file?
+# - Turn this into a controller class, or just leave as a script?
 
 import numpy as np
 import numpy.typing as npt
