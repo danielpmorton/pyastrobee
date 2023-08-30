@@ -28,7 +28,7 @@ from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
-from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
+from pyastrobee.trajectories.rewards_and_penalties import state_tracking_cost
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController
@@ -190,7 +190,7 @@ def mpc_main(
             # TODO should we visualize the deviation in the trajectory?
             pos, orn, vel, ang_vel = robot.dynamics_state
             costs.append(
-                deviation_penalty(
+                state_tracking_cost(
                     pos,
                     orn,
                     vel,

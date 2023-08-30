@@ -32,7 +32,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
 from pyastrobee.core.cargo_bag import CargoBag
 from pyastrobee.core.rigid_bag import RigidCargoBag
-from pyastrobee.trajectories.rewards_and_penalties import deviation_penalty
+from pyastrobee.trajectories.rewards_and_penalties import state_tracking_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
@@ -340,7 +340,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Get the state of the robot after we follow the trajectory
         pos, orn, vel, omega = self.robot.dynamics_state
         # Determine the reward based on how much we deviated from the target
-        reward = -1 * deviation_penalty(
+        reward = -1 * state_tracking_cost(
             pos,
             orn,
             vel,

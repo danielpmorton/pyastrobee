@@ -16,7 +16,7 @@ from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.utils.quaternions import quaternion_angular_error
 
 
-def deviation_penalty(
+def state_tracking_cost(
     cur_pos: npt.ArrayLike,
     cur_orn: npt.ArrayLike,
     cur_vel: npt.ArrayLike,
@@ -30,7 +30,7 @@ def deviation_penalty(
     vel_penalty: float,
     ang_vel_penalty: float,
 ) -> float:
-    """Evaluate a loss/penalty for deviations between the current and desired dynamics state
+    """Evaluate a cost function for deviations between the current and desired dynamics state
 
     Args:
         cur_pos (npt.ArrayLike): Current position, shape (3,)
@@ -47,7 +47,7 @@ def deviation_penalty(
         ang_vel_penalty (float): Penalty scaling factor for angular velocity error
 
     Returns:
-        float: Loss/penalty value
+        float: Cost function evaluation
     """
     pos_err = np.subtract(cur_pos, des_pos)
     orn_err = quaternion_angular_error(cur_orn, des_orn)
@@ -62,18 +62,48 @@ def deviation_penalty(
     )
 
 
-def integrated_deviation(
+def traj_tracking_cost(
     des_traj: Trajectory,
     recorded_traj: Trajectory,
     pos_penalty: float,
     orn_penalty: float,
     vel_penalty: float,
     ang_vel_penalty: float,
-):
-    pass
+) -> float:
+    """Evaluates a state mismatch cost function over the duration of a trajectory
+
+    Args:
+        des_traj (Trajectory): Desired trajectory
+        recorded_traj (Trajectory): Recorded trajectory
+        pos_penalty (float): Penalty scaling factor for position error
+        orn_penalty (float): Penalty scaling factor for orientation/angular error
+        vel_penalty (float): Penalty scaling factor for linear velocity error
+        ang_vel_penalty (float): Penalty scaling factor for angular velocity error
+
+    Returns:
+        float: Cost function evaluation
+    """
+    assert recorded_traj.num_timesteps == des_traj.num_timesteps
+    total_cost = 0
+    for i in range(recorded_traj.num_timesteps):
+        total_cost += state_tracking_cost(
+            recorded_traj.positions[i],
+            recorded_traj.quaternions[i],
+            recorded_traj.linear_velocities[i],
+            recorded_traj.angular_velocities[i],
+            des_traj.positions[i],
+            des_traj.quaternions[i],
+            des_traj.linear_velocities[i],
+            des_traj.angular_velocities[i],
+            pos_penalty,
+            orn_penalty,
+            vel_penalty,
+            ang_vel_penalty,
+        )
+    return total_cost
 
 
-def safe_set_deviation(
+def safe_set_cost(
     position: npt.ArrayLike,
     boxes: Union[Box, list[Box]],
     padding: Optional[npt.ArrayLike] = None,
@@ -85,7 +115,7 @@ def safe_set_deviation(
     position approaches the wall. Costs are negative for being inside the safe set, and positive outside (in collision).
     We can add an additional large penalty for being in collision, to help ensure collision avoidance
 
-    This essentially works out to be an L1 signed distance field
+    This is essentially an axis-aligned L1 signed distance field
 
     Args:
         position (npt.ArrayLike): Position to evaluate the cost function
@@ -129,19 +159,39 @@ def safe_set_deviation(
         )
 
 
-def integrated_safe_set_deviation(
+def integrated_safe_set_cost(
     positions: npt.ArrayLike,
-    box_or_boxes: Union[Box, list[Box]],
+    boxes: Union[Box, list[Box]],
     padding: Optional[npt.ArrayLike] = None,
     collision_penalty: float = 0,
-):
-    dev = 0
+) -> tuple[float, bool]:
+    """Evaluates the safe-set collision avoidance cost function over a sequence of positions
+
+    Args:
+        positions (npt.ArrayLike): Positions to evaluate the cost function
+        boxes (Union[Box, list[Box]]): Local description of the safe set. This does NOT need to be every box in the
+            environment, just the ones in the proximity of the position being evaluated
+        padding (Optional[npt.ArrayLike]): Distance(s) to pad the safe set by (for instance, if we evaluate the central
+            point of a spherical robot). Defaults to None.
+        collision_penalty (float, optional): Additional penalty to increase the cost function if collision occurs.
+            Defaults to 0.
+
+    Returns:
+        tuple[float, bool]:
+            float: The total integrated cost function evaluation
+            bool: Whether a collision occurred at any point in the motion
+    """
+    total_cost = 0
+    collision_occurred = False
     for pos in positions:
-        dev += safe_set_deviation(pos, box_or_boxes, padding, collision_penalty)
-    pass
+        cost = safe_set_cost(pos, boxes, padding, collision_penalty)
+        total_cost += cost
+        if cost >= 0:
+            collision_occurred = True
+    return total_cost, collision_occurred
 
 
-def _visualize_penalty_test():
+def _visualize_safe_set_cost():
     """Create a 2D example of two safe-set boxes and visualize a heatmap of the penalty function"""
     n = 50
     X, Y = np.meshgrid(np.linspace(-1, 1, n), np.linspace(-1, 1, n))
@@ -158,9 +208,10 @@ def _visualize_penalty_test():
     ]
     for i in range(n):
         for j in range(n):
-            Z[i, j] = safe_set_deviation(
+            Z[i, j] = safe_set_cost(
                 (X[i, j], Y[i, j]), [box_1, box_2], padding, penalty
             )
+            # Z[i, j] = (1 if Z[i, j] >= 0 else -1) * Z[i, j] ** 2
 
     two_slope_norm = colors.TwoSlopeNorm(vmin=np.min(Z), vcenter=0, vmax=np.max(Z))
     heatmap = plt.pcolormesh(X, Y, Z, cmap="Spectral_r", norm=two_slope_norm)
@@ -176,4 +227,4 @@ def _visualize_penalty_test():
 
 
 if __name__ == "__main__":
-    _visualize_penalty_test()
+    _visualize_safe_set_cost()
