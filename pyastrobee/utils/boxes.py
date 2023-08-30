@@ -94,7 +94,7 @@ def is_in_box(point: npt.ArrayLike, box: Box) -> bool:
 
 def find_containing_box(
     point: npt.ArrayLike, boxes: Union[list[Box], npt.ArrayLike]
-) -> int | None:
+) -> Optional[int]:
     """Find the index of the first box which contains a certain point
 
     Args:
@@ -102,7 +102,7 @@ def find_containing_box(
         boxes (Union[list[Box], npt.ArrayLike]): Boxes to search. If an array, must be of shape (n_boxes, 2, box_dim)
 
     Returns:
-        int | None: Index of the first box which contains the point. None if the point is not in any box
+        Optional[int]: Index of the first box which contains the point. None if the point is not in any box
     """
     for i, box in enumerate(boxes):
         lower, upper = box
@@ -111,14 +111,16 @@ def find_containing_box(
     return None
 
 
-def find_containing_box_name(point: npt.ArrayLike, boxes: dict[str, Box]) -> str | None:
+def find_containing_box_name(
+    point: npt.ArrayLike, boxes: dict[str, Box]
+) -> Optional[str]:
     """Find the name of the first box which contains a certain point
 
     Args:
         point (npt.ArrayLike): Point to evaluate
         boxes (dict[str, Box]): Boxes to search. Key/value: (box name) -> box
     Returns:
-        str | None: Name of the first box which contains the point. None if the point is not in any box
+        Optional[str]: Name of the first box which contains the point. None if the point is not in any box
     """
     for name, box in boxes.items():
         if np.all(point >= box.lower) and np.all(point <= box.upper):

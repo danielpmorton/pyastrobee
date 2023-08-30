@@ -1,20 +1,20 @@
 """Common algorithms"""
 
-from typing import Iterable, TypeVar
+from typing import Iterable, TypeVar, Optional
 
 T = TypeVar("T")
 
 
-def dfs(graph: dict[T, Iterable[T]], start: T, end: T) -> list[T] | None:
+def dfs(graph: dict[T, Iterable[T]], start: T, end: T) -> Optional[list[T]]:
     """Depth first search
 
     Args:
-        graph (dict[Any, Iterable]): Graph to search. Maps nodes to a list or other iterable of neighbors
-        start (Any): Starting node
-        end (Any): Ending node
+        graph (dict[T, Iterable[T]]): Graph to search. Maps nodes to a list or other iterable of neighbors
+        start (T): Starting node
+        end (T): Ending node
 
     Returns:
-        list[Any] | None: Sequence of nodes from start to end. None if the the path does not exist
+        Optional[list[T]]: Sequence of nodes from start to end. None if the the path does not exist
     """
     if start not in graph or end not in graph:
         return None
