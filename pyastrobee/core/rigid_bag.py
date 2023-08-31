@@ -85,8 +85,12 @@ class RigidCargoBag:
         # to provide some resistance to motion like we would see in a deformable
         # The dummy joints are the joints associated with the motion of the handle
         if self.num_handles == 1:
+            self.num_joints = 4  # 3 for rpy, 1 for handle
+            self.num_links = 5  # Base, 3 dummies for rpy, handle
             dummy_joint_ids = [0, 1, 2]
         elif self.num_handles == 2:
+            self.num_joints = 8
+            self.num_links = 9
             dummy_joint_ids = [0, 1, 2, 4, 5, 6]
         self.client.setJointMotorControlArray(
             self.id,
