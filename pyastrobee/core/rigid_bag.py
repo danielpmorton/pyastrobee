@@ -88,7 +88,7 @@ class RigidCargoBag:
             dummy_joint_ids = [0, 1, 2]
         elif self.num_handles == 2:
             dummy_joint_ids = [0, 1, 2, 4, 5, 6]
-        pybullet.setJointMotorControlArray(
+        self.client.setJointMotorControlArray(
             self.id,
             dummy_joint_ids,
             pybullet.POSITION_CONTROL,
