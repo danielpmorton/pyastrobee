@@ -493,16 +493,14 @@ def calculateVelocityQuaternion(*args, **kwargs):  # real signature unknown
     pass
 
 def changeConstraint(
-    parentBodyUniqueId: int,
-    parentLinkIndex: int,
-    childBodyUniqueId: int,
-    childLinkIndex: int,
-    jointType: int,
-    jointAxis: list[float],
-    parentFramePosition: list[float],
-    childFramePosition: list[float],
-    parentFrameOrientation: list[float],
-    childFrameOrientation: list[float],
+    userConstraintUniqueId: int,
+    jointChildPivot: int,
+    jointChildFrameOrientation: int,
+    maxForce: int,
+    gearRatio: int,
+    gearAuxLink: list[float],
+    relativePositionTarget: list[float],
+    erp: list[float],
     physicsClientId: int,
     *args,
     **kwargs
@@ -1327,7 +1325,8 @@ def resetDebugVisualizerCamera(
     physicsClientId: int = 0,
 ) -> None:  # real signature unknown
     """For the 3D OpenGL Visualizer, set the camera distance, yaw, pitch and target position.
-    Example: pybullet.resetDebugVisualizerCamera( cameraDistance=3, cameraYaw=30,cameraPitch=52, cameraTargetPosition=[0,0,0])"""
+    Example: pybullet.resetDebugVisualizerCamera( cameraDistance=3, cameraYaw=30,cameraPitch=52, cameraTargetPosition=[0,0,0])
+    """
     pass
 
 def resetJointState(
