@@ -71,7 +71,7 @@
         <collision name="handle_collision">
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <box size="0.02 0.05 0.15"/>
+                <box size="0.02 0.05 0.05"/>
             </geometry>
         </collision>
         <inertial>
@@ -87,7 +87,7 @@
         <axis xyz="0 1 0" />
         <!-- Origin specifies the ball joint location -->
         <origin rpy="0 0 0" xyz="0.25 0 0"/>
-        <limit effort="1.0" lower="-0.7" upper="0.7" velocity="1.0"/>
+        <limit effort="1.0" lower="-1.57079" upper="1.57079" velocity="1.0"/>
     </joint>
 
     <link name="pitch_link">
@@ -102,7 +102,7 @@
         <parent link="pitch_link"/>
         <child link="yaw_link"/>
         <axis xyz="0 0 1" />
-        <limit effort="1.0" lower="-0.52360" upper="0.52360" velocity="1.0"/>
+        <limit effort="1.0" lower="-1.57079" upper="1.57079" velocity="1.0"/>
     </joint>
 
     <link name="yaw_link">
@@ -117,7 +117,7 @@
         <parent link="yaw_link"/>
         <child link="roll_link"/>
         <axis xyz="1 0 0" />
-        <limit effort="1.0" lower="-0.52360" upper="0.52360" velocity="1.0"/>
+        <limit effort="1.0" lower="-1.57079" upper="1.57079" velocity="1.0"/>
     </joint>
 
     <link name="roll_link">
