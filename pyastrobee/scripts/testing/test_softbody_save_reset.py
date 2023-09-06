@@ -18,7 +18,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.control.force_torque_control import ForceTorqueController
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.utils.rotations import euler_xyz_to_quat
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
@@ -39,13 +39,13 @@ def run_test(object: str):
     """Pause, save, and reset the sim after user interaction. Object is either "bag", "cloth", or "astrobee"."""
     client = initialize_pybullet()
     if object == "bag":
-        bag = CargoBag("top_handle")
+        bag = DeformableCargoBag("top_handle")
     elif object == "cloth":
         pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
         cloth_id = load_deformable_object("cloth_z_up.obj")
     elif object == "astrobee":
         robot = Astrobee()
-        bag = CargoBag("top_handle")
+        bag = DeformableCargoBag("top_handle")
         bag.attach_to(robot)
     print("Apply a disturbance force")
     loop_sim()
@@ -67,7 +67,7 @@ def multi_reset_test():
     """
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     bag.attach_to(robot)
     start_pose = robot.pose
     end_pose = [1, 2, 3, *random_quaternion()]

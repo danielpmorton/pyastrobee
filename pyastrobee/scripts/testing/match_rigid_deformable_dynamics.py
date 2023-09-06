@@ -14,12 +14,12 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 
 
-def get_state(deformable_bag: CargoBag, robot: Optional[Astrobee] = None):
+def get_state(deformable_bag: DeformableCargoBag, robot: Optional[Astrobee] = None):
     robot_state = robot.full_state if robot is not None else None
     return deformable_bag.dynamics_state, robot_state
 
@@ -70,7 +70,7 @@ def bag_only_test():
     rigid_p0 = deformable_p0 + pos_offset
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    deformable_bag = CargoBag(bag_name, deformable_p0, client=client)
+    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
     rigid_bag = RigidCargoBag(bag_name, rigid_p0, client=client)
 
     time_per_reset = 1  # seconds
@@ -92,7 +92,7 @@ def astrobee_and_bag_test():
     rigid_p0 = deformable_p0 + pos_offset
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    deformable_bag = CargoBag(bag_name, deformable_p0, client=client)
+    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
     robot_1 = Astrobee()
     deformable_bag.attach_to(robot_1, "robot")
     rigid_bag = RigidCargoBag(bag_name, rigid_p0, client=client)

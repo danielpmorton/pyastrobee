@@ -5,14 +5,14 @@ import time
 import pybullet
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 
 
 def test_attach_and_detach():
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     bag.attach_to(robot)
     init_time = time.time()
     detach_time_lim = 10
@@ -38,7 +38,7 @@ def test_attach_and_detach():
 def test_dynamics():
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     bag.attach_to(robot)
     dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
     while True:
@@ -56,7 +56,7 @@ def test_multi_robot():
     client = initialize_pybullet()
     robot_1 = Astrobee()
     robot_2 = Astrobee()
-    bag = CargoBag("top_bottom_handle")
+    bag = DeformableCargoBag("top_bottom_handle")
     # bag = CargoBag("front_back_handle")
     # bag = CargoBag("right_left_handle")
     bag.attach_to([robot_1, robot_2])

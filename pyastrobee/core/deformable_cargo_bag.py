@@ -57,7 +57,7 @@ BAG_CORNERS = {
 }
 
 
-class CargoBag:
+class DeformableCargoBag:
     """Class for loading and managing properties associated with the cargo bags
 
     Args:
@@ -468,7 +468,7 @@ def _main():
     # Very simple example of loading the bag and attaching a robot
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     bag.attach_to(robot)
     while True:
         client.stepSimulation()

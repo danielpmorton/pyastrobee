@@ -4,7 +4,7 @@ import pybullet
 import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.trajectories.planner import local_planner
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.rotations import Rx, rmat_to_quat
@@ -99,7 +99,7 @@ def bag_example():
     Note: This currently seems to be unstable
     """
     client = initialize_pybullet()
-    bag = CargoBag("right_left_handle")
+    bag = DeformableCargoBag("right_left_handle")
     robot_1 = Astrobee()
     robot_2 = Astrobee()
     bag.attach_to([robot_1, robot_2])

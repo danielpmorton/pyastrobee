@@ -21,7 +21,7 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
@@ -34,7 +34,7 @@ from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
 def init(
     robot_pose: npt.ArrayLike, use_gui: bool = True
-) -> tuple[BulletClient, Astrobee, CargoBag]:
+) -> tuple[BulletClient, Astrobee, DeformableCargoBag]:
     """Initialize the simulation environment with our assets
 
     Args:
@@ -50,7 +50,7 @@ def init(
     client = initialize_pybullet(use_gui)
     iss = ISS(client=client)
     robot = Astrobee(robot_pose, client=client)
-    bag = CargoBag("top_handle", client=client)
+    bag = DeformableCargoBag("top_handle", client=client)
     bag.attach_to(robot, object_to_move="bag")
     return client, robot, bag
 

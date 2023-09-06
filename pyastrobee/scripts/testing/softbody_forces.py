@@ -5,7 +5,7 @@ import pybullet
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.bullet_utils import create_anchor
 from pyastrobee.utils.mesh_utils import get_closest_mesh_vertex
@@ -22,7 +22,7 @@ def main():
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
     # We'll use our standard cargo bag for the deformable object
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     # And for the rigid object, we'll just use a simple cube
     # We'll rotate the cube so that we can attach the bag handle right at the tip of the cube
     cube_rot = axis_angle_to_quat(

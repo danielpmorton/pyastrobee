@@ -12,7 +12,7 @@ import pybullet
 import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag import CargoBag
+from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion
@@ -72,7 +72,7 @@ def astrobee_with_bag_example():
     client = initialize_pybullet(bg_color=[1, 1, 1])
     np.random.seed(0)
     robot = Astrobee()
-    bag = CargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle")
     bag.attach_to(robot)
     pose_1 = robot.pose
     pose_2 = [1, 2, 3, *random_quaternion()]
