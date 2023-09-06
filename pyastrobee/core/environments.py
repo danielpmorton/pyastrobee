@@ -30,7 +30,7 @@ from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
 from pyastrobee.core.deformable_bag import DeformableCargoBag
-from pyastrobee.core.rigid_bag import RigidCargoBag
+from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.trajectories.cost_functions import state_tracking_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
@@ -63,7 +63,8 @@ class AstrobeeEnv(gym.Env):
         if use_deformable_bag:
             self.bag = DeformableCargoBag(bag_name, client=self.client)
         else:
-            self.bag = RigidCargoBag(bag_name, client=self.client)
+            mass = 5  # TODO update this.. 5 seems reasonable given the behavior of the deformable
+            self.bag = ConstraintCargoBag(bag_name, mass, client=self.client)
         self.bag.reset_to_handle_pose(self.robot.ee_pose)
         self.bag.attach_to(self.robot, object_to_move="bag")
         self.dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
