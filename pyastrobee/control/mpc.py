@@ -25,7 +25,7 @@ from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
-from pyastrobee.trajectories.cost_functions import state_tracking_cost
+from pyastrobee.control.cost_functions import state_tracking_cost
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController

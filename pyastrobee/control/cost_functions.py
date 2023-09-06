@@ -1,4 +1,4 @@
-"""Cost functions: For defining how well we track trajectorues, remain in collision-free regions, and more"""
+"""Cost functions: For defining how well we track trajectories, remain in collision-free regions, and more"""
 
 from typing import Union, Optional
 

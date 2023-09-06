@@ -31,7 +31,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
-from pyastrobee.trajectories.cost_functions import state_tracking_cost
+from pyastrobee.control.cost_functions import state_tracking_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
