@@ -5,7 +5,6 @@
 # NOTE the deformable methods might not use a handle index
 
 from abc import ABC
-import time
 from typing import Union, Optional
 
 import pybullet
@@ -13,45 +12,11 @@ from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
 
-import pyastrobee.config.bag_properties as bag_props
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.utils.bullet_utils import (
-    load_deformable_object,
-    create_anchor,
-    initialize_pybullet,
-)
-from pyastrobee.utils.mesh_utils import get_mesh_data, get_closest_mesh_vertex
 from pyastrobee.utils.poses import pos_quat_to_tmat, tmat_to_pos_quat
-from pyastrobee.utils.python_utils import print_green, flatten
-from pyastrobee.utils.quaternions import quats_to_angular_velocities
 from pyastrobee.utils.transformations import invert_transform_mat
 from pyastrobee.utils.rotations import quat_to_rmat
-
-# Constants. TODO Move these to class attributes?
-MESH_DIR = "pyastrobee/assets/meshes/bags/"
-SINGLE_HANDLE_BAGS = ["front_handle", "right_handle", "top_handle"]
-DUAL_HANDLE_BAGS = ["front_back_handle", "right_left_handle", "top_bottom_handle"]
-BAG_NAMES = SINGLE_HANDLE_BAGS + DUAL_HANDLE_BAGS
-# _objs = [MESH_DIR + name + ".obj" for name in BAG_NAMES]
-# _vtks = [MESH_DIR + name + ".vtk" for name in BAG_NAMES]
-# OBJS = dict(zip(BAG_NAMES, _objs))
-# VTKS = dict(zip(BAG_NAMES, _vtks))
-HANDLE_TRANSFORMS = {
-    "front": bag_props.FRONT_HANDLE_TRANSFORM,
-    "back": bag_props.BACK_HANDLE_TRANSFORM,
-    "left": bag_props.LEFT_HANDLE_TRANSFORM,
-    "right": bag_props.RIGHT_HANDLE_TRANSFORM,
-    "top": bag_props.TOP_HANDLE_TRANSFORM,
-    "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
-}
-BAG_CORNERS = {
-    "front_handle": bag_props.FRONT_HANDLE_BAG_CORNERS,
-    "right_handle": bag_props.RIGHT_HANDLE_BAG_CORNERS,
-    "top_handle": bag_props.TOP_HANDLE_BAG_CORNERS,
-    "front_back_handle": bag_props.FRONT_BACK_HANDLE_BAG_CORNERS,
-    "right_left_handle": bag_props.RIGHT_LEFT_HANDLE_BAG_CORNERS,
-    "top_bottom_handle": bag_props.TOP_BOTTOM_HANDLE_BAG_CORNERS,
-}
+import pyastrobee.config.bag_properties as bag_props
 
 
 # TODO rename this
@@ -59,6 +24,19 @@ class CargoBagABC(ABC):
     LENGTH = 0.50  # meters
     WIDTH = 0.25  # meters
     HEIGHT = 0.42  # meters
+    URDF_DIR = "pyastrobee/assets/urdf/bags/"
+    MESH_DIR = "pyastrobee/assets/meshes/bags/"
+    SINGLE_HANDLE_BAGS = ["front_handle", "right_handle", "top_handle"]
+    DUAL_HANDLE_BAGS = ["front_back_handle", "right_left_handle", "top_bottom_handle"]
+    BAG_NAMES = SINGLE_HANDLE_BAGS + DUAL_HANDLE_BAGS
+    HANDLE_TRANSFORMS = {
+        "front": bag_props.FRONT_HANDLE_TRANSFORM,
+        "back": bag_props.BACK_HANDLE_TRANSFORM,
+        "left": bag_props.LEFT_HANDLE_TRANSFORM,
+        "right": bag_props.RIGHT_HANDLE_TRANSFORM,
+        "top": bag_props.TOP_HANDLE_TRANSFORM,
+        "bottom": bag_props.BOTTOM_HANDLE_TRANSFORM,
+    }
 
     def __init__(
         self,
@@ -71,9 +49,9 @@ class CargoBagABC(ABC):
         self.client: pybullet = pybullet if client is None else client
         if not self.client.isConnected():
             raise ConnectionError("Need to connect to pybullet before loading a bag")
-        if bag_name not in BAG_NAMES:
+        if bag_name not in self.BAG_NAMES:
             raise ValueError(
-                f"Invalid bag name: {bag_name}. Must be one of {BAG_NAMES}"
+                f"Invalid bag name: {bag_name}. Must be one of {self.BAG_NAMES}"
             )
         self._mass = mass
         self._name = bag_name
@@ -105,17 +83,17 @@ class CargoBagABC(ABC):
         In the case of a single-handled bag, this list will only have one entry
         """
         if self._name == "front_handle":
-            return [HANDLE_TRANSFORMS["front"]]
+            return [self.HANDLE_TRANSFORMS["front"]]
         elif self._name == "right_handle":
-            return [HANDLE_TRANSFORMS["right"]]
+            return [self.HANDLE_TRANSFORMS["right"]]
         elif self._name == "top_handle":
-            return [HANDLE_TRANSFORMS["top"]]
+            return [self.HANDLE_TRANSFORMS["top"]]
         elif self._name == "front_back_handle":
-            return [HANDLE_TRANSFORMS["front"], HANDLE_TRANSFORMS["back"]]
+            return [self.HANDLE_TRANSFORMS["front"], self.HANDLE_TRANSFORMS["back"]]
         elif self._name == "right_left_handle":
-            return [HANDLE_TRANSFORMS["right"], HANDLE_TRANSFORMS["left"]]
+            return [self.HANDLE_TRANSFORMS["right"], self.HANDLE_TRANSFORMS["left"]]
         elif self._name == "top_bottom_handle":
-            return [HANDLE_TRANSFORMS["top"], HANDLE_TRANSFORMS["bottom"]]
+            return [self.HANDLE_TRANSFORMS["top"], self.HANDLE_TRANSFORMS["bottom"]]
         else:
             raise NotImplementedError(
                 f"Grasp transform(s) not available for bag: {self._name}"
@@ -181,9 +159,9 @@ class CargoBagABC(ABC):
     @property
     def num_handles(self) -> int:
         """Number of handles on the cargo bag"""
-        if self._name in SINGLE_HANDLE_BAGS:
+        if self._name in self.SINGLE_HANDLE_BAGS:
             return 1
-        elif self._name in DUAL_HANDLE_BAGS:
+        elif self._name in self.DUAL_HANDLE_BAGS:
             return 2
         else:
             return 0  # This may have an application in the future

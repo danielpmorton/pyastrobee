@@ -1,6 +1,6 @@
 """Modeling a cargo bag as a single rigid box with a handle constructed from multiple point-to-point constraints
 
-Documentation for most methods can be found in the base class
+Documentation for inherited methods can be found in the base class
 """
 
 import time
