@@ -15,7 +15,7 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag_class import CargoBagABC
+from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.python_utils import print_green
 from pyastrobee.utils.transformations import make_transform_mat
@@ -23,7 +23,7 @@ from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.dynamics import box_inertia
 
 
-class RigidCargoBag(CargoBagABC):
+class RigidCargoBag(CargoBag):
     """Class for loading and managing properties associated with the rigid URDF-based cargo bags
 
     Args:
@@ -37,10 +37,9 @@ class RigidCargoBag(CargoBagABC):
 
     LINKS_PER_HANDLE = 4  # 3 dummy links for roll/pitch/yaw, plus the handle itself
     _urdfs = [
-        CargoBagABC.URDF_DIR + name + "_rigid_bag.urdf"
-        for name in CargoBagABC.BAG_NAMES
+        CargoBag.URDF_DIR + name + "_rigid_bag.urdf" for name in CargoBag.BAG_NAMES
     ]
-    URDFS = dict(zip(CargoBagABC.BAG_NAMES, _urdfs))
+    URDFS = dict(zip(CargoBag.BAG_NAMES, _urdfs))
 
     def __init__(
         self,

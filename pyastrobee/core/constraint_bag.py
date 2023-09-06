@@ -11,13 +11,13 @@ import pybullet
 from pybullet_utils.bullet_client import BulletClient
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.cargo_bag_class import CargoBagABC
+from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.transformations import transform_point
 from pyastrobee.utils.python_utils import print_green
 
 
-class ConstraintCargoBag(CargoBagABC):
+class ConstraintCargoBag(CargoBag):
     """Class for loading and managing properties associated with the constraint-based cargo bags
 
     Args:

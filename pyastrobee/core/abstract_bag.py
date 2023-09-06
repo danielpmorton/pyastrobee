@@ -19,8 +19,7 @@ from pyastrobee.utils.rotations import quat_to_rmat
 import pyastrobee.config.bag_properties as bag_props
 
 
-# TODO rename this
-class CargoBagABC(ABC):
+class CargoBag(ABC):
     LENGTH = 0.50  # meters
     WIDTH = 0.25  # meters
     HEIGHT = 0.42  # meters
