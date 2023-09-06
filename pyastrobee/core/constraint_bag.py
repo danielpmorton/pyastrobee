@@ -38,6 +38,9 @@ class ConstraintCargoBag(CargoBag):
         orn: npt.ArrayLike = (0, 0, 0, 1),
         client: BulletClient | None = None,
     ):
+        # Heuristic for constraint forces that scales with the mass of the bag
+        self.primary_constraint_force = 10 * mass
+        self.secondary_constraint_force = 0.5 * mass
         super().__init__(bag_name, mass, pos, orn, client)
         self._constraints = {}
         # Set up the geometric structure of the constraint-based handle
@@ -92,9 +95,9 @@ class ConstraintCargoBag(CargoBag):
         constraint_ids = []
         for i in range(len(self.constraint_structure)):
             if i == 0:
-                max_force = 20  # TUNE THESE!!!!!!
+                max_force = self.primary_constraint_force
             else:
-                max_force = 1
+                max_force = self.secondary_constraint_force
             cid = pybullet.createConstraint(
                 robot.id,
                 robot.Links.ARM_DISTAL.value,
@@ -187,11 +190,10 @@ def _main():
         force_mags = np.linalg.norm(forces, axis=1)
         rgbs = []
         for i in range(bag.num_contraints):
-            # TODO use the numbers from the actual class
             if i == 0:
-                fmax = 100
+                fmax = bag.primary_constraint_force
             else:
-                fmax = 1
+                fmax = bag.secondary_constraint_force
             r = min(1, force_mags[i] / fmax)
             rgbs.append((r, 1 - r, 0))
         world_constraint_pos = bag.get_world_constraint_pos(0)
