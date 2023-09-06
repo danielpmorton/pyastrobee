@@ -16,6 +16,20 @@ import pyastrobee.config.bag_properties as bag_props
 
 
 class CargoBag(ABC):
+    """Base (abstract) cargo bag class
+
+    See inherited cargo bags for full implementations (deformable bag, rigid bag, constraint bag, ...)
+
+    Args:
+        bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
+            Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
+        mass (float): Mass of the cargo bag
+        pos (npt.ArrayLike): Initial XYZ position to load the bag
+        orn (npt.ArrayLike): Initial XYZW quaternion to load the bag
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+
     LENGTH = 0.50  # meters
     WIDTH = 0.25  # meters
     HEIGHT = 0.42  # meters
