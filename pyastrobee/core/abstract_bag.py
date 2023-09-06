@@ -325,3 +325,21 @@ class CargoBag(ABC):
         bag_to_world = handle_to_world @ bag_to_handle
         bag_pose = tmat_to_pos_quat(bag_to_world)
         self.client.resetBasePositionAndOrientation(self.id, bag_pose[:3], bag_pose[3:])
+
+    def reset_dynamics(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        lin_vel: npt.ArrayLike,
+        ang_vel: npt.ArrayLike,
+    ) -> None:
+        """Resets the pose and velocities of the bag
+
+        Args:
+            pos (npt.ArrayLike): Position, shape (3,)
+            orn (npt.ArrayLike): XYZW quaternion orientation, shape (4,)
+            lin_vel (npt.ArrayLike): Linear velocity, shape (3,)
+            ang_vel (npt.ArrayLike): Angular velocity, shape (3,)
+        """
+        self.client.resetBasePositionAndOrientation(self.id, pos, orn)
+        self.client.resetBaseVelocity(self.id, lin_vel, ang_vel)

@@ -375,6 +375,70 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             raise PermissionError("Only the primary simulation can save the state")
         return super().save_state()
 
+    def get_robot_state(self) -> tuple[np.ndarray, ...]:
+        """Returns the full state information for the Astrobee in the environment (Base pos/orn/vels, joint angles/vels)
+
+        Returns:
+            tuple[np.ndarray, ...]:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: Orientation (XYZW quaternion), shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+                np.ndarray: Joint positions, shape (NUM_JOINTS,)
+                np.ndarray: Joint velocities, shape (NUM_JOINTS,)
+        """
+        return self.robot.full_state
+
+    def get_bag_state(self) -> tuple[np.ndarray, ...]:
+        """Returns the dynamics state information for the bag in the environment (pos/orn/vels)
+
+        Returns:
+            tuple[np.ndarray, ...]:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: XYZW quaternion orientation, shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+        """
+        return self.bag.dynamics_state
+
+    def reset_robot_state(self, state: tuple[np.ndarray, ...]) -> None:
+        """Fully resets the state of the Astrobee in the environment
+
+        Args:
+            state (tuple[np.ndarray, ...]): Full Astrobee state information containing:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: Orientation (XYZW quaternion), shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+                np.ndarray: Joint positions, shape (NUM_JOINTS,)
+                np.ndarray: Joint velocities, shape (NUM_JOINTS,)
+        """
+        assert len(state) == 6
+        assert len(state[0]) == 3
+        assert len(state[1]) == 4
+        assert len(state[2]) == 3
+        assert len(state[3]) == 3
+        assert len(state[4]) == Astrobee.NUM_JOINTS
+        assert len(state[5]) == Astrobee.NUM_JOINTS
+        self.robot.reset_full_state(*state)
+
+    def reset_bag_state(self, state: tuple[np.ndarray, ...]) -> None:
+        """Resets the dynamics of the bag in the environment
+
+        Args:
+            state (tuple[np.ndarray, ...]): Dynamics info of the bag, containing:
+                np.ndarray: Position, shape (3,)
+                np.ndarray: Orientation (XYZW quaternion), shape (4,)
+                np.ndarray: Linear velocity, shape (3,)
+                np.ndarray: Angular velocity, shape (3,)
+        """
+        assert len(state) == 4
+        assert len(state[0]) == 3
+        assert len(state[1]) == 4
+        assert len(state[2]) == 3
+        assert len(state[3]) == 3
+        self.bag.reset_dynamics(*state)
+
     def show_traj_plan(self, n: Optional[int]) -> None:
         """Displays the planned trajectory on the current pybullet client GUI (if enabled)
 

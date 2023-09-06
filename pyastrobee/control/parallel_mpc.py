@@ -25,7 +25,8 @@ def parallel_mpc_main(
     start_pose: npt.ArrayLike,
     goal_pose: npt.ArrayLike,
     n_vec_envs: int,
-    use_deformable_bag: bool = True,
+    use_deformable_primary_sim: bool = True,
+    use_deformable_rollouts: bool = False,
     debug: bool = False,
 ):
     """Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between
@@ -35,8 +36,10 @@ def parallel_mpc_main(
         start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)
         goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)
         n_vec_envs (int): Number of vectorized environments to launch in parallel (>= 1)
-        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
+        use_deformable_primary_sim (bool, optional): Whether to load the deformable bag in the main simulation env.
             Defaults to True (load the deformable version)
+        use_deformable_rollouts (bool, optional): Whether to use the deformable bag for rollouts. Defaults to False
+            (perform rollouts with the simplified rigid bag)
         debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize
             some of the rollouts being evaluated. Defaults to False.
     """
@@ -44,13 +47,13 @@ def parallel_mpc_main(
         raise ValueError("Must have at least one environment for evaluating rollouts")
     # Set up main environment
     main_env = AstrobeeMPCEnv(
-        use_gui=True, is_primary=True, use_deformable_bag=use_deformable_bag
+        use_gui=True, is_primary=True, use_deformable_bag=use_deformable_primary_sim
     )
     # Set up vectorized environments
     env_kwargs = {
         "use_gui": False,
         "is_primary": False,
-        "use_deformable_bag": use_deformable_bag,
+        "use_deformable_bag": use_deformable_rollouts,
     }
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs
@@ -113,8 +116,17 @@ def parallel_mpc_main(
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
 
             # Ensure that the vec envs start from the same point as the main simulation
-            saved_file = main_env.save_state()
-            vec_env.env_method("restore_state", saved_file)
+            if use_deformable_rollouts:
+                # If we are using the deformable bag for rollouts, we have to fully save the state to disk (slow)
+                # because there is no other way to restore the deformable
+                saved_file = main_env.save_state()
+                vec_env.env_method("restore_state", saved_file)
+            else:
+                # If we're using the simple rigid bag for rollouts, we can just do a very simple reset mechanic
+                robot_state = main_env.get_robot_state()
+                bag_state = main_env.get_bag_state()
+                vec_env.env_method("reset_robot_state", robot_state)
+                vec_env.env_method("reset_bag_state", bag_state)
             # Set the desired state of the robot at the lookahead point
             target_state = [
                 nominal_traj.positions[lookahead_idx],
@@ -167,8 +179,16 @@ def _test_parallel_mpc():
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
     n_vec_envs = 5
     debug = True
-    use_deformable_bag = False
-    parallel_mpc_main(start_pose, end_pose, n_vec_envs, use_deformable_bag, debug)
+    use_deformable_main_sim = True
+    use_deformable_rollouts = False
+    parallel_mpc_main(
+        start_pose,
+        end_pose,
+        n_vec_envs,
+        use_deformable_main_sim,
+        use_deformable_rollouts,
+        debug,
+    )
 
 
 if __name__ == "__main__":
