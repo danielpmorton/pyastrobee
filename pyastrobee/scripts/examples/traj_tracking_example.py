@@ -12,7 +12,7 @@ import pybullet
 import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion

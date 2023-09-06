@@ -5,7 +5,7 @@ import pybullet
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.bullet_utils import create_anchor
 from pyastrobee.utils.mesh_utils import get_closest_mesh_vertex

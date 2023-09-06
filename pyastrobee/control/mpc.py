@@ -21,7 +21,7 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria

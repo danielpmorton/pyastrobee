@@ -18,7 +18,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.trajectories.polynomials import polynomial_trajectory
 from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.control.force_torque_control import ForceTorqueController
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.utils.rotations import euler_xyz_to_quat
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,

@@ -29,7 +29,7 @@ from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.trajectories.cost_functions import state_tracking_cost
 from pyastrobee.trajectories.sampling import generate_trajs

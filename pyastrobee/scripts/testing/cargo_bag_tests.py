@@ -5,7 +5,7 @@ import time
 import pybullet
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.core.deformable_cargo_bag import DeformableCargoBag
+from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 
 
