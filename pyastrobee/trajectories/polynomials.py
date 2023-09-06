@@ -318,7 +318,7 @@ def fifth_order_polynomial_traj_with_velocity_bcs(
     )
 
 
-def main():
+def _main():
     # TODO add the astrobee following the trajectory??
 
     # Update these values depending on what examples you want to run
@@ -356,4 +356,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _main()

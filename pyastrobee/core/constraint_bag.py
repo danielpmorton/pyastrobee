@@ -174,7 +174,7 @@ class ConstraintCargoBag(CargoBag):
         return forces
 
 
-def main():
+def _main():
     pybullet.connect(pybullet.GUI)
     robot = Astrobee()
     # robot2 = Astrobee()
@@ -206,4 +206,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _main()

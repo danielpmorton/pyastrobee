@@ -255,7 +255,7 @@ def _get_dw(q, dq, ddq):
     ]  # Index the vector part of pure quat
 
 
-def main():
+def _main():
     import matplotlib.pyplot as plt  # pylint: disable=import-outside-toplevel
 
     # Calculate and plot an example interpolation
@@ -302,4 +302,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _main()
