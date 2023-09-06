@@ -1,6 +1,7 @@
 """WORK IN PROGRESS"""
 
 # TODO use custom methods for the deformable bag velocity / angular velocity
+# ^^ Same for dynamics state
 # NOTE the deformable methods might not use a handle index
 
 from abc import ABC
@@ -24,6 +25,7 @@ from pyastrobee.utils.poses import pos_quat_to_tmat, tmat_to_pos_quat
 from pyastrobee.utils.python_utils import print_green, flatten
 from pyastrobee.utils.quaternions import quats_to_angular_velocities
 from pyastrobee.utils.transformations import invert_transform_mat
+from pyastrobee.utils.rotations import quat_to_rmat
 
 # Constants. TODO Move these to class attributes?
 MESH_DIR = "pyastrobee/assets/meshes/bags/"
@@ -80,7 +82,6 @@ class CargoBagABC(ABC):
         self.id = self._load(pos, orn)
         if self.id < 0:
             raise ValueError("Bag was not properly loaded!")
-        # print_green("Bag is ready")
 
     @property
     def mass(self) -> float:
@@ -168,7 +169,14 @@ class CargoBagABC(ABC):
                 np.ndarray: Linear velocity, shape (3,)
                 np.ndarray: Angular velocity, shape (3,)
         """
-        pass
+        pos, orn = self.client.getBasePositionAndOrientation(self.id)
+        lin_vel, ang_vel = self.client.getBaseVelocity(self.id)
+        return (
+            np.array(pos),
+            np.array(orn),
+            np.array(lin_vel),
+            np.array(ang_vel),
+        )
 
     @property
     def num_handles(self) -> int:
@@ -183,7 +191,26 @@ class CargoBagABC(ABC):
     @property
     def corner_positions(self) -> list[np.ndarray]:
         """Positions of the 8 corners of the main compartment of the bag, shape (8, 3)"""
-        pass
+        # The main compartment is the base link in all URDFs
+        pos, quat = self.client.getBasePositionAndOrientation(self.id)
+        rmat = quat_to_rmat(quat)
+        l, w, h = self.LENGTH, self.WIDTH, self.HEIGHT
+        return (
+            pos
+            + np.array(
+                [
+                    [l / 2, w / 2, h / 2],
+                    [l / 2, w / 2, -h / 2],
+                    [l / 2, -w / 2, h / 2],
+                    [l / 2, -w / 2, -h / 2],
+                    [-l / 2, w / 2, h / 2],
+                    [-l / 2, w / 2, -h / 2],
+                    [-l / 2, -w / 2, h / 2],
+                    [-l / 2, -w / 2, -h / 2],
+                ]
+            )
+            @ rmat.T
+        )
 
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> int:
         """Loads a cargo bag at the specified position/orientation
@@ -199,6 +226,7 @@ class CargoBagABC(ABC):
 
     def unload(self) -> None:
         """Removes the cargo bag from the simulation"""
+        self.detach()
         self.client.removeBody(self.id)
         self.id = None
 
