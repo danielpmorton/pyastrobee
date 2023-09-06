@@ -1,8 +1,4 @@
-"""WORK IN PROGRESS"""
-
-# TODO use custom methods for the deformable bag velocity / angular velocity
-# ^^ Same for dynamics state
-# NOTE the deformable methods might not use a handle index
+"""Abstract base class for representing cargo bags with different models"""
 
 from abc import ABC
 from typing import Union, Optional
