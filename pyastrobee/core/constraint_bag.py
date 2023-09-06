@@ -4,24 +4,32 @@ Documentation for most methods can be found in the base class
 """
 
 import time
-from typing import Optional
+
 import numpy as np
 import numpy.typing as npt
 import pybullet
 from pybullet_utils.bullet_client import BulletClient
+
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.cargo_bag_class import CargoBagABC
-from pyastrobee.utils.rotations import (
-    euler_xyz_to_quat,
-    quat_to_rmat,
-    euler_xyz_to_rmat,
-)
 from pyastrobee.utils.bullet_utils import create_box
-from pyastrobee.utils.transformations import make_transform_mat, transform_point
-from pyastrobee.utils.poses import pos_quat_to_tmat, tmat_to_pos_quat
+from pyastrobee.utils.transformations import transform_point
+from pyastrobee.utils.python_utils import print_green
 
 
 class ConstraintCargoBag(CargoBagABC):
+    """Class for loading and managing properties associated with the constraint-based cargo bags
+
+    Args:
+        bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
+            Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
+        mass (float): Mass of the cargo bag
+        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
+        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+
     def __init__(
         self,
         bag_name: str,
@@ -31,8 +39,8 @@ class ConstraintCargoBag(CargoBagABC):
         client: BulletClient | None = None,
     ):
         super().__init__(bag_name, mass, pos, orn, client)
-
         self._constraints = {}
+        # Set up the geometric structure of the constraint-based handle
         constraint_offset_dist = 0.05
         self.constraint_structure = (
             np.array(
@@ -49,12 +57,11 @@ class ConstraintCargoBag(CargoBagABC):
             * constraint_offset_dist
         )
         self.num_contraints = len(self.constraint_structure)
+        print_green("Bag is ready")
 
     # Implement abstract methods
 
-    def _load(self, pos, orn):
-        # TODO ALLOW FOR MORE VERSIONS OF THE BAG
-        # Tune the naming of the length/width/height things too.. make properties based on bag name?
+    def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> int:
         return create_box(
             pos,
             orn,
@@ -62,17 +69,6 @@ class ConstraintCargoBag(CargoBagABC):
             (self.LENGTH, self.WIDTH, self.HEIGHT),
             True,
             (1, 1, 1, 1),
-        )
-
-    @property
-    def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        pos, orn = self.client.getBasePositionAndOrientation(self.id)
-        lin_vel, ang_vel = self.client.getBaseVelocity(self.id)
-        return (
-            np.array(pos),
-            np.array(orn),
-            np.array(lin_vel),
-            np.array(ang_vel),
         )
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
@@ -85,15 +81,14 @@ class ConstraintCargoBag(CargoBagABC):
         ]:
             pybullet.setCollisionFilterPair(robot.id, self.id, link_id, -1, 0)
 
+        # Get the constraint attachment positions in each of the local frames
         robot_local_constraint_pos = np.array(
             [
                 transform_point(Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL, pt)
                 for pt in self.constraint_structure
             ]
         )
-
         bag_local_constraint_pos = self.get_local_constraint_pos(handle_index)
-
         constraint_ids = []
         for i in range(len(self.constraint_structure)):
             if i == 0:
@@ -135,9 +130,18 @@ class ConstraintCargoBag(CargoBagABC):
 
     @property
     def constraints(self) -> dict[int, list[int]]:
+        """Constraints between the robot(s) and the handle(s). Key: robot ID; Value: list of constraint IDs"""
         return self._constraints
 
     def get_local_constraint_pos(self, handle_index: int) -> np.ndarray:
+        """Determine the position of the handle's constraints in the bag frame
+
+        Args:
+            handle_index (int): Index of the handle of interest
+
+        Returns:
+            np.ndarray: Constraint positions, shape (n_constraints, 3)
+        """
         return np.array(
             [
                 transform_point(self.grasp_transforms[handle_index], pt)
@@ -146,14 +150,23 @@ class ConstraintCargoBag(CargoBagABC):
         )
 
     def get_world_constraint_pos(self, handle_index: int) -> np.ndarray:
+        """Determine the position of the handle's constraints in the world frame
+
+        Args:
+            handle_index (int): Index of the handle of interest
+
+        Returns:
+            np.ndarray: Constraint positions, shape (n_constraints, 3)
+        """
         tmat = self.tmat
         local_constraint_pos = self.get_local_constraint_pos(handle_index)
         return np.array([transform_point(tmat, pos) for pos in local_constraint_pos])
 
     @property
     def constraint_forces(self) -> dict[int, float]:
-        # TODO add check that these constraints actually exist
-        # TODO be clearer about the insertion order and how this corresponds to the constraints...
+        """Forces on each constraint. Key: constraint ID; Value: Force, shape (3,)"""
+        # NOTE: this dictionary will maintain insertion order so we can also associate
+        # these constraint forces in the same order as the original structure
         forces = {}
         for robot_id, cids in self.constraints.items():
             for cid in cids:
