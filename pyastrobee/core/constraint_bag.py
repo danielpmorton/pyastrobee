@@ -16,6 +16,33 @@ from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.transformations import transform_point
 from pyastrobee.utils.python_utils import print_green
 
+# Different geometries of the constraint "constellation"
+# First point is the central (primary) constraint
+# Notes: tetrahedron seems to give a bit better behavior than diamond -- diamond will sometimes "snap" into place,
+# which doesn't really make sense for a handle. Plus, tetrahedron has fewer constraints, which is better for sim
+UNIT_CONSTRAINT_STRUCTURES = {
+    "diamond": np.array(
+        [
+            [0, 0, 0],
+            [1, 0, 0],
+            [-1, 0, 0],
+            [0, 1, 0],
+            [0, -1, 0],
+            [0, 0, 1],
+            [0, 0, -1],
+        ]
+    ),
+    "tetrahedron": np.array(
+        [
+            [0, 0, 0],
+            [-1 / 3, np.sqrt(8 / 9), 0],
+            [-1 / 3, -np.sqrt(2 / 9), np.sqrt(2 / 3)],
+            [-1 / 3, -np.sqrt(2 / 9), -np.sqrt(2 / 3)],
+            [1, 0, 0],
+        ]
+    ),
+}
+
 
 class ConstraintCargoBag(CargoBag):
     """Class for loading and managing properties associated with the constraint-based cargo bags
@@ -39,25 +66,16 @@ class ConstraintCargoBag(CargoBag):
         client: BulletClient | None = None,
     ):
         # Heuristic for constraint forces that scales with the mass of the bag
-        self.primary_constraint_force = 10 * mass
-        self.secondary_constraint_force = 0.5 * mass
+        # These are intended to roughly match the forces from the deformable for the small displacements that we might
+        # see when controlling the robot
+        self.primary_constraint_force = 5 * mass
+        self.secondary_constraint_force = 0.05 * mass
         super().__init__(bag_name, mass, pos, orn, client)
         self._constraints = {}
         # Set up the geometric structure of the constraint-based handle
-        constraint_offset_dist = 0.05
+        constraint_scaling = 0.05
         self.constraint_structure = (
-            np.array(
-                [
-                    [0, 0, 0],
-                    [1, 0, 0],
-                    [-1, 0, 0],
-                    [0, 1, 0],
-                    [0, -1, 0],
-                    [0, 0, 1],
-                    [0, 0, -1],
-                ]
-            )
-            * constraint_offset_dist
+            UNIT_CONSTRAINT_STRUCTURES["tetrahedron"] * constraint_scaling
         )
         self.num_contraints = len(self.constraint_structure)
         print_green("Bag is ready")
@@ -179,6 +197,8 @@ class ConstraintCargoBag(CargoBag):
 
 def _main():
     pybullet.connect(pybullet.GUI)
+    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, 0)
+    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_WIREFRAME, 1)
     robot = Astrobee()
     # robot2 = Astrobee()
     bag = ConstraintCargoBag("top_handle", 1)
