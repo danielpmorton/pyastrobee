@@ -13,6 +13,7 @@ import numpy as np
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.deformable_bag import DeformableCargoBag
+from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import create_box, initialize_pybullet
 from pyastrobee.utils.quaternions import random_quaternion
@@ -93,7 +94,33 @@ def astrobee_with_bag_example():
     controller.control_log.plot()
 
 
+def astrobee_with_rigid_bag_example():
+    client = initialize_pybullet(bg_color=[1, 1, 1])
+    np.random.seed(0)
+    robot = Astrobee()
+    bag = ConstraintCargoBag("top_handle", mass=5)
+    bag.attach_to(robot)
+    pose_1 = robot.pose
+    pose_2 = [1, 2, 3, *random_quaternion()]
+    max_time = 10
+    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+    traj = polynomial_trajectory(pose_1, pose_2, max_time, dt)
+    visualize_traj(traj, 20)
+    kp = 20
+    kv = 5
+    kq = 1
+    kw = 0.1
+    controller = ForceTorqueController(
+        robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, 1e-1, 1e-1, 1e-1, 1e-1
+    )
+    controller.follow_traj(traj, stop_at_end=True)
+    pybullet.disconnect()
+    compare_trajs(traj, controller.traj_log)
+    controller.control_log.plot()
+
+
 if __name__ == "__main__":
     # unit_mass_cube_example()
     # astrobee_example()
-    astrobee_with_bag_example()
+    # astrobee_with_bag_example()
+    astrobee_with_rigid_bag_example()
