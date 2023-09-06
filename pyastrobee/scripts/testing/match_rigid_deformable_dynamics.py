@@ -19,6 +19,10 @@ from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
+from pyastrobee.utils.quaternions import random_quaternion
+from pyastrobee.trajectories.polynomials import polynomial_trajectory
+from pyastrobee.trajectories.trajectory import visualize_traj
+from pyastrobee.control.force_torque_control import ForceTorqueController
 
 
 def get_state(deformable_bag: DeformableCargoBag, robot: Optional[Astrobee] = None):
@@ -115,6 +119,131 @@ def astrobee_and_bag_test():
         reset_state(rigid_bag, bag_state, robot_2, robot_state, pos_offset)
 
 
+def dual_tracking_example():
+    np.random.seed(0)
+    bag_name = "top_handle"
+    deformable_p0 = np.zeros(3)
+    pos_offset = np.array([2, 0, 0])
+    rigid_p0 = deformable_p0 + pos_offset
+    client = initialize_pybullet()
+    dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
+    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
+    robot_1 = Astrobee()
+    deformable_bag.attach_to(robot_1, "robot")
+    rigid_bag_mass = 5
+    rigid_bag = ConstraintCargoBag(bag_name, rigid_bag_mass, rigid_p0, client=client)
+    robot_2 = Astrobee()
+    rigid_bag.attach_to(robot_2, "robot")
+
+    robot_1_start_pose = robot_1.pose
+    q_goal = random_quaternion()
+    robot_1_end_pose = [1, 2, 3, *q_goal]
+    robot_2_start_pose = robot_2.pose
+    robot_2_end_pose = [*(robot_1_end_pose[:3] + pos_offset), *q_goal]
+    max_time = 10
+    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+    traj_1 = polynomial_trajectory(robot_1_start_pose, robot_1_end_pose, max_time, dt)
+    traj_2 = polynomial_trajectory(robot_2_start_pose, robot_2_end_pose, max_time, dt)
+    visualize_traj(traj_1, 20)
+    visualize_traj(traj_2, 20)
+    kp = 20
+    kv = 5
+    kq = 1
+    kw = 0.1
+    controller_1 = ForceTorqueController(
+        robot_1.id,
+        robot_1.mass,
+        robot_1.inertia,
+        kp,
+        kv,
+        kq,
+        kw,
+        dt,
+        1e-1,
+        1e-1,
+        1e-1,
+        1e-1,
+    )
+    controller_2 = ForceTorqueController(
+        robot_2.id,
+        robot_2.mass,
+        robot_2.inertia,
+        kp,
+        kv,
+        kq,
+        kw,
+        dt,
+        1e-1,
+        1e-1,
+        1e-1,
+        1e-1,
+    )
+    assert traj_1.num_timesteps == traj_2.num_timesteps
+    for i in range(traj_1.num_timesteps):
+        pos_1, orn_1, lin_vel_1, ang_vel_1 = controller_1.get_current_state()
+        controller_1.step(
+            pos_1,
+            lin_vel_1,
+            orn_1,
+            ang_vel_1,
+            traj_1.positions[i, :],
+            traj_1.linear_velocities[i, :],
+            traj_1.linear_accels[i, :],
+            traj_1.quaternions[i, :],
+            traj_1.angular_velocities[i, :],
+            traj_1.angular_accels[i, :],
+        )
+        pos_2, orn_2, lin_vel_2, ang_vel_2 = controller_2.get_current_state()
+        controller_2.step(
+            pos_2,
+            lin_vel_2,
+            orn_2,
+            ang_vel_2,
+            traj_2.positions[i, :],
+            traj_2.linear_velocities[i, :],
+            traj_2.linear_accels[i, :],
+            traj_2.quaternions[i, :],
+            traj_2.angular_velocities[i, :],
+            traj_2.angular_accels[i, :],
+        )
+    # Stopping
+    des_vel = np.zeros(3)
+    des_accel = np.zeros(3)
+    des_omega = np.zeros(3)
+    des_alpha = np.zeros(3)
+    try:
+        while True:
+            pos_1, orn_1, lin_vel_1, ang_vel_1 = controller_1.get_current_state()
+            controller_1.step(
+                pos_1,
+                lin_vel_1,
+                orn_1,
+                ang_vel_1,
+                traj_1.positions[-1],
+                des_vel,
+                des_accel,
+                traj_1.quaternions[-1],
+                des_omega,
+                des_alpha,
+            )
+            pos_2, orn_2, lin_vel_2, ang_vel_2 = controller_2.get_current_state()
+            controller_2.step(
+                pos_2,
+                lin_vel_2,
+                orn_2,
+                ang_vel_2,
+                traj_2.positions[-1],
+                des_vel,
+                des_accel,
+                traj_2.quaternions[-1],
+                des_omega,
+                des_alpha,
+            )
+    except KeyboardInterrupt:
+        pybullet.disconnect()
+
+
 if __name__ == "__main__":
     # bag_only_test()
-    astrobee_and_bag_test()
+    # astrobee_and_bag_test()
+    dual_tracking_example()
