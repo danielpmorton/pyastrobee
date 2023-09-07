@@ -41,6 +41,7 @@ def unit_mass_cube_example():
     inertia = box_inertia(mass, *sidelengths)
     controller = ForceTorqueController(box, mass, inertia, kp, kv, kq, kw, dt)
     controller.follow_traj(traj)
+    input("Press Enter to disconnect and show plots")
     pybullet.disconnect()
     compare_trajs(traj, controller.traj_log)
     controller.control_log.plot()
@@ -64,6 +65,7 @@ def astrobee_example():
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     controller.follow_traj(traj)
+    input("Press Enter to disconnect and show plots")
     pybullet.disconnect()
     compare_trajs(traj, controller.traj_log)
     controller.control_log.plot()
@@ -89,6 +91,7 @@ def astrobee_with_bag_example():
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, 1e-1, 1e-1, 1e-1, 1e-1
     )
     controller.follow_traj(traj)
+    input("Press Enter to disconnect and show plots")
     pybullet.disconnect()
     compare_trajs(traj, controller.traj_log)
     controller.control_log.plot()
@@ -114,6 +117,7 @@ def astrobee_with_rigid_bag_example():
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt, 1e-1, 1e-1, 1e-1, 1e-1
     )
     controller.follow_traj(traj, stop_at_end=True)
+    input("Press Enter to disconnect and show plots")
     pybullet.disconnect()
     compare_trajs(traj, controller.traj_log)
     controller.control_log.plot()
