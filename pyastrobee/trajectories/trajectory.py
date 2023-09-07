@@ -148,13 +148,18 @@ class Trajectory:
         return self.positions.size == 0 and self.quaternions.size == 0
 
     def visualize(
-        self, n: Optional[int] = None, client: Optional[BulletClient] = None
+        self,
+        n: Optional[int] = None,
+        size: float = 0.5,
+        client: Optional[BulletClient] = None,
     ) -> list[int]:
         """View the trajectory in Pybullet
 
         Args:
             n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
                 Defaults to None (plot all frames)
+            size (float, optional): Length of the lines to plot for each frame. Defaults to 0.5 (this gives a good scale
+                with respect to the dimensions of the Astrobee)
             client (BulletClient, optional): If connecting to multiple physics servers, include the client
                 (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
@@ -167,7 +172,7 @@ class Trajectory:
         if not connection_status:
             client.connect(pybullet.GUI)
         if self.contains_pos_and_orn:
-            ids = visualize_traj(self, n, client)
+            ids = visualize_traj(self, n, size, client=client)
         elif self.contains_pos_only:
             print("Trajectory only contains position info. Showing path instead")
             ids = visualize_path(self.positions, n, client=client)
@@ -537,6 +542,7 @@ def compare_trajs(
 def visualize_traj(
     traj: Union[Trajectory, npt.ArrayLike],
     n: Optional[int] = None,
+    size: float = 0.5,
     client: Optional[BulletClient] = None,
 ) -> list[int]:
     """Visualizes a trajectory's sequence of poses on the Pybullet GUI
@@ -546,6 +552,8 @@ def visualize_traj(
             position + orientation info), or an array of position + quaternion poses, shape (n, 7)
         n (Optional[int]): Number of frames to plot, if plotting all of the frames is not desired.
             Defaults to None (plot all frames)
+        size (float, optional): Length of the lines to plot for each frame. Defaults to 0.5 (this gives a good scale
+            with respect to the dimensions of the Astrobee)
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
@@ -567,7 +575,7 @@ def visualize_traj(
     tmats = batched_pos_quats_to_tmats(traj)
     ids = []
     for i in range(tmats.shape[0]):
-        ids += visualize_frame(tmats[i, :, :], client=client)
+        ids += visualize_frame(tmats[i, :, :], size, client=client)
     return ids
 
 

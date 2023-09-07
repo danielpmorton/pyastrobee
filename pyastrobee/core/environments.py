@@ -448,7 +448,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         """
         if self.traj_plan is None:
             raise ValueError("No trajectory available to visualize")
-        self.debug_viz_ids = self.traj_plan.visualize(n, self.client)
+        self.debug_viz_ids = self.traj_plan.visualize(n, client=self.client)
 
     def unshow_traj_plan(self) -> None:
         """Removes a displayed trajectory from the pybullet client GUI"""

@@ -113,7 +113,7 @@ def mpc_main(
         dt,
     )
     if debug:
-        line_ids = nominal_traj.visualize(20, client)
+        line_ids = nominal_traj.visualize(20, client=client)
         input("Press Enter to continue")
         remove_debug_objects(line_ids, client)
     # Add some buffer time to the end of the trajectory for stopping
@@ -179,7 +179,7 @@ def mpc_main(
         )
         for traj in trajs:
             if debug:
-                line_ids = traj.visualize(10, client)
+                line_ids = traj.visualize(10, client=client)
                 input("Press Enter to continue")
                 remove_debug_objects(line_ids, client)
             # This is effectively a perfect rollout (TODO make this fact clearer)
