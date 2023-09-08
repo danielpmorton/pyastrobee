@@ -6,6 +6,7 @@ WORK IN PROGRESS!!!!!!
 import time
 
 import numpy as np
+import numpy.typing as npt
 
 from pyastrobee.utils.bullet_utils import (
     initialize_pybullet,
@@ -59,3 +60,84 @@ for id in ids:
 while True:
     client.stepSimulation()
     time.sleep(1 / 120)
+
+
+class HybridCargoBag(CargoBag):
+    def __init__(
+        self,
+        bag_name: str,
+        mass: float,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        client: Optional[BulletClient] = None,
+    ):
+        super().__init__(bag_name, mass, pos, orn, client)
+
+    @property
+    def pose(self) -> np.ndarray:
+        # return super().pose
+        pass
+
+    @property
+    def position(self) -> np.ndarray:
+        # return super().position
+        pass
+
+    @property
+    def orientation(self) -> np.ndarray:
+        # return super().orientation
+        pass
+
+    @property
+    def velocity(self) -> np.ndarray:
+        # return super().velocity
+        pass
+
+    @property
+    def angular_velocity(self) -> np.ndarray:
+        # return super().angular_velocity
+        pass
+
+    @property
+    def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        # return super().dynamics_state
+        pass
+
+    @property
+    def corner_positions(self) -> list[np.ndarray]:
+        # return super().corner_positions
+        pass
+
+    def _load(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+    ) -> int:
+        # return super()._load(pos, orn)
+        pass
+
+    def unload(self) -> None:
+        # return super().unload()
+        pass
+
+    def _attach(self, robot: Astrobee, handle_index: int) -> None:
+        # return super()._attach(robot, handle_index)
+        pass
+
+    def detach(self) -> None:
+        # return super().detach()
+        pass
+
+    def detach_robot(self, robot_id: int) -> None:
+        # return super().detach_robot(robot_id)
+        pass
+
+    def reset_dynamics(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        lin_vel: npt.ArrayLike,
+        ang_vel: npt.ArrayLike,
+    ) -> None:
+        # return super().reset_dynamics(pos, orn, lin_vel, ang_vel)
+        pass
