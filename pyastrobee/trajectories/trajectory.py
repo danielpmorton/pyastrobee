@@ -275,6 +275,14 @@ class TrajectoryLogger(Trajectory):
         elif dt is not None:
             self._times.append(self._times[-1] + dt)
 
+    def clear_log(self) -> None:
+        """Clears the log of all trajectory data"""
+        self._positions = []
+        self._quats = []
+        self._lin_vels = []
+        self._ang_vels = []
+        self._times = []
+
 
 # TODO see if we can incorporate a sequence of Boxes for the position constraints
 # on a spline trajectory (rather than just a single Box constraint for a single curve)
