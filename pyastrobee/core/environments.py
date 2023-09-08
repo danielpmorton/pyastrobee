@@ -32,7 +32,11 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
-from pyastrobee.control.cost_functions import state_tracking_cost
+from pyastrobee.control.cost_functions import (
+    state_tracking_cost,
+    integrated_safe_set_cost,
+    traj_tracking_cost,
+)
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 
@@ -218,9 +222,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             client=self.client,
         )
         # Penalty multipliers for evaluating rollouts. TEMPORARY: figure these out, make parameters
-        self.pos_penalty = 1
+        self.pos_penalty = 10
         self.orn_penalty = 1
-        self.vel_penalty = 1
+        self.vel_penalty = 10
         self.ang_vel_penalty = 1
 
         # Sampling parameters (these need refinement)
@@ -239,7 +243,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Keep track of any temporary debug visualizer IDs
         self.debug_viz_ids = ()
 
-        self._is_primary = is_primary
+        self._is_primary_env = is_primary
+        self._is_debugging_env = not is_primary and use_gui
         self._nominal_rollouts = nominal_rollouts
         self._cleanup = cleanup
         self.traj_plan = None  # Init
@@ -258,7 +263,12 @@ class AstrobeeMPCEnv(AstrobeeEnv):
     def is_primary_simulation(self) -> bool:
         """Whether this environment is running the primary planning/control simulation
         or is a separate (likely vectorized) environment for evaluating rollouts"""
-        return self._is_primary
+        return self._is_primary_env
+
+    @property
+    def is_debugging_simulation(self) -> bool:
+        """Whether this is an environment launched in debug mode"""
+        return self._is_debugging_env
 
     def set_target_state(
         self,
@@ -336,27 +346,70 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
         if self.traj_plan is None:
             raise ValueError("Trajectory has not been planned")
+        # Follow the trajectory. NOTE: This is effectively the same as the follow_traj() function in the controller,
+        # but accessing the loop directly allows us to do more with the data at each step
         # TODO decide how to handle the stopping criteria
-        self.controller.follow_traj(
-            self.traj_plan, stop_at_end=False, max_stop_iters=None
-        )
-        # Get the state of the robot after we follow the trajectory
-        pos, orn, vel, omega = self.robot.dynamics_state
-        # Determine the reward based on how much we deviated from the target
-        reward = -1 * state_tracking_cost(
-            pos,
-            orn,
-            vel,
-            omega,
-            self.target_pos,
-            self.target_orn,
-            self.target_vel,
-            self.target_omega,
-            self.pos_penalty,
-            self.orn_penalty,
-            self.vel_penalty,
-            self.ang_vel_penalty,
-        )
+
+        # If this is the primary simulation, we just follow the best trajectory we have
+        # Rewrd for the primary simulation doesn't mean anything, so no computation needed
+        if self.is_primary_simulation:
+            self.controller.follow_traj(
+                self.traj_plan, stop_at_end=False, max_stop_iters=None
+            )
+            reward = 0
+        else:
+            # We are in a rollout environment
+            # So, follow the trajectory, but also keep track of a bunch of things so that we can compute the reward
+            self.controller.traj_log.clear_log()  # Clear so that we can evaluate the rollout only
+            bag_corner_log = np.empty((self.traj_plan.num_timesteps, 8, 3))
+            for i in range(self.traj_plan.num_timesteps):
+                # Note: the traj log gets updated whenever we access the current state
+                pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
+                self.controller.step(
+                    pos,
+                    lin_vel,
+                    orn,
+                    ang_vel,
+                    self.traj_plan.positions[i, :],
+                    self.traj_plan.linear_velocities[i, :],
+                    self.traj_plan.linear_accels[i, :],
+                    self.traj_plan.quaternions[i, :],
+                    self.traj_plan.angular_velocities[i, :],
+                    self.traj_plan.angular_accels[i, :],
+                )
+                bag_corner_log[i] = self.bag.corner_positions
+            # The traj log will be filled with the rollout data at this point
+
+            # TODO SPEED ALL OF THESE COSTS UP
+            tracking_cost = traj_tracking_cost(
+                self.traj_plan,
+                self.controller.traj_log,
+                self.pos_penalty,
+                self.orn_penalty,
+                self.vel_penalty,
+                self.ang_vel_penalty,
+            )
+            # TODO figure out how to handle the padding -- I believe the way I originally defined the ISS
+            # boxes inherently incorporated the radius of the astrobee...
+            # TODO tune scaling on these cost values
+            robot_safe_set_cost, robot_collided = integrated_safe_set_cost(
+                self.controller.traj_log.positions,
+                list(self.iss.safe_boxes.values()),
+                # padding=Astrobee.COLLISION_RADIUS,
+                padding=0,
+                collision_penalty=10,
+            )
+            bag_safe_set_cost, bag_collided = integrated_safe_set_cost(
+                np.vstack(bag_corner_log),
+                list(self.iss.safe_boxes.values()),
+                padding=0,
+                collision_penalty=1,
+            )
+            if self.is_debugging_simulation:
+                print("Robot safe set cost: ", robot_safe_set_cost)
+                print("Bag safe set cost: ", bag_safe_set_cost)
+                print("Tracking cost: ", tracking_cost)
+            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost + tracking_cost)
         # All returns are essentially dummy values except the reward
         observation = self._get_obs()
         terminated = False  # If at the terminal state

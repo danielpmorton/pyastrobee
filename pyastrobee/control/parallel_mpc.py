@@ -91,7 +91,10 @@ def parallel_mpc_main(
     traj_end_time = nominal_traj.times[-1]
     max_stopping_time = 3  # seconds
     max_time = traj_end_time + max_stopping_time
-    target_rollout_duration = 1  # seconds
+    target_rollout_duration = 5  # seconds
+    target_execution_duration = (
+        1  # seconds (How much of the rollout to actually execute)
+    )
 
     # Init stopping mode for when we get to the end of the trajectory
     stopping = False
@@ -109,9 +112,13 @@ def parallel_mpc_main(
                 break
             if stopping:
                 rollout_duration = min(target_rollout_duration, remaining_total_time)
+                execution_duration = min(
+                    target_execution_duration, remaining_total_time
+                )
                 lookahead_idx = -1
             else:  # Following the trajectory
                 rollout_duration = min(target_rollout_duration, remaining_traj_time)
+                execution_duration = min(target_execution_duration, remaining_traj_time)
                 # Handle the case where we are nearing the end of the trajectory
                 if remaining_traj_time < target_rollout_duration:
                     lookahead_idx = -1
@@ -158,7 +165,10 @@ def parallel_mpc_main(
                 "traj_plan", [int(np.argmax(reward))]
             )[0]
             # Follow the best rollout in the main environment. (Use dummy action value in step call)
-            main_env.traj_plan = best_traj
+            main_env.traj_plan = best_traj.get_segment(
+                0,
+                int(best_traj.num_timesteps * (execution_duration / rollout_duration)),
+            )
             observation, reward, terminated, truncated, info = main_env.step(0)
 
             # TODO: use stopping criteria in terminated/truncated
