@@ -1,4 +1,7 @@
-"""Test to see if we can attach a bunch of rigid bodies via constraints to mimic deformables"""
+"""Test to see if we can attach a bunch of rigid bodies via constraints to mimic deformables
+
+WORK IN PROGRESS
+"""
 
 import time
 from typing import Optional
@@ -26,68 +29,128 @@ class CompositeCargoBag(CargoBag):
         divisions: tuple[int, int, int],
         client: Optional[BulletClient] = None,
     ):
-        self.divisions = self._check_divisions(bag_name, divisions)
+        if (
+            len(divisions) != 3
+            or any(d <= 0 for d in divisions)
+            or any(d % 2 != 1 for d in divisions)
+            or any(not isinstance(d, int) for d in divisions)
+        ):
+            raise ValueError(
+                f"Invalid divisions: These must be three positive odd integers.\nGot: {divisions}"
+            )
+        self.divisions = divisions
         super().__init__(bag_name, mass, pos, orn, client)
 
     @property
-    def pose(self) -> np.ndarray:
-        # return super().pose
-        pass
-
-    @property
-    def position(self) -> np.ndarray:
-        # return super().position
-        pass
-
-    @property
-    def orientation(self) -> np.ndarray:
-        # return super().orientation
-        pass
-
-    @property
-    def velocity(self) -> np.ndarray:
-        # return super().velocity
-        pass
-
-    @property
-    def angular_velocity(self) -> np.ndarray:
-        # return super().angular_velocity
-        pass
-
-    @property
-    def dynamics_state(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        # return super().dynamics_state
-        pass
-
-    @property
     def corner_positions(self) -> list[np.ndarray]:
-        # return super().corner_positions
-        pass
-
-    def _load(
-        self,
-        pos: npt.ArrayLike,
-        orn: npt.ArrayLike,
-    ) -> int:
-        # return super()._load(pos, orn)
-        self._form_structure(pos, orn)
-        return self.handle_block_ids[0]
+        # TODO: currently, this assumes that there is no deformation going on
+        # Should we do something smarter by looking at the corners of each of the corner boxes?
+        return super().corner_positions
 
     def unload(self) -> None:
-        # return super().unload()
-        pass
+        self.detach()
+        for id in self.block_ids:
+            self.client.removeBody(id)
+        self.block_ids = None
+        self.handle_block_ids = None
+        self.center_block_id = None
+        self.corner_block_ids = None
+        self.ijk_to_id = None
+        self.id = None
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
-        # return super()._attach(robot, handle_index)
-        pass
+        # We'll use the same handle modeling as with the constraint bag
+        # BUT we'll attach to the handle block rather than the center point of the bag
+        constraint_scaling = 0.05
+        constraint_structure = (
+            np.array(
+                [
+                    [0, 0, 0],
+                    [-1 / 3, np.sqrt(8 / 9), 0],
+                    [-1 / 3, -np.sqrt(2 / 9), np.sqrt(2 / 3)],
+                    [-1 / 3, -np.sqrt(2 / 9), -np.sqrt(2 / 3)],
+                    [1, 0, 0],
+                ]
+            )
+            * constraint_scaling
+        )
+        primary_constraint_force = 5 * self.mass
+        secondary_constraint_force = 0.05 * self.mass
+
+        self._handle_constraints = {}
+
+        def _get_local_constraint_pos(handle_index):
+            # need to update the grasp transform so that it's not with respect to the center point of the
+            # bag itself, but rather the center point of the handle block
+            original_grasp_transform = self.grasp_transforms[handle_index]
+            orig_rmat = original_grasp_transform[:3, :3]
+            handle_id = self.handle_block_ids[handle_index]
+            handle_ijk = self.id_to_ijk[handle_id]
+            pos = self._center_aligned_block_structure()[handle_ijk]
+            adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
+            return np.array(
+                [
+                    transform_point(adjusted_grasp_transform, pt)
+                    for pt in constraint_structure
+                ]
+            )
+
+        # Disable collisions with the end of the gripper
+        # Otherwise if we use the standard handle location, it will always be in collision
+        # TODO decide if proximal joints should also be disabled
+        for link_id in [
+            robot.Links.GRIPPER_LEFT_DISTAL.value,
+            robot.Links.GRIPPER_RIGHT_DISTAL.value,
+        ]:
+            for block_id in self.block_ids:
+                self.client.setCollisionFilterPair(robot.id, block_id, link_id, -1, 0)
+
+        # Get the constraint attachment positions in each of the local frames
+        robot_local_constraint_pos = np.array(
+            [
+                transform_point(Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL, pt)
+                for pt in constraint_structure
+            ]
+        )
+        bag_local_constraint_pos = _get_local_constraint_pos(handle_index)
+        constraint_ids = []
+        for i in range(len(constraint_structure)):
+            if i == 0:
+                max_force = primary_constraint_force
+            else:
+                max_force = secondary_constraint_force
+            cid = self.client.createConstraint(
+                robot.id,
+                robot.Links.ARM_DISTAL.value,
+                # self.id,
+                self.handle_block_ids[handle_index],
+                -1,
+                self.client.JOINT_POINT2POINT,
+                (0, 0, 1),
+                robot_local_constraint_pos[i],
+                bag_local_constraint_pos[i],
+            )
+            self.client.changeConstraint(cid, maxForce=max_force)
+            constraint_ids.append(cid)
+        self._handle_constraints.update({robot.id: constraint_ids})
+        self._attached.append(robot.id)
 
     def detach(self) -> None:
         # return super().detach()
-        pass
+        for robot_id, cids in self._handle_constraints.items():
+            for cid in cids:
+                self.client.removeConstraint(cid)
+        self._attached = []
+        self._handle_constraints = {}
 
     def detach_robot(self, robot_id: int) -> None:
         # return super().detach_robot(robot_id)
-        pass
+        if robot_id not in self._handle_constraints:
+            raise ValueError("Cannot detach robot: ID unknown")
+        for cid in self._handle_constraints[robot_id]:
+            self.client.removeConstraint(cid)
+        self._attached.remove(robot_id)
+        self._handle_constraints.pop(robot_id)
 
     def reset_dynamics(
         self,
@@ -96,48 +159,57 @@ class CompositeCargoBag(CargoBag):
         lin_vel: npt.ArrayLike,
         ang_vel: npt.ArrayLike,
     ) -> None:
-        # return super().reset_dynamics(pos, orn, lin_vel, ang_vel)
+        block_positions = self.get_init_block_positions(pos, orn)
+        for block_ijk, block_id in self.ijk_to_id.items():
+            self.client.resetBasePositionAndOrientation(
+                block_id, block_positions[block_ijk], orn
+            )
+            r = block_positions[block_ijk] - pos
+            self.client.resetBaseVelocity(
+                block_id,
+                lin_vel + np.cross(ang_vel, r),
+                ang_vel,
+            )
         pass
 
-    def _check_divisions(
-        self, name: str, divisions: npt.ArrayLike
-    ) -> tuple[int, int, int]:
-        assert len(divisions) == 3
-        assert all(d > 0 for d in divisions)
-        assert all(isinstance(d, int) for d in divisions)
-        dl, dw, dh = divisions
-        if name in {"top_handle", "top_bottom_handle"}:
-            requires_odd = ["length", "width"]
-            is_invalid = dl % 2 != 1 or dw % 2 != 1
-        elif name in {"front_handle", "front_back_handle"}:
-            requires_odd = ["length", "height"]
-            is_invalid = dl % 2 != 1 or dh % 2 != 1
-        elif name in {"right_handle", "right_left_handle"}:
-            requires_odd = ["width", "height"]
-            is_invalid = dw % 2 != 1 or dh % 2 != 1
-        else:
-            raise ValueError("Bag name not recognized")
-        if is_invalid:
-            raise ValueError(
-                f"Invalid divisions:\nBag: {name} requires an odd number of divisions in "
-                + f"{requires_odd[0]} and {requires_odd[1]}.\nGot: {divisions}"
-            )
-        return dl, dw, dh
+    def get_init_block_positions(
+        self, pos: npt.ArrayLike, orn: npt.ArrayLike
+    ) -> dict[tuple[int, int, int], np.ndarray]:
+        # Deformation free
+        rmat = quat_to_rmat(orn)
+        center_tmat = make_transform_mat(rmat, pos)
 
-    def _form_structure(
+        positions = self._center_aligned_block_structure()
+        for block_ijk in positions:
+            positions[block_ijk] = transform_point(center_tmat, positions[block_ijk])
+        return positions
+
+    def _corner_aligned_block_structure(self):
+        nx, ny, nz = self.divisions
+        l = self.LENGTH / nx
+        w = self.WIDTH / ny
+        h = self.HEIGHT / nz
+        positions = {}
+        for i in range(nx):
+            for j in range(ny):
+                for k in range(nz):
+                    positions[(i, j, k)] = np.array(
+                        [(2 * i + 1) * l / 2, (2 * j + 1) * w / 2, (2 * k + 1) * h / 2]
+                    )
+        return positions
+
+    def _center_aligned_block_structure(self):
+        positions = self._corner_aligned_block_structure()
+        corner_to_center = np.array([self.LENGTH / 2, self.WIDTH / 2, self.HEIGHT / 2])
+        for block_ijk in positions:
+            positions[block_ijk] -= corner_to_center
+        return positions
+
+    def _load(
         self,
         pos: npt.ArrayLike,
         orn: npt.ArrayLike,
-    ):
-        # Transformation matrix to the *central* point
-        rmat = quat_to_rmat(orn)
-        center_tmat = make_transform_mat(rmat, pos)
-        # Construct things based on the bottom left front corner (min x y z)
-        corner_point = transform_point(
-            center_tmat, np.array([-self.LENGTH / 2, -self.WIDTH / 2, -self.HEIGHT / 2])
-        )
-        corner_tmat = make_transform_mat(rmat, corner_point)
-
+    ) -> int:
         # Number of blocks in each dimension
         nx, ny, nz = self.divisions
         num_blocks = nx * ny * nz
@@ -145,11 +217,15 @@ class CompositeCargoBag(CargoBag):
         l = self.LENGTH / nx
         w = self.WIDTH / ny
         h = self.HEIGHT / nz
+        # Mass of each individual block
         m = self.mass / num_blocks
         # Create the blocks
-        ids = []
+        self.block_ids = []
         self.handle_block_ids = []
-        ijk_to_id = {}
+        self.corner_block_ids = []
+        self.center_block_id = None
+        self.ijk_to_id = {}
+        self.id_to_ijk = {}
         if self.name == "top_handle":
             handle_ijks = [(nx // 2, ny // 2, nz - 1)]
         elif self.name == "front_handle":
@@ -163,120 +239,139 @@ class CompositeCargoBag(CargoBag):
         elif self.name == "right_left_handle":
             handle_ijks = [(nx - 1, ny // 2, nz // 2), (0, ny // 2, nz // 2)]
 
+        center_block_ijk = (nx // 2, ny // 2, nz // 2)
         block_to_center = {}
+        block_positions = self.get_init_block_positions(pos, orn)
         for i in range(nx):
             for j in range(ny):
                 for k in range(nz):
                     is_handle_block = (i, j, k) in handle_ijks
-                    rgba = (1, 0, 0, 1) if is_handle_block else (1, 1, 1, 1)
+                    is_corner_block = (
+                        (i in {0, nx - 1}) and (j in {0, ny - 1}) and (k in {0, nz - 1})
+                    )
+                    is_center_block = (i, j, k) == center_block_ijk
+                    if is_handle_block:
+                        rgba = (1, 0, 0, 1)
+                    elif is_corner_block:
+                        rgba = (0, 1, 0, 1)
+                    elif is_center_block:
+                        rgba = (0, 0, 1, 1)
+                    else:
+                        rgba = (1, 1, 1, 1)
                     local_pos = np.array(
                         [(2 * i + 1) * l / 2, (2 * j + 1) * w / 2, (2 * k + 1) * h / 2]
                     )
-                    block_pos = transform_point(corner_tmat, local_pos)
                     block_id = create_box(
-                        block_pos,
+                        block_positions[(i, j, k)],
                         orn,
-                        # 0 if is_handle_block else m,  # DEBUGGING
                         m,
                         (l, w, h),
                         True,
                         rgba,
                     )
-                    ijk_to_id[(i, j, k)] = block_id
-                    ids.append(block_id)
+                    self.ijk_to_id[(i, j, k)] = block_id
+                    self.id_to_ijk[block_id] = (i, j, k)
+                    self.block_ids.append(block_id)
                     block_to_center[block_id] = (
                         np.array([self.LENGTH / 2, self.WIDTH / 2, self.HEIGHT / 2])
                         - local_pos
                     )
                     if is_handle_block:
                         self.handle_block_ids.append(block_id)
-        # Form constraints between adjacent blocks
-        # Actually what if we just create constraints between the blocks and the middle?
-        # Also consider disabling collisions between all of the blocks with themselves
-        # Trying just constraining to the handle block right now
+                    if is_corner_block:
+                        self.corner_block_ids.append(block_id)
+                    if is_center_block:
+                        self.center_block_id = block_id
+        # Form constraints between the blocks
+        # We constrain each block to the central block, with the handle blocks having a larger force
+        cids = []
+        center_block_id = self.ijk_to_id[center_block_ijk]
         for i in range(nx):
             for j in range(ny):
                 for k in range(nz):
                     is_handle_block = (i, j, k) in handle_ijks
-                    # Constrain to center point using handle block as a reference
-                    # TODO FIXME improve this for the two-handle case
-                    if not is_handle_block:
-                        self.client.createConstraint(
-                            self.handle_block_ids[0],
+                    is_center_block = (i, j, k) == center_block_ijk
+                    if not is_center_block:
+                        cid = self.client.createConstraint(
+                            center_block_id,
                             -1,
-                            ijk_to_id[(i, j, k)],
+                            self.ijk_to_id[(i, j, k)],
                             -1,
                             self.client.JOINT_FIXED,
                             (0, 0, 1),
-                            block_to_center[self.handle_block_ids[0]],
-                            block_to_center[ijk_to_id[(i, j, k)]],
+                            (0, 0, 0),  # Center block origin
+                            block_to_center[self.ijk_to_id[(i, j, k)]],
                             (0, 0, 0, 1),
                             (0, 0, 0, 1),
                         )
+                        cids.append(cid)
+                        # TODO TUNE THESE FORCES
+                        constraint_force = self.mass * (20 if is_handle_block else 2)
+                        self.client.changeConstraint(cid, maxForce=constraint_force)
         # Disable internal collisions between adjacent blocks
-        # TODO see if we can use setCollisionFilterGroupMask
+        # Define neighbors via a kind of voxel grid (like a Rubiks cube without the central block)
         neighbors = defaultdict(list)
-        # Define neighbors by all linear and diagonal nearest blocks
-        # The most neighbors a block can have is 26
-        # Think of this like a rubiks cube but with no central block
-        # TODO there is definitely a better way to do this
         for i in range(nx):
             for j in range(ny):
                 for k in range(nz):
-                    possible_neighbors = [
-                        (i - 1, j, k),  # Left
-                        (i + 1, j, k),  # Right
-                        (i, j - 1, k),  # Front
-                        (i, j + 1, k),  # Back
-                        (i, j, k - 1),  # Bottom
-                        (i, j, k + 1),  # Top
-                        (i, j - 1, k - 1),
-                        (i, j - 1, k + 1),
-                        (i, j + 1, k - 1),
-                        (i, j + 1, k + 1),
-                        (i - 1, j, k - 1),
-                        (i - 1, j, k + 1),
-                        (i + 1, j, k - 1),
-                        (i + 1, j, k + 1),
-                        (i - 1, j - 1, k),
-                        (i - 1, j + 1, k),
-                        (i + 1, j - 1, k),
-                        (i + 1, j + 1, k),
-                        (i - 1, j - 1, k - 1),  # Left front bottom
-                        (i - 1, j - 1, k + 1),  # Left front top
-                        (i - 1, j + 1, k - 1),  # Left back bottom
-                        (i - 1, j + 1, k + 1),  # Left back top
-                        (i + 1, j - 1, k - 1),  # Right front bottom
-                        (i + 1, j - 1, k + 1),  # Right front top
-                        (i + 1, j + 1, k - 1),  # Right back bottom
-                        (i + 1, j + 1, k + 1),  # Right back top
-                    ]
-                    for neighbor in possible_neighbors:
-                        ni, nj, nk = neighbor
-                        if 0 <= ni < nx and 0 <= nj < ny and 0 <= nk < nz:
-                            neighbors[(i, j, k)].append((ni, nj, nk))
+                    # Find the 26 neighboring voxel coordinates
+                    for delta_i in [-1, 0, 1]:
+                        for delta_j in [-1, 0, 1]:
+                            for delta_k in [-1, 0, 1]:
+                                if delta_i == 0 and delta_j == 0 and delta_k == 0:
+                                    pass  # Skip the center point
+                                else:
+                                    # Add the neighbor if it is within the bounds of the box
+                                    ni = i + delta_i
+                                    nj = j + delta_j
+                                    nk = k + delta_k
+                                    if 0 <= ni < nx and 0 <= nj < ny and 0 <= nk < nz:
+                                        neighbors[(i, j, k)].append((ni, nj, nk))
+        # Get all unique pairs between neighboring blocks
         pairs = set()
         for ijk, neighbor_ijks in neighbors.items():
             for nijk in neighbor_ijks:
+                # Ensure no duplicate pairs in the reverse order
                 if (nijk, ijk) not in pairs:
                     pairs.add((ijk, nijk))
         for pair in pairs:
-            pair_ids = ijk_to_id[pair[0]], ijk_to_id[pair[1]]
-            pybullet.setCollisionFilterPair(pair_ids[0], pair_ids[1], -1, -1, 0)
+            # Disable collision
+            pybullet.setCollisionFilterPair(
+                self.ijk_to_id[pair[0]], self.ijk_to_id[pair[1]], -1, -1, 0
+            )
+
+        # Correct the handle block ID order
+        # We build the blocks in order of increasing xyz position, but the way we've ordered the handles in the
+        # two-handle bags are top->bottom, front->back, right->left which don't necessarily adhere to this order
+        if self.num_handles == 2:
+            # Reverse the order for the bags where the first handle is not at the minimum of the relevant dimension
+            # Note: the front/back handle bag adheres to the correct order since the front handle is at min y
+            if self.name in {"top_bottom_handle", "right_left_handle"}:
+                self.handle_block_ids = self.handle_block_ids[::-1]
+
+        # We need an ID to assign to the object
+        # In general, the center block makes the most sense because we can query this for dynamics info of the bag
+        return self.center_block_id
 
 
 def _main():
+    # pylint: disable=import-outside-toplevel
     from pyastrobee.utils.bullet_utils import load_floor
 
-    name = "top_handle"
+    name = "front_handle"
     pos = (0, 0, 1)
     orn = (0, 0, 0, 1)
     mass = 5
     divisions = (3, 3, 3)
+
     pybullet.connect(pybullet.GUI)
-    pybullet.setGravity(0, 0, -9.81)
+    # pybullet.setGravity(0, 0, -9.81)
     load_floor()
+    robot = Astrobee()
+    # robot2 = Astrobee()
     bag = CompositeCargoBag(name, mass, pos, orn, divisions)
+    # bag.attach_to([robot, robot2])
+    bag.attach_to(robot)
     while True:
         pybullet.stepSimulation()
         time.sleep(1 / 120)
