@@ -100,7 +100,7 @@ class ConstraintCargoBag(CargoBag):
             robot.Links.GRIPPER_LEFT_DISTAL.value,
             robot.Links.GRIPPER_RIGHT_DISTAL.value,
         ]:
-            pybullet.setCollisionFilterPair(robot.id, self.id, link_id, -1, 0)
+            self.client.setCollisionFilterPair(robot.id, self.id, link_id, -1, 0)
 
         # Get the constraint attachment positions in each of the local frames
         robot_local_constraint_pos = np.array(
@@ -116,21 +116,20 @@ class ConstraintCargoBag(CargoBag):
                 max_force = self.primary_constraint_force
             else:
                 max_force = self.secondary_constraint_force
-            cid = pybullet.createConstraint(
+            cid = self.client.createConstraint(
                 robot.id,
                 robot.Links.ARM_DISTAL.value,
                 self.id,
                 -1,
-                pybullet.JOINT_POINT2POINT,
+                self.client.JOINT_POINT2POINT,
                 (0, 0, 1),
                 robot_local_constraint_pos[i],
                 bag_local_constraint_pos[i],
             )
-            pybullet.changeConstraint(cid, maxForce=max_force)
+            self.client.changeConstraint(cid, maxForce=max_force)
             constraint_ids.append(cid)
         self._constraints.update({robot.id: constraint_ids})
         self._attached.append(robot.id)
-        pass  # TODO
 
     def detach(self) -> None:
         for robot_id, cids in self.constraints.items():
@@ -191,7 +190,7 @@ class ConstraintCargoBag(CargoBag):
         forces = {}
         for robot_id, cids in self.constraints.items():
             for cid in cids:
-                forces[cid] = pybullet.getConstraintState(cid)
+                forces[cid] = self.client.getConstraintState(cid)
         return forces
 
 
