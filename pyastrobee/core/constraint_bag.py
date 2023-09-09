@@ -4,6 +4,7 @@ Documentation for inherited methods can be found in the base class
 """
 
 import time
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -102,33 +103,18 @@ class ConstraintCargoBag(CargoBag):
         ]:
             self.client.setCollisionFilterPair(robot.id, self.id, link_id, -1, 0)
 
-        # Get the constraint attachment positions in each of the local frames
-        robot_local_constraint_pos = np.array(
-            [
-                transform_point(Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL, pt)
-                for pt in self.constraint_structure
-            ]
+        constraints = form_constraint_grasp(
+            robot,
+            self.id,
+            self.mass,
+            self.grasp_transforms[handle_index],
+            "tetrahedron",
+            0.05,
+            5,
+            0.05,
+            client=self.client,
         )
-        bag_local_constraint_pos = self.get_local_constraint_pos(handle_index)
-        constraint_ids = []
-        for i in range(len(self.constraint_structure)):
-            if i == 0:
-                max_force = self.primary_constraint_force
-            else:
-                max_force = self.secondary_constraint_force
-            cid = self.client.createConstraint(
-                robot.id,
-                robot.Links.ARM_DISTAL.value,
-                self.id,
-                -1,
-                self.client.JOINT_POINT2POINT,
-                (0, 0, 1),
-                robot_local_constraint_pos[i],
-                bag_local_constraint_pos[i],
-            )
-            self.client.changeConstraint(cid, maxForce=max_force)
-            constraint_ids.append(cid)
-        self._constraints.update({robot.id: constraint_ids})
+        self._constraints.update({robot.id: constraints})
         self._attached.append(robot.id)
 
     def detach(self) -> None:
@@ -192,6 +178,77 @@ class ConstraintCargoBag(CargoBag):
             for cid in cids:
                 forces[cid] = self.client.getConstraintState(cid)
         return forces
+
+
+def form_constraint_grasp(
+    robot: Astrobee,
+    body_id: int,
+    body_mass: float,
+    grasp_transform: np.ndarray,
+    structure_type: str = "tetrahedron",
+    structure_scaling: float = 0.05,
+    primary_force_scale: float = 5,
+    secondary_force_scale: float = 0.05,
+    client: Optional[BulletClient] = None,
+) -> list[int]:
+    """Connects the Astrobee's gripper to an object via point-to-point constraints to mimic a non-rigid grasp
+
+    NOTE: Depending on the grasp transform used, it may be recommended to disable collisions between the Astrobee
+    gripper and the object before forming these constraints
+
+    Args:
+        robot (Astrobee): Astrobee performing the grasp
+        body_id (int): Pybullet ID of the object being grasped
+        body_mass (float): Mass of the object being grasped. Used for rescaling the constraint forces
+        grasp_transform (np.ndarray): Transformation matrix defining the grasp pose w.r.t the base frame of the object
+        structure_type (str, optional): Type of geometry to construct the series of constraints. Defaults to
+            "tetrahedron". Other options include "diamond"
+        structure_scaling (float, optional): Scale on the size of the constraint structure (if set to 1, the
+            constraints will be spaced along a unit (1 meter) sphere). Defaults to 0.05.
+        primary_force_scale (float, optional): Scaling factor on the maximum force applied by the central constraint.
+            Force = (scale) * (mass). Defaults to 5.
+        secondary_force_scale (float, optional): Scaling factor on the maximum force applied by the non-central
+            constraints. Force = (scale) * (mass). Defaults to 0.05.
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+
+    Returns:
+        list[int]: Pybullet IDs of the constraints
+    """
+    client: pybullet = pybullet if client is None else client
+    constraint_structure = (
+        UNIT_CONSTRAINT_STRUCTURES[structure_type] * structure_scaling
+    )
+    body_local_constraint_pos = np.array(
+        [transform_point(grasp_transform, pt) for pt in constraint_structure]
+    )
+    robot_local_constraint_pos = np.array(
+        [
+            transform_point(Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL, pt)
+            for pt in constraint_structure
+        ]
+    )
+    primary_force = primary_force_scale * body_mass
+    secondary_force = secondary_force_scale * body_mass
+    constraints = []
+    for i in range(len(constraint_structure)):
+        if i == 0:
+            max_force = primary_force
+        else:
+            max_force = secondary_force
+        cid = client.createConstraint(
+            robot.id,
+            robot.Links.ARM_DISTAL.value,
+            body_id,
+            -1,
+            client.JOINT_POINT2POINT,
+            (0, 0, 1),
+            robot_local_constraint_pos[i],
+            body_local_constraint_pos[i],
+        )
+        client.changeConstraint(cid, maxForce=max_force)
+        constraints.append(cid)
+    return constraints
 
 
 def _main():
