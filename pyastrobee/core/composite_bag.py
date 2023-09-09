@@ -17,6 +17,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.transformations import make_transform_mat, transform_point
 from pyastrobee.utils.rotations import quat_to_rmat
+from pyastrobee.core.constraint_bag import form_constraint_grasp
 
 
 class CompositeCargoBag(CargoBag):
@@ -41,6 +42,8 @@ class CompositeCargoBag(CargoBag):
         self.divisions = divisions
         super().__init__(bag_name, mass, pos, orn, client)
 
+        self._handle_constraints = {}
+
     @property
     def corner_positions(self) -> list[np.ndarray]:
         # TODO: currently, this assumes that there is no deformation going on
@@ -60,79 +63,18 @@ class CompositeCargoBag(CargoBag):
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
         # We'll use the same handle modeling as with the constraint bag
-        # BUT we'll attach to the handle block rather than the center point of the bag
-        constraint_scaling = 0.05
-        constraint_structure = (
-            np.array(
-                [
-                    [0, 0, 0],
-                    [-1 / 3, np.sqrt(8 / 9), 0],
-                    [-1 / 3, -np.sqrt(2 / 9), np.sqrt(2 / 3)],
-                    [-1 / 3, -np.sqrt(2 / 9), -np.sqrt(2 / 3)],
-                    [1, 0, 0],
-                ]
-            )
-            * constraint_scaling
+        # BUT we'll attach to the handle block rather than the center point of the bag,
+        # so we need to update the grasp transformation
+        handle_id = self.handle_block_ids[handle_index]
+        handle_ijk = self.id_to_ijk[handle_id]
+        original_grasp_transform = self.grasp_transforms[handle_index]
+        orig_rmat = original_grasp_transform[:3, :3]
+        pos = self._center_aligned_block_structure()[handle_ijk]
+        adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
+        constraints = form_constraint_grasp(
+            robot, handle_id, self.mass, adjusted_grasp_transform, client=self.client
         )
-        primary_constraint_force = 5 * self.mass
-        secondary_constraint_force = 0.05 * self.mass
-
-        self._handle_constraints = {}
-
-        def _get_local_constraint_pos(handle_index):
-            # need to update the grasp transform so that it's not with respect to the center point of the
-            # bag itself, but rather the center point of the handle block
-            original_grasp_transform = self.grasp_transforms[handle_index]
-            orig_rmat = original_grasp_transform[:3, :3]
-            handle_id = self.handle_block_ids[handle_index]
-            handle_ijk = self.id_to_ijk[handle_id]
-            pos = self._center_aligned_block_structure()[handle_ijk]
-            adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
-            return np.array(
-                [
-                    transform_point(adjusted_grasp_transform, pt)
-                    for pt in constraint_structure
-                ]
-            )
-
-        # Disable collisions with the end of the gripper
-        # Otherwise if we use the standard handle location, it will always be in collision
-        # TODO decide if proximal joints should also be disabled
-        for link_id in [
-            robot.Links.GRIPPER_LEFT_DISTAL.value,
-            robot.Links.GRIPPER_RIGHT_DISTAL.value,
-        ]:
-            for block_id in self.block_ids:
-                self.client.setCollisionFilterPair(robot.id, block_id, link_id, -1, 0)
-
-        # Get the constraint attachment positions in each of the local frames
-        robot_local_constraint_pos = np.array(
-            [
-                transform_point(Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL, pt)
-                for pt in constraint_structure
-            ]
-        )
-        bag_local_constraint_pos = _get_local_constraint_pos(handle_index)
-        constraint_ids = []
-        for i in range(len(constraint_structure)):
-            if i == 0:
-                max_force = primary_constraint_force
-            else:
-                max_force = secondary_constraint_force
-            cid = self.client.createConstraint(
-                robot.id,
-                robot.Links.ARM_DISTAL.value,
-                # self.id,
-                self.handle_block_ids[handle_index],
-                -1,
-                self.client.JOINT_POINT2POINT,
-                (0, 0, 1),
-                robot_local_constraint_pos[i],
-                bag_local_constraint_pos[i],
-            )
-            self.client.changeConstraint(cid, maxForce=max_force)
-            constraint_ids.append(cid)
-        self._handle_constraints.update({robot.id: constraint_ids})
+        self._handle_constraints.update({robot.id: constraints})
         self._attached.append(robot.id)
 
     def detach(self) -> None:
