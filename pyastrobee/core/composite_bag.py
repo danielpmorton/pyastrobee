@@ -40,6 +40,8 @@ class CompositeCargoBag(CargoBag):
                 f"Invalid divisions: These must be three positive odd integers.\nGot: {divisions}"
             )
         self.divisions = divisions
+        self.handle_block_force_scale = 5
+        self.block_force_scale = 0.5
         super().__init__(bag_name, mass, pos, orn, client)
 
         self._handle_constraints = {}
@@ -71,8 +73,20 @@ class CompositeCargoBag(CargoBag):
         orig_rmat = original_grasp_transform[:3, :3]
         pos = self._center_aligned_block_structure()[handle_ijk]
         adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
+        structure = "tetrahedron"
+        structure_scaling = 0.1
+        primary_force_scale = 10
+        secondary_force_scale = 0.1
         constraints = form_constraint_grasp(
-            robot, handle_id, self.mass, adjusted_grasp_transform, client=self.client
+            robot,
+            handle_id,
+            self.mass,
+            adjusted_grasp_transform,
+            structure,
+            structure_scaling,
+            primary_force_scale,
+            secondary_force_scale,
+            client=self.client,
         )
         self._handle_constraints.update({robot.id: constraints})
         self._attached.append(robot.id)
@@ -248,7 +262,11 @@ class CompositeCargoBag(CargoBag):
                         )
                         cids.append(cid)
                         # TODO TUNE THESE FORCES
-                        constraint_force = self.mass * (20 if is_handle_block else 2)
+                        constraint_force = self.mass * (
+                            self.handle_block_force_scale
+                            if is_handle_block
+                            else self.block_force_scale
+                        )
                         self.client.changeConstraint(cid, maxForce=constraint_force)
         # Disable internal collisions between adjacent blocks
         # Define neighbors via a kind of voxel grid (like a Rubiks cube without the central block)
@@ -300,7 +318,7 @@ def _main():
     # pylint: disable=import-outside-toplevel
     from pyastrobee.utils.bullet_utils import load_floor
 
-    name = "front_handle"
+    name = "top_handle"
     pos = (0, 0, 1)
     orn = (0, 0, 0, 1)
     mass = 5
