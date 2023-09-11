@@ -51,7 +51,7 @@ class ConstraintCargoBag(CargoBag):
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
-        mass (float): Mass of the cargo bag
+        mass (float): Mass of the cargo bag, in kg
         pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
         orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
         client (BulletClient, optional): If connecting to multiple physics servers, include the client

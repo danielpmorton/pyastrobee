@@ -23,7 +23,7 @@ class CargoBag(ABC):
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
-        mass (float): Mass of the cargo bag
+        mass (float): Mass of the cargo bag, in kg
         pos (npt.ArrayLike): Initial XYZ position to load the bag
         orn (npt.ArrayLike): Initial XYZW quaternion to load the bag
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
@@ -173,7 +173,7 @@ class CargoBag(ABC):
         elif self._name in self.DUAL_HANDLE_BAGS:
             return 2
         else:
-            return 0  # This may have an application in the future
+            raise ValueError("Name not recognized - number of handles unknown")
 
     @property
     def corner_positions(self) -> list[np.ndarray]:

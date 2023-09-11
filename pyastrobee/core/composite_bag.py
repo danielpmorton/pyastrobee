@@ -26,7 +26,7 @@ class CompositeCargoBag(CargoBag):
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
-        mass (float): Mass of the cargo bag
+        mass (float): Mass of the cargo bag, in kg
         pos (npt.ArrayLike): Initial XYZ position to load the bag
         orn (npt.ArrayLike): Initial XYZW quaternion to load the bag
         divisions (tuple[int, int, int]): Number of smaller sub-blocks along each dimension (length, width, height) of
@@ -41,7 +41,7 @@ class CompositeCargoBag(CargoBag):
         mass: float,
         pos: npt.ArrayLike,
         orn: npt.ArrayLike,
-        divisions: tuple[int, int, int],
+        divisions: tuple[int, int, int] = (3, 3, 3),
         client: Optional[BulletClient] = None,
     ):
         if (
