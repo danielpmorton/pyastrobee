@@ -1,6 +1,6 @@
-"""Test to see if we can attach a bunch of rigid bodies via constraints to mimic deformables
+"""Modeling a deformable cargo bag as an interconnected series of smaller rigid bodies via constraints
 
-WORK IN PROGRESS
+Documentation for inherited methods can be found in the base class
 """
 
 import time
@@ -21,6 +21,20 @@ from pyastrobee.core.constraint_bag import form_constraint_grasp
 
 
 class CompositeCargoBag(CargoBag):
+    """Class for loading and managing properties associated with the composite cargo bags
+
+    Args:
+        bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
+            Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
+        mass (float): Mass of the cargo bag
+        pos (npt.ArrayLike): Initial XYZ position to load the bag
+        orn (npt.ArrayLike): Initial XYZW quaternion to load the bag
+        divisions (tuple[int, int, int]): Number of smaller sub-blocks along each dimension (length, width, height) of
+            the bag's main compartment. Must be three positive odd integers.
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
+    """
+
     def __init__(
         self,
         bag_name: str,
@@ -43,7 +57,6 @@ class CompositeCargoBag(CargoBag):
         self.handle_block_force_scale = 5
         self.block_force_scale = 0.5
         super().__init__(bag_name, mass, pos, orn, client)
-
         self._handle_constraints = {}
 
     @property
@@ -54,8 +67,8 @@ class CompositeCargoBag(CargoBag):
 
     def unload(self) -> None:
         self.detach()
-        for id in self.block_ids:
-            self.client.removeBody(id)
+        for block_id in self.block_ids:
+            self.client.removeBody(block_id)
         self.block_ids = None
         self.handle_block_ids = None
         self.center_block_id = None
@@ -100,7 +113,6 @@ class CompositeCargoBag(CargoBag):
         self._handle_constraints = {}
 
     def detach_robot(self, robot_id: int) -> None:
-        # return super().detach_robot(robot_id)
         if robot_id not in self._handle_constraints:
             raise ValueError("Cannot detach robot: ID unknown")
         for cid in self._handle_constraints[robot_id]:
@@ -126,21 +138,33 @@ class CompositeCargoBag(CargoBag):
                 lin_vel + np.cross(ang_vel, r),
                 ang_vel,
             )
-        pass
 
     def get_init_block_positions(
         self, pos: npt.ArrayLike, orn: npt.ArrayLike
     ) -> dict[tuple[int, int, int], np.ndarray]:
+        """Gives the initial positions of the centers of the blocks in world frame
+
+        Args:
+            pos (npt.ArrayLike): Position to load the center of the bag
+            orn (npt.ArrayLike): Orientation to load the bag (XYZW quaternion)
+
+        Returns:
+            dict[tuple[int, int, int], np.ndarray]: Map from block (i, j, k) index to its world frame position
+        """
         # Deformation free
         rmat = quat_to_rmat(orn)
         center_tmat = make_transform_mat(rmat, pos)
-
         positions = self._center_aligned_block_structure()
         for block_ijk in positions:
             positions[block_ijk] = transform_point(center_tmat, positions[block_ijk])
         return positions
 
-    def _corner_aligned_block_structure(self):
+    def _corner_aligned_block_structure(self) -> dict[tuple[int, int, int], np.ndarray]:
+        """Gives the initial positions of the centers of the blocks w.r.t the bottom corner of the box in local frame
+
+        Returns:
+            dict[tuple[int, int, int], np.ndarray]: Map from block (i, j, k) index to its local frame position
+        """
         nx, ny, nz = self.divisions
         l = self.LENGTH / nx
         w = self.WIDTH / ny
@@ -154,7 +178,13 @@ class CompositeCargoBag(CargoBag):
                     )
         return positions
 
-    def _center_aligned_block_structure(self):
+    def _center_aligned_block_structure(self) -> dict[tuple[int, int, int], np.ndarray]:
+        """Gives the initial positions of the centers of the blocks w.r.t the center of the box in local frame
+
+        Returns:
+            dict[tuple[int, int, int], np.ndarray]: Map from block (i, j, k) index to its local frame position
+        """
+        # Simple translation, no rotation required
         positions = self._corner_aligned_block_structure()
         corner_to_center = np.array([self.LENGTH / 2, self.WIDTH / 2, self.HEIGHT / 2])
         for block_ijk in positions:
