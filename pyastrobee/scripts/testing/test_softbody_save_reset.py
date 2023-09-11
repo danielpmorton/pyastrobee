@@ -39,13 +39,13 @@ def run_test(object: str):
     """Pause, save, and reset the sim after user interaction. Object is either "bag", "cloth", or "astrobee"."""
     client = initialize_pybullet()
     if object == "bag":
-        bag = DeformableCargoBag("top_handle")
+        bag = DeformableCargoBag("top_handle", 10)
     elif object == "cloth":
         pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
         cloth_id = load_deformable_object("cloth_z_up.obj")
     elif object == "astrobee":
         robot = Astrobee()
-        bag = DeformableCargoBag("top_handle")
+        bag = DeformableCargoBag("top_handle", 10)
         bag.attach_to(robot)
     print("Apply a disturbance force")
     loop_sim()
@@ -67,7 +67,7 @@ def multi_reset_test():
     """
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = DeformableCargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle", 10)
     bag.attach_to(robot)
     start_pose = robot.pose
     end_pose = [1, 2, 3, *random_quaternion()]

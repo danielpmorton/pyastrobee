@@ -75,7 +75,7 @@ def astrobee_with_bag_example():
     client = initialize_pybullet(bg_color=[1, 1, 1])
     np.random.seed(0)
     robot = Astrobee()
-    bag = DeformableCargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle", 10)
     bag.attach_to(robot)
     pose_1 = robot.pose
     pose_2 = [1, 2, 3, *random_quaternion()]

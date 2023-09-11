@@ -71,14 +71,14 @@ def reset_state(
 
 def bag_only_test():
     bag_name = "top_handle"
+    mass = 10
     deformable_p0 = np.zeros(3)
     pos_offset = np.array([0, 0, 1])
     rigid_p0 = deformable_p0 + pos_offset
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
-    rigid_bag_mass = 1
-    rigid_bag = ConstraintCargoBag(bag_name, rigid_bag_mass, rigid_p0, client=client)
+    deformable_bag = DeformableCargoBag(bag_name, mass, deformable_p0, client=client)
+    rigid_bag = ConstraintCargoBag(bag_name, mass, rigid_p0, client=client)
 
     time_per_reset = 1  # seconds
     steps_per_reset = round(time_per_reset / dt)
@@ -94,16 +94,16 @@ def bag_only_test():
 
 def astrobee_and_bag_test():
     bag_name = "top_handle"
+    mass = 10
     deformable_p0 = np.zeros(3)
     pos_offset = np.array([1, 0, 0])
     rigid_p0 = deformable_p0 + pos_offset
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
+    deformable_bag = DeformableCargoBag(bag_name, mass, deformable_p0, client=client)
     robot_1 = Astrobee()
     deformable_bag.attach_to(robot_1, "robot")
-    rigid_bag_mass = 1
-    rigid_bag = ConstraintCargoBag(bag_name, rigid_bag_mass, rigid_p0, client=client)
+    rigid_bag = ConstraintCargoBag(bag_name, mass, rigid_p0, client=client)
     robot_2 = Astrobee()
     rigid_bag.attach_to(robot_2, "robot")
 
@@ -122,16 +122,16 @@ def astrobee_and_bag_test():
 def dual_tracking_example():
     np.random.seed(0)
     bag_name = "top_handle"
+    mass = 10
     deformable_p0 = np.zeros(3)
     pos_offset = np.array([2, 0, 0])
     rigid_p0 = deformable_p0 + pos_offset
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    deformable_bag = DeformableCargoBag(bag_name, deformable_p0, client=client)
+    deformable_bag = DeformableCargoBag(bag_name, mass, deformable_p0, client=client)
     robot_1 = Astrobee()
     deformable_bag.attach_to(robot_1, "robot")
-    rigid_bag_mass = 5
-    rigid_bag = ConstraintCargoBag(bag_name, rigid_bag_mass, rigid_p0, client=client)
+    rigid_bag = ConstraintCargoBag(bag_name, mass, rigid_p0, client=client)
     robot_2 = Astrobee()
     rigid_bag.attach_to(robot_2, "robot")
 

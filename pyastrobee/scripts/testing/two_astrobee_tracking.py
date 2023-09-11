@@ -99,7 +99,7 @@ def bag_example():
     Note: This currently seems to be unstable
     """
     client = initialize_pybullet()
-    bag = DeformableCargoBag("right_left_handle")
+    bag = DeformableCargoBag("right_left_handle", 10)
     robot_1 = Astrobee()
     robot_2 = Astrobee()
     bag.attach_to([robot_1, robot_2])

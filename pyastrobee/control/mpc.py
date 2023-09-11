@@ -50,7 +50,8 @@ def init(
     client = initialize_pybullet(use_gui)
     iss = ISS(client=client)
     robot = Astrobee(robot_pose, client=client)
-    bag = DeformableCargoBag("top_handle", client=client)
+    bag_mass = 10
+    bag = DeformableCargoBag("top_handle", bag_mass, client=client)
     bag.attach_to(robot, object_to_move="bag")
     return client, robot, bag
 

@@ -34,6 +34,7 @@ class DeformableCargoBag(CargoBag):
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
+        mass (float): Mass of the cargo bag, in kg
         pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
         orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
@@ -56,11 +57,11 @@ class DeformableCargoBag(CargoBag):
     def __init__(
         self,
         bag_name: str,
+        mass: float,
         pos: npt.ArrayLike = (0, 0, 0),
         orn: npt.ArrayLike = (0, 0, 0, 1),
         client: Optional[BulletClient] = None,
     ):
-        mass = bag_props.MASS  # Cannot vary this sadly
         super().__init__(bag_name, mass, pos, orn, client)
         # Initializations
         self._anchors = {}
@@ -261,7 +262,7 @@ def _main():
     # Very simple example of loading the bag and attaching a robot
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = DeformableCargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle", 10)
     bag.attach_to(robot)
     while True:
         client.stepSimulation()

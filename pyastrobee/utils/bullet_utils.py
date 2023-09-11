@@ -212,9 +212,9 @@ def load_deformable_object(
         int: ID number for the object
     """
     client: pybullet = pybullet if client is None else client
-    if mass != 1.0:
+    if mass < 1.0:
         print_red(
-            "Warning: mass = 1 is the most stable for deformables. Small mass can cause instabilities"
+            "Warning: mass > 1 is the most stable for deformables. Small mass can cause instabilities"
         )
 
     # TODO: decide if some of these parameters should be included as inputs rather than hard-coded

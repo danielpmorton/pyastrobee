@@ -22,7 +22,7 @@ def main():
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
     # We'll use our standard cargo bag for the deformable object
-    bag = DeformableCargoBag("top_handle")
+    bag = DeformableCargoBag("top_handle", 10)
     # And for the rigid object, we'll just use a simple cube
     # We'll rotate the cube so that we can attach the bag handle right at the tip of the cube
     cube_rot = axis_angle_to_quat(
