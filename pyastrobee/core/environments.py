@@ -29,6 +29,7 @@ from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.iss import ISS
+from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.control.cost_functions import state_tracking_cost
@@ -43,6 +44,8 @@ class AstrobeeEnv(gym.Env):
         use_gui (bool): Whether or not to use the GUI as opposed to headless.
         robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
+        bag_mass (float): Mass of the cargo bag, in kg
+        bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
         use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
             Defaults to True (load the deformable version)
     """
@@ -55,16 +58,13 @@ class AstrobeeEnv(gym.Env):
         use_gui: bool,
         robot_pose: npt.ArrayLike = (0, 0, 0, 0, 0, 0, 1),
         bag_name: str = "top_handle",
-        use_deformable_bag: bool = True,
+        bag_mass: float = 10,
+        bag_type: type[CargoBag] = DeformableCargoBag,
     ):
         self.client = initialize_pybullet(use_gui)
         self.iss = ISS(client=self.client)
         self.robot = Astrobee(robot_pose, client=self.client)
-        if use_deformable_bag:
-            self.bag = DeformableCargoBag(bag_name, client=self.client)
-        else:
-            mass = 5  # TODO update this.. 5 seems reasonable given the behavior of the deformable
-            self.bag = ConstraintCargoBag(bag_name, mass, client=self.client)
+        self.bag = bag_type(bag_name, bag_mass, client=self.client)
         self.bag.reset_to_handle_pose(self.robot.ee_pose)
         self.bag.attach_to(self.robot, object_to_move="bag")
         self.dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
@@ -182,6 +182,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             vectorized environments for evaluating a rollout (False)
         robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
+        bag_mass (float): Mass of the cargo bag, in kg
+        bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
         use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
             Defaults to True (load the deformable version)
         nominal_rollouts (bool, optional): If True, will roll-out a trajectory based on the nominal target.
@@ -195,11 +197,12 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         is_primary: bool,
         robot_pose: npt.ArrayLike = (0, 0, 0, 0, 0, 0, 1),
         bag_name: str = "top_handle",
-        use_deformable_bag: bool = True,
+        bag_mass: float = 10,
+        bag_type: type[CargoBag] = DeformableCargoBag,
         nominal_rollouts: bool = False,
         cleanup: bool = True,
     ):
-        super().__init__(use_gui, robot_pose, bag_name, use_deformable_bag)
+        super().__init__(use_gui, robot_pose, bag_name, bag_mass, bag_type)
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
         kp, kv, kq, kw = 20, 5, 1, 0.1  # TODO make parameters

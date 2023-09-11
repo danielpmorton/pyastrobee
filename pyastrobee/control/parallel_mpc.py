@@ -16,6 +16,8 @@ import numpy as np
 import numpy.typing as npt
 from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
+from pyastrobee.core.deformable_bag import DeformableCargoBag
+from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
@@ -47,13 +49,19 @@ def parallel_mpc_main(
         raise ValueError("Must have at least one environment for evaluating rollouts")
     # Set up main environment
     main_env = AstrobeeMPCEnv(
-        use_gui=True, is_primary=True, use_deformable_bag=use_deformable_primary_sim
+        use_gui=True,
+        is_primary=True,
+        bag_type=DeformableCargoBag
+        if use_deformable_primary_sim
+        else ConstraintCargoBag,
     )
     # Set up vectorized environments
     env_kwargs = {
         "use_gui": False,
         "is_primary": False,
-        "use_deformable_bag": use_deformable_rollouts,
+        "bag_type": DeformableCargoBag
+        if use_deformable_rollouts
+        else ConstraintCargoBag,
     }
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs
