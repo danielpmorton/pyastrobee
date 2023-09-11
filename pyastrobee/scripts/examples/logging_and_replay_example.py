@@ -19,7 +19,7 @@ def run_example():
     client = initialize_pybullet(bg_color=[1, 1, 1])
     np.random.seed(0)
     robot = Astrobee()
-    bag = RigidCargoBag("top_handle")
+    bag = RigidCargoBag("top_handle", 10)
     bag.attach_to(robot)
     log_id = client.startStateLogging(
         client.STATE_LOGGING_GENERIC_ROBOT,
@@ -48,7 +48,7 @@ def playback():
     # Set up pybullet in the same way as in the original execution
     client = initialize_pybullet()
     robot = Astrobee()
-    bag = RigidCargoBag("top_handle")
+    bag = RigidCargoBag("top_handle", 10)
     bag.attach_to(robot)
 
     playback_from_log("artifacts/logging_test_2.bullet", real_time=True)

@@ -3,7 +3,6 @@
 Documentation for inherited methods can be found in the base class
 """
 
-# TODO make mass variable
 # TODO tune the position control force on the handle
 
 import time
@@ -29,6 +28,7 @@ class RigidCargoBag(CargoBag):
     Args:
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
+        mass (float): Mass of the cargo bag, in kg
         pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
         orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
@@ -44,15 +44,15 @@ class RigidCargoBag(CargoBag):
     def __init__(
         self,
         bag_name: str,
+        mass: float,
         pos: npt.ArrayLike = (0, 0, 0),
         orn: npt.ArrayLike = (0, 0, 0, 1),
         client: Optional[BulletClient] = None,
     ):
-        mass = 5  # From URDF. TODO make this an input
-        super().__init__(bag_name, mass, pos, orn, client)
         # This inertia is slightly approximate because some mass is in the handle and dummy links
-        self.inertia = box_inertia(self.mass, self.LENGTH, self.WIDTH, self.HEIGHT)
+        self.inertia = box_inertia(mass, self.LENGTH, self.WIDTH, self.HEIGHT)
         # Initializations
+        self._name = bag_name  # HACK (this gets set in super.init but we need to know it before calling that)
         self._constraints = {}
         # Add position control to the handle(s) so its springs back into its natural position
         # to provide some resistance to motion like we would see in a deformable
@@ -65,6 +65,7 @@ class RigidCargoBag(CargoBag):
             self.num_joints = 8
             self.num_links = 9
             dummy_joint_ids = [0, 1, 2, 4, 5, 6]
+        super().__init__(bag_name, mass, pos, orn, client)
         self.client.setJointMotorControlArray(
             self.id,
             dummy_joint_ids,
@@ -81,7 +82,14 @@ class RigidCargoBag(CargoBag):
         return list(self._constraints.values())
 
     def _load(self, pos: npt.ArrayLike, orn: npt.ArrayLike) -> int:
-        return self.client.loadURDF(self.URDFS[self.name], pos, orn)
+        bag_id = self.client.loadURDF(self.URDFS[self.name], pos, orn)
+        # Update the mass of the bag based on the value provided at initialization
+        # The other links in the URDF (e.g. the handle(s)) have some mass so we need to account for this
+        link_mass = 0
+        for i in range(self.num_links - 1):
+            link_mass += self.client.getDynamicsInfo(bag_id, i)[0]
+        self.client.changeDynamics(bag_id, -1, self.mass - link_mass)
+        return bag_id
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
         handle_link_index = (handle_index + 1) * self.LINKS_PER_HANDLE - 1
@@ -136,7 +144,7 @@ def _single_handle_test(bag_name: str):
     # Very simple example of loading the bag and attaching a robot
     client = initialize_pybullet(bg_color=(0.8, 0.8, 1))
     robot = Astrobee()
-    bag = RigidCargoBag(bag_name)
+    bag = RigidCargoBag(bag_name, 10)
     bag.attach_to(robot)
     while True:
         client.stepSimulation()
@@ -148,7 +156,7 @@ def _two_handle_test(bag_name: str):
     client = initialize_pybullet(bg_color=(0.8, 0.8, 1))
     robot_1 = Astrobee()
     robot_2 = Astrobee()
-    bag = RigidCargoBag(bag_name)
+    bag = RigidCargoBag(bag_name, 10)
     bag.attach_to([robot_1, robot_2])
     while True:
         client.stepSimulation()
