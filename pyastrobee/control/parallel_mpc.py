@@ -182,7 +182,7 @@ def parallel_mpc_main(
             vec_env.set_attr("last_alpha_cmd", best_traj.angular_accels[-1])
 
             # Update our time information
-            cur_time += rollout_duration
+            cur_time += execution_duration
 
         input("Complete. Press Enter to exit")
     finally:
