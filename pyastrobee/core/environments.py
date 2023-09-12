@@ -381,14 +381,6 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             # The traj log will be filled with the rollout data at this point
 
             # TODO SPEED ALL OF THESE COSTS UP
-            tracking_cost = traj_tracking_cost(
-                self.traj_plan,
-                self.controller.traj_log,
-                self.pos_penalty,
-                self.orn_penalty,
-                self.vel_penalty,
-                self.ang_vel_penalty,
-            )
             # TODO figure out how to handle the padding -- I believe the way I originally defined the ISS
             # boxes inherently incorporated the radius of the astrobee...
             # TODO tune scaling on these cost values
@@ -408,8 +400,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             if self.is_debugging_simulation:
                 print("Robot safe set cost: ", robot_safe_set_cost)
                 print("Bag safe set cost: ", bag_safe_set_cost)
-                print("Tracking cost: ", tracking_cost)
-            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost + tracking_cost)
+            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost)
         # All returns are essentially dummy values except the reward
         observation = self._get_obs()
         terminated = False  # If at the terminal state
