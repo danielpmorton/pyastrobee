@@ -386,14 +386,14 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             # TODO tune scaling on these cost values
             robot_safe_set_cost, robot_collided = integrated_safe_set_cost(
                 self.controller.traj_log.positions,
-                list(self.iss.safe_boxes.values()),
+                list(self.iss.robot_safe_set.values()),
                 # padding=Astrobee.COLLISION_RADIUS,
                 padding=0,
                 collision_penalty=10,
             )
             bag_safe_set_cost, bag_collided = integrated_safe_set_cost(
                 np.vstack(bag_corner_log),
-                list(self.iss.safe_boxes.values()),
+                list(self.iss.full_safe_set.values()),
                 padding=0,
                 collision_penalty=1,
             )

@@ -14,7 +14,7 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.trajectories.face_forward import face_forward_traj
 from pyastrobee.utils.boxes import find_containing_box
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES, compute_iss_graph
+from pyastrobee.config.iss_safe_boxes import ROBOT_SAFE_SET, compute_iss_graph
 from pyastrobee.utils.algos import dfs
 from pyastrobee.trajectories.splines import spline_trajectory_with_retiming
 from pyastrobee.utils.rotations import rmat_to_quat, Rz
@@ -26,14 +26,14 @@ from pyastrobee.core.iss import ISS
 def plan_path(p0, pf, T, n_timesteps):
     names = []
     boxes = []
-    for name, box in ALL_BOXES.items():
+    for name, box in ROBOT_SAFE_SET.items():
         names.append(name)
         boxes.append(box)
     start_id = find_containing_box(p0, boxes)
     end_id = find_containing_box(pf, boxes)
     graph = compute_iss_graph()
     path = dfs(graph, names[start_id], names[end_id])
-    box_path = [ALL_BOXES[p] for p in path]  # TODO improve this
+    box_path = [ROBOT_SAFE_SET[p] for p in path]  # TODO improve this
     init_durations = T / len(box_path) * np.ones(len(box_path))
     curve, cost = spline_trajectory_with_retiming(
         p0,
@@ -52,12 +52,12 @@ def plan_path(p0, pf, T, n_timesteps):
 
 
 def face_forward_test(record_video: bool = False):
-    p0 = ALL_BOXES["jpm"].center
-    # pf = ALL_BOXES["cupola"].center
+    p0 = ROBOT_SAFE_SET["jpm"].center
+    # pf = ROBOT_SAFE_SET["cupola"].center
     # There seems to be something weird going on with my relationship between quaternions
     # and headings since it does an odd spin if we move to the cupola... (TODO debug)
 
-    pf = ALL_BOXES["node_1"].center
+    pf = ROBOT_SAFE_SET["node_1"].center
     T = 30
     q0 = rmat_to_quat(Rz(-np.pi))
     pybullet.connect(pybullet.GUI)

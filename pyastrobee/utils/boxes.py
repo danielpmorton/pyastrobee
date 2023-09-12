@@ -50,6 +50,32 @@ class Box:
             raise ValueError("Invalid inputs: Mismatched order of lower/upper points")
 
 
+def expand_box(box: Box, distance: float) -> Box:
+    """Increases the size of a box by a given distance
+
+    Args:
+        box (Box): The reference box
+        distance (float): Amount to increase the size of the box in all dimensions
+
+    Returns:
+        Box: The increased-size box
+    """
+    return Box(box.lower - distance, box.upper + distance)
+
+
+def contract_box(box: Box, distance: float) -> Box:
+    """Reduces the size of a box by a given distance
+
+    Args:
+        box (Box): The reference box
+        distance (float): Amount to decrease the size of the box in all dimensions
+
+    Returns:
+        Box: The reduced-size box
+    """
+    return Box(box.lower + distance, box.upper - distance)
+
+
 def intersect_boxes(b1: Box, b2: Box) -> Box:
     """Calculate the intersection of two boxes
 

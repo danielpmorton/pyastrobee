@@ -24,6 +24,7 @@ from pyastrobee.utils.transformations import make_transform_mat, invert_transfor
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
+from pyastrobee.config.astrobee_geom import COLLISION_RADIUS
 from pyastrobee.utils.python_utils import print_green, ExtendedEnum
 from pyastrobee.utils.dynamics import (
     inertial_transformation,
@@ -86,10 +87,8 @@ class Astrobee:
         0.12,  # gripper right distal joint
     ]
 
-    # Bounding sphere for collision modeling. Based on URDF collision geometry
-    COLLISION_RADIUS = np.linalg.norm(
-        [0.319199 / 2, 0.117546 + 0.083962 / 2, 0.319588 / 2]
-    )
+    # Bounding sphere for collision modeling
+    COLLISION_RADIUS = COLLISION_RADIUS
 
     class Joints(ExtendedEnum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""

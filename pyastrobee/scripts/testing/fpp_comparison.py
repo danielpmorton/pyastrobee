@@ -10,7 +10,7 @@ import fastpathplanning as fpp
 
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES, compute_iss_graph
+from pyastrobee.config.iss_safe_boxes import ROBOT_SAFE_SET, compute_iss_graph
 from pyastrobee.utils.boxes import find_containing_box_name
 from pyastrobee.utils.debug_visualizer import visualize_path, animate_path
 from pyastrobee.utils.algos import dfs
@@ -23,7 +23,7 @@ def fpp_method(p0, pf, T):
     # Reorganize the safe set structure into the same L, U matrices from the paper
     lowers = []
     uppers = []
-    for name, box in ALL_BOXES.items():
+    for name, box in ROBOT_SAFE_SET.items():
         lowers.append(box.lower)
         uppers.append(box.upper)
 
@@ -53,11 +53,11 @@ def my_method(p0, pf, T, max_retiming_iters):
     We can set the maximum retiming iterations to 0 if we want to see how the retiming
     afects the path shape
     """
-    start = find_containing_box_name(p0, ALL_BOXES)
-    end = find_containing_box_name(pf, ALL_BOXES)
+    start = find_containing_box_name(p0, ROBOT_SAFE_SET)
+    end = find_containing_box_name(pf, ROBOT_SAFE_SET)
     graph = compute_iss_graph()
     path = dfs(graph, start, end)
-    box_path = [ALL_BOXES[p] for p in path]
+    box_path = [ROBOT_SAFE_SET[p] for p in path]
     curve, cost = spline_trajectory_with_retiming(
         p0,
         pf,
@@ -78,8 +78,8 @@ def my_method(p0, pf, T, max_retiming_iters):
 def main():
     """Generate trajectories between the same two points using Tobia's method and mine"""
 
-    start_pt = ALL_BOXES["jpm"].center
-    end_pt = ALL_BOXES["cupola"].center
+    start_pt = ROBOT_SAFE_SET["jpm"].center
+    end_pt = ROBOT_SAFE_SET["cupola"].center
     T = 10
 
     time_a = time.time()

@@ -1,7 +1,14 @@
 """Description of the free space within the ISS as a collection of safe boxes"""
 
-from pyastrobee.utils.boxes import Box, visualize_3D_box, compute_graph
+from pyastrobee.config.astrobee_geom import COLLISION_RADIUS
+from pyastrobee.utils.boxes import Box, visualize_3D_box, compute_graph, contract_box
 from pyastrobee.utils.algos import dfs
+
+# TODO:
+# Test cases:
+# - Avoid 3-way intersections
+# - Ensure that the graph is connected
+# (Run these tests when accounting for the collision radius of the Astrobee)
 
 # Names of the safe boxes in the ISS
 # Originally these were an enum but this made indexing in the graph search weird
@@ -23,22 +30,28 @@ US_N1_CORRIDOR = "us_n1_corridor"
 N1_N3_CORRIDOR = "n1_n3_corridor"
 N3_CUPOLA_CORRIDOR = "n3_cupola_corridor"
 
-# Calibrated values from simulation
-ALL_BOXES = {
-    JPM: Box([3.542, -0.623, -0.739], [10.242, 0.760, 0.749]),
-    NODE_2: Box([-0.761, -2.306, -0.860], [0.831, 0.939, 0.643]),
-    EU_LAB: Box([-7.412, -0.714, -0.775], [-3.770, 0.773, 0.827]),
-    US_LAB: Box([-0.745, -11.113, -0.745], [0.583, -5.958, 0.756]),
-    NODE_1: Box([-0.661, -17.013, -0.832], [0.829, -13.601, 0.747]),
-    NODE_3_A: Box([3.025, -15.437, -0.772], [6.031, -14.932, 0.307]),
-    NODE_3_B: Box([5.249, -15.378, -0.774], [7.355, -14.259, 0.658]),
-    CUPOLA: Box([6.140, -15.028, 1.648], [6.371, -14.437, 2.877]),
-    JPM_N2_CORRIDOR: Box([0.25, -0.338, -0.354], [4.5, 0.325, 0.413]),
-    N2_EU_CORRIDOR: Box([-4.5, -0.338, -0.354], [-0.25, 0.325, 0.413]),
-    N2_US_CORRIDOR: Box([-0.410, -6.75, -0.402], [0.368, -1.5, 0.440]),
-    US_N1_CORRIDOR: Box([-0.410, -14.2, -0.402], [0.368, -10.5, 0.440]),
-    N1_N3_CORRIDOR: Box([0, -15.179, -0.396], [3.889, -14.515, 0.267]),
-    N3_CUPOLA_CORRIDOR: Box([6.021, -15.269, 0.4], [6.771, -14.337, 1.898]),
+# Full description of free space within the ISS (Manually calibrated from simulation)
+FULL_SAFE_SET = {
+    JPM: Box([3.200, -0.775, -1.000], [10.500, 0.912, 1.000]),
+    NODE_2: Box([-1.000, -2.458, -1.100], [1.100, 1.091, 0.924]),
+    EU_LAB: Box([-7.703, -0.866, -1.000], [-3.400, 0.925, 1.000]),
+    US_LAB: Box([-1.000, -11.265, -1.000], [0.874, -5.806, 1.000]),
+    NODE_1: Box([-0.952, -17.165, -1.000], [1.000, -13.449, 1.028]),
+    NODE_3_A: Box([2.900, -15.589, -1.000], [6.322, -14.700, 0.588]),
+    NODE_3_B: Box([4.958, -15.53, -1.000], [7.646, -14.107, 0.939]),
+    CUPOLA: Box([5.900, -15.18, 1.367], [6.662, -14.285, 3.158]),
+    JPM_N2_CORRIDOR: Box([0.100, -0.475, -0.600], [4.800, 0.475, 0.600]),
+    N2_EU_CORRIDOR: Box([-4.800, -0.475, -0.600], [-0.100, 0.475, 0.600]),
+    N2_US_CORRIDOR: Box([-0.600, -6.902, -0.600], [0.600, -1.348, 0.600]),
+    US_N1_CORRIDOR: Box([-0.600, -14.350, -0.600], [0.600, -10.200, 0.600]),
+    N1_N3_CORRIDOR: Box([-0.100, -15.400, -0.600], [4.18, -14.400, 0.600]),
+    N3_CUPOLA_CORRIDOR: Box([5.800, -15.421, 0.119], [7.000, -14.100, 2.179]),
+}
+
+# Locations where the robot base can travel (the full safe set but shrunk by the collision radius)
+ROBOT_SAFE_SET = {
+    module: contract_box(box, COLLISION_RADIUS)
+    for (module, box) in FULL_SAFE_SET.items()
 }
 
 
@@ -49,7 +62,10 @@ def compute_iss_graph() -> dict[str, list[str]]:
         dict[str, list[str]]: Adjacency list / graph dictating safe paths in the ISS. Key/value pair is:
             (name of the module) -> (list of names of all neighbors of that module)
     """
-    return compute_graph(ALL_BOXES)
+    # Use the robot safe set here because it gives a better description of motion
+    # If we use the full safe set there could be some locations with 3-way intersections that don't present themselves
+    # when planning for working with the robot
+    return compute_graph(ROBOT_SAFE_SET)
 
 
 def _show_iss_boxes():
@@ -57,9 +73,10 @@ def _show_iss_boxes():
     import pybullet  # pylint: disable=import-outside-toplevel
 
     pybullet.connect(pybullet.GUI)
-    padding = None  # np.array([0.290513, 0.151942, 0.281129]) / 2
-    for box in ALL_BOXES.values():
-        visualize_3D_box(box, padding)
+    for box in FULL_SAFE_SET.values():
+        visualize_3D_box(box, rgba=(1, 0, 0, 0.5))
+    for box in ROBOT_SAFE_SET.values():
+        visualize_3D_box(box, rgba=(0, 0, 1, 0.5))
     input("Press Enter to exit")
     pybullet.disconnect()
 

@@ -30,7 +30,7 @@ from pyastrobee.trajectories.timing import (
     rotation_duration_heuristic,
 )
 from pyastrobee.config.astrobee_motion import LINEAR_SPEED_LIMIT, LINEAR_ACCEL_LIMIT
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES
+from pyastrobee.config.iss_safe_boxes import ROBOT_SAFE_SET
 from pyastrobee.config.iss_paths import GRAPH, PATHS
 from pyastrobee.utils.boxes import Box, find_containing_box_name, compute_graph
 from pyastrobee.utils.algos import dfs
@@ -116,7 +116,7 @@ def global_planner(
     pf: npt.ArrayLike,
     qf: npt.ArrayLike,
     dt: float,
-    all_boxes: dict[str, Box] = ALL_BOXES,
+    safe_set: dict[str, Box] = ROBOT_SAFE_SET,
     graph: Optional[dict[str, list[str]]] = GRAPH,
 ) -> Trajectory:
     """Generate an optimal spline-based position trajectory with a polynomial orientation component
@@ -133,11 +133,11 @@ def global_planner(
         pf (npt.ArrayLike): Final position, shape (3,)
         qf (npt.ArrayLike): Final XYZW quaternion, shape (4,)
         dt (float): Sampling period (seconds)
-        all_boxes (dict[str, Box], optional): Description of the safe set of the environment. Defaults to ALL_BOXES
-            (the precomputed safe-set decomposition for the ISS)
+        safe_set (dict[str, Box], optional): Description of the safe set of the environment. Defaults to ROBOT_SAFE_SET
+            (the precomputed safe-set decomposition for the ISS, accounting for the robot's collision radius)
         graph (Optional[dict[str, list[str]]], optional): The graph defining the connections between the safe boxes in
             the environment. Defaults to GRAPH (the precomputed safe-set graph for the ISS). Note: if set to None, this
-            graph will be recomputed from the all_boxes parameter
+            graph will be recomputed from the ROBOT_SAFE_SET parameter
 
     Returns:
         Trajectory: The optimal global trajectory plan
@@ -158,12 +158,12 @@ def global_planner(
     # will be left at the default values for now
 
     # Determine the path through the safe-space graph
-    start = find_containing_box_name(p0, all_boxes)
-    end = find_containing_box_name(pf, all_boxes)
+    start = find_containing_box_name(p0, safe_set)
+    end = find_containing_box_name(pf, safe_set)
     if graph is None:
-        graph = compute_graph(all_boxes)
+        graph = compute_graph(safe_set)
     path = dfs(graph, start, end)
-    box_path = [all_boxes[p] for p in path]
+    box_path = [safe_set[p] for p in path]
 
     init_angular_duration = rotation_duration_heuristic(q0, qf)
     init_pos_duration, init_timing_fractions = spline_duration_heuristic(

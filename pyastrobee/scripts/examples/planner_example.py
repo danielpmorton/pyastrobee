@@ -4,7 +4,7 @@ import numpy as np
 
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES
+from pyastrobee.config.iss_safe_boxes import ROBOT_SAFE_SET
 from pyastrobee.utils.debug_visualizer import visualize_path, animate_path
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.utils.quaternions import random_quaternion
@@ -52,19 +52,19 @@ def _run_test(p0, pf):
 def long_traj_test():
     """Plan a long trajectory across the entirety of the ISS"""
 
-    p0 = ALL_BOXES["jpm"].center
-    pf = ALL_BOXES["cupola"].center
+    p0 = ROBOT_SAFE_SET["jpm"].center
+    pf = ROBOT_SAFE_SET["cupola"].center
     _run_test(p0, pf)
 
 
 def short_traj_test():
     """Plan a short trajectory within a single module of the ISS"""
 
-    p0 = ALL_BOXES["jpm"].center + 0.75 * (
-        ALL_BOXES["jpm"].lower - ALL_BOXES["jpm"].center
+    p0 = ROBOT_SAFE_SET["jpm"].center + 0.75 * (
+        ROBOT_SAFE_SET["jpm"].lower - ROBOT_SAFE_SET["jpm"].center
     )
-    pf = ALL_BOXES["jpm"].center + 0.75 * (
-        ALL_BOXES["jpm"].upper - ALL_BOXES["jpm"].center
+    pf = ROBOT_SAFE_SET["jpm"].center + 0.75 * (
+        ROBOT_SAFE_SET["jpm"].upper - ROBOT_SAFE_SET["jpm"].center
     )
     _run_test(p0, pf)
 

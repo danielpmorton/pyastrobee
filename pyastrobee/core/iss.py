@@ -17,7 +17,7 @@ import numpy as np
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.utils.errors import PybulletError
 from pyastrobee.utils.python_utils import print_green
-from pyastrobee.config.iss_safe_boxes import ALL_BOXES
+from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET, ROBOT_SAFE_SET
 from pyastrobee.config.iss_paths import GRAPH
 from pyastrobee.utils.boxes import visualize_3D_box
 
@@ -50,7 +50,8 @@ class ISS:
         self.client: pybullet = pybullet if client is None else client
         # The meshes have a weird orientation so we need to use this orientation to rotate them to lay flat
         self.mesh_orn = (np.sqrt(2) / 2, 0, 0, np.sqrt(2) / 2)
-        self.safe_boxes = ALL_BOXES
+        self.full_safe_set = FULL_SAFE_SET
+        self.robot_safe_set = ROBOT_SAFE_SET
         self.graph = GRAPH  # Precomputed
         self._debug_box_ids = []
         self.ids = []
@@ -58,20 +59,16 @@ class ISS:
             self.ids.append(self._load_module(module))
         print_green("ISS is ready")
 
-    def show_safe_set(self, show_padding: bool = True) -> None:
+    def show_safe_set(self, for_robot: bool = False) -> None:
         """Visualizes the collision-free regions inside the ISS
 
         Args:
-            show_padding (bool, optional): Whether or not to pad the safe set by the half-widths of the Astrobee. If
-                False, it will show just the safe area where the *center* of the Astrobee can travel. Defaults to True.
+            for_robot (bool, optional): Whether to shrink the safe set to account for the collision radius of the
+                Astrobee's body. Defaults to False (Show the full safe set)
         """
-        if show_padding:
-            # Half of the Astrobee dimensions from the base link in the Astrobee URDF
-            padding = np.array([0.290513, 0.151942, 0.281129]) / 2
-        else:
-            padding = None
-        for box in self.safe_boxes.values():
-            self._debug_box_ids.append(visualize_3D_box(box, padding))
+        boxes = self.robot_safe_set if for_robot else self.full_safe_set
+        for box in boxes.values():
+            self._debug_box_ids.append(visualize_3D_box(box))
 
     def hide_safe_set(self) -> None:
         """Removes the visualization of the collision-free regions"""
@@ -201,7 +198,7 @@ class ISS:
 def _main():
     client = initialize_pybullet()
     iss = ISS(debug=False, client=client)
-    iss.show_safe_set(show_padding=True)
+    iss.show_safe_set()
     input("Press Enter to hide the safe set visualization")
     iss.hide_safe_set()
     input("Press Enter to exit")
