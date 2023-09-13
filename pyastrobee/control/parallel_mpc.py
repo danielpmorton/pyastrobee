@@ -12,6 +12,9 @@ When debugging, we visualize the nominal parallel environment as well, and show 
 # - Merge this with the main MPC file?
 # - Turn this into a controller class, or just leave as a script?
 
+from pathlib import Path
+from datetime import datetime
+
 import numpy as np
 import numpy.typing as npt
 from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
@@ -21,12 +24,20 @@ from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
+from pyastrobee.utils.python_utils import print_red
+
+RECORD_VIDEO = True
+VIDEO_LOCATION = (
+    f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
+)
 
 
 def parallel_mpc_main(
     start_pose: npt.ArrayLike,
     goal_pose: npt.ArrayLike,
     n_vec_envs: int,
+    bag_name: str = "top_handle",
+    bag_mass: float = 10,
     use_deformable_primary_sim: bool = True,
     use_deformable_rollouts: bool = False,
     debug: bool = False,
@@ -38,6 +49,8 @@ def parallel_mpc_main(
         start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)
         goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)
         n_vec_envs (int): Number of vectorized environments to launch in parallel (>= 1)
+        bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
+        bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         use_deformable_primary_sim (bool, optional): Whether to load the deformable bag in the main simulation env.
             Defaults to True (load the deformable version)
         use_deformable_rollouts (bool, optional): Whether to use the deformable bag for rollouts. Defaults to False
@@ -51,6 +64,8 @@ def parallel_mpc_main(
     main_env = AstrobeeMPCEnv(
         use_gui=True,
         is_primary=True,
+        bag_name=bag_name,
+        bag_mass=bag_mass,
         bag_type=DeformableCargoBag
         if use_deformable_primary_sim
         else ConstraintCargoBag,
@@ -59,6 +74,8 @@ def parallel_mpc_main(
     env_kwargs = {
         "use_gui": False,
         "is_primary": False,
+        "bag_name": bag_name,
+        "bag_mass": bag_mass,
         "bag_type": DeformableCargoBag
         if use_deformable_rollouts
         else ConstraintCargoBag,
@@ -85,6 +102,15 @@ def parallel_mpc_main(
         goal_pose[3:],
         dt,
     )
+
+    if RECORD_VIDEO:
+        print("Ready to record video")
+        if Path(VIDEO_LOCATION).exists():
+            print_red("WARNING: Recording video will overwrite an existing file")
+        input("Press Enter to begin")
+        log_id = main_env.client.startStateLogging(
+            main_env.client.STATE_LOGGING_VIDEO_MP4, VIDEO_LOCATION
+        )
 
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
@@ -186,6 +212,8 @@ def parallel_mpc_main(
 
         input("Complete. Press Enter to exit")
     finally:
+        if RECORD_VIDEO:
+            main_env.client.stopStateLogging(log_id)
         print("Closing environments")
         main_env.close()
         vec_env.close()
@@ -193,16 +221,21 @@ def parallel_mpc_main(
 
 def _test_parallel_mpc():
     """Quick function to test that the parallel MPC is working as expected"""
+    np.random.seed(0)
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
+    bag_name = "top_handle"
+    bag_mass = 5
     n_vec_envs = 5
-    debug = True
+    debug = False
     use_deformable_main_sim = True
     use_deformable_rollouts = False
     parallel_mpc_main(
         start_pose,
         end_pose,
         n_vec_envs,
+        bag_name,
+        bag_mass,
         use_deformable_main_sim,
         use_deformable_rollouts,
         debug,
