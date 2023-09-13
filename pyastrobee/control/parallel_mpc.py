@@ -25,7 +25,8 @@ from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
-from pyastrobee.utils.python_utils import print_red
+from pyastrobee.utils.python_utils import print_red, print_green
+from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 
 RECORD_VIDEO = False
 VIDEO_LOCATION = (
@@ -141,7 +142,7 @@ def parallel_mpc_main(
             remaining_traj_time = traj_end_time - cur_time
             remaining_total_time = max_time - cur_time
             # stopping = remaining_traj_time <= dt
-            done = remaining_total_time <= dt
+            out_of_time = remaining_total_time <= dt
 
             if remaining_traj_time <= dt:
                 # Update this flag in our environments only once, when this changes
@@ -152,8 +153,8 @@ def parallel_mpc_main(
                         "set_flight_state", AstrobeeMPCEnv.FlightStates.STOPPING
                     )
                 stopping = True
-            if done:
-                print("Terminating due to time limit")
+            if out_of_time:
+                print_red("Terminating due to time limit")
                 break
             if stopping:
                 rollout_duration = min(target_rollout_duration, remaining_total_time)
@@ -175,6 +176,16 @@ def parallel_mpc_main(
             if debug:
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
 
+            # TODO make the robot/bag states the observation of the main env,
+            # move this whole save/reset block of code to the bottom
+            # Get the current state of the system to determine if we're done and to reset the sim
+            robot_state = main_env.get_robot_state()
+            bag_state = main_env.get_bag_state()
+            if stopping and robot_and_bag_termination_criteria(
+                robot_state, bag_state, goal_pose
+            ):
+                print_green("Success! Stabilized at end of trajectory within tolerance")
+                break
             # Ensure that the vec envs start from the same point as the main simulation
             if use_deformable_rollouts:
                 # If we are using the deformable bag for rollouts, we have to fully save the state to disk (slow)
@@ -183,8 +194,6 @@ def parallel_mpc_main(
                 vec_env.env_method("restore_state", saved_file)
             else:
                 # If we're using the simple rigid bag for rollouts, we can just do a very simple reset mechanic
-                robot_state = main_env.get_robot_state()
-                bag_state = main_env.get_bag_state()
                 vec_env.env_method("reset_robot_state", robot_state)
                 vec_env.env_method("reset_bag_state", bag_state)
             # Set the desired state of the robot at the lookahead point

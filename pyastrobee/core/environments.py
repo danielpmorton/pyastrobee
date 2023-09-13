@@ -38,6 +38,7 @@ from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
+from pyastrobee.utils.quaternions import quaternion_dist
 
 
 class AstrobeeEnv(gym.Env):
@@ -260,7 +261,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self.debug_viz_ids = ()
 
         # Keep track of whether we're stopping or in a nominal flight mode
-        self.flight_state = "nominal"  # init
+        self.flight_state = self.FlightStates.NOMINAL  # init
 
         self._is_primary_env = is_primary
         self._is_debugging_env = not is_primary and use_gui
@@ -298,10 +299,12 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         """
         # TODO add check that it is valid
         # TODO should we store the state as the string or the Enum????
-        if isinstance(state, self.FlightStates):
-            self.flight_state = state.value
-        else:
+        if isinstance(state, str):
+            self.flight_state = self.FlightStates(state)
+        elif isinstance(state, self.FlightStates):
             self.flight_state = state
+        else:
+            raise ValueError("Flight state not recognized")
 
     def set_target_state(
         self,
@@ -377,6 +380,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Note: For MPC, this is less so a "step" than a "rollout" function. The trajectory should be sampled
         #       before calling this function
 
+        terminated = False  # init (If at the terminal state)
+        truncated = False  # init (If stopping the sim before the terminal state)
+
         if self.traj_plan is None:
             raise ValueError("Trajectory has not been planned")
         # Follow the trajectory. NOTE: This is effectively the same as the follow_traj() function in the controller,
@@ -395,6 +401,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             # So, follow the trajectory, but also keep track of a bunch of things so that we can compute the reward
             robot_safe_set_cost = 0  # init
             bag_safe_set_cost = 0  # init
+            stabilization_cost = 0
+            tracking_cost = 0
             steps_per_safe_set_eval = round(
                 1 / (self.traj_plan.timestep * self.safe_set_eval_freq)
             )
@@ -423,9 +431,11 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 # (Very large but not infinity to maintain sorting order in the edge case that all rollouts collide)
                 if not robot_is_safe:
                     robot_safe_set_cost += 1000000
+                    truncated = True
                     break
                 if not bag_is_safe:
                     bag_safe_set_cost += 1000000
+                    truncated = True
                     break
                 # These "stay away from the walls" costs are somewhat expensive to compute and don't necessarily need
                 # to be done every timestep. TODO just use the local description of the safe set, not the full thing
@@ -442,31 +452,60 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     bag_safe_set_cost += safe_set_cost(
                         bag_bb[1], self.safe_set.values()
                     )
-                # Add a cost function component to stabilize the bag at the end of the traj
-                # Should this only be computed at the end of the rollout????
-                if self.flight_state == self.FlightStates.STOPPING.value:
-                    bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
-                    angular_term = np.linalg.norm(ang_vel - bag_ang_vel)
-                    r_r2b = bag_pos - pos  # Vector from robot to bag
-                    linear_term = np.linalg.norm(
-                        lin_vel - bag_vel + np.cross(ang_vel, r_r2b)
-                    )
-                    # TODO CHECK THE MAGNITUDES
-                    # Totally arbitrary scaling factor right now to keep things roughly on
-                    # the same order of magnitude
-                    stabilization_cost = 100 * (linear_term + angular_term)
-                else:
-                    stabilization_cost = 0
+            # End-of-rollout additional cost function evaluations
+            # 1) Stabilize the motion of the bag with respect to the robot
+            # 2) Position the robot so it's stopped at the goal pose
+            # Both of these are only relevant when we're at the end of the nominal trajectory
+            # TODO tune all of the scaling factors on the costs
+            if self.flight_state == self.FlightStates.STOPPING:
+                bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
+                angular_term = np.linalg.norm(ang_vel - bag_ang_vel)
+                r_r2b = bag_pos - pos  # Vector from robot to bag
+                linear_term = np.linalg.norm(
+                    lin_vel - bag_vel + np.cross(ang_vel, r_r2b)
+                )
+                stabilization_cost += 500 * (linear_term + angular_term)
+
+                # TODO make this a separate function?
+                # Adding back in a tracking cost component
+                # If we are stopping then we know that the target state is the goal
+                pos_error = np.linalg.norm(pos - self.target_pos)
+                orn_error = quaternion_dist(orn, self.target_orn)
+                vel_error = np.linalg.norm(lin_vel - self.target_vel)
+                ang_vel_error = np.linalg.norm(ang_vel - self.target_omega)
+                if self.is_debugging_simulation:
+                    print("Position error: ", pos_error)
+                    print("Orn error: ", orn_error)
+                    print("Vel error: ", vel_error)
+                    print("Ang vel error: ", ang_vel_error)
+                tracking_cost += (
+                    200 * pos_error
+                    + 100 * orn_error
+                    + 200 * vel_error
+                    + 100 * ang_vel_error
+                )
+            else:
+                stabilization_cost = 0
+                tracking_cost = 0
 
             if self.is_debugging_simulation:
                 print("Robot safe set cost: ", robot_safe_set_cost)
                 print("Bag safe set cost: ", bag_safe_set_cost)
                 print("Stabilization cost: ", stabilization_cost)
-            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost + stabilization_cost)
+                print("Tracking cost: ", tracking_cost)
+            reward = -1 * (
+                robot_safe_set_cost
+                + bag_safe_set_cost
+                + stabilization_cost
+                + tracking_cost
+            )
         # All returns are essentially dummy values except the reward
         observation = self._get_obs()
-        terminated = False  # If at the terminal state
-        truncated = False  # If stopping the sim before the terminal state
+
+        # TODO: If we change the observation function to return the state of the robot and the bag,
+        # we can determine the "terminated" parameter!
+        # But note that we should only really do the observation in the main env
+
         info = self._get_info()
         return observation, reward, terminated, truncated, info
 
