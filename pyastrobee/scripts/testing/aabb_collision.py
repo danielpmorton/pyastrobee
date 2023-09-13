@@ -5,13 +5,11 @@
 
 import time
 
-import numpy as np
-
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
-from pyastrobee.utils.boxes import visualize_3D_box
+from pyastrobee.utils.boxes import visualize_3D_box, check_box_containment
 
 
 def main():
@@ -23,17 +21,10 @@ def main():
         visualize_3D_box(box)
     while True:
         client.stepSimulation()
-        robot_base_aabb = client.getAABB(robot.id, -1)
-        bag_aabb = client.getAABB(bag.id, -1)
-        robot_is_safe = any(
-            np.all(robot_base_aabb[0] > box.lower)
-            and np.all(robot_base_aabb[1] < box.upper)
-            for box in FULL_SAFE_SET.values()
+        robot_is_safe = check_box_containment(
+            robot.bounding_box, FULL_SAFE_SET.values()
         )
-        bag_is_safe = any(
-            np.all(bag_aabb[0] > box.lower) and np.all(bag_aabb[1] < box.upper)
-            for box in FULL_SAFE_SET.values()
-        )
+        bag_is_safe = check_box_containment(bag.bounding_box, FULL_SAFE_SET.values())
         if not robot_is_safe:
             print("Robot collided")
         if not bag_is_safe:

@@ -231,3 +231,22 @@ def compute_graph(boxes: dict[str, Box]) -> dict[str, list[str]]:
                 adj[names[i]].append(names[j])
                 adj[names[j]].append(names[i])
     return adj
+
+
+def check_box_containment(
+    bounding_box: Union[Box, npt.ArrayLike], safe_set: list[Box]
+) -> bool:
+    """Determine if the bounding box of an object is fully contained within a safe set
+
+    Args:
+        bounding_box (Union[Box, npt.ArrayLike]): Axis-aligned bounding box. If ArrayLike, must be of shape (2, 3)
+            e.g. the lower and upper XYZ values defining the box
+        safe_set (list[Box]): Boxes to check containment
+
+    Returns:
+        bool: True if the bounding box is contained in the safe set, False otherwise
+    """
+    return any(
+        np.all(bounding_box[0] > box.lower) and np.all(bounding_box[1] < box.upper)
+        for box in safe_set
+    )
