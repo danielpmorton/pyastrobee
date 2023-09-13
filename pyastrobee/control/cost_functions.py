@@ -1,5 +1,9 @@
 """Cost functions: For defining how well we track trajectories, remain in collision-free regions, and more"""
 
+# TODO
+# - rename this file to metrics
+# - move the original termination criteria function here
+
 from typing import Union, Optional
 
 import numpy as np
@@ -9,7 +13,7 @@ from matplotlib import colors
 
 from pyastrobee.utils.boxes import Box, plot_2D_box, is_in_box
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.utils.quaternions import quaternion_angular_error
+from pyastrobee.utils.quaternions import quaternion_angular_error, quaternion_dist
 
 
 def state_tracking_cost(
@@ -185,6 +189,50 @@ def integrated_safe_set_cost(
         if cost >= 0:
             collision_occurred = True
     return total_cost, collision_occurred
+
+
+def robot_and_bag_termination_criteria(
+    robot_state: tuple[npt.ArrayLike, ...],
+    bag_state: tuple[npt.ArrayLike, ...],
+    desired_robot_pose: npt.ArrayLike,
+    pos_tol: float = 0.05,
+    orn_tol: float = np.deg2rad(10),
+    vel_tol: float = 0.05,
+    omega_tol=np.deg2rad(10),
+) -> bool:
+    """Deterine if the robot/bag system is successfully stabilized about the desired robot pose
+
+    Note: The ending pose of the bag is not super important right now, so we're neglecting it in this criteria. If this
+    is important later on, we can add it to this
+
+    Args:
+        robot_state (tuple[npt.ArrayLike, ...]): Current dynamics state of the robot: position, orientation (XYZW
+            quaternion), velocity, and angular velocity
+        bag_state (tuple[npt.ArrayLike, ...]): Current dynamics state of the bag: position, orientation (XYZW
+            quaternion), velocity, and angular velocity
+        desired_robot_pose (npt.ArrayLike): Desired position + XYZW quaternion pose of the robot, shape (7,)
+        pos_tol (float, optional): Absolute tolerance on position. Defaults to 0.05 (within 5 cm)
+        orn_tol (float, optional): Absolute tolerance on orientation (via quaternion distance metric). Defaults to
+            deg2rad(10) (approximately within a 10 degree rotation)
+        vel_tol (float, optional): Absolute tolerance on velocity. Defaults to 0.05 (within 5 cm/s)
+        omega_tol (float, optional): Absolute tolerance on angular velocity. Defaults to deg2rad(10) (approximately
+            within 10 deg/s)
+
+    Returns:
+        bool: True if stabilized at the desired pose
+    """
+    des_pos = desired_robot_pose[:3]
+    des_orn = desired_robot_pose[3:]
+    pos, orn, vel, ang_vel = robot_state[:4]
+    bag_vel, bag_ang_vel = bag_state[2:]
+    return (
+        np.linalg.norm(pos - des_pos) <= pos_tol
+        and quaternion_dist(orn, des_orn) <= orn_tol
+        and np.linalg.norm(vel) <= vel_tol
+        and np.linalg.norm(ang_vel) <= omega_tol
+        and np.linalg.norm(bag_vel) <= vel_tol
+        and np.linalg.norm(bag_ang_vel) <= omega_tol
+    )
 
 
 def _visualize_safe_set_cost():
