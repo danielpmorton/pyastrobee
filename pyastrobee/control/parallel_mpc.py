@@ -69,6 +69,7 @@ def parallel_mpc_main(
         bag_type=DeformableCargoBag
         if use_deformable_primary_sim
         else ConstraintCargoBag,
+        load_full_iss=True,
     )
     # Set up vectorized environments
     env_kwargs = {
@@ -79,6 +80,7 @@ def parallel_mpc_main(
         "bag_type": DeformableCargoBag
         if use_deformable_rollouts
         else ConstraintCargoBag,
+        "load_full_iss": False,
     }
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs

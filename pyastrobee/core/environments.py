@@ -36,7 +36,8 @@ from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.control.cost_functions import safe_set_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
-from pyastrobee.utils.boxes import check_box_containment
+from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
+from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
 
 
 class AstrobeeEnv(gym.Env):
@@ -48,6 +49,8 @@ class AstrobeeEnv(gym.Env):
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
         bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
+        load_full_iss (bool, optional): Whether to load the ISS (expensive, not necessarily required for rollouts) or
+            just work with the safe set information. Defaults to True (load the ISS)
     """
 
     SAVE_STATE_DIR = "artifacts/saved_states/"
@@ -60,9 +63,15 @@ class AstrobeeEnv(gym.Env):
         bag_name: str = "top_handle",
         bag_mass: float = 10,
         bag_type: type[CargoBag] = DeformableCargoBag,
+        load_full_iss: bool = True,
     ):
         self.client = initialize_pybullet(use_gui)
-        self.iss = ISS(client=self.client)
+        self.safe_set = FULL_SAFE_SET
+        if load_full_iss:
+            self.iss = ISS(client=self.client)
+        elif use_gui:
+            for box in self.safe_set.values():
+                visualize_3D_box(box, rgba=(1, 0, 0, 0.3))
         self.robot = Astrobee(robot_pose, client=self.client)
         self.bag = bag_type(bag_name, bag_mass, client=self.client)
         self.bag.reset_to_handle_pose(self.robot.ee_pose)
@@ -184,6 +193,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
         bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
+        load_full_iss (bool, optional): Whether to load the ISS (expensive, not necessarily required for rollouts) or
+            just work with the safe set information. Defaults to True (load the ISS)
         nominal_rollouts (bool, optional): If True, will roll-out a trajectory based on the nominal target.
             If False, will sample a trajectory about the nominal target. Defaults to False.
         cleanup (bool, optional): Whether or not to delete all saved states when the simulation ends. Defaults to True.
@@ -202,10 +213,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         bag_name: str = "top_handle",
         bag_mass: float = 10,
         bag_type: type[CargoBag] = DeformableCargoBag,
+        load_full_iss: bool = True,
         nominal_rollouts: bool = False,
         cleanup: bool = True,
     ):
-        super().__init__(use_gui, robot_pose, bag_name, bag_mass, bag_type)
+        super().__init__(
+            use_gui, robot_pose, bag_name, bag_mass, bag_type, load_full_iss
+        )
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
         kp, kv, kq, kw = 20, 5, 1, 0.1  # TODO make parameters
@@ -403,12 +417,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 # Perform collision checking on every timestep
                 robot_bb = self.robot.bounding_box
                 bag_bb = self.bag.bounding_box
-                robot_is_safe = check_box_containment(
-                    robot_bb, self.iss.full_safe_set.values()
-                )
-                bag_is_safe = check_box_containment(
-                    bag_bb, self.iss.full_safe_set.values()
-                )
+                robot_is_safe = check_box_containment(robot_bb, self.safe_set.values())
+                bag_is_safe = check_box_containment(bag_bb, self.safe_set.values())
                 # If either the robot or bag collided, stop the simulation and return an effectively infinite cost
                 # (Very large but not infinity to maintain sorting order in the edge case that all rollouts collide)
                 if not robot_is_safe:
@@ -421,16 +431,16 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 # to be done every timestep. TODO just use the local description of the safe set, not the full thing
                 if i % steps_per_safe_set_eval == 0:
                     robot_safe_set_cost += safe_set_cost(
-                        robot_bb[0], self.iss.full_safe_set.values()
+                        robot_bb[0], self.safe_set.values()
                     )
                     robot_safe_set_cost += safe_set_cost(
-                        robot_bb[1], self.iss.full_safe_set.values()
+                        robot_bb[1], self.safe_set.values()
                     )
                     bag_safe_set_cost += safe_set_cost(
-                        bag_bb[0], self.iss.full_safe_set.values()
+                        bag_bb[0], self.safe_set.values()
                     )
                     bag_safe_set_cost += safe_set_cost(
-                        bag_bb[1], self.iss.full_safe_set.values()
+                        bag_bb[1], self.safe_set.values()
                     )
                 # Add a cost function component to stabilize the bag at the end of the traj
                 # Should this only be computed at the end of the rollout????
