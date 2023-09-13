@@ -413,12 +413,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 bag_is_safe = check_box_containment(
                     bag_bb, self.iss.full_safe_set.values()
                 )
-                # If either the robot or bag collided, stop the simulation and return an infinite cost
+                # If either the robot or bag collided, stop the simulation and return an effectively infinite cost
+                # (Very large but not infinity to maintain sorting order in the edge case that all rollouts collide)
                 if not robot_is_safe:
-                    robot_safe_set_cost += np.inf
+                    robot_safe_set_cost += 1000000
                     break
                 if not bag_is_safe:
-                    bag_safe_set_cost += np.inf
+                    bag_safe_set_cost += 1000000
                     break
                 # These "stay away from the walls" costs are somewhat expensive to compute and don't necessarily need
                 # to be done every timestep. TODO just use the local description of the safe set, not the full thing
