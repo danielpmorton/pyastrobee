@@ -32,13 +32,10 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
-from pyastrobee.control.cost_functions import (
-    state_tracking_cost,
-    integrated_safe_set_cost,
-    traj_tracking_cost,
-)
+from pyastrobee.control.cost_functions import safe_set_cost
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
+from pyastrobee.utils.boxes import check_box_containment
 
 
 class AstrobeeEnv(gym.Env):
@@ -48,7 +45,7 @@ class AstrobeeEnv(gym.Env):
         use_gui (bool): Whether or not to use the GUI as opposed to headless.
         robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
-        bag_mass (float): Mass of the cargo bag, in kg
+        bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
         use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
             Defaults to True (load the deformable version)
@@ -186,7 +183,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             vectorized environments for evaluating a rollout (False)
         robot_pose (npt.ArrayLike, optional): Starting position + XYZW quaternion pose of the Astrobee, shape (7,)
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
-        bag_mass (float): Mass of the cargo bag, in kg
+        bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
         use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
             Defaults to True (load the deformable version)
@@ -239,6 +236,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Update through set_attr
         self.last_accel_cmd = 0.0  # init
         self.last_alpha_cmd = 0.0  # init
+
+        # Frequency at which we query our "stay away from the walls" cost function
+        self.safe_set_eval_freq = 10  # Hz
 
         # Keep track of any temporary debug visualizer IDs
         self.debug_viz_ids = ()
@@ -360,8 +360,11 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         else:
             # We are in a rollout environment
             # So, follow the trajectory, but also keep track of a bunch of things so that we can compute the reward
-            self.controller.traj_log.clear_log()  # Clear so that we can evaluate the rollout only
-            bag_corner_log = np.empty((self.traj_plan.num_timesteps, 8, 3))
+            robot_safe_set_cost = 0  # init
+            bag_safe_set_cost = 0  # init
+            steps_per_safe_set_eval = round(
+                1 / (self.traj_plan.timestep * self.safe_set_eval_freq)
+            )
             for i in range(self.traj_plan.num_timesteps):
                 # Note: the traj log gets updated whenever we access the current state
                 pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
@@ -377,26 +380,37 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     self.traj_plan.angular_velocities[i, :],
                     self.traj_plan.angular_accels[i, :],
                 )
-                bag_corner_log[i] = self.bag.corner_positions
-            # The traj log will be filled with the rollout data at this point
-
-            # TODO SPEED ALL OF THESE COSTS UP
-            # TODO figure out how to handle the padding -- I believe the way I originally defined the ISS
-            # boxes inherently incorporated the radius of the astrobee...
-            # TODO tune scaling on these cost values
-            robot_safe_set_cost, robot_collided = integrated_safe_set_cost(
-                self.controller.traj_log.positions,
-                list(self.iss.robot_safe_set.values()),
-                # padding=Astrobee.COLLISION_RADIUS,
-                padding=0,
-                collision_penalty=10,
-            )
-            bag_safe_set_cost, bag_collided = integrated_safe_set_cost(
-                np.vstack(bag_corner_log),
-                list(self.iss.full_safe_set.values()),
-                padding=0,
-                collision_penalty=1,
-            )
+                # Perform collision checking on every timestep
+                robot_bb = self.robot.bounding_box
+                bag_bb = self.bag.bounding_box
+                robot_is_safe = check_box_containment(
+                    robot_bb, self.iss.full_safe_set.values()
+                )
+                bag_is_safe = check_box_containment(
+                    bag_bb, self.iss.full_safe_set.values()
+                )
+                # If either the robot or bag collided, stop the simulation and return an infinite cost
+                if not robot_is_safe:
+                    robot_safe_set_cost += np.inf
+                    break
+                if not bag_is_safe:
+                    bag_safe_set_cost += np.inf
+                    break
+                # These "stay away from the walls" costs are somewhat expensive to compute and don't necessarily need
+                # to be done every timestep. TODO just use the local description of the safe set, not the full thing
+                if i % steps_per_safe_set_eval == 0:
+                    robot_safe_set_cost += safe_set_cost(
+                        robot_bb[0], self.iss.full_safe_set.values()
+                    )
+                    robot_safe_set_cost += safe_set_cost(
+                        robot_bb[1], self.iss.full_safe_set.values()
+                    )
+                    bag_safe_set_cost += safe_set_cost(
+                        bag_bb[0], self.iss.full_safe_set.values()
+                    )
+                    bag_safe_set_cost += safe_set_cost(
+                        bag_bb[1], self.iss.full_safe_set.values()
+                    )
             if self.is_debugging_simulation:
                 print("Robot safe set cost: ", robot_safe_set_cost)
                 print("Bag safe set cost: ", bag_safe_set_cost)

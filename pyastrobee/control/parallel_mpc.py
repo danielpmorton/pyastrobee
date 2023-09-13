@@ -115,7 +115,7 @@ def parallel_mpc_main(
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
     traj_end_time = nominal_traj.times[-1]
-    max_stopping_time = 3  # seconds
+    max_stopping_time = 10  # seconds
     max_time = traj_end_time + max_stopping_time
     target_rollout_duration = 5  # seconds
     target_execution_duration = (
