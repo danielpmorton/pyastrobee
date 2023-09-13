@@ -26,7 +26,7 @@ from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.utils.python_utils import print_red
 
-RECORD_VIDEO = True
+RECORD_VIDEO = False
 VIDEO_LOCATION = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
 )
@@ -128,11 +128,24 @@ def parallel_mpc_main(
     # Execute the main MPC code in a try/finally block to make sure things close out / clean up when done
     try:
         while True:
+            # TODO handle the stopping mode better... Should we be "stopping" if the rollout or planned execution
+            # reaches the end of the trajectory? Or just when we've fully reached the end?
+
             # Determine the duration of the rollout and where on the trajectory we are interested
             remaining_traj_time = traj_end_time - cur_time
             remaining_total_time = max_time - cur_time
-            stopping = remaining_traj_time <= dt
+            # stopping = remaining_traj_time <= dt
             done = remaining_total_time <= dt
+
+            if remaining_traj_time <= dt:
+                # Update this flag in our environments only once, when this changes
+                if not stopping:
+                    print("Setting flight state to STOPPING")
+                    main_env.set_flight_state(AstrobeeMPCEnv.FlightStates.STOPPING)
+                    vec_env.env_method(
+                        "set_flight_state", AstrobeeMPCEnv.FlightStates.STOPPING
+                    )
+                stopping = True
             if done:
                 print("Terminating due to time limit")
                 break
@@ -227,8 +240,8 @@ def _test_parallel_mpc():
     bag_name = "top_handle"
     bag_mass = 5
     n_vec_envs = 5
-    debug = False
-    use_deformable_main_sim = True
+    debug = True
+    use_deformable_main_sim = False
     use_deformable_rollouts = False
     parallel_mpc_main(
         start_pose,

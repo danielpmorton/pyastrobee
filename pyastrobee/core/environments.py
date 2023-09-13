@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 from typing import Optional, Any, Callable, Dict, Type, Union
 from datetime import datetime
+from enum import Enum
 
 import numpy as np
 import numpy.typing as npt
@@ -192,6 +193,11 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         cleanup (bool, optional): Whether or not to delete all saved states when the simulation ends. Defaults to True.
     """
 
+    class FlightStates(Enum):
+        NOMINAL = "nominal"
+        # SLOWING = "slowing"
+        STOPPING = "stopping"
+
     def __init__(
         self,
         use_gui: bool,
@@ -243,6 +249,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Keep track of any temporary debug visualizer IDs
         self.debug_viz_ids = ()
 
+        # Keep track of whether we're stopping or in a nominal flight mode
+        self.flight_state = "nominal"  # init
+
         self._is_primary_env = is_primary
         self._is_debugging_env = not is_primary and use_gui
         self._nominal_rollouts = nominal_rollouts
@@ -269,6 +278,20 @@ class AstrobeeMPCEnv(AstrobeeEnv):
     def is_debugging_simulation(self) -> bool:
         """Whether this is an environment launched in debug mode"""
         return self._is_debugging_env
+
+    def set_flight_state(self, state: Union[str, FlightStates]):
+        """Set the current flight state: for instance, whether we are in nominal operating mode, stopping, ...
+
+        Args:
+            state (Union[str, FlightStates]): A flight state or its string representation
+                (i.e. "nominal", "stopping", ...)
+        """
+        # TODO add check that it is valid
+        # TODO should we store the state as the string or the Enum????
+        if isinstance(state, self.FlightStates):
+            self.flight_state = state.value
+        else:
+            self.flight_state = state
 
     def set_target_state(
         self,
@@ -380,6 +403,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     self.traj_plan.angular_velocities[i, :],
                     self.traj_plan.angular_accels[i, :],
                 )
+                # *** COST FUNCTION ***
                 # Perform collision checking on every timestep
                 robot_bb = self.robot.bounding_box
                 bag_bb = self.bag.bounding_box
@@ -411,10 +435,27 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     bag_safe_set_cost += safe_set_cost(
                         bag_bb[1], self.iss.full_safe_set.values()
                     )
+                # Add a cost function component to stabilize the bag at the end of the traj
+                # Should this only be computed at the end of the rollout????
+                if self.flight_state == self.FlightStates.STOPPING.value:
+                    bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
+                    angular_term = np.linalg.norm(ang_vel - bag_ang_vel)
+                    r_r2b = bag_pos - pos  # Vector from robot to bag
+                    linear_term = np.linalg.norm(
+                        lin_vel - bag_vel + np.cross(ang_vel, r_r2b)
+                    )
+                    # TODO CHECK THE MAGNITUDES
+                    # Totally arbitrary scaling factor right now to keep things roughly on
+                    # the same order of magnitude
+                    stabilization_cost = 100 * (linear_term + angular_term)
+                else:
+                    stabilization_cost = 0
+
             if self.is_debugging_simulation:
                 print("Robot safe set cost: ", robot_safe_set_cost)
                 print("Bag safe set cost: ", bag_safe_set_cost)
-            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost)
+                print("Stabilization cost: ", stabilization_cost)
+            reward = -1 * (robot_safe_set_cost + bag_safe_set_cost + stabilization_cost)
         # All returns are essentially dummy values except the reward
         observation = self._get_obs()
         terminated = False  # If at the terminal state
