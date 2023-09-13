@@ -48,8 +48,6 @@ class AstrobeeEnv(gym.Env):
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
         bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
-        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
-            Defaults to True (load the deformable version)
     """
 
     SAVE_STATE_DIR = "artifacts/saved_states/"
@@ -186,8 +184,6 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         bag_name (str, optional): Type of cargo bag to load. Defaults to "top_handle".
         bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10
         bag_type (type[CargoBag]): Class of cargo bag to use in the environment. Defaults to DeformableCargoBag
-        use_deformable_bag (bool, optional): Whether to load the deformable or rigid version of the bag.
-            Defaults to True (load the deformable version)
         nominal_rollouts (bool, optional): If True, will roll-out a trajectory based on the nominal target.
             If False, will sample a trajectory about the nominal target. Defaults to False.
         cleanup (bool, optional): Whether or not to delete all saved states when the simulation ends. Defaults to True.
