@@ -14,6 +14,7 @@ When debugging, we visualize the nominal parallel environment as well, and show 
 
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -41,6 +42,7 @@ def parallel_mpc_main(
     use_deformable_primary_sim: bool = True,
     use_deformable_rollouts: bool = False,
     debug: bool = False,
+    random_seed: Optional[int] = None,
 ):
     """Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between
     two poses while carrying a cargo bag
@@ -57,6 +59,7 @@ def parallel_mpc_main(
             (perform rollouts with the simplified rigid bag)
         debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize
             some of the rollouts being evaluated. Defaults to False.
+        random_seed (Optional[int]): Seed for the random number generator, if desired. Defaults to None (unseeded)
     """
     if n_vec_envs < 1:
         raise ValueError("Must have at least one environment for evaluating rollouts")
@@ -88,12 +91,13 @@ def parallel_mpc_main(
     vec_env = make_vec_env(
         AstrobeeMPCEnv,
         n_vec_envs,
+        random_seed,
         env_kwargs=env_kwargs,
         vec_env_cls=SubprocVecEnv if n_vec_envs > 1 else DummyVecEnv,
         per_env_kwargs=per_env_kwargs,
     )
-    main_env.reset()
-    vec_env.reset()
+    main_env.reset(random_seed)
+    vec_env.reset()  # Random seed included in make_vec_env
 
     # Generate nominal trajectory
     dt = main_env.client.getPhysicsEngineParameters()["fixedTimeStep"]
@@ -117,7 +121,7 @@ def parallel_mpc_main(
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
     traj_end_time = nominal_traj.times[-1]
-    max_stopping_time = 10  # seconds
+    max_stopping_time = 30  # seconds
     max_time = traj_end_time + max_stopping_time
     target_rollout_duration = 5  # seconds
     target_execution_duration = (
@@ -236,7 +240,8 @@ def parallel_mpc_main(
 
 def _test_parallel_mpc():
     """Quick function to test that the parallel MPC is working as expected"""
-    np.random.seed(0)
+    random_seed = 0
+    np.random.seed(random_seed)
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
     bag_name = "top_handle"
@@ -254,6 +259,7 @@ def _test_parallel_mpc():
         use_deformable_main_sim,
         use_deformable_rollouts,
         debug,
+        random_seed,
     )
 
 
