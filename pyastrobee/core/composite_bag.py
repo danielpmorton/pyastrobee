@@ -343,6 +343,19 @@ class CompositeCargoBag(CargoBag):
         # In general, the center block makes the most sense because we can query this for dynamics info of the bag
         return self.center_block_id
 
+    @property
+    def bounding_box(self) -> np.ndarray:
+        # TODO see if there is a simpler way to handle this
+        # We can't use the standard method because it would just give the AABB of the center block
+        lower = np.inf * np.ones(3)
+        upper = -np.inf * np.ones(3)
+        for block_id in self.corner_block_ids:
+            aabb = self.client.getAABB(block_id, -1)
+            lower = np.minimum(lower, aabb[0])
+            upper = np.maximum(upper, aabb[1])
+        # TODO convert to Box instance?
+        return np.array([lower, upper])
+
 
 def _main():
     # pylint: disable=import-outside-toplevel

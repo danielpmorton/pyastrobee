@@ -343,3 +343,9 @@ class CargoBag(ABC):
         """
         self.client.resetBasePositionAndOrientation(self.id, pos, orn)
         self.client.resetBaseVelocity(self.id, lin_vel, ang_vel)
+
+    @property
+    def bounding_box(self) -> np.ndarray:
+        """Current axis-aligned bounding box of the bag (or just the main compartment), shape (2, 3)"""
+        # TODO convert to Box instance?
+        return np.array(self.client.getAABB(self.id, -1))

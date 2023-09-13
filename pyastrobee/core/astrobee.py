@@ -719,6 +719,12 @@ class Astrobee:
         for i in range(Astrobee.NUM_JOINTS):
             self.client.resetJointState(self.id, i, q[i], qdot[i])
 
+    @property
+    def bounding_box(self) -> np.ndarray:
+        """Current axis-aligned bounding box of the Astrobee body (Not including the arm), shape (2, 3)"""
+        # TODO convert to Box instance?
+        return np.array(self.client.getAABB(self.id, -1))
+
     # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
     #
     # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
