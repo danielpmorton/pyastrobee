@@ -8,9 +8,11 @@ We create three different types of environments:
 When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan
 """
 # TODO:
-# - Stopping criteria at end of trajectory (use the terminated/truncated parameters somehow)
 # - Merge this with the main MPC file?
 # - Turn this into a controller class, or just leave as a script?
+# - Update the observation and action spaces to match what we're using
+#   (robot/bag state observations). We're using dummy action values right now but we could
+#   also let the action input be a trajectory, rather than sampling in the env
 
 from pathlib import Path
 from datetime import datetime
@@ -26,7 +28,6 @@ from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.utils.python_utils import print_red, print_green
-from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 
 RECORD_VIDEO = False
 VIDEO_LOCATION = (
@@ -68,6 +69,7 @@ def parallel_mpc_main(
     main_env = AstrobeeMPCEnv(
         use_gui=True,
         is_primary=True,
+        robot_pose=start_pose,
         bag_name=bag_name,
         bag_mass=bag_mass,
         bag_type=DeformableCargoBag
@@ -79,6 +81,7 @@ def parallel_mpc_main(
     env_kwargs = {
         "use_gui": False,
         "is_primary": False,
+        "robot_pose": start_pose,
         "bag_name": bag_name,
         "bag_mass": bag_mass,
         "bag_type": DeformableCargoBag
@@ -109,6 +112,11 @@ def parallel_mpc_main(
         goal_pose[3:],
         dt,
     )
+
+    # Store the goal pose to determine stopping criteria
+    # TODO should this instead be an input to the environment?
+    main_env.goal_pose = goal_pose
+    vec_env.set_attr("goal_pose", goal_pose)
 
     if RECORD_VIDEO:
         print("Ready to record video")
@@ -176,26 +184,6 @@ def parallel_mpc_main(
             if debug:
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
 
-            # TODO make the robot/bag states the observation of the main env,
-            # move this whole save/reset block of code to the bottom
-            # Get the current state of the system to determine if we're done and to reset the sim
-            robot_state = main_env.get_robot_state()
-            bag_state = main_env.get_bag_state()
-            if stopping and robot_and_bag_termination_criteria(
-                robot_state, bag_state, goal_pose
-            ):
-                print_green("Success! Stabilized at end of trajectory within tolerance")
-                break
-            # Ensure that the vec envs start from the same point as the main simulation
-            if use_deformable_rollouts:
-                # If we are using the deformable bag for rollouts, we have to fully save the state to disk (slow)
-                # because there is no other way to restore the deformable
-                saved_file = main_env.save_state()
-                vec_env.env_method("restore_state", saved_file)
-            else:
-                # If we're using the simple rigid bag for rollouts, we can just do a very simple reset mechanic
-                vec_env.env_method("reset_robot_state", robot_state)
-                vec_env.env_method("reset_bag_state", bag_state)
             # Set the desired state of the robot at the lookahead point
             target_state = [
                 nominal_traj.positions[lookahead_idx],
@@ -214,20 +202,25 @@ def parallel_mpc_main(
                 vec_env.env_method("show_traj_plan", 10, indices=[debug_env_idx])
             # Stepping in the vec env will follow the sampled trajectory
             # Action input in step(actions) is a dummy parameter for now, just for Gym compatibility
-            observation, reward, done, info = vec_env.step(np.zeros(n_vec_envs))
+            env_obs, env_rewards, env_dones, env_infos = vec_env.step(
+                np.zeros(n_vec_envs)
+            )
             best_traj: Trajectory = vec_env.get_attr(
-                "traj_plan", [int(np.argmax(reward))]
+                "traj_plan", [int(np.argmax(env_rewards))]
             )[0]
             # Follow the best rollout in the main environment. (Use dummy action value in step call)
             main_env.traj_plan = best_traj.get_segment(
                 0,
                 int(best_traj.num_timesteps * (execution_duration / rollout_duration)),
             )
-            observation, reward, terminated, truncated, info = main_env.step(0)
-
-            # TODO: use stopping criteria in terminated/truncated
-            # Idea: terminated -> successfully stopped; truncated -> out of time
-            # if terminated: print_green(success_message); elif truncated: print_red(failure_message); then break
+            (
+                main_obs,
+                main_reward,
+                main_terminated,
+                main_truncated,
+                main_info,
+            ) = main_env.step(0)
+            robot_state, bag_state = main_obs
 
             # Update our knowledge of the last acceleration commands
             main_env.last_accel_cmd = best_traj.linear_accels[-1]
@@ -237,6 +230,22 @@ def parallel_mpc_main(
 
             # Update our time information
             cur_time += execution_duration
+
+            # Check if we've successfully completed the trajectory
+            if main_terminated:
+                print_green("Success! Stabilized at end of trajectory within tolerance")
+                break
+            # We are not done, so reset the environments back to the same point as the main env
+            # Ensure that the vec envs start from the same point as the main simulation
+            if use_deformable_rollouts:
+                # If we are using the deformable bag for rollouts, we have to fully save the state to disk (slow)
+                # because there is no other way to restore the deformable
+                saved_file = main_env.save_state()
+                vec_env.env_method("restore_state", saved_file)
+            else:
+                # If we're using the simple rigid bag for rollouts, we can just do a very simple reset mechanic
+                vec_env.env_method("reset_robot_state", robot_state)
+                vec_env.env_method("reset_bag_state", bag_state)
 
         input("Complete. Press Enter to exit")
     finally:

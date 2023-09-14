@@ -39,6 +39,7 @@ from pyastrobee.utils.debug_visualizer import remove_debug_objects
 from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
 from pyastrobee.utils.quaternions import quaternion_dist
+from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 
 
 class AstrobeeEnv(gym.Env):
@@ -79,8 +80,9 @@ class AstrobeeEnv(gym.Env):
         self.bag.attach_to(self.robot, object_to_move="bag")
         self.dt = self.client.getPhysicsEngineParameters()["fixedTimeStep"]
         # Dummy parameters for gym/stable baselines compatibility
-        self.observation_space = gym.spaces.Discrete(3)  # temporary
-        self.action_space = gym.spaces.Discrete(3)  # temporary
+        # TODO make custom gym.spaces.space.Space subclasses for these?
+        self.observation_space = gym.spaces.Discrete(3)  # temporary, unused
+        self.action_space = gym.spaces.Discrete(3)  # temporary, unused
         # Step the simulation once to get the bag in the right place
         self.client.stepSimulation()
 
@@ -99,7 +101,7 @@ class AstrobeeEnv(gym.Env):
             ObsType: Observation
         """
         # This function setup was recommended in the gym documentation
-        return 0  # Dummy value for now
+        return None, None  # Dummy value for now
 
     def _get_info(self) -> dict[str, Any]:
         """Provide auxiliary information associated with an observation
@@ -277,6 +279,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # Keep track of whether we're stopping or in a nominal flight mode
         self.flight_state = self.FlightStates.NOMINAL  # init
 
+        # Store where we want the Astrobee to be at the end of the MPC run to determine if we are done
+        self.goal_pose = None  # init
+
         self._is_primary_env = is_primary
         self._is_debugging_env = not is_primary and use_gui
         self._nominal_rollouts = nominal_rollouts
@@ -287,11 +292,6 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self.target_vel = None  # Init
         self.target_omega = None  # Init
         self.target_duration = None  # Init
-        # TODO decide if saving the initial state is useful...
-        # I was thinking maybe it would be nice to have a clean slate we could go back to
-        # but I don't quite know what the use case would be right now
-        if self.is_primary_simulation:
-            self.initial_saved_state = self.save_state()
 
     @property
     def is_primary_simulation(self) -> bool:
@@ -388,11 +388,18 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             include_nominal_traj=self._nominal_rollouts,
         )[0]
 
+    def _get_obs(self) -> ObsType:
+        if self.is_primary_simulation:
+            return self.robot.full_state, self.bag.dynamics_state
+        else:
+            return None, None
+
     def step(
         self, action: ActType
     ) -> tuple[ObsType, float, bool, bool, dict[str, Any]]:
         # Note: For MPC, this is less so a "step" than a "rollout" function. The trajectory should be sampled
         #       before calling this function
+        # TODO use the action parameter to pass in a trajectory to follow?
 
         terminated = False  # init (If at the terminal state)
         truncated = False  # init (If stopping the sim before the terminal state)
@@ -513,8 +520,20 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 + stabilization_cost
                 + tracking_cost
             )
-        # All returns are essentially dummy values except the reward
+
+        # Observe the robot/bag state in the main env, dummy value if in rollout env
         observation = self._get_obs()
+
+        # Evaluate if we have stabilized the robot and the bag at the end of the trajectory
+        # (main env only since that's what we care about and we don't want to waste compute)
+        if (
+            self.flight_state == self.FlightStates.STOPPING
+            and self.is_primary_simulation
+            and robot_and_bag_termination_criteria(
+                observation[0], observation[1], self.goal_pose
+            )
+        ):
+            terminated = True
 
         # TODO: If we change the observation function to return the state of the robot and the bag,
         # we can determine the "terminated" parameter!
