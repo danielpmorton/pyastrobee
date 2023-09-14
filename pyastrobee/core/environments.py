@@ -181,6 +181,20 @@ class AstrobeeEnv(gym.Env):
             return str(path)
         raise FileNotFoundError(f"Could not find file: {filename}")
 
+    def send_client_command(self, *args, **kwargs) -> Any:
+        """Send a command to the environment's pybullet client
+
+        For instance, we can use pybullet.getBasePositionAndOrientation with this as
+        send_client_command("getBasePositionAndOrientation", body_id)
+
+        Returns:
+            Any: The return from the Pybullet command
+        """
+        attr = getattr(self.client, args[0])
+        if isinstance(attr, Callable):
+            return attr(*args[1:], **kwargs)
+        return attr
+
 
 class AstrobeeMPCEnv(AstrobeeEnv):
     """Astrobee environment for MPC: Contains additional controller parameters and functions associated with MPC, on
