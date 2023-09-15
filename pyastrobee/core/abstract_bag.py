@@ -324,7 +324,8 @@ class CargoBag(ABC):
         bag_to_handle = invert_transform_mat(self.grasp_transforms[handle_index])
         bag_to_world = handle_to_world @ bag_to_handle
         bag_pose = tmat_to_pos_quat(bag_to_world)
-        self.client.resetBasePositionAndOrientation(self.id, bag_pose[:3], bag_pose[3:])
+        # This assumes that we want the bag to be stationary
+        self.reset_dynamics(bag_pose[:3], bag_pose[3:], np.zeros(3), np.zeros(3))
 
     def reset_dynamics(
         self,

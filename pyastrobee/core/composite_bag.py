@@ -27,8 +27,8 @@ class CompositeCargoBag(CargoBag):
         bag_name (str): Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".
             Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"
         mass (float): Mass of the cargo bag, in kg
-        pos (npt.ArrayLike): Initial XYZ position to load the bag
-        orn (npt.ArrayLike): Initial XYZW quaternion to load the bag
+        pos (npt.ArrayLike): Initial XYZ position to load the bag. Defaults to (0, 0, 0)
+        orn (npt.ArrayLike): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)
         divisions (tuple[int, int, int]): Number of smaller sub-blocks along each dimension (length, width, height) of
             the bag's main compartment. Must be three positive odd integers.
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
@@ -39,8 +39,8 @@ class CompositeCargoBag(CargoBag):
         self,
         bag_name: str,
         mass: float,
-        pos: npt.ArrayLike,
-        orn: npt.ArrayLike,
+        pos: npt.ArrayLike = (0, 0, 0),
+        orn: npt.ArrayLike = (0, 0, 0, 1),
         divisions: tuple[int, int, int] = (3, 3, 3),
         client: Optional[BulletClient] = None,
     ):
