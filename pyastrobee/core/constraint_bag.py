@@ -94,12 +94,14 @@ class ConstraintCargoBag(CargoBag):
         )
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
-        # Disable collisions with the end of the gripper
-        # Otherwise if we use the standard handle location, it will always be in collision
-        # TODO decide if proximal joints should also be disabled
+        # Disable collisions with the arm for stability when resetting the position w.r.t the deformable
         for link_id in [
             robot.Links.GRIPPER_LEFT_DISTAL.value,
             robot.Links.GRIPPER_RIGHT_DISTAL.value,
+            robot.Links.GRIPPER_LEFT_PROXIMAL.value,
+            robot.Links.GRIPPER_RIGHT_PROXIMAL.value,
+            robot.Links.ARM_DISTAL.value,
+            robot.Links.ARM_PROXIMAL.value,
         ]:
             self.client.setCollisionFilterPair(robot.id, self.id, link_id, -1, 0)
 
