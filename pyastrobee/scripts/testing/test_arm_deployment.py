@@ -18,10 +18,9 @@ from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MA
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.planner import global_planner
-from pyastrobee.trajectories.polynomials import fifth_order_poly
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.transformations import invert_transform_mat
-from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
+from pyastrobee.trajectories.arm_planner import plan_arm_traj
 
 
 # The idea here was to determine how much the arm moves back when it is moved from "grasp" to "drag"
@@ -65,72 +64,6 @@ def get_bag_positions():
     print("DRAG Bag offset", get_bag_local_offset(robot, bag))
     input("Press Enter to exit")
     client.disconnect()
-
-
-def plan_arm_traj(base_traj: Trajectory) -> ArmTrajectory:
-    """Plans a motion for the arm so that we are dragging the bag behind the robot for most of the trajectory, but we
-    start and end from the grasping position
-
-    This will only use the shoulder joint -- other joints are less relevant for the motion of the bag/robot system
-
-    This is essentially comprised of three parts:
-    1) Moving the arm from an initial grasp position to the "dragging behind" position
-    2) Maintaining the "dragging behind" position for most of the trajectory
-    3) Moving the arm to the grasp position again at the end of the trajectory
-
-    Args:
-        base_traj (Trajectory): Trajectory of the Astrobee base
-
-    Returns:
-        ArmTrajectory: Positional trajectory for the arm (shoulder joint only)
-    """
-    # Shoulder joint parameters
-    grasp_angle = 0
-    drag_angle = -1.57079
-    shoulder_index = Astrobee.ARM_JOINT_IDXS[0]
-    # Find the transition times/indices for the arm motion planning
-    # We could define a fixed amount of time to allocate to the arm motion, but it makes a bit more sense to define this
-    # with respect to the motion of the base. The arm should move jointly with the base, so we can say that it should
-    # be fully deployed after a certain displacement of the robot
-    dists_from_start = np.linalg.norm(
-        base_traj.positions - base_traj.positions[0], axis=1
-    )
-    dists_from_end = np.linalg.norm(
-        base_traj.positions - base_traj.positions[-1], axis=1
-    )
-    # A little over 1 meter seems to work well for the deployment distance (TODO probably needs tuning)
-    # For reference, the 0.23 number is how much the x position of the arm changes when it moves back
-    dx_arm = 0.23162640743995172 * 5
-    # Note: originally I used searchsorted to find these indices, but these distances are not guaranteed to be sorted
-    drag_idx = np.flatnonzero(dists_from_start >= dx_arm)[0]
-    grasp_idx = np.flatnonzero(dists_from_end <= dx_arm)[0]
-    drag_time = base_traj.times[drag_idx]
-    grasp_time = base_traj.times[grasp_idx]
-    end_time = base_traj.times[-1]
-    drag_poly = fifth_order_poly(0, drag_time, grasp_angle, drag_angle, 0, 0, 0, 0)
-    grasp_poly = fifth_order_poly(
-        grasp_time, end_time, drag_angle, grasp_angle, 0, 0, 0, 0
-    )
-    arm_motion = np.ones_like(base_traj.times) * drag_angle
-    arm_motion[:drag_idx] = drag_poly(base_traj.times[:drag_idx])
-    arm_motion[grasp_idx:] = grasp_poly(base_traj.times[grasp_idx:])
-    # Edge case for short trajectories: not enough time to fully move arm there and back again
-    overlap = drag_idx > grasp_idx
-    if overlap:
-        # Blend the two motions in the overlapping region
-        overlap_poly = (
-            (drag_poly - drag_angle) + (grasp_poly - drag_angle)
-        ) + drag_angle
-        arm_motion[grasp_idx:drag_idx] = np.clip(
-            overlap_poly(base_traj.times[grasp_idx:drag_idx]), drag_angle, grasp_angle
-        )
-    key_times = {
-        "begin_drag_motion": base_traj.times[0],
-        "end_drag_motion": base_traj.times[drag_idx],
-        "begin_grasp_motion": base_traj.times[grasp_idx],
-        "end_grasp_motion": base_traj.times[-1],
-    }
-    return ArmTrajectory(arm_motion, [shoulder_index], base_traj.times, key_times)
 
 
 def _run_test():
