@@ -67,7 +67,7 @@ def get_bag_positions():
     client.disconnect()
 
 
-def plan_arm_traj(base_traj: Trajectory):
+def plan_arm_traj(base_traj: Trajectory) -> ArmTrajectory:
     """Plans a motion for the arm so that we are dragging the bag behind the robot for most of the trajectory, but we
     start and end from the grasping position
 
@@ -82,7 +82,7 @@ def plan_arm_traj(base_traj: Trajectory):
         base_traj (Trajectory): Trajectory of the Astrobee base
 
     Returns:
-        _type_: _description_ # TODO!!!
+        ArmTrajectory: Positional trajectory for the arm (shoulder joint only)
     """
     # Shoulder joint parameters
     grasp_angle = 0
@@ -124,17 +124,13 @@ def plan_arm_traj(base_traj: Trajectory):
         arm_motion[grasp_idx:drag_idx] = np.clip(
             overlap_poly(base_traj.times[grasp_idx:drag_idx]), drag_angle, grasp_angle
         )
-    # TODO figure out if this info is even useful
-    info = {
-        "drag_index": drag_idx,
-        "drag_time": base_traj.times[drag_idx],
-        "grasp_index": grasp_idx,
-        "grasp_time": base_traj.times[grasp_idx],
+    key_times = {
+        "begin_drag_motion": base_traj.times[0],
+        "end_drag_motion": base_traj.times[drag_idx],
+        "begin_grasp_motion": base_traj.times[grasp_idx],
+        "end_grasp_motion": base_traj.times[-1],
     }
-    return (
-        ArmTrajectory(arm_motion, [shoulder_index], base_traj.times),
-        info,
-    )
+    return ArmTrajectory(arm_motion, [shoulder_index], base_traj.times, key_times)
 
 
 def _run_test():
@@ -184,10 +180,10 @@ def _run_test():
         dt,
     )
     traj.visualize(10, client=client)
-    arm_traj, info = plan_arm_traj(traj)
+    arm_traj = plan_arm_traj(traj)
     arm_traj.plot()
 
-    for i in range(traj.num_timesteps):
+    for i, t in enumerate(traj.times):
         pos, orn, lin_vel, ang_vel = controller.get_current_state()
         client.setJointMotorControlArray(
             robot.id,
@@ -209,10 +205,11 @@ def _run_test():
             traj.angular_accels[i, :],
         )
         # Update inertia values after the arm is fully deployed to a new state
-        if i == info["drag_index"]:
+        if abs(t - arm_traj.key_times["end_drag_motion"]) <= dt / 2:
+            print("DONE WITH DRAG MOTION")
             controller.inertia = robot.inertia + drag_inertia
-        # if i == info["grasp_index"]:  # Does it make sense to update it here? Or at the end of the nominal traj?
-        if i == traj.num_timesteps - 1:
+        if abs(t - arm_traj.key_times["end_grasp_motion"]) <= dt / 2:
+            print("DONE WITH GRASP MOTION")
             controller.inertia = robot.inertia + grab_inertia
         # time.sleep(1 / 240)
     while True:

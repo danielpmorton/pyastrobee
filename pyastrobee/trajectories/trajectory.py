@@ -5,6 +5,7 @@
 # TODO make it clearer what happens if some of the traj components are None
 #      (Numerically calculate the gradient? Remove the option to set these as None?)
 # TODO add max vel/accel lines into the plots?
+# TODO remove the ability to not give time information... this makes no sense.
 
 from typing import Optional, Union
 
@@ -19,6 +20,7 @@ from pyastrobee.utils.poses import batched_pos_quats_to_tmats
 from pyastrobee.utils.debug_visualizer import visualize_frame, visualize_path
 from pyastrobee.utils.quaternions import quaternion_dist, quats_to_angular_velocities
 from pyastrobee.utils.boxes import Box
+from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
 class Trajectory:
@@ -282,6 +284,88 @@ class TrajectoryLogger(Trajectory):
         self._lin_vels = []
         self._ang_vels = []
         self._times = []
+
+
+# TODO improve this... make it match up with the normal class
+# TODO velocity/force control?
+# TODO use a dictionary for the angles instead? map joint indices => their angles over time
+# TODO should we always define the trajectory for all of the joints?
+class ArmTrajectory:
+    """Maintains information on the positions of the arm's joint angles over time
+
+    Currently this assumes we are working with position control
+
+    Args:
+        angles (np.ndarray): Joint angles over time, shape (n_timesteps, n_controlled_joints)
+        joint_ids (npt.ArrayLike): Indices of the joints being controlled with position control. Unspecified joints
+            will be left at their default control value (Either manually set or defined at robot initialization)
+        times (Optional[npt.ArrayLike]): Time information for the trajectory, shape (n_timesteps). Defaults to None.
+        key_times (Optional[dict[str, float]]): Information about when key transitions occur in the trajectory,
+            for instance, when we start/stop an arm deployment motion. Defaults to None.
+
+    Raises:
+        ValueError: If the shape of the angles input does not match the expected number of joints being controlled,
+            or the number of timesteps in the time input
+        KeyError: If the key_times dictionary contains unexpected keys. Currently supported: "begin_drag_motion",
+            "end_drag_motion", "begin_grasp_motion", "end_grasp_motion"
+    """
+
+    def __init__(
+        self,
+        angles: np.ndarray,
+        joint_ids: npt.ArrayLike,
+        times: Optional[npt.ArrayLike] = None,
+        key_times: Optional[dict[str, float]] = None,
+    ):
+        if np.ndim(angles) == 1:
+            angles = angles.reshape(-1, 1)
+        joint_ids = np.atleast_1d(joint_ids)
+        n_steps, n_joints = angles.shape
+        if n_joints != len(joint_ids):
+            raise ValueError(
+                "Mismatched inputs: The second dimension of the angles must match the number of joints.\n"
+                + f"Got shape: {angles.shape} for {len(joint_ids)} joint indices: {joint_ids}"
+            )
+        if times is not None and len(times) != n_steps:
+            raise ValueError(
+                "Mismatched input dimensions: Time info is not the same length as the angles"
+            )
+        self.angles = angles
+        self.indices = joint_ids
+        self.times = times if times is not None else []
+        self.num_timesteps = n_steps
+        # Hacky way to store information on the times/indices when the arm moves back or forward
+        # This somewhat assumes that we're going to move the arm to "drag" and then back to "grasp"
+        # TODO make this more general
+        # TODO improve how we handle the keys that we'd expect to see
+        self.key_times = key_times
+        expected_keys = {
+            "begin_drag_motion",
+            "end_drag_motion",
+            "begin_grasp_motion",
+            "end_grasp_motion",
+        }
+        for key in self.key_times.keys():
+            if key not in expected_keys:
+                raise KeyError("Unexpected key time name: ", key)
+
+    def plot(self):
+        if self.times is None or np.size(self.times) == 0:
+            x_axis = range(self.num_timesteps)
+            x_label = "Timesteps"
+        else:
+            x_axis = self.times
+            x_label = "Time, s"
+        n_subplots = len(self.indices)
+        subplot_shape = num_subplots_to_shape(n_subplots)
+        fig = plt.figure()
+        for j, index in enumerate(self.indices):
+            plt.subplot(*subplot_shape, j + 1)
+            plt.plot(x_axis, self.angles[:, j])
+            plt.title(f"Joint {index}")
+            plt.xlabel(x_label)
+            plt.ylabel("Angle")
+        plt.show()
 
 
 # TODO see if we can incorporate a sequence of Boxes for the position constraints
