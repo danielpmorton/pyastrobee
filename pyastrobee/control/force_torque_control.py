@@ -41,6 +41,8 @@ class ForceTorqueController:
         orn_tol (float, optional): Stopping tolerance on quaternion distance between cur/des. Defaults to 1e-2.
         vel_tol (float, optional): Stopping tolerance on linear velocity error magnitude. Defaults to 1e-2.
         ang_vel_tol (float, optional): Stopping tolerance on angular velocity error magnitude. Defaults to 5e-3.
+        max_force (Optional[float]): Limit on the applied force magnitude. Defaults to None (no limit)
+        max_torque (Optional[float]): Limit on the applied torque magnitude. Defaults to None (no limit)
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
     """
@@ -59,6 +61,8 @@ class ForceTorqueController:
         orn_tol: float = 1e-2,
         vel_tol: float = 1e-2,
         ang_vel_tol: float = 5e-3,
+        max_force: Optional[float] = None,
+        max_torque: Optional[float] = None,
         client: Optional[BulletClient] = None,
     ):
         self.id = robot_id
@@ -73,6 +77,8 @@ class ForceTorqueController:
         self.orn_tol = orn_tol
         self.vel_tol = vel_tol
         self.ang_vel_tol = ang_vel_tol
+        self.max_force = max_force
+        self.max_torque = max_torque
         self.traj_log = TrajectoryLogger()
         self.control_log = ControlLogger()
         self.client: pybullet = pybullet if client is None else client
@@ -242,6 +248,15 @@ class ForceTorqueController:
         """
         force = self.get_force(pos, vel, des_pos, des_vel, des_accel)
         torque = self.get_torque(orn, omega, des_orn, des_omega, des_alpha)
+        # Clamp the maximum force/torque if needed
+        if self.max_force is not None:
+            force_mag = np.linalg.norm(force)
+            if force_mag > self.max_force:
+                force = self.max_force * (force / force_mag)
+        if self.max_torque is not None:
+            torque_mag = np.linalg.norm(torque)
+            if torque_mag > self.max_torque:
+                torque = self.max_torque * (torque / torque_mag)
         self.control_log.log_control(force, torque, self.dt)
         self.client.applyExternalForce(
             self.id, -1, force, list(pos), pybullet.WORLD_FRAME

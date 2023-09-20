@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pyastrobee.core.astrobee import Astrobee
+from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.planner import global_planner
@@ -93,6 +94,9 @@ def _run_test():
         kq,
         kw,
         dt,
+        max_force=MAX_FORCE_MAGNITUDE,
+        max_torque=MAX_TORQUE_MAGNITUDE,
+        client=client,
     )
     traj = global_planner(
         start_pose[:3],

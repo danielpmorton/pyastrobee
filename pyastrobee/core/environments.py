@@ -40,6 +40,7 @@ from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
 from pyastrobee.utils.quaternions import quaternion_dist
 from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
+from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 
 
 class AstrobeeEnv(gym.Env):
@@ -249,6 +250,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             kq,
             kw,
             self.dt,
+            max_force=MAX_FORCE_MAGNITUDE,
+            max_torque=MAX_TORQUE_MAGNITUDE,
             client=self.client,
         )
         # Penalty multipliers for evaluating rollouts. TEMPORARY: figure these out, make parameters

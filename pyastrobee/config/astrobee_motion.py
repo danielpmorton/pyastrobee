@@ -5,6 +5,7 @@ Sourced from:
 - A Brief Guide to Astrobee
 """
 # TODO make flight mode an input somewhere, rather than a hardcoded variable here?
+# TODO improve force/torque magnitude handling
 
 from enum import Enum
 import numpy as np
@@ -60,6 +61,11 @@ else:
 
 # For forces/torques, assume we can operate at up to the max motor speed in RPM
 # See the Astrobee guide for more values if this is not the case
-MAX_FORCE = np.array([0.849, 0.406, 0.486])  # Max force applied in xyz axes from fans
-MAX_TORQUE = MAX_FORCE / 10  # Max torques about xyz axes
+MAX_FORCE = np.array([0.849, 0.406, 0.486])  # Max force applied in local xyz axes
+MAX_TORQUE = MAX_FORCE / 10  # Max torques about local xyz axes
 # NOTE: The torque values are an approximation. See guide for reasoning
+
+# Slightly hacky force/torque magnitude values... In theory the world-frame force values depend on the orientation
+# of Astrobee, but we'll ignore this for now
+MAX_FORCE_MAGNITUDE = 0.849
+MAX_TORQUE_MAGNITUDE = 0.849 / 10
