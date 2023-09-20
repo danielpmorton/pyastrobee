@@ -7,10 +7,11 @@ state for better dragging
 When positioning the bag at the end of the trajectory, the arm should also go back
 to the original state
 """
-import time
-import pybullet
+
+# TODO
+# make sure that the trajectory orientation component is face-forwards!
+
 import numpy as np
-import matplotlib.pyplot as plt
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
@@ -20,8 +21,10 @@ from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.polynomials import fifth_order_poly
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.transformations import invert_transform_mat
+from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
 
 
+# The idea here was to determine how much the arm moves back when it is moved from "grasp" to "drag"
 # This outputs: X position delta:  -0.23162640743995172
 def get_arm_pos_delta():
     client = initialize_pybullet(bg_color=(1, 1, 1))
@@ -38,7 +41,7 @@ def get_arm_pos_delta():
     client.disconnect()
 
 
-def get_bag_local_offset(robot: Astrobee, bag: ConstraintCargoBag, client: pybullet):
+def get_bag_local_offset(robot: Astrobee, bag: ConstraintCargoBag):
     T_R2W = robot.tmat
     T_B2W = bag.tmat
     T_B2R = invert_transform_mat(T_R2W) @ T_B2W
@@ -54,14 +57,84 @@ def get_bag_positions():
     client.changeDynamics(robot.id, -1, 0)  # Fix base
     pose_1 = robot.ee_pose
     bag.attach_to(robot, "bag")
-    print("GRAB Bag offset", get_bag_local_offset(robot, bag, client))
+    print("GRAB Bag offset", get_bag_local_offset(robot, bag))
     input("Press Enter to set the arm")
     bag.detach()
     robot.set_joint_angles([-1.57079], [Astrobee.ARM_JOINT_IDXS[0]], force=True)
     bag.attach_to(robot, "bag")
-    print("DRAGBag offset", get_bag_local_offset(robot, bag, client))
+    print("DRAG Bag offset", get_bag_local_offset(robot, bag))
     input("Press Enter to exit")
     client.disconnect()
+
+
+def plan_arm_traj(base_traj: Trajectory):
+    """Plans a motion for the arm so that we are dragging the bag behind the robot for most of the trajectory, but we
+    start and end from the grasping position
+
+    This will only use the shoulder joint -- other joints are less relevant for the motion of the bag/robot system
+
+    This is essentially comprised of three parts:
+    1) Moving the arm from an initial grasp position to the "dragging behind" position
+    2) Maintaining the "dragging behind" position for most of the trajectory
+    3) Moving the arm to the grasp position again at the end of the trajectory
+
+    Args:
+        base_traj (Trajectory): Trajectory of the Astrobee base
+
+    Returns:
+        _type_: _description_ # TODO!!!
+    """
+    # Shoulder joint parameters
+    grasp_angle = 0
+    drag_angle = -1.57079
+    shoulder_index = Astrobee.ARM_JOINT_IDXS[0]
+    # Find the transition times/indices for the arm motion planning
+    # We could define a fixed amount of time to allocate to the arm motion, but it makes a bit more sense to define this
+    # with respect to the motion of the base. The arm should move jointly with the base, so we can say that it should
+    # be fully deployed after a certain displacement of the robot
+    dists_from_start = np.linalg.norm(
+        base_traj.positions - base_traj.positions[0], axis=1
+    )
+    dists_from_end = np.linalg.norm(
+        base_traj.positions - base_traj.positions[-1], axis=1
+    )
+    # A little over 1 meter seems to work well for the deployment distance (TODO probably needs tuning)
+    # For reference, the 0.23 number is how much the x position of the arm changes when it moves back
+    dx_arm = 0.23162640743995172 * 5
+    # Note: originally I used searchsorted to find these indices, but these distances are not guaranteed to be sorted
+    drag_idx = np.flatnonzero(dists_from_start >= dx_arm)[0]
+    grasp_idx = np.flatnonzero(dists_from_end <= dx_arm)[0]
+    drag_time = base_traj.times[drag_idx]
+    grasp_time = base_traj.times[grasp_idx]
+    end_time = base_traj.times[-1]
+    drag_poly = fifth_order_poly(0, drag_time, grasp_angle, drag_angle, 0, 0, 0, 0)
+    grasp_poly = fifth_order_poly(
+        grasp_time, end_time, drag_angle, grasp_angle, 0, 0, 0, 0
+    )
+    arm_motion = np.ones_like(base_traj.times) * drag_angle
+    arm_motion[:drag_idx] = drag_poly(base_traj.times[:drag_idx])
+    arm_motion[grasp_idx:] = grasp_poly(base_traj.times[grasp_idx:])
+    # Edge case for short trajectories: not enough time to fully move arm there and back again
+    overlap = drag_idx > grasp_idx
+    if overlap:
+        # Blend the two motions in the overlapping region
+        overlap_poly = (
+            (drag_poly - drag_angle) + (grasp_poly - drag_angle)
+        ) + drag_angle
+        arm_motion[grasp_idx:drag_idx] = np.clip(
+            overlap_poly(base_traj.times[grasp_idx:drag_idx]), drag_angle, grasp_angle
+        )
+    # TODO figure out if this info is even useful
+    info = {
+        "drag_index": drag_idx,
+        "drag_time": base_traj.times[drag_idx],
+        "grasp_index": grasp_idx,
+        "grasp_time": base_traj.times[grasp_idx],
+    }
+    return (
+        ArmTrajectory(arm_motion, [shoulder_index], base_traj.times),
+        info,
+    )
 
 
 def _run_test():
@@ -75,7 +148,12 @@ def _run_test():
     bag = ConstraintCargoBag(bag_name, bag_mass)
     bag.attach_to(robot, "bag")
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
-    # p = get_bag_local_offset(robot, bag, client)
+    # Determine what the moment of inertia contribution from the bag is...
+    # TODO this is kinda weird. Right now this is like we assume that this is a point mass that is rigidly connected
+    # to the arm at the center of mass of the bag. This might be an OK model for the rigid analogs... but the deformable
+    # probably not. Does it make sense to have a notion of inertia there? Perhaps the deformable should be modeled
+    # as a point mass applied at the grasp point.
+    # Also, these positions are for the TOP HANDLE bag only... TODO get the values for all bags
     p_grab = np.array([-0.07968587, 0, -0.55740857])
     p_drag = np.array([-0.55684116, 0, -0.17977188])
     grab_inertia = bag_mass * (
@@ -105,47 +183,18 @@ def _run_test():
         end_pose[3:],
         dt,
     )
-    d_pos_start = np.linalg.norm(traj.positions - start_pose[:3], axis=1)
-    d_pos_end = np.linalg.norm(traj.positions - end_pose[:3], axis=1)
-    dx_arm = 0.23162640743995172
-    dx_arm *= 2  # TESTING
-    grab_shoulder_angle = robot.joint_angles[robot.ARM_JOINT_IDXS[0]]
-    drag_shoulder_angle = -1.57079
-    grab_to_drag_idx = np.searchsorted(d_pos_start, dx_arm)
-    drag_to_grab_idx = np.searchsorted(-d_pos_end, -dx_arm)
-    T_drag = traj.times[grab_to_drag_idx]
-    T_grab = traj.times[drag_to_grab_idx]
-    tf = traj.times[-1]
-    grab_to_drag_shoulder_poly = fifth_order_poly(
-        0, T_drag, grab_shoulder_angle, drag_shoulder_angle, 0, 0, 0, 0
-    )
-    drag_to_grab_shoulder_poly = fifth_order_poly(
-        T_grab, tf, drag_shoulder_angle, grab_shoulder_angle, 0, 0, 0, 0
-    )
-    grab_to_drag_traj = grab_to_drag_shoulder_poly(traj.times[:grab_to_drag_idx])
-    drag_to_grab_traj = drag_to_grab_shoulder_poly(traj.times[drag_to_grab_idx:])
-    shoulder_traj = np.ones_like(traj.times) * drag_shoulder_angle
-    shoulder_traj[:grab_to_drag_idx] = grab_to_drag_traj
-    shoulder_traj[drag_to_grab_idx:] = drag_to_grab_traj
+    traj.visualize(10, client=client)
+    arm_traj, info = plan_arm_traj(traj)
+    arm_traj.plot()
 
-    # if bag_name.startswith("top_handle"):
-    #     p_grab =  + np.array([0, 0, ConstraintCargoBag.HEIGHT / 2]) + ConstraintCargoBag.grasp_transforms
-    #     p_drag =
-
-    # plt.figure()
-    # plt.plot(traj.times, shoulder_traj)
-    # plt.show()
-    # This traj has a constant orientation component so we don't need to face-forward it
-    # TODO get this working
-
-    # TODO  make sure that the traj is long enough that it makes sense to move the arm
     for i in range(traj.num_timesteps):
         pos, orn, lin_vel, ang_vel = controller.get_current_state()
         client.setJointMotorControlArray(
             robot.id,
-            [robot.ARM_JOINT_IDXS[0]],
+            arm_traj.indices,
             client.POSITION_CONTROL,
-            [shoulder_traj[i]],
+            arm_traj.angles[i, :],
+            forces=Astrobee.JOINT_EFFORT_LIMITS[arm_traj.indices],
         )
         controller.step(
             pos,
@@ -159,12 +208,28 @@ def _run_test():
             traj.angular_velocities[i, :],
             traj.angular_accels[i, :],
         )
-        if i == grab_to_drag_idx:
-            # Update the inertia
+        # Update inertia values after the arm is fully deployed to a new state
+        if i == info["drag_index"]:
             controller.inertia = robot.inertia + drag_inertia
-        if i == drag_to_grab_idx:  # Does it make sense to update it here?
+        # if i == info["grasp_index"]:  # Does it make sense to update it here? Or at the end of the nominal traj?
+        if i == traj.num_timesteps - 1:
             controller.inertia = robot.inertia + grab_inertia
-        time.sleep(1 / 240)
+        # time.sleep(1 / 240)
+    while True:
+        pos, orn, lin_vel, ang_vel = controller.get_current_state()
+        controller.step(
+            pos,
+            lin_vel,
+            orn,
+            ang_vel,
+            traj.positions[-1, :],
+            traj.linear_velocities[-1, :],
+            traj.linear_accels[-1, :],
+            traj.quaternions[-1, :],
+            traj.angular_velocities[-1, :],
+            traj.angular_accels[-1, :],
+        )
+        # time.sleep(1 / 240)
 
 
 if __name__ == "__main__":
