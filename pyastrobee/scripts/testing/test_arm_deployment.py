@@ -118,13 +118,7 @@ def _run_test():
 
     for i, t in enumerate(traj.times):
         pos, orn, lin_vel, ang_vel = controller.get_current_state()
-        client.setJointMotorControlArray(
-            robot.id,
-            arm_traj.indices,
-            client.POSITION_CONTROL,
-            arm_traj.angles[i, :],
-            forces=Astrobee.JOINT_EFFORT_LIMITS[arm_traj.indices],
-        )
+        robot.set_joint_angles(arm_traj.angles[i, :], arm_traj.joint_ids)
         controller.step(
             pos,
             lin_vel,
