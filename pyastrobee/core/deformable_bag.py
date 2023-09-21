@@ -26,6 +26,8 @@ from pyastrobee.utils.bullet_utils import (
 from pyastrobee.utils.mesh_utils import get_mesh_data, get_closest_mesh_vertex
 from pyastrobee.utils.python_utils import print_green, flatten
 from pyastrobee.utils.quaternions import quats_to_angular_velocities
+from pyastrobee.utils.poses import pos_quat_to_tmat
+from pyastrobee.utils.transformations import transform_point
 
 
 class DeformableCargoBag(CargoBag):
@@ -208,32 +210,51 @@ class DeformableCargoBag(CargoBag):
 
     def _attach(self, robot: Astrobee, handle_index: int) -> None:
         del handle_index  # Unused for the deformable bag
-        # Generate the constraints between the bag and the robot: First, find the points on the mesh on either side
+        # Generate the constraints between the bag and the robot
+        # Originally, we made two anchors at the vertices closest to the gripper points
+        # But, this seemed too "floppy" so I tried using 4 anchors
+        # However, 4 anchors introduced weird disturbance forces when things weren't perfectly
+        # symmetric and in the locations where they were expected to be
+
+        # First, find the points on the mesh on either side
         # of the handle (Using the left/right gripper link frames as reference points), then create the anchors
         pos_1 = robot.get_link_transform(robot.Links.GRIPPER_LEFT_DISTAL)[:3, 3]
-        pos_2 = robot.get_link_transform(robot.Links.GRIPPER_RIGHT_DISTAL)[:3, 3]
-        v1_pos, v1_id = get_closest_mesh_vertex(pos_1, self.mesh_vertices)
-        v2_pos, v2_id = get_closest_mesh_vertex(pos_2, self.mesh_vertices)
-        anchor1_id, geom1_id = create_anchor(
-            self.id,
-            v1_id,
-            robot.id,
-            robot.Links.ARM_DISTAL.value,
-            add_geom=True,
-            geom_pos=v1_pos,
-            client=self.client,
+        # pos_2 = robot.get_link_transform(robot.Links.GRIPPER_RIGHT_DISTAL)[:3, 3]
+
+        ee_tmat = pos_quat_to_tmat(robot.ee_pose)
+        # Dist from grasp position to the link
+        dist = np.linalg.norm(ee_tmat[:3, 3] - pos_1)
+
+        # First two points correspond to the left and right side of the gripper, second two are front and back
+        local_pts = (
+            np.array(
+                [
+                    # [0, 1, 0], # Uncomment to change the configuration
+                    # [0, -1, 0],
+                    [0, 0, 1],
+                    [0, 0, -1],
+                ]
+            )
+            * dist
         )
-        anchor2_id, geom2_id = create_anchor(
-            self.id,
-            v2_id,
-            robot.id,
-            robot.Links.ARM_DISTAL.value,
-            add_geom=True,
-            geom_pos=v2_pos,
-            client=self.client,
-        )
-        self._anchors.update({robot.id: [anchor1_id, anchor2_id]})
-        self._anchor_objects.update({robot.id: [geom1_id, geom2_id]})
+        world_pts = [transform_point(ee_tmat, pt) for pt in local_pts]
+        anchor_ids = []
+        geom_ids = []
+        for pt in world_pts:
+            v_pos, v_id = get_closest_mesh_vertex(pt, self.mesh_vertices)
+            a_id, g_id = create_anchor(
+                self.id,
+                v_id,
+                robot.id,
+                robot.Links.ARM_DISTAL.value,
+                add_geom=True,
+                geom_pos=v_pos,
+                client=self.client,
+            )
+            anchor_ids.append(a_id)
+            geom_ids.append(g_id)
+        self._anchors.update({robot.id: anchor_ids})
+        self._anchor_objects.update({robot.id: geom_ids})
         self._attached.append(robot.id)
 
     def detach(self) -> None:
@@ -260,9 +281,9 @@ class DeformableCargoBag(CargoBag):
 
 def _main():
     # Very simple example of loading the bag and attaching a robot
-    client = initialize_pybullet()
+    client = initialize_pybullet(bg_color=(0.5, 0.5, 0.75))
     robot = Astrobee()
-    bag = DeformableCargoBag("top_handle", 10)
+    bag = DeformableCargoBag("top_handle_symmetric", 10)
     bag.attach_to(robot)
     while True:
         client.stepSimulation()
