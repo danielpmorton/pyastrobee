@@ -752,63 +752,6 @@ class Astrobee:
         # TODO convert to Box instance?
         return np.array(self.client.getAABB(self.id, -1))
 
-    # **** TO IMPLEMENT: (maybe... some of these are just random ideas) ****
-    #
-    # def step(self, constraint=None, joint_pos=None, joint_vel=None, joint_torques=None):
-    #     # TODO. Remove while loops from individual functions and use this instead?
-    #     raise NotImplementedError
-
-    # def set_joint_torques(self, torques, indices):
-    #     raise NotImplementedError
-    # def set_joint_vels(self, vels, indices):
-    #     raise NotImplementedError
-
-    # def is_near(
-    #     self, pose: npt.ArrayLike, pos_tol: float = 1e-3, orn_tol: float = 1e-5
-    # ) -> bool:
-    #     """Confirms if the Astrobee is near a desired pose or not
-    #     TODO finish this, and decide how we're setting poses
-    #     Args:
-    #         pose (npt.ArrayLike): _description_
-    #         pos_tol (float, optional): _description_. Defaults to 1e-3.
-    #         orn_tol (float, optional): _description_. Defaults to 1e-5.
-
-    #     Returns:
-    #         bool: _description_
-    #     """
-    #     raise NotImplementedError
-
-    # TODO figure this out (use the gripper/distal transform?)
-    # @property
-    # def tcp_offset(self):
-    #     return self._tcp_offset
-
-    # Does this even need to be a property??
-    # @tcp_offset.setter
-    # def tcp_offset(self, offset):
-    #     self._tcp_offset = offset
-
-    # @property
-    # def joint_reaction_forces(self) -> np.ndarray:
-    #     # TODO: decide if we should use this
-    #     # Need to figure out if we are enabling torque sensors on these joints
-    #     raise NotImplementedError
-    #     states = self.client.getJointStates(self.id, list(range(Astrobee.NUM_JOINTS)))
-    #     return [
-    #         states[i][1] for i in range(Astrobee.NUM_JOINTS)
-    #     ]  # Index 2: reaction forces
-
-    # TODO: should refine these states so it is clear what is going on
-    # Should it be possible for the robot to be in multiple states? e.g. moving and manipulating??
-    # Should we keep multiple states in separate enumerations?
-    # These states are all just ideas for now
-    # Add an error state?
-    # class States(Enum):
-    #     IDLE = 1
-    #     PLANNING = 2
-    #     MOVING = 3
-    #     MANIPULATING = 4
-
 
 def _main():
     client = initialize_pybullet(bg_color=[1, 1, 1])
