@@ -16,6 +16,7 @@ from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.transformations import transform_point
 from pyastrobee.utils.python_utils import print_green
+from pyastrobee.utils.bullet_utils import initialize_pybullet
 
 # Different geometries of the constraint "constellation"
 # First point is the central (primary) constraint
@@ -114,19 +115,26 @@ class ConstraintCargoBag(CargoBag):
         orn: npt.ArrayLike = (0, 0, 0, 1),
         client: BulletClient | None = None,
     ):
-        # Heuristic for constraint forces that scales with the mass of the bag
-        # These are intended to roughly match the forces from the deformable for the small displacements that we might
-        # see when controlling the robot
-        self.primary_constraint_force = 5 * mass
-        self.secondary_constraint_force = 0.05 * mass
-        super().__init__(bag_name, mass, pos, orn, client)
-        self._constraints = {}
         # Set up the geometric structure of the constraint-based handle
-        constraint_scaling = 0.05
+        self.constraint_scaling = 0.05
+        self.constraint_structure_type = "tetrahedron"
         self.constraint_structure = (
-            UNIT_CONSTRAINT_STRUCTURES["tetrahedron"] * constraint_scaling
+            UNIT_CONSTRAINT_STRUCTURES[self.constraint_structure_type]
+            * self.constraint_scaling
         )
+        # Define the forces applied by the constraints
+        self.primary_constraint_force = 3
+        self.secondary_constraint_force = 2
+        self.max_constraint_forces = np.concatenate(
+            [
+                [self.primary_constraint_force],
+                self.secondary_constraint_force
+                * np.ones(len(self.constraint_structure) - 1),
+            ]
+        )
+        self._constraints = {}
         self.num_contraints = len(self.constraint_structure)
+        super().__init__(bag_name, mass, pos, orn, client)
         print_green("Bag is ready")
 
     # Implement abstract methods
@@ -156,12 +164,10 @@ class ConstraintCargoBag(CargoBag):
         constraints = form_constraint_grasp(
             robot,
             self.id,
-            self.mass,
             self.grasp_transforms[handle_index],
-            "tetrahedron",
-            0.05,
-            5,
-            0.05,
+            self.constraint_structure_type,
+            self.constraint_scaling,
+            self.max_constraint_forces,
             client=self.client,
         )
         self._constraints.update({robot.id: constraints})
@@ -233,12 +239,10 @@ class ConstraintCargoBag(CargoBag):
 def form_constraint_grasp(
     robot: Astrobee,
     body_id: int,
-    body_mass: float,
     grasp_transform: np.ndarray,
-    structure_type: str = "tetrahedron",
-    structure_scaling: float = 0.05,
-    primary_force_scale: float = 5,
-    secondary_force_scale: float = 0.05,
+    structure_type: str,
+    structure_scaling: float,
+    max_forces: list[float],
     client: Optional[BulletClient] = None,
 ) -> list[int]:
     """Connects the Astrobee's gripper to an object via point-to-point constraints to mimic a non-rigid grasp
@@ -249,16 +253,13 @@ def form_constraint_grasp(
     Args:
         robot (Astrobee): Astrobee performing the grasp
         body_id (int): Pybullet ID of the object being grasped
-        body_mass (float): Mass of the object being grasped. Used for rescaling the constraint forces
         grasp_transform (np.ndarray): Transformation matrix defining the grasp pose w.r.t the base frame of the object
         structure_type (str, optional): Type of geometry to construct the series of constraints. Defaults to
             "tetrahedron". Other options include "diamond"
         structure_scaling (float, optional): Scale on the size of the constraint structure (if set to 1, the
             constraints will be spaced along a unit (1 meter) sphere). Defaults to 0.05.
-        primary_force_scale (float, optional): Scaling factor on the maximum force applied by the central constraint.
-            Force = (scale) * (mass). Defaults to 5.
-        secondary_force_scale (float, optional): Scaling factor on the maximum force applied by the non-central
-            constraints. Force = (scale) * (mass). Defaults to 0.05.
+        max_forces (list[float]): Maximum applied force for each constraint. Length must match with the number of
+            constraints in the desired structure type
         client (BulletClient, optional): If connecting to multiple physics servers, include the client
             (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
@@ -269,6 +270,11 @@ def form_constraint_grasp(
     constraint_structure = (
         UNIT_CONSTRAINT_STRUCTURES[structure_type] * structure_scaling
     )
+    if len(max_forces) != len(constraint_structure):
+        raise ValueError(
+            f"Invalid number of forces: Must be of length {len(constraint_structure)} "
+            + f"for structure type {structure_type}.\nGot: {max_forces}"
+        )
     body_local_constraint_pos = np.array(
         [transform_point(grasp_transform, pt) for pt in constraint_structure]
     )
@@ -278,14 +284,8 @@ def form_constraint_grasp(
             for pt in constraint_structure
         ]
     )
-    primary_force = primary_force_scale * body_mass
-    secondary_force = secondary_force_scale * body_mass
     constraints = []
     for i in range(len(constraint_structure)):
-        if i == 0:
-            max_force = primary_force
-        else:
-            max_force = secondary_force
         cid = client.createConstraint(
             robot.id,
             robot.Links.ARM_DISTAL.value,
@@ -296,18 +296,17 @@ def form_constraint_grasp(
             robot_local_constraint_pos[i],
             body_local_constraint_pos[i],
         )
-        client.changeConstraint(cid, maxForce=max_force)
+        client.changeConstraint(cid, maxForce=max_forces[i])
         constraints.append(cid)
     return constraints
 
 
 def _main():
-    pybullet.connect(pybullet.GUI)
-    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, 0)
-    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_WIREFRAME, 1)
+    client = initialize_pybullet(bg_color=(0.5, 0.5, 1))
+    client.configureDebugVisualizer(client.COV_ENABLE_WIREFRAME, 1)
     robot = Astrobee()
     # robot2 = Astrobee()
-    bag = ConstraintCargoBag("top_handle", 1)
+    bag = ConstraintCargoBag("top_handle", 10)
     # bag.attach_to([robot, robot2])
     bag.attach_to(robot)
     points_uid = None
@@ -316,20 +315,16 @@ def _main():
         force_mags = np.linalg.norm(forces, axis=1)
         rgbs = []
         for i in range(bag.num_contraints):
-            if i == 0:
-                fmax = bag.primary_constraint_force
-            else:
-                fmax = bag.secondary_constraint_force
-            r = min(1, force_mags[i] / fmax)
+            r = min(1, force_mags[i] / bag.max_constraint_forces[i])
             rgbs.append((r, 1 - r, 0))
         world_constraint_pos = bag.get_world_constraint_pos(0)
         if points_uid is None:
-            points_uid = pybullet.addUserDebugPoints(world_constraint_pos, rgbs, 10, 0)
+            points_uid = client.addUserDebugPoints(world_constraint_pos, rgbs, 10, 0)
         else:
-            points_uid = pybullet.addUserDebugPoints(
+            points_uid = client.addUserDebugPoints(
                 world_constraint_pos, rgbs, 10, 0, replaceItemUniqueId=points_uid
             )
-        pybullet.stepSimulation()
+        client.stepSimulation()
         time.sleep(1 / 120)
 
 

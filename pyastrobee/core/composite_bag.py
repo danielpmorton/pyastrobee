@@ -87,18 +87,23 @@ class CompositeCargoBag(CargoBag):
         pos = self._center_aligned_block_structure()[handle_ijk]
         adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
         structure = "tetrahedron"
-        structure_scaling = 0.1
-        primary_force_scale = 10
-        secondary_force_scale = 0.1
+        n_constraints = 5  # For tetrahedron
+        structure_scaling = 0.05
+        primary_constraint_force = 3
+        secondary_constraint_force = 2
+        max_forces = np.concatenate(
+            [
+                [primary_constraint_force],
+                secondary_constraint_force * np.ones(n_constraints - 1),
+            ]
+        )
         constraints = form_constraint_grasp(
             robot,
             handle_id,
-            self.mass,
             adjusted_grasp_transform,
             structure,
             structure_scaling,
-            primary_force_scale,
-            secondary_force_scale,
+            max_forces,
             client=self.client,
         )
         self._handle_constraints.update({robot.id: constraints})
