@@ -68,24 +68,28 @@ class Astrobee:
             [0.69813, 1.22173],  # gripper right distal joint
         ]
     )
-    JOINT_EFFORT_LIMITS = [
-        0.0,  # top aft (fixed)
-        1.0,  # arm proximal joint
-        1.0,  # arm distal joint
-        0.1,  # gripper left proximal joint
-        0.1,  # gripper left distal joint
-        0.1,  # gripper right proximal joint
-        0.1,  # gripper right distal joint
-    ]
-    JOINT_VEL_LIMITS = [
-        0.00,  # top aft (fixed)
-        0.12,  # arm proximal joint
-        0.12,  # arm distal joint
-        0.12,  # gripper left proximal joint
-        0.12,  # gripper left distal joint
-        0.12,  # gripper right proximal joint
-        0.12,  # gripper right distal joint
-    ]
+    JOINT_EFFORT_LIMITS = np.array(
+        [
+            0.0,  # top aft (fixed)
+            1.0,  # arm proximal joint
+            1.0,  # arm distal joint
+            0.1,  # gripper left proximal joint
+            0.1,  # gripper left distal joint
+            0.1,  # gripper right proximal joint
+            0.1,  # gripper right distal joint
+        ]
+    )
+    JOINT_VEL_LIMITS = np.array(
+        [
+            0.00,  # top aft (fixed)
+            0.12,  # arm proximal joint
+            0.12,  # arm distal joint
+            0.12,  # gripper left proximal joint
+            0.12,  # gripper left distal joint
+            0.12,  # gripper right proximal joint
+            0.12,  # gripper right distal joint
+        ]
+    )
 
     # Bounding sphere for collision modeling
     COLLISION_RADIUS = COLLISION_RADIUS
@@ -453,13 +457,17 @@ class Astrobee:
         return np.round(np.average(np.concatenate([l_pct, r_pct]))).astype(int)
 
     # TODO decide if we need finer-grain control of the individual joints, or if this integer-position is fine
-    def set_gripper_position(self, position: float, force: bool = False) -> None:
+    def set_gripper_position(
+        self, position: float, force: bool = False, wait: bool = False
+    ) -> None:
         """Sets the gripper to a position between 0 (fully closed) to 100 (fully open)
 
         Args:
             position (float): Gripper position, in range [0, 100]
             force (bool, optional): Whether to (non-physically) instantly reset the gripper position, instead
                 of stepping the sim. Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
         """
         if position < 0 or position > 100:
             raise ValueError("Position should be in range [0, 100]")
@@ -467,7 +475,7 @@ class Astrobee:
         left_pos = l_closed + (position / 100) * (l_open - l_closed)
         right_pos = r_closed + (position / 100) * (r_open - r_closed)
         angle_cmd = [*left_pos, *right_pos]
-        self.set_gripper_joints(angle_cmd, force)
+        self.set_gripper_joints(angle_cmd, force, wait)
 
     def open_gripper(self) -> None:
         """Fully opens the gripper"""
@@ -508,6 +516,7 @@ class Astrobee:
         angles: npt.ArrayLike,
         indices: Optional[npt.ArrayLike] = None,
         force: bool = False,
+        wait: bool = False,
     ):
         """Sets the joint angles for the Astrobee (either all joints, or a specified subset)
 
@@ -515,8 +524,10 @@ class Astrobee:
             angles (npt.ArrayLike): Desired joint angles, in radians
             indices (npt.ArrayLike, optional): Indices of the joints to control. Defaults to None,
                 in which case we assume all 7 joints will be set.
-            force (bool, optional): Whether to (non-physically) instantly reset the joint state, instead
-                of stepping the sim. Should only be used at initialization. Defaults to False
+            force (bool, optional): Whether to (non-physically) instantly reset the joint state.
+                Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
 
         Raises:
             ValueError: If the number of angles provided do not match the number of indices
@@ -541,10 +552,14 @@ class Astrobee:
                 self.client.resetJointState(self.id, ind, angle)
         # Set the position control for the arm so Pybullet will correct for disturbances
         self.client.setJointMotorControlArray(
-            self.id, indices, self.client.POSITION_CONTROL, angles
+            self.id,
+            indices,
+            self.client.POSITION_CONTROL,
+            angles,
+            forces=self.JOINT_EFFORT_LIMITS[indices],
         )
-        # If not force-resetting the joint positions, allow for some time to get to that position
-        if not force:
+        # Step the sim until the arm is at the desired angle, if waiting for it to reach the position
+        if wait:
             tol = 0.01  # TODO TOTALLY ARBITRARY FOR NOW
             while np.any(np.abs(self.get_joint_angles(indices) - angles) > tol):
                 self.client.stepSimulation()
@@ -562,25 +577,33 @@ class Astrobee:
         states = self.client.getJointStates(self.id, indices)
         return np.array([state[0] for state in states])
 
-    def set_arm_joints(self, angles: npt.ArrayLike, force: bool = False) -> None:
+    def set_arm_joints(
+        self, angles: npt.ArrayLike, force: bool = False, wait: bool = False
+    ) -> None:
         """Sets the joint angles for the arm (proximal + distal)
 
         Args:
             angles (npt.ArrayLike): Arm joint angles, length = 2
-            force (bool, optional): Whether to (non-physically) instantly reset the joint states, instead
-                of stepping the sim. Should only be used at initialization. Defaults to False
+            force (bool, optional): Whether to (non-physically) instantly reset the joint states.
+                Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
         """
-        self.set_joint_angles(angles, Astrobee.ARM_JOINT_IDXS, force)
+        self.set_joint_angles(angles, Astrobee.ARM_JOINT_IDXS, force, wait)
 
-    def set_gripper_joints(self, angles: npt.ArrayLike, force: bool = False) -> None:
+    def set_gripper_joints(
+        self, angles: npt.ArrayLike, force: bool = False, wait: bool = False
+    ) -> None:
         """Sets the joint angles for the gripper (left + right, proximal + distal)
 
         Args:
             angles (npt.ArrayLike): Gripper joint angles, length = 4
-            force (bool, optional): Whether to (non-physically) instantly reset the gripper joints, instead
-                of stepping the sim. Should only be used at initialization. Defaults to False
+            force (bool, optional): Whether to (non-physically) instantly reset the gripper joints.
+                Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
         """
-        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS, force)
+        self.set_joint_angles(angles, Astrobee.GRIPPER_JOINT_IDXS, force, wait)
 
     def reset_to_ee_pose(self, pose: npt.ArrayLike) -> None:
         """Resets the position of the robot to achieve a target end-effector pose
@@ -640,28 +663,32 @@ class Astrobee:
         self._inertia = inertia
         self._inv_inertia = np.linalg.inv(inertia)
 
-    def store_arm(self, force: bool = False):
+    def store_arm(self, force: bool = False, wait: bool = False):
         """Folds the Astrobee's arm into its body
 
         Note: Storing the arm reduces the products of inertia, so this is the preferable
         configuration if not manipulating any objects
 
         Args:
-            force (bool, optional): Whether to (non-physically) instantly reset the joints, instead
-                of stepping the sim. Should only be used at initialization. Defaults to False
+            force (bool, optional): Whether to (non-physically) instantly reset the joints.
+                Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
         """
-        self.set_arm_joints([Astrobee.JOINT_POS_LIMITS[1, 1], 0], force)
-        self.set_gripper_position(0, force)
+        self.set_arm_joints([Astrobee.JOINT_POS_LIMITS[1, 1], 0], force, wait)
+        self.set_gripper_position(0, force, wait)
 
-    def deploy_arm(self, force: bool = False):
+    def deploy_arm(self, force: bool = False, wait: bool = False):
         """Sets the arm to the default position, with the gripper fully open
 
         Args:
-            force (bool, optional): Whether to (non-physically) instantly reset the joints, instead
-                of stepping the sim. Should only be used at initialization. Defaults to False
+            force (bool, optional): Whether to (non-physically) instantly reset the joints.
+                Should only be used at initialization. Defaults to False
+            wait (bool, optional): Whether to wait until the arm reaches the desired state by stepping the sim
+                forwards in a blocking manner. Defaults to False
         """
-        self.set_arm_joints([0, 0], force)
-        self.set_gripper_position(100, force)
+        self.set_arm_joints([0, 0], force, wait)
+        self.set_gripper_position(100, force, wait)
 
     @property
     def full_state(self) -> tuple[np.ndarray, ...]:

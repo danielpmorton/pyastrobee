@@ -31,7 +31,7 @@ def get_arm_pos_delta():
     client.changeDynamics(robot.id, -1, 0)  # Fix base
     pose_1 = robot.ee_pose
     input("Press Enter to set the arm")
-    robot.set_joint_angles([-1.57079], [Astrobee.ARM_JOINT_IDXS[0]])
+    robot.set_joint_angles([-1.57079], [Astrobee.ARM_JOINT_IDXS[0]], wait=True)
     pose_2 = robot.ee_pose
     print("Pose 1: ", pose_1)
     print("Pose 2: ", pose_2)
