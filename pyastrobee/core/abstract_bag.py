@@ -35,7 +35,13 @@ class CargoBag(ABC):
     HEIGHT = 0.42  # meters
     URDF_DIR = "pyastrobee/assets/urdf/bags/"
     MESH_DIR = "pyastrobee/assets/meshes/bags/"
-    SINGLE_HANDLE_BAGS = ["front_handle", "right_handle", "top_handle"]
+    SINGLE_HANDLE_BAGS = [
+        "front_handle",
+        "right_handle",
+        "top_handle",
+        "top_handle_symmetric",
+        # TODO: Add more symmetric versions (single and dual handle)
+    ]
     DUAL_HANDLE_BAGS = ["front_back_handle", "right_left_handle", "top_bottom_handle"]
     BAG_NAMES = SINGLE_HANDLE_BAGS + DUAL_HANDLE_BAGS
     HANDLE_TRANSFORMS = {
@@ -91,17 +97,17 @@ class CargoBag(ABC):
 
         In the case of a single-handled bag, this list will only have one entry
         """
-        if self._name == "front_handle":
+        if self._name.startswith("front_handle"):
             return [self.HANDLE_TRANSFORMS["front"]]
-        elif self._name == "right_handle":
+        elif self._name.startswith("right_handle"):
             return [self.HANDLE_TRANSFORMS["right"]]
-        elif self._name == "top_handle":
+        elif self._name.startswith("top_handle"):
             return [self.HANDLE_TRANSFORMS["top"]]
-        elif self._name == "front_back_handle":
+        elif self._name.startswith("front_back_handle"):
             return [self.HANDLE_TRANSFORMS["front"], self.HANDLE_TRANSFORMS["back"]]
-        elif self._name == "right_left_handle":
+        elif self._name.startswith("right_left_handle"):
             return [self.HANDLE_TRANSFORMS["right"], self.HANDLE_TRANSFORMS["left"]]
-        elif self._name == "top_bottom_handle":
+        elif self._name.startswith("top_bottom_handle"):
             return [self.HANDLE_TRANSFORMS["top"], self.HANDLE_TRANSFORMS["bottom"]]
         else:
             raise NotImplementedError(
@@ -115,7 +121,7 @@ class CargoBag(ABC):
 
     @property
     def tmat(self):
-        """Current transformation matrix for the cargo bag"""
+        """Current transformation matrix for the cargo bag: (Bag to world)"""
         return pos_quat_to_tmat(self.pose)
 
     @property
