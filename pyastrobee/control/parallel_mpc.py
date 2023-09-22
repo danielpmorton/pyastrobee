@@ -29,6 +29,8 @@ from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
+from pyastrobee.trajectories.sampling import generate_trajs
+
 
 RECORD_VIDEO = False
 VIDEO_LOCATION = (
@@ -149,7 +151,6 @@ def parallel_mpc_main(
     # Init stopping mode for when we get to the end of the trajectory
     stopping = False
 
-    point_ids = None
     cur_idx = 0
 
     # Execute the main MPC code in a try/finally block to make sure things close out / clean up when done
@@ -194,12 +195,30 @@ def parallel_mpc_main(
                     )
             # Clear any previously visualized trajectories before viewing the new plan
             if debug:
-                vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
-                if point_ids is not None:
-                    for pid in point_ids:
-                        vec_env.env_method(
-                            "send_client_command", "removeUserDebugItem", pid
-                        )
+                vec_env.env_method("hide_debug_visuals", indices=[debug_env_idx])
+
+            # Generate actions (trajectories) to take
+            trajs = generate_trajs(
+                *main_env.robot.dynamics_state,
+                main_env.last_accel_cmd,
+                main_env.last_alpha_cmd,
+                nominal_traj.positions[lookahead_idx],
+                nominal_traj.quaternions[lookahead_idx],
+                nominal_traj.linear_velocities[lookahead_idx],
+                nominal_traj.angular_velocities[lookahead_idx],
+                nominal_traj.linear_accels[lookahead_idx],
+                nominal_traj.angular_accels[lookahead_idx],
+                main_env.pos_stdev,
+                main_env.orn_stdev,
+                main_env.vel_stdev,
+                main_env.ang_vel_stdev,
+                main_env.accel_stdev,
+                main_env.alpha_stdev,
+                n_vec_envs,
+                rollout_duration,
+                main_env.dt,
+                include_nominal_traj=True,
+            )
 
             # Set the desired state of the robot at the lookahead point
             target_state = [
@@ -211,36 +230,28 @@ def parallel_mpc_main(
                 nominal_traj.angular_accels[lookahead_idx],
                 rollout_duration,
             ]
-            main_env.set_target_state(*target_state)
-            vec_env.env_method("set_target_state", *target_state)
+            main_env.set_nominal_target(*target_state)
+            # NOTE renamed set target state to set_nominal_target
+            # vec_env.env_method("set_target_state", *target_state)
             # Generate sampled trajectories within each vec env
-            vec_env.env_method("sample_trajectory")
+            # vec_env.env_method("sample_trajectory")
 
             # HACK
-            n = vec_env.get_attr("traj_plan", [0])[0].num_timesteps
+            n = trajs[0].num_timesteps
             # Handle arm traj
             arm_traj_plan = nominal_arm_traj.get_segment(cur_idx, cur_idx + n)
             # main_env.set_arm_traj(arm_traj_plan)
             vec_env.env_method("set_arm_traj", arm_traj_plan)
 
+            # Slight hack to get the debug env to display position samples for all envs
             if debug:
-                env_state_samples = vec_env.get_attr("sampled_end_state")
-                env_poss = [s[0] for s in env_state_samples]
-                point_ids = vec_env.env_method(
-                    "send_client_command",
-                    "addUserDebugPoints",
-                    env_poss,
-                    [[1, 1, 1]] * len(env_poss),
-                    10,
-                    0,
-                    indices=[debug_env_idx],
+                end_positions = [traj.positions[-1] for traj in trajs]
+                vec_env.env_method(
+                    "show_points", end_positions, indices=[debug_env_idx]
                 )
-                vec_env.env_method("show_traj_plan", 10, indices=[debug_env_idx])
             # Stepping in the vec env will follow the sampled trajectory
             # Action input in step(actions) is a dummy parameter for now, just for Gym compatibility
-            env_obs, env_rewards, env_dones, env_infos = vec_env.step(
-                np.zeros(n_vec_envs)
-            )
+            env_obs, env_rewards, env_dones, env_infos = vec_env.step(trajs)
             best_traj: Trajectory = vec_env.get_attr(
                 "traj_plan", [int(np.argmax(env_rewards))]
             )[0]
@@ -251,7 +262,7 @@ def parallel_mpc_main(
             # print("N EXECUTION TIMESTEPS: ", n_execution_timesteps)
             # print("N ROLLOUT TIMESTEPS: ", lookahead_idx - cur_idx)
             # print("CUR IDX: ", cur_idx)
-            main_env.traj_plan = best_traj.get_segment(0, n_execution_timesteps)
+            # main_env.traj_plan = best_traj.get_segment(0, n_execution_timesteps)
             main_env.set_arm_traj(
                 nominal_arm_traj.get_segment(cur_idx, cur_idx + n_execution_timesteps)
             )
@@ -261,7 +272,7 @@ def parallel_mpc_main(
                 main_terminated,
                 main_truncated,
                 main_info,
-            ) = main_env.step(0)
+            ) = main_env.step(best_traj.get_segment(0, n_execution_timesteps))
             robot_state, bag_state = main_obs
 
             # Update our knowledge of the last acceleration commands
@@ -317,7 +328,7 @@ def _test_parallel_mpc():
     bag_name = "top_handle_symmetric"
     bag_mass = 10
     n_vec_envs = 10
-    debug = True
+    debug = False
     use_deformable_main_sim = True
     use_deformable_rollouts = False
     parallel_mpc_main(

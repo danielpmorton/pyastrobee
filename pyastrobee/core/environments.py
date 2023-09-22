@@ -34,7 +34,7 @@ from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.control.cost_functions import safe_set_cost
-from pyastrobee.trajectories.sampling import generate_trajs
+from pyastrobee.trajectories.sampling import generate_trajs, sample_states
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
@@ -42,6 +42,8 @@ from pyastrobee.utils.quaternions import quaternion_dist
 from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
+from pyastrobee.utils.debug_visualizer import visualize_points
+
 
 class AstrobeeEnv(gym.Env):
     """Base Astrobee environment containing the Astrobee, ISS, and a cargo bag
@@ -280,7 +282,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self.safe_set_eval_freq = 10  # Hz
 
         # Keep track of any temporary debug visualizer IDs
-        self.debug_viz_ids = ()
+        self.debug_ids = []
 
         # Keep track of whether we're stopping or in a nominal flight mode
         self.flight_state = self.FlightStates.NOMINAL  # init
@@ -332,7 +334,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         else:
             raise ValueError("Flight state not recognized")
 
-    def set_target_state(
+    def set_nominal_target(
         self,
         pos: npt.ArrayLike,
         orn: npt.ArrayLike,
@@ -361,50 +363,50 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         self.target_alpha = alpha
         self.target_duration = duration
 
-    def sample_trajectory(self) -> None:
-        """Samples a trajectory about the nominal target.
+    # def sample_trajectory(self) -> None:
+    #     """Samples a trajectory about the nominal target.
 
-        - If the nominal_rollouts parameter is True for this environment, the final state of the trajectory will be
-          exactly the nominal value (no noise added when sampling)
-        - This should just be called in the vectorized rollout environments (not the main environment) since the main
-          environment will use the best trajectory from the rollout envs
-        """
-        if self.is_primary_simulation:
-            raise ValueError(
-                "Trajectory sampling should only occur in one of parallel environments for evaluation purposes"
-            )
-        pos, orn, vel, omega = self.robot.dynamics_state
-        n_trajs = 1
-        self.traj_plan = generate_trajs(
-            pos,
-            orn,
-            vel,
-            omega,
-            self.last_accel_cmd,
-            self.last_alpha_cmd,
-            self.target_pos,
-            self.target_orn,
-            self.target_vel,
-            self.target_omega,
-            self.target_accel,
-            self.target_alpha,
-            self.pos_stdev,
-            self.orn_stdev,
-            self.vel_stdev,
-            self.ang_vel_stdev,
-            self.accel_stdev,
-            self.alpha_stdev,
-            n_trajs,
-            self.target_duration,
-            self.dt,
-            include_nominal_traj=self._nominal_rollouts,
-        )[0]
-        self.sampled_end_state = (
-            self.traj_plan.positions[-1],
-            self.traj_plan.quaternions[-1],
-            self.traj_plan.linear_velocities[-1],
-            self.traj_plan.angular_velocities[-1],
-        )
+    #     - If the nominal_rollouts parameter is True for this environment, the final state of the trajectory will be
+    #       exactly the nominal value (no noise added when sampling)
+    #     - This should just be called in the vectorized rollout environments (not the main environment) since the main
+    #       environment will use the best trajectory from the rollout envs
+    #     """
+    #     if self.is_primary_simulation:
+    #         raise ValueError(
+    #             "Trajectory sampling should only occur in one of parallel environments for evaluation purposes"
+    #         )
+    #     pos, orn, vel, omega = self.robot.dynamics_state
+    #     n_trajs = 1
+    #     self.traj_plan = generate_trajs(
+    #         pos,
+    #         orn,
+    #         vel,
+    #         omega,
+    #         self.last_accel_cmd,
+    #         self.last_alpha_cmd,
+    #         self.target_pos,
+    #         self.target_orn,
+    #         self.target_vel,
+    #         self.target_omega,
+    #         self.target_accel,
+    #         self.target_alpha,
+    #         self.pos_stdev,
+    #         self.orn_stdev,
+    #         self.vel_stdev,
+    #         self.ang_vel_stdev,
+    #         self.accel_stdev,
+    #         self.alpha_stdev,
+    #         n_trajs,
+    #         self.target_duration,
+    #         self.dt,
+    #         include_nominal_traj=self._nominal_rollouts,
+    #     )[0]
+    #     self.sampled_end_state = (
+    #         self.traj_plan.positions[-1],
+    #         self.traj_plan.quaternions[-1],
+    #         self.traj_plan.linear_velocities[-1],
+    #         self.traj_plan.angular_velocities[-1],
+    #     )
 
     def _get_obs(self) -> ObsType:
         if self.is_primary_simulation:
@@ -419,6 +421,44 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         #       before calling this function
         # TODO use the action parameter to pass in a trajectory to follow?
 
+        # Action will be the NOMINAL STATE
+        # each env will add noise and then plan to the noisy state estimate
+        # only the first venv will use the nominal state
+
+        # NEW NEW
+        # Define the nominal target and the sampled target
+        assert len(action) == 6  # pos, orn, vel, omega, accel, alpha
+        # TODO decide if this should include time or arm stuff
+        self.nominal_target = action
+        if self._nominal_rollouts:
+            self.target_state = self.nominal_target
+        else:
+            self.target_state = sample_states(
+                *self.nominal_target,
+            )
+        # Plan a trajectory to the sampled target
+        pos, orn, vel, ang_vel = self.robot.dynamics_state
+        self.traj_plan = local_planner(
+            *self.robot.dynamics_state,
+            self.last_accel_cmd,
+            self.last_alpha_cmd,
+            *self.nominal_target,  # CHECK UNPACKNIG
+        )
+
+        assert isinstance(action, Trajectory)
+        # HACK for working with previous structure
+        self.traj_plan = action
+        self.target_pos = action.positions[-1]
+        self.target_orn = action.quaternions[-1]
+        self.target_vel = action.linear_velocities[-1]
+        self.target_omega = action.angular_velocities[-1]
+        self.target_accel = action.linear_accels[-1]
+        self.target_alpha = action.angular_accels[-1]
+        self.target_duration = action.times[-1]
+
+        if self.is_debugging_simulation:
+            self.show_traj_plan(10)
+
         terminated = False  # init (If at the terminal state)
         truncated = False  # init (If stopping the sim before the terminal state)
 
@@ -429,7 +469,11 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # TODO decide how to handle the stopping criteria
 
         if not self.traj_plan.num_timesteps == self.arm_traj_plan.num_timesteps:
-            raise ValueError("Mismatched time info between base and arm trajs")
+            raise ValueError(
+                "Mismatched time info between base and arm trajs.\n"
+                + f"Got {self.traj_plan.num_timesteps} timesteps for the base traj, "
+                + f"and {self.arm_traj_plan.num_timesteps} for the arm traj"
+            )
 
         # If this is the primary simulation, we just follow the best trajectory we have
         # Rewrd for the primary simulation doesn't mean anything, so no computation needed
@@ -593,6 +637,10 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # But note that we should only really do the observation in the main env
 
         info = self._get_info()
+
+        if self.is_debugging_simulation:
+            self.hide_debug_visuals()
+
         return observation, reward, terminated, truncated, info
 
     def close(self):
@@ -682,14 +730,19 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         """
         if self.traj_plan is None:
             raise ValueError("No trajectory available to visualize")
-        self.debug_viz_ids = self.traj_plan.visualize(n, client=self.client)
+        self.debug_ids.extend(self.traj_plan.visualize(n, client=self.client))
 
-    def unshow_traj_plan(self) -> None:
-        """Removes a displayed trajectory from the pybullet client GUI"""
-        if len(self.debug_viz_ids) == 0:
+    def show_points(self, points: npt.ArrayLike):
+        self.debug_ids.append(
+            visualize_points(points, (1, 1, 1), 10, 0, client=self.client)
+        )
+
+    def hide_debug_visuals(self) -> None:
+        """Removes a displayed trajectory/points from the pybullet client GUI"""
+        if len(self.debug_ids) == 0:
             return
-        remove_debug_objects(self.debug_viz_ids, self.client)
-        self.debug_viz_ids = ()
+        remove_debug_objects(self.debug_ids, self.client)
+        self.debug_ids = []
 
 
 def make_vec_env(
@@ -822,8 +875,8 @@ def _test_envs():
         main_env.reset()
         vec_envs.reset()
         # Call step with dummy action values, note difference in return parameters
-        observation, reward, terminated, truncated, info = main_env.step(0)
-        observation, reward, done, info = vec_envs.step(np.zeros(n_vec_envs))
+        observation, reward, terminated, truncated, info = main_env.step(Trajectory())
+        observation, reward, done, info = vec_envs.step([Trajectory()] * n_vec_envs)
         input("Stepped. Press Enter to finish")
     finally:
         # Terminate pybullet processes, delete any saved states

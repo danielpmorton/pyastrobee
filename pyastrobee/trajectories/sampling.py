@@ -7,8 +7,92 @@ import numpy as np
 import numpy.typing as npt
 
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
-from pyastrobee.trajectories.trajectory import Trajectory
+from pyastrobee.trajectories.trajectory import Trajectory, TrajectoryState
 from pyastrobee.trajectories.planner import local_planner
+
+
+def sample_states(
+    nominal_pos: npt.ArrayLike,
+    nominal_orn: npt.ArrayLike,
+    nominal_vel: npt.ArrayLike,
+    nominal_ang_vel: npt.ArrayLike,
+    nominal_accel: npt.ArrayLike,
+    nominal_alpha: npt.ArrayLike,
+    nominal_joint_angles,
+    nominal_joint_vels,
+    nominal_joint_accels,
+    pos_stdev: float,
+    orn_stdev: float,
+    vel_stdev: float,
+    ang_vel_stdev: float,
+    accel_stdev: float,
+    alpha_stdev: float,
+    joint_angle_stdevs,
+    joint_vel_stdevs,
+    joint_accel_stdevs,
+    n: int,
+) -> list[list[np.ndarray]]:
+    """Generate a number of states sampled about a nominal target state
+
+    Args:
+        nominal_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)
+        nominal_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)
+        nominal_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)
+        nominal_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)
+        nominal_accel (npt.ArrayLike): Nominal desired linear acceleration to sample about, shape (3,)
+        nominal_alpha (npt.ArrayLike): Nominal desired angular acceleration to sample about, shape (3,)
+        pos_stdev (float): Standard deviation of the position sampling distribution
+        orn_stdev (float): Standard deviation of the orientation sampling distribution
+        vel_stdev (float): Standard deviation of the velocity sampling distribution
+        ang_vel_stdev (float): Standard deviation of the angular velocity sampling distribution
+        accel_stdev (float): Standard deviation of the linear acceleration sampling distribution
+        alpha_stdev (float): Standard deviation of the angular acceleration sampling distribution
+        n (int): Number of states to sample
+
+    Returns:
+        list[list[np.ndarray]]: Sampled states. Length = n. Each state is a list including a position, orientation,
+            velocity, angular velocity, acceleration, and angular acceleration
+    """
+    sampled_positions = np.random.multivariate_normal(
+        nominal_pos, pos_stdev**2 * np.eye(3), n
+    )
+    sampled_quats = spherical_vonmises_sampling(nominal_orn, 1 / (orn_stdev**2), n)
+    sampled_vels = np.random.multivariate_normal(
+        nominal_vel, vel_stdev**2 * np.eye(3), n
+    )
+    sampled_ang_vels = np.random.multivariate_normal(
+        nominal_ang_vel, ang_vel_stdev**2 * np.eye(3), n
+    )
+    sampled_accels = np.random.multivariate_normal(
+        nominal_accel, accel_stdev**2 * np.eye(3), n
+    )
+    sampled_alphas = np.random.multivariate_normal(
+        nominal_alpha, alpha_stdev**2 * np.eye(3), n
+    )
+    states = []
+    for i in range(n):
+        states.append(
+            TrajectoryState(
+                sampled_positions[i],
+                sampled_quats[i],
+                sampled_vels[i],
+                sampled_ang_vels[i],
+                sampled_accels[i],
+                sampled_alphas[i],
+            )
+        )
+
+    states = [[]] * n
+    for i in range(n):
+        states[i] = [
+            sampled_positions[i],
+            sampled_quats[i],
+            sampled_vels[i],
+            sampled_ang_vels[i],
+            sampled_accels[i],
+            sampled_alphas[i],
+        ]
+    return states
 
 
 # TODO
@@ -130,3 +214,24 @@ def generate_trajs(
             )
         )
     return trajs
+
+
+if __name__ == "__main__":
+    from pyastrobee.utils.quaternions import random_quaternion
+
+    s = sample_states(
+        np.random.rand(3),
+        random_quaternion(),
+        np.random.rand(3),
+        np.random.rand(3),
+        np.random.rand(3),
+        np.random.rand(3),
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        10,
+    )
+    input("Press Enter to exit")

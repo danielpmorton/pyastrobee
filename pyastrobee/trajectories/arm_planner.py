@@ -7,6 +7,12 @@ from pyastrobee.trajectories.polynomials import fifth_order_poly
 from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
 
 
+def local_arm_planner(
+    cur_angles, cur_vels, cur_accels, des_angles, des_vels, des_accels
+):
+    pass
+
+
 def plan_arm_traj(base_traj: Trajectory) -> ArmTrajectory:
     """Plans a motion for the arm so that we are dragging the bag behind the robot for most of the trajectory, but we
     start and end from the grasping position

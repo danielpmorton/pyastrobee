@@ -240,6 +240,7 @@ class Trajectory:
         # end_index = np.searchsorted(self.times, end_time)
         raise NotImplementedError("TODO")
 
+
 class TrajectoryLogger(Trajectory):
     """Class for maintaining a history of a robot's state over time"""
 
@@ -475,6 +476,30 @@ class ArmTrajectory:
             time_after = end_time - self.times[-1]
             end_index = len(self.times) - 1 + round(time_after / dt)
         return self.get_segment(start_index, end_index, reset_time)
+
+
+class TrajectoryState:
+    def __init__(
+        self,
+        pos: npt.ArrayLike,
+        orn: npt.ArrayLike,
+        vel: npt.ArrayLike,
+        omega: npt.ArrayLike,
+        accel: npt.ArrayLike,
+        alpha: npt.ArrayLike,
+        joint_angles: Optional[npt.ArrayLike],
+        joint_vels: Optional[npt.ArrayLike],
+        joint_accels: Optional[npt.ArrayLike],
+        duration,
+    ):
+        self.position = pos
+        self.quaternion = orn
+        self.linear_velocity = vel
+        self.angular_velocity = omega
+        self.linear_acceleration = accel
+        self.angular_acceleration = alpha
+        self.duration = duration
+        # NOT DONE
 
 
 # TODO see if we can incorporate a sequence of Boxes for the position constraints
