@@ -93,7 +93,7 @@ def bag_only_test():
 
 
 def astrobee_and_bag_test():
-    bag_name = "top_handle"
+    bag_name = "top_handle_symmetric"
     mass = 10
     deformable_p0 = np.zeros(3)
     pos_offset = np.array([1, 0, 0])
@@ -245,5 +245,5 @@ def dual_tracking_example():
 
 if __name__ == "__main__":
     # bag_only_test()
-    # astrobee_and_bag_test()
-    dual_tracking_example()
+    astrobee_and_bag_test()
+    # dual_tracking_example()

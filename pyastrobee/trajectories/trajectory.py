@@ -235,6 +235,10 @@ class Trajectory:
             new_times,
         )
 
+    def get_segment_between_times(self, start_time, end_time, reset_time: bool = True):
+        # start_index = np.searchsorted(self.times, start_time)
+        # end_index = np.searchsorted(self.times, end_time)
+        raise NotImplementedError("TODO")
 
 class TrajectoryLogger(Trajectory):
     """Class for maintaining a history of a robot's state over time"""
@@ -366,6 +370,111 @@ class ArmTrajectory:
             plt.xlabel(x_label)
             plt.ylabel("Angle")
         plt.show()
+
+    # TODO!! USE NEW CONCATENATE AND EXTRAPOLATE METHODS
+    def get_segment(
+        self, start_index: int, end_index: int, reset_time: bool = True
+    ) -> "ArmTrajectory":
+        """Construct an arm trajectory segment from a larger trajectory
+
+        Args:
+            start_index (int): Starting index of the larger trajectory to extract the segment
+            end_index (int): Ending index of the larger trajectory to extract the segment
+            reset_time (bool): Whether to maintain the time association with the original trajectory,
+                or reset the start time back to 0. Defaults to True (reset start time back to 0)
+
+        Returns:
+            ArmTrajectory: A new trajectory representing a segment of the original trajectory
+        """
+        # TODO: add check for invalid slicing indices? Or just leave it up to numpy
+
+        # HACK HACK HACK !!!!!!!!!!!!!!!!!!!!!!
+
+        n_steps = len(self.times)
+        # print(f"GETTING ARM SEGMENT: Start: {start_index}, End: {end_index}")
+        if start_index < n_steps and end_index < n_steps:
+            # NORMAL
+
+            # Time needs to get handled differently because the trajectory may or may not have time info
+            if np.size(self.times) == 0:  # No time info
+                new_times = None
+            else:
+                new_times = self.times[start_index:end_index]
+
+            new_key_times = {}
+            for name, time in self.key_times.items():
+                if new_times[0] <= time <= new_times[-1]:
+                    new_key_times[name] = time
+
+            if reset_time and new_times is not None:
+                new_times -= new_times[0]
+                for name, time in new_key_times.items():
+                    new_key_times[name] -= new_times[0]
+
+            return ArmTrajectory(
+                self.angles[start_index:end_index, :],
+                self.joint_ids,
+                new_times,
+                new_key_times,
+            )
+        elif start_index < n_steps and end_index >= n_steps:
+            angles = np.vstack(
+                [
+                    self.angles[start_index:, :],
+                    np.ones((end_index - n_steps, len(self.joint_ids)))
+                    * self.angles[-1],
+                ]
+            )
+            dt = self.times[1] - self.times[0]
+            new_times = (
+                self.times[start_index] + np.arange(end_index - start_index) * dt
+            )
+            new_key_times = {}
+            for name, time in self.key_times.items():
+                if new_times[0] <= time <= new_times[-1]:
+                    new_key_times[name] = time
+            if reset_time:
+                new_times -= new_times[0]
+                for name, time in new_key_times.items():
+                    new_key_times[name] -= new_times[0]
+            return ArmTrajectory(angles, self.joint_ids, new_times, new_key_times)
+        else:  # Both over the limit
+            angles = self.angles[-1] * np.ones(
+                (end_index - start_index, len(self.joint_ids))
+            )
+            dt = self.times[1] - self.times[0]
+            new_times = self.times[-1] + np.arange(end_index - start_index) * dt
+            new_key_times = {}
+            for name, time in self.key_times.items():
+                if new_times[0] <= time <= new_times[-1]:
+                    new_key_times[name] = time
+            if reset_time:
+                new_times -= new_times[0]
+                for name, time in new_key_times.items():
+                    new_key_times[name] -= new_times[0]
+            return ArmTrajectory(angles, self.joint_ids, new_times, new_key_times)
+
+    def get_segment_from_times(
+        self, start_time: float, end_time: float, reset_time: bool = True
+    ) -> "ArmTrajectory":
+        """Construct an arm trajectory segment from a larger trajectory
+
+        Args:
+            start_time (float): Starting time of the segment
+            end_time (float): Ending time of the segment
+            reset_time (bool): Whether to maintain the time association with the original trajectory,
+                or reset the start time back to 0. Defaults to True (reset start time back to 0)
+
+        Returns:
+            ArmTrajectory: A new trajectory representing a segment of the original trajectory
+        """
+        start_index = np.searchsorted(self.times, start_time)
+        end_index = np.searchsorted(self.times, end_time)
+        if end_index == len(self.times):  # Past the max time... somewhat of a HACK
+            dt = self.times[-1] - self.times[-2]
+            time_after = end_time - self.times[-1]
+            end_index = len(self.times) - 1 + round(time_after / dt)
+        return self.get_segment(start_index, end_index, reset_time)
 
 
 # TODO see if we can incorporate a sequence of Boxes for the position constraints

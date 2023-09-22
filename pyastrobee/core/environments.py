@@ -41,7 +41,7 @@ from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
 from pyastrobee.utils.quaternions import quaternion_dist
 from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
-
+from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
 
 class AstrobeeEnv(gym.Env):
     """Base Astrobee environment containing the Astrobee, ISS, and a cargo bag
@@ -219,6 +219,7 @@ class AstrobeeMPCEnv(AstrobeeEnv):
     """
 
     class FlightStates(Enum):
+        STARTING = "starting"
         NOMINAL = "nominal"
         # SLOWING = "slowing"
         STOPPING = "stopping"
@@ -240,11 +241,18 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         )
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
-        kp, kv, kq, kw = 20, 5, 1, 0.1  # TODO make parameters
+        # TODO should these be functions of the bag mass???
+        kp, kv, kq, kw = 20, 5, 5, 0.1  # TODO make parameters
+        p = self.bag.position - self.robot.position
         self.controller = ForceTorqueController(
             self.robot.id,
-            self.robot.mass,
-            self.robot.inertia,
+            self.robot.mass + bag_mass,
+            # self.robot.inertia,
+            self.robot.inertia
+            + bag_mass
+            * (
+                np.dot(p, p) * np.eye(3) - np.outer(p, p)
+            ),  # TODO parallel axis theorem for bag?? test this
             kp,
             kv,
             kq,
@@ -254,19 +262,14 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             max_torque=MAX_TORQUE_MAGNITUDE,
             client=self.client,
         )
-        # Penalty multipliers for evaluating rollouts. TEMPORARY: figure these out, make parameters
-        self.pos_penalty = 10
-        self.orn_penalty = 1
-        self.vel_penalty = 10
-        self.ang_vel_penalty = 1
 
-        # Sampling parameters (these need refinement)
-        self.pos_stdev = 0.05
-        self.orn_stdev = 0.05
-        self.vel_stdev = 0.05
-        self.ang_vel_stdev = 0.05
-        self.accel_stdev = 0.05
-        self.alpha_stdev = 0.05
+        # Sampling parameters (TODO these need refinement)
+        self.pos_stdev = 0.1
+        self.orn_stdev = 0.1
+        self.vel_stdev = 0.1
+        self.ang_vel_stdev = 0.1
+        self.accel_stdev = 0.1
+        self.alpha_stdev = 0.1
 
         # Store last acceleration commands
         # Update through set_attr
@@ -284,6 +287,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
         # Store where we want the Astrobee to be at the end of the MPC run to determine if we are done
         self.goal_pose = None  # init
+
+        # HACK - improve how this is handled
+        self.arm_traj_plan = None
 
         self._is_primary_env = is_primary
         self._is_debugging_env = not is_primary and use_gui
@@ -306,6 +312,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
     def is_debugging_simulation(self) -> bool:
         """Whether this is an environment launched in debug mode"""
         return self._is_debugging_env
+
+    def set_arm_traj(self, traj: ArmTrajectory):  # TODO IMPROVE THIS
+        self.arm_traj_plan = traj
 
     def set_flight_state(self, state: Union[str, FlightStates]):
         """Set the current flight state: for instance, whether we are in nominal operating mode, stopping, ...
@@ -390,6 +399,12 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             self.dt,
             include_nominal_traj=self._nominal_rollouts,
         )[0]
+        self.sampled_end_state = (
+            self.traj_plan.positions[-1],
+            self.traj_plan.quaternions[-1],
+            self.traj_plan.linear_velocities[-1],
+            self.traj_plan.angular_velocities[-1],
+        )
 
     def _get_obs(self) -> ObsType:
         if self.is_primary_simulation:
@@ -413,12 +428,29 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # but accessing the loop directly allows us to do more with the data at each step
         # TODO decide how to handle the stopping criteria
 
+        if not self.traj_plan.num_timesteps == self.arm_traj_plan.num_timesteps:
+            raise ValueError("Mismatched time info between base and arm trajs")
+
         # If this is the primary simulation, we just follow the best trajectory we have
         # Rewrd for the primary simulation doesn't mean anything, so no computation needed
         if self.is_primary_simulation:
-            self.controller.follow_traj(
-                self.traj_plan, stop_at_end=False, max_stop_iters=None
-            )
+            for i in range(self.traj_plan.num_timesteps):
+                pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
+                self.controller.step(
+                    pos,
+                    lin_vel,
+                    orn,
+                    ang_vel,
+                    self.traj_plan.positions[i, :],
+                    self.traj_plan.linear_velocities[i, :],
+                    self.traj_plan.linear_accels[i, :],
+                    self.traj_plan.quaternions[i, :],
+                    self.traj_plan.angular_velocities[i, :],
+                    self.traj_plan.angular_accels[i, :],
+                )
+                self.robot.set_joint_angles(
+                    self.arm_traj_plan.angles[i, :], self.arm_traj_plan.joint_ids
+                )
             reward = 0
         else:
             # We are in a rollout environment
@@ -427,9 +459,11 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             bag_safe_set_cost = 0  # init
             stabilization_cost = 0
             tracking_cost = 0
+            bag_vel_cost = 0
             steps_per_safe_set_eval = round(
                 1 / (self.traj_plan.timestep * self.safe_set_eval_freq)
             )
+            steps_per_bag_vel_eval = steps_per_safe_set_eval  # TEMP
             for i in range(self.traj_plan.num_timesteps):
                 # Note: the traj log gets updated whenever we access the current state
                 pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
@@ -445,6 +479,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     self.traj_plan.angular_velocities[i, :],
                     self.traj_plan.angular_accels[i, :],
                 )
+                self.robot.set_joint_angles(
+                    self.arm_traj_plan.angles[i, :], self.arm_traj_plan.joint_ids
+                )
                 # *** COST FUNCTION ***
                 # Perform collision checking on every timestep
                 robot_bb = self.robot.bounding_box
@@ -454,13 +491,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 # If either the robot or bag collided, stop the simulation and return an effectively infinite cost
                 # (Very large but not infinity to maintain sorting order in the edge case that all rollouts collide)
                 if not robot_is_safe:
-                    robot_safe_set_cost += 1000000
+                    robot_safe_set_cost += 10000
                     truncated = True
-                    break
+                    # break
                 if not bag_is_safe:
-                    bag_safe_set_cost += 1000000
+                    bag_safe_set_cost += 10000
                     truncated = True
-                    break
+                    # break
                 # These "stay away from the walls" costs are somewhat expensive to compute and don't necessarily need
                 # to be done every timestep. TODO just use the local description of the safe set, not the full thing
                 if i % steps_per_safe_set_eval == 0:
@@ -476,6 +513,17 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     bag_safe_set_cost += safe_set_cost(
                         bag_bb[1], self.safe_set.values()
                     )
+                # Penalizing bag velocities perpendicular to the robot's velocity during tracking
+                if i % steps_per_bag_vel_eval == 0:
+                    if self.flight_state == self.FlightStates.NOMINAL:
+                        # TODO move the bag dynamics eval
+                        bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
+                        bag_vel_cost += 30 * np.linalg.norm(bag_vel) - np.dot(
+                            lin_vel / np.linalg.norm(lin_vel), bag_vel
+                        )
+                    else:
+                        bag_vel_cost += 0
+
             # End-of-rollout additional cost function evaluations
             # 1) Stabilize the motion of the bag with respect to the robot
             # 2) Position the robot so it's stopped at the goal pose
@@ -517,11 +565,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 print("Bag safe set cost: ", bag_safe_set_cost)
                 print("Stabilization cost: ", stabilization_cost)
                 print("Tracking cost: ", tracking_cost)
+                print("Bag velocity cost: ", bag_vel_cost)
             reward = -1 * (
                 robot_safe_set_cost
                 + bag_safe_set_cost
                 + stabilization_cost
                 + tracking_cost
+                + bag_vel_cost
             )
 
         # Observe the robot/bag state in the main env, dummy value if in rollout env

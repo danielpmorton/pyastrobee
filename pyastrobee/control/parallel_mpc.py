@@ -27,6 +27,7 @@ from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
+from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
 
 RECORD_VIDEO = False
@@ -87,7 +88,8 @@ def parallel_mpc_main(
         "bag_type": DeformableCargoBag
         if use_deformable_rollouts
         else ConstraintCargoBag,
-        "load_full_iss": False,
+        # We need the full ISS loaded if using deformable rollouts so save/restore state sees the same envs
+        "load_full_iss": use_deformable_rollouts,
     }
     debug_env_idx = 0
     # Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs
@@ -101,6 +103,7 @@ def parallel_mpc_main(
         per_env_kwargs=per_env_kwargs,
     )
     main_env.reset(random_seed)
+    vec_env.seed(random_seed)
     vec_env.reset()  # Random seed included in make_vec_env
 
     # Generate nominal trajectory
@@ -112,14 +115,20 @@ def parallel_mpc_main(
         goal_pose[3:],
         dt,
     )
+    nominal_arm_traj = plan_arm_traj(nominal_traj)
 
     # Store the goal pose to determine stopping criteria
     # TODO should this instead be an input to the environment?
+    # TODO it seems like this doesn't actually work properly
     main_env.goal_pose = goal_pose
     vec_env.set_attr("goal_pose", goal_pose)
 
     if RECORD_VIDEO:
-        print("Ready to record video")
+        main_env.client.resetDebugVisualizerCamera(
+            1.40, -69.60, -19.00, (0.55, 0.00, -0.39)
+        )
+        camera_moved = False
+        print("Ready to record video. Remember to maximize the GUI")
         if Path(VIDEO_LOCATION).exists():
             print_red("WARNING: Recording video will overwrite an existing file")
         input("Press Enter to begin")
@@ -139,6 +148,9 @@ def parallel_mpc_main(
 
     # Init stopping mode for when we get to the end of the trajectory
     stopping = False
+
+    point_ids = None
+    cur_idx = 0
 
     # Execute the main MPC code in a try/finally block to make sure things close out / clean up when done
     try:
@@ -183,6 +195,11 @@ def parallel_mpc_main(
             # Clear any previously visualized trajectories before viewing the new plan
             if debug:
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
+                if point_ids is not None:
+                    for pid in point_ids:
+                        vec_env.env_method(
+                            "send_client_command", "removeUserDebugItem", pid
+                        )
 
             # Set the desired state of the robot at the lookahead point
             target_state = [
@@ -198,7 +215,26 @@ def parallel_mpc_main(
             vec_env.env_method("set_target_state", *target_state)
             # Generate sampled trajectories within each vec env
             vec_env.env_method("sample_trajectory")
+
+            # HACK
+            n = vec_env.get_attr("traj_plan", [0])[0].num_timesteps
+            # Handle arm traj
+            arm_traj_plan = nominal_arm_traj.get_segment(cur_idx, cur_idx + n)
+            # main_env.set_arm_traj(arm_traj_plan)
+            vec_env.env_method("set_arm_traj", arm_traj_plan)
+
             if debug:
+                env_state_samples = vec_env.get_attr("sampled_end_state")
+                env_poss = [s[0] for s in env_state_samples]
+                point_ids = vec_env.env_method(
+                    "send_client_command",
+                    "addUserDebugPoints",
+                    env_poss,
+                    [[1, 1, 1]] * len(env_poss),
+                    10,
+                    0,
+                    indices=[debug_env_idx],
+                )
                 vec_env.env_method("show_traj_plan", 10, indices=[debug_env_idx])
             # Stepping in the vec env will follow the sampled trajectory
             # Action input in step(actions) is a dummy parameter for now, just for Gym compatibility
@@ -209,9 +245,15 @@ def parallel_mpc_main(
                 "traj_plan", [int(np.argmax(env_rewards))]
             )[0]
             # Follow the best rollout in the main environment. (Use dummy action value in step call)
-            main_env.traj_plan = best_traj.get_segment(
-                0,
-                int(best_traj.num_timesteps * (execution_duration / rollout_duration)),
+            n_execution_timesteps = int(
+                best_traj.num_timesteps * (execution_duration / rollout_duration)
+            )
+            # print("N EXECUTION TIMESTEPS: ", n_execution_timesteps)
+            # print("N ROLLOUT TIMESTEPS: ", lookahead_idx - cur_idx)
+            # print("CUR IDX: ", cur_idx)
+            main_env.traj_plan = best_traj.get_segment(0, n_execution_timesteps)
+            main_env.set_arm_traj(
+                nominal_arm_traj.get_segment(cur_idx, cur_idx + n_execution_timesteps)
             )
             (
                 main_obs,
@@ -230,6 +272,16 @@ def parallel_mpc_main(
 
             # Update our time information
             cur_time += execution_duration
+            # TODO should the cur_time value actually be times[cur_idx]????
+            cur_idx += n_execution_timesteps
+
+            # Update the camera if we're taking video. These are hardcoded for the JPM motion
+            # Switch cameras when the robot base passes x = 2.5
+            if RECORD_VIDEO and not camera_moved and robot_state[0][0] >= 2.5:
+                main_env.client.resetDebugVisualizerCamera(
+                    1.00, 64.40, -12.20, (6.44, -0.39, 0.07)
+                )
+                camera_moved = True
 
             # Check if we've successfully completed the trajectory
             if main_terminated:
@@ -262,11 +314,11 @@ def _test_parallel_mpc():
     np.random.seed(random_seed)
     start_pose = [0, 0, 0, 0, 0, 0, 1]
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
-    bag_name = "top_handle"
-    bag_mass = 5
-    n_vec_envs = 5
+    bag_name = "top_handle_symmetric"
+    bag_mass = 10
+    n_vec_envs = 10
     debug = True
-    use_deformable_main_sim = False
+    use_deformable_main_sim = True
     use_deformable_rollouts = False
     parallel_mpc_main(
         start_pose,
