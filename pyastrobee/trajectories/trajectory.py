@@ -331,7 +331,7 @@ class ArmTrajectory:
                 "Mismatched input dimensions: Time info is not the same length as the angles"
             )
         self.angles = angles
-        self.indices = joint_ids
+        self.joint_ids = joint_ids
         self.times = times if times is not None else []
         self.num_timesteps = n_steps
         # Hacky way to store information on the times/indices when the arm moves back or forward
@@ -356,10 +356,10 @@ class ArmTrajectory:
         else:
             x_axis = self.times
             x_label = "Time, s"
-        n_subplots = len(self.indices)
+        n_subplots = len(self.joint_ids)
         subplot_shape = num_subplots_to_shape(n_subplots)
         fig = plt.figure()
-        for j, index in enumerate(self.indices):
+        for j, index in enumerate(self.joint_ids):
             plt.subplot(*subplot_shape, j + 1)
             plt.plot(x_axis, self.angles[:, j])
             plt.title(f"Joint {index}")
@@ -759,4 +759,75 @@ def merge_trajs(pos_traj: Trajectory, orn_traj: Trajectory) -> Trajectory:
 
     return Trajectory(
         positions, quaternions, lin_vels, ang_vels, lin_accels, ang_accels, times
+    )
+
+
+def concatenate_trajs(traj_1: Trajectory, traj_2: Trajectory) -> Trajectory:
+    """Combine two trajectories one after the other
+
+    This will follow the first trajectory until its end, then follow the second one until it ends
+
+    Args:
+        traj_1 (Trajectory): First trajectory
+        traj_2 (Trajectory): Second trajectory
+
+    Returns:
+        Trajectory: Combined trajectory
+    """
+    # Ensure continuity in time
+    # TODO check for continuity in all other components?
+    # TODO this assumes that both have time information
+    dt = traj_1.times[-1] - traj_1.times[-2]
+    if np.isclose(traj_2.times[0], 0):
+        times = np.concatenate([traj_1.times, traj_2.times + traj_1.times[-1] + dt])
+    elif np.isclose(traj_2.times[0], traj_1.times[-1] + dt):
+        times = np.concatenate([traj_1.times, traj_2.times])
+    return Trajectory(
+        np.vstack([traj_1.positions, traj_2.positions]),
+        np.vstack(
+            [traj_1.quaternions, traj_2.quaternions],
+        ),
+        np.vstack([traj_1.linear_velocities, traj_2.linear_velocities]),
+        np.vstack([traj_1.angular_velocities, traj_2.angular_velocities]),
+        np.vstack([traj_1.linear_accels, traj_2.linear_accels]),
+        np.vstack([traj_1.angular_accels, traj_2.angular_accels]),
+        times,
+    )
+
+
+def concatenate_arm_trajs(
+    traj_1: ArmTrajectory, traj_2: ArmTrajectory
+) -> ArmTrajectory:
+    """Combine two arm trajectories one after the other
+
+    This will follow the first trajectory until its end, then follow the second one until it ends
+
+    Args:
+        traj_1 (ArmTrajectory): First trajectory
+        traj_2 (ArmTrajectory): Second trajectory
+
+    Returns:
+        ArmTrajectory: Combined trajectory
+    """
+    if traj_1.joint_ids != traj_2.joint_ids:
+        raise NotImplementedError(
+            "Controlled joint indices must match between the two trajectories (for now)"
+        )
+    # Ensure continuity in time, and merge the key time information
+    # TODO check for continuity in all other components?
+    # TODO this assumes that both have time information
+    dt = traj_1.times[-1] - traj_1.times[-2]
+    new_key_times = traj_1.key_times
+    if np.isclose(traj_2.times[0], 0):
+        times = np.concatenate([traj_1.times, traj_2.times + traj_1.times[-1] + dt])
+        for name, time in traj_2.key_times.items():
+            new_key_times[name] = time + traj_1.times[-1] + dt
+    elif np.isclose(traj_2.times[0], traj_1.times[-1] + dt):
+        times = np.concatenate([traj_1.times, traj_2.times])
+        new_key_times |= traj_2.key_times
+    return ArmTrajectory(
+        np.vstack([traj_1.angles, traj_2.angles]),
+        traj_1.joint_ids,
+        times,
+        new_key_times
     )
