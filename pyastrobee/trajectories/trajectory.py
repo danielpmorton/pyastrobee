@@ -829,5 +829,88 @@ def concatenate_arm_trajs(
         np.vstack([traj_1.angles, traj_2.angles]),
         traj_1.joint_ids,
         times,
-        new_key_times
+        new_key_times,
+    )
+
+
+def extrapolate_traj(
+    traj: Trajectory, duration: Optional[float] = None, n_steps: Optional[int] = None
+) -> Trajectory:
+    """Extrapolates a trajectory by an amount of time
+
+    This assumes that the (pre-extrapolation) trajectory comes to a rest at the end
+
+    Either the extrapolation duration or number of timesteps must be specified. Not both, not neither
+
+    Args:
+        traj (Trajectory): Original trajectory
+        duration (Optional[float], optional): Amount of time to extrapolate by. Defaults to None
+            (n_steps input must be provided)
+        n_steps (Optional[int], optional): Number of timesteps to extrapolate by. Defaults to None
+            (duration input must be provided)
+
+    Returns:
+        Trajectory: Extrapolated trajectory
+    """
+    dt = traj.times[-1] - traj.times[-2]
+    if duration is None and n_steps is None:
+        raise ValueError(
+            "Must provide either a duration to extrapolate by, or a fixed number of timesteps"
+        )
+    elif duration is not None and n_steps is not None:
+        raise ValueError("Provide either a duration or a number of timesteps, not both")
+    elif duration is not None:
+        n_steps = round(duration / dt)
+    assert n_steps is not None
+    if not np.isclose(np.linalg.norm(traj.linear_velocities[-1]), 0) or not np.isclose(
+        np.linalg.norm(traj.angular_velocities[-1]), 0
+    ):
+        raise NotImplementedError(
+            "Cannot extrapolate the trajectory: Only implemented for trajectories that end at a stopped pose"
+        )
+    return Trajectory(
+        np.vstack([traj.positions, traj.positions[-1] * np.ones((n_steps, 1))]),
+        np.vstack([traj.quaternions, traj.quaternions[-1] * np.ones((n_steps, 1))]),
+        np.vstack([traj.linear_velocities, np.zeros((n_steps, 3))]),
+        np.vstack([traj.angular_velocities, np.zeros((n_steps, 3))]),
+        np.vstack([traj.linear_accels, np.zeros((n_steps, 3))]),
+        np.vstack([traj.angular_accels, np.zeros((n_steps, 3))]),
+        np.concatenate([traj.times, traj.times[-1] + dt + np.arange(n_steps) * dt]),
+    )
+
+
+def extrapolate_arm_traj(
+    traj: ArmTrajectory, duration: Optional[float] = None, n_steps: Optional[int] = None
+) -> ArmTrajectory:
+    """Extrapolates an arm trajectory by an amount of time
+
+    This assumes that the (pre-extrapolation) trajectory comes to a rest at the end
+
+    Either the extrapolation duration or number of timesteps must be specified. Not both, not neither
+
+    Args:
+        traj (ArmTrajectory): Original arm trajectory
+        duration (Optional[float], optional): Amount of time to extrapolate by. Defaults to None
+            (n_steps input must be provided)
+        n_steps (Optional[int], optional): Number of timesteps to extrapolate by. Defaults to None
+            (duration input must be provided)
+
+    Returns:
+        ArmTrajectory: Extrapolated arm trajectory
+    """
+    dt = traj.times[-1] - traj.times[-2]
+    if duration is None and n_steps is None:
+        raise ValueError(
+            "Must provide either a duration to extrapolate by, or a fixed number of timesteps"
+        )
+    elif duration is not None and n_steps is not None:
+        raise ValueError("Provide either a duration or a number of timesteps, not both")
+    elif duration is not None:
+        n_steps = round(duration / dt)
+    assert n_steps is not None
+    return ArmTrajectory(
+        np.vstack([traj.angles, traj.angles[-1] * np.ones((n_steps, 1))]),
+        traj.joint_ids,
+        np.concatenate([traj.times, traj.times[-1] + dt + np.arange(n_steps) * dt]),
+        traj.key_times,
     )
