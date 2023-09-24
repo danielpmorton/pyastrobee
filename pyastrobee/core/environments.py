@@ -42,6 +42,10 @@ from pyastrobee.utils.quaternions import quaternion_dist
 from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
+from pyastrobee.utils.transformations import invert_transform_mat
+from pyastrobee.trajectories.planner import local_planner
+from pyastrobee.trajectories.trajectory import concatenate_trajs
+
 
 class AstrobeeEnv(gym.Env):
     """Base Astrobee environment containing the Astrobee, ISS, and a cargo bag
@@ -375,30 +379,72 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             )
         pos, orn, vel, omega = self.robot.dynamics_state
         n_trajs = 1
-        self.traj_plan = generate_trajs(
-            pos,
-            orn,
-            vel,
-            omega,
-            self.last_accel_cmd,
-            self.last_alpha_cmd,
-            self.target_pos,
-            self.target_orn,
-            self.target_vel,
-            self.target_omega,
-            self.target_accel,
-            self.target_alpha,
-            self.pos_stdev,
-            self.orn_stdev,
-            self.vel_stdev,
-            self.ang_vel_stdev,
-            self.accel_stdev,
-            self.alpha_stdev,
-            n_trajs,
-            self.target_duration,
-            self.dt,
-            include_nominal_traj=self._nominal_rollouts,
-        )[0]
+        if self.flight_state == self.FlightStates.NOMINAL:
+            self.traj_plan = generate_trajs(
+                pos,
+                orn,
+                vel,
+                omega,
+                self.last_accel_cmd,
+                self.last_alpha_cmd,
+                self.target_pos,
+                self.target_orn,
+                self.target_vel,
+                self.target_omega,
+                self.target_accel,
+                self.target_alpha,
+                self.pos_stdev,
+                self.orn_stdev,
+                self.vel_stdev,
+                self.ang_vel_stdev,
+                self.accel_stdev,
+                self.alpha_stdev,
+                n_trajs,
+                self.target_duration,
+                self.dt,
+                include_nominal_traj=self._nominal_rollouts,
+            )[0]
+        elif self.flight_state == self.FlightStates.STOPPING:
+            stopping_time_stdev = 1  # TODO refine this and move it'
+            # Note: ensure that this is a positive value post-sampling
+            stopping_time = np.maximum(
+                np.random.normal(self.target_duration, stopping_time_stdev), 0
+            )
+            traj = local_planner(
+                pos,
+                orn,
+                vel,
+                omega,
+                self.last_accel_cmd,
+                self.last_alpha_cmd,
+                self.target_pos,
+                self.target_orn,
+                self.target_vel,
+                self.target_omega,
+                self.target_accel,
+                self.target_alpha,
+                stopping_time,
+                self.dt,
+            )
+            n_timesteps = round(self.target_duration / self.dt)
+            # If the stopping time is greater than the rollout time (target duration), clip it
+            # If the stopping time is less than the rollout time, extend it
+            if stopping_time >= self.target_duration:
+                self.traj_plan = traj.get_segment(0, n_timesteps)
+            else:  # Less than
+                # Create a trajectory at the stopped position for the remaining timesteps
+                remaining_timesteps = n_timesteps - traj.num_timesteps
+                stop_traj = Trajectory(
+                    self.target_pos * np.ones((remaining_timesteps, 1)),
+                    self.target_orn * np.ones((remaining_timesteps, 1)),
+                    np.zeros((remaining_timesteps, 3)),
+                    np.zeros((remaining_timesteps, 3)),
+                    np.zeros((remaining_timesteps, 3)),
+                    np.zeros((remaining_timesteps, 3)),
+                    np.arange(remaining_timesteps) * self.dt,
+                )
+                self.traj_plan = concatenate_trajs(traj, stop_traj)
+
         self.sampled_end_state = (
             self.traj_plan.positions[-1],
             self.traj_plan.quaternions[-1],
