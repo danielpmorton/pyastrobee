@@ -145,13 +145,15 @@ def parallel_mpc_main(
     traj_end_time = nominal_traj.times[-1]
     max_stopping_time = 30  # seconds
     max_time = traj_end_time + max_stopping_time
-    target_rollout_duration = 5  # seconds
-    target_execution_duration = (
-        1  # seconds (How much of the rollout to actually execute)
-    )
+    rollout_duration = 5  # seconds
+    execution_duration = 1  # seconds (How much of the rollout to actually execute)
 
-    # Init stopping mode for when we get to the end of the trajectory
-    stopping = False
+    # TEMP, TESTING. IMPROVE THIS
+    main_env.set_planning_duration(rollout_duration)
+    vec_env.env_method("set_planning_duration", rollout_duration)
+
+    # State machine
+    mode = AstrobeeMPCEnv.FlightStates.NOMINAL
 
     point_ids = None
     cur_idx = 0
@@ -165,37 +167,43 @@ def parallel_mpc_main(
             # Determine the duration of the rollout and where on the trajectory we are interested
             remaining_traj_time = traj_end_time - cur_time
             remaining_total_time = max_time - cur_time
-            # stopping = remaining_traj_time <= dt
             out_of_time = remaining_total_time <= dt
 
-            if remaining_traj_time <= dt:
+            # Update our flight state machine (TODO improve logic, make separate method)
+            if (
+                remaining_traj_time <= rollout_duration
+                and mode == AstrobeeMPCEnv.FlightStates.NOMINAL
+            ):
                 # Update this flag in our environments only once, when this changes
-                if not stopping:
-                    print("Setting flight state to STOPPING")
-                    main_env.set_flight_state(AstrobeeMPCEnv.FlightStates.STOPPING)
-                    vec_env.env_method(
-                        "set_flight_state", AstrobeeMPCEnv.FlightStates.STOPPING
-                    )
-                stopping = True
+                print("Setting flight state to SLOWING")
+                main_env.set_flight_state(AstrobeeMPCEnv.FlightStates.SLOWING)
+                vec_env.env_method(
+                    "set_flight_state", AstrobeeMPCEnv.FlightStates.SLOWING
+                )
+                mode = AstrobeeMPCEnv.FlightStates.SLOWING
+            if (
+                remaining_traj_time <= dt
+                and mode != AstrobeeMPCEnv.FlightStates.STOPPING
+            ):
+                # Update this flag in our environments only once, when this changes
+                print("Setting flight state to STOPPING")
+                main_env.set_flight_state(AstrobeeMPCEnv.FlightStates.STOPPING)
+                vec_env.env_method(
+                    "set_flight_state", AstrobeeMPCEnv.FlightStates.STOPPING
+                )
+                mode = AstrobeeMPCEnv.FlightStates.STOPPING
             if out_of_time:
                 print_red("Terminating due to time limit")
                 break
-            if stopping:
-                rollout_duration = min(target_rollout_duration, remaining_total_time)
-                execution_duration = min(
-                    target_execution_duration, remaining_total_time
-                )
+            if mode in {
+                AstrobeeMPCEnv.FlightStates.SLOWING,
+                AstrobeeMPCEnv.FlightStates.STOPPING,
+            }:
                 lookahead_idx = -1
-            else:  # Following the trajectory
-                rollout_duration = min(target_rollout_duration, remaining_traj_time)
-                execution_duration = min(target_execution_duration, remaining_traj_time)
-                # Handle the case where we are nearing the end of the trajectory
-                if remaining_traj_time < target_rollout_duration:
-                    lookahead_idx = -1
-                else:
-                    lookahead_idx = np.searchsorted(
-                        nominal_traj.times, cur_time + rollout_duration
-                    )
+            else:
+                lookahead_idx = np.searchsorted(
+                    nominal_traj.times, cur_time + rollout_duration
+                )
             # Clear any previously visualized trajectories before viewing the new plan
             if debug:
                 vec_env.env_method("unshow_traj_plan", indices=[debug_env_idx])
@@ -205,6 +213,10 @@ def parallel_mpc_main(
                             "send_client_command", "removeUserDebugItem", pid
                         )
 
+            # THIS IS WEIRD
+            # The thinking here is that when we are slowing down we might have a plan that we will get to our goal in
+            # like 2 seconds even if the rollout duration is 5 seconds
+            target_duration = min(max(0, remaining_traj_time), rollout_duration)
             # Set the desired state of the robot at the lookahead point
             target_state = [
                 nominal_traj.positions[lookahead_idx],
@@ -213,7 +225,7 @@ def parallel_mpc_main(
                 nominal_traj.angular_velocities[lookahead_idx],
                 nominal_traj.linear_accels[lookahead_idx],
                 nominal_traj.angular_accels[lookahead_idx],
-                rollout_duration,
+                target_duration,
             ]
             main_env.set_target_state(*target_state)
             vec_env.env_method("set_target_state", *target_state)

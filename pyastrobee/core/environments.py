@@ -34,7 +34,7 @@ from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.control.cost_functions import safe_set_cost
-from pyastrobee.trajectories.sampling import generate_trajs
+from pyastrobee.trajectories.sampling import generate_trajs, sample_state
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
@@ -67,7 +67,7 @@ class AstrobeeEnv(gym.Env):
         self,
         use_gui: bool,
         robot_pose: npt.ArrayLike = (0, 0, 0, 0, 0, 0, 1),
-        bag_name: str = "top_handle",
+        bag_name: str = "top_handle_symmetric",
         bag_mass: float = 10,
         bag_type: type[CargoBag] = DeformableCargoBag,
         load_full_iss: bool = True,
@@ -223,9 +223,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
     """
 
     class FlightStates(Enum):
-        STARTING = "starting"
+        # STARTING = "starting"
         NOMINAL = "nominal"
-        # SLOWING = "slowing"
+        SLOWING = "slowing"
         STOPPING = "stopping"
 
     def __init__(
@@ -262,8 +262,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             kq,
             kw,
             self.dt,
-            max_force=MAX_FORCE_MAGNITUDE,
-            max_torque=MAX_TORQUE_MAGNITUDE,
+            max_force=MAX_FORCE_MAGNITUDE * 10,  # TODO REMOVE THIS SCALING FACTOR
+            max_torque=MAX_TORQUE_MAGNITUDE * 10,
             client=self.client,
         )
 
@@ -277,8 +277,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
         # Store last acceleration commands
         # Update through set_attr
-        self.last_accel_cmd = 0.0  # init
-        self.last_alpha_cmd = 0.0  # init
+        self.last_accel_cmd = np.zeros(3)  # init
+        self.last_alpha_cmd = np.zeros(3)  # init
 
         # Frequency at which we query our "stay away from the walls" cost function
         self.safe_set_eval_freq = 10  # Hz
@@ -288,6 +288,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
         # Keep track of whether we're stopping or in a nominal flight mode
         self.flight_state = self.FlightStates.NOMINAL  # init
+
+        # (effectively the rollout duration, should be a constant) - TODO IMPROVE THIS
+        self.planning_duration = None
 
         # Store where we want the Astrobee to be at the end of the MPC run to determine if we are done
         self.goal_pose = None  # init
@@ -319,6 +322,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
     def set_arm_traj(self, traj: ArmTrajectory):  # TODO IMPROVE THIS
         self.arm_traj_plan = traj
+
+    def set_planning_duration(self, duration):  # TODO improve this
+        self.planning_duration = duration
 
     def set_flight_state(self, state: Union[str, FlightStates]):
         """Set the current flight state: for instance, whether we are in nominal operating mode, stopping, ...
@@ -378,65 +384,114 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 "Trajectory sampling should only occur in one of parallel environments for evaluation purposes"
             )
         pos, orn, vel, omega = self.robot.dynamics_state
-        n_trajs = 1
+
+        # Time sampling parameters (TODO refine these, move them somewhere else)
+        time_stdev = 1
+        # Note: ensure that this is a positive value post-sampling
+        min_time = 1
+        n_timesteps = round(self.planning_duration / self.dt)  # Nominal
+
         if self.flight_state == self.FlightStates.NOMINAL:
-            self.traj_plan = generate_trajs(
-                pos,
-                orn,
-                vel,
-                omega,
-                self.last_accel_cmd,
-                self.last_alpha_cmd,
-                self.target_pos,
-                self.target_orn,
-                self.target_vel,
-                self.target_omega,
-                self.target_accel,
-                self.target_alpha,
-                self.pos_stdev,
-                self.orn_stdev,
-                self.vel_stdev,
-                self.ang_vel_stdev,
-                self.accel_stdev,
-                self.alpha_stdev,
-                n_trajs,
-                self.target_duration,
-                self.dt,
-                include_nominal_traj=self._nominal_rollouts,
-            )[0]
+            end_state = (
+                [
+                    self.target_pos,
+                    self.target_orn,
+                    self.target_vel,
+                    self.target_omega,
+                    self.target_accel,
+                    self.target_alpha,
+                ]
+                if self._nominal_rollouts
+                else sample_state(
+                    self.target_pos,
+                    self.target_orn,
+                    self.target_vel,
+                    self.target_omega,
+                    self.last_accel_cmd,
+                    self.last_alpha_cmd,
+                    self.pos_stdev,
+                    self.orn_stdev,
+                    self.vel_stdev,
+                    self.ang_vel_stdev,
+                    self.accel_stdev,
+                    self.alpha_stdev,
+                )
+            )
+            duration = self.target_duration
+        elif self.flight_state == self.FlightStates.SLOWING:
+            end_state = (
+                [
+                    self.target_pos,
+                    self.target_orn,
+                    self.target_vel,
+                    self.target_omega,
+                    self.target_accel,
+                    self.target_alpha,
+                ]
+                if self._nominal_rollouts
+                else sample_state(
+                    self.target_pos,
+                    self.target_orn,
+                    self.target_vel,
+                    self.target_omega,
+                    self.last_accel_cmd,
+                    self.last_alpha_cmd,
+                    self.pos_stdev / 3,
+                    self.orn_stdev / 3,
+                    self.vel_stdev / 3,
+                    self.ang_vel_stdev / 3,
+                    self.accel_stdev / 3,
+                    self.alpha_stdev / 3,
+                )
+            )
+            duration = (
+                self.target_duration
+                if self._nominal_rollouts
+                else np.maximum(
+                    np.random.normal(self.target_duration, time_stdev), min_time
+                )
+            )
         elif self.flight_state == self.FlightStates.STOPPING:
-            stopping_time_stdev = 1  # TODO refine this and move it'
-            # Note: ensure that this is a positive value post-sampling
-            stopping_time = np.maximum(
-                np.random.normal(self.target_duration, stopping_time_stdev), 0
-            )
-            traj = local_planner(
-                pos,
-                orn,
-                vel,
-                omega,
-                self.last_accel_cmd,
-                self.last_alpha_cmd,
+            end_state = [
                 self.target_pos,
                 self.target_orn,
                 self.target_vel,
                 self.target_omega,
                 self.target_accel,
                 self.target_alpha,
-                stopping_time,
-                self.dt,
+            ]
+            duration = (
+                self.planning_duration
+                if self._nominal_rollouts
+                else np.maximum(
+                    np.random.normal(self.planning_duration, time_stdev), min_time
+                )
             )
-            n_timesteps = round(self.target_duration / self.dt)
-            # If the stopping time is greater than the rollout time (target duration), clip it
-            # If the stopping time is less than the rollout time, extend it
-            if stopping_time >= self.target_duration:
+        else:
+            raise AttributeError("Flight state not recognized")
+        traj = local_planner(
+            pos,
+            orn,
+            vel,
+            omega,
+            self.last_accel_cmd,
+            self.last_alpha_cmd,
+            *end_state,
+            duration,
+            self.dt,
+        )
+        if traj.num_timesteps == n_timesteps:
+            self.traj_plan = traj
+        else:
+            # Traj is either too long or too short, so adjust it
+            if traj.num_timesteps > n_timesteps:
                 self.traj_plan = traj.get_segment(0, n_timesteps)
             else:  # Less than
                 # Create a trajectory at the stopped position for the remaining timesteps
                 remaining_timesteps = n_timesteps - traj.num_timesteps
                 stop_traj = Trajectory(
-                    self.target_pos * np.ones((remaining_timesteps, 1)),
-                    self.target_orn * np.ones((remaining_timesteps, 1)),
+                    traj.positions[-1] * np.ones((remaining_timesteps, 1)),
+                    traj.quaternions[-1] * np.ones((remaining_timesteps, 1)),
                     np.zeros((remaining_timesteps, 3)),
                     np.zeros((remaining_timesteps, 3)),
                     np.zeros((remaining_timesteps, 3)),
@@ -444,7 +499,6 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     np.arange(remaining_timesteps) * self.dt,
                 )
                 self.traj_plan = concatenate_trajs(traj, stop_traj)
-
         self.sampled_end_state = (
             self.traj_plan.positions[-1],
             self.traj_plan.quaternions[-1],
