@@ -82,6 +82,9 @@ class ForceTorqueController:
         self.traj_log = TrajectoryLogger()
         self.control_log = ControlLogger()
         self.client: pybullet = pybullet if client is None else client
+        # Parameters for checking if there was a quaternion sign flip
+        self.last_quat = np.array(self.client.getBasePositionAndOrientation(self.id)[1])
+        self.quat_sign = 1
 
     # TODO figure out how world/robot frame should be handled
     def get_force(
@@ -129,7 +132,11 @@ class ForceTorqueController:
         Returns:
             np.ndarray: Torque, (Tx, Ty, Tz), shape (3,)
         """
-        ang_err = quaternion_angular_error(cur_q, des_q)
+        if np.allclose(cur_q, -1 * self.last_quat, atol=1e-3):
+            print("Quaternion flip detected")
+            self.quat_sign *= -1
+        ang_err = quaternion_angular_error(cur_q * self.quat_sign, des_q)
+        self.last_quat = cur_q
         ang_vel_err = cur_w - des_w
         # Standard 3D free-body torque equation based on desired ang. accel and current ang. vel
         torque = self.inertia @ des_a + np.cross(cur_w, self.inertia @ cur_w)
