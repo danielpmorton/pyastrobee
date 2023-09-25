@@ -523,7 +523,12 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             steps_per_safe_set_eval = round(
                 1 / (self.traj_plan.timestep * self.safe_set_eval_freq)
             )
-            steps_per_bag_vel_eval = steps_per_safe_set_eval  # TEMP
+            # TODO IMPROVE THIS
+            # the thought here was that if we're stopping (or slowing) we care more about the overall positioning
+            # rather than just staying in the middle of the modules
+            safe_set_weight = (
+                1 if self.flight_state == self.FlightStates.NOMINAL else 0.1
+            )
             for i in range(self.traj_plan.num_timesteps):
                 # Note: the traj log gets updated whenever we access the current state
                 pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
@@ -570,16 +575,16 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 # These "stay away from the walls" costs are somewhat expensive to compute and don't necessarily need
                 # to be done every timestep. TODO just use the local description of the safe set, not the full thing
                 if i % steps_per_safe_set_eval == 0:
-                    robot_safe_set_cost += safe_set_cost(
+                    robot_safe_set_cost += safe_set_weight * safe_set_cost(
                         robot_bb[0], self.safe_set.values()
                     )
-                    robot_safe_set_cost += safe_set_cost(
+                    robot_safe_set_cost += safe_set_weight * safe_set_cost(
                         robot_bb[1], self.safe_set.values()
                     )
-                    bag_safe_set_cost += safe_set_cost(
+                    bag_safe_set_cost += safe_set_weight * safe_set_cost(
                         bag_bb[0], self.safe_set.values()
                     )
-                    bag_safe_set_cost += safe_set_cost(
+                    bag_safe_set_cost += safe_set_weight * safe_set_cost(
                         bag_bb[1], self.safe_set.values()
                     )
                 # Penalizing bag velocities perpendicular to the robot's velocity during tracking
