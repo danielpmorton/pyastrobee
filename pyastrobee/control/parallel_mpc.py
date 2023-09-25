@@ -30,10 +30,15 @@ from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
 
+# Recording parameters
 RECORD_VIDEO = False
 VIDEO_LOCATION = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
 )
+# Debug visualizer camera parameters: Dist, yaw, pitch, target
+NODE_2_VIEW = (1.40, -69.60, -19.00, (0.55, 0.00, -0.39))
+JPM_VIEW = (1.00, 64.40, -12.20, (6.44, -0.39, 0.07))
+EXTERNAL_VIEW = (9.20, 49.60, -9.80, (-1.07, -1.53, -0.41))
 
 
 def parallel_mpc_main(
@@ -124,9 +129,8 @@ def parallel_mpc_main(
     vec_env.set_attr("goal_pose", goal_pose)
 
     if RECORD_VIDEO:
-        main_env.client.resetDebugVisualizerCamera(
-            1.40, -69.60, -19.00, (0.55, 0.00, -0.39)
-        )
+        # main_env.client.resetDebugVisualizerCamera(*NODE_2_VIEW)
+        main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)
         camera_moved = False
         print("Ready to record video. Remember to maximize the GUI")
         if Path(VIDEO_LOCATION).exists():
@@ -277,11 +281,13 @@ def parallel_mpc_main(
 
             # Update the camera if we're taking video. These are hardcoded for the JPM motion
             # Switch cameras when the robot base passes x = 2.5
-            if RECORD_VIDEO and not camera_moved and robot_state[0][0] >= 2.5:
-                main_env.client.resetDebugVisualizerCamera(
-                    1.00, 64.40, -12.20, (6.44, -0.39, 0.07)
-                )
-                camera_moved = True
+
+            # if RECORD_VIDEO and not camera_moved and robot_state[0][0] >= 2.5:
+            #     main_env.client.resetDebugVisualizerCamera(*JPM_VIEW)
+            #     camera_moved = True
+            # if RECORD_VIDEO and not camera_moved and robot_state[0][0] <= -1:
+            #     main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW_2)
+            #     camera_moved = True
 
             # Check if we've successfully completed the trajectory
             if main_terminated:
@@ -308,7 +314,7 @@ def parallel_mpc_main(
         vec_env.close()
 
 
-def _test_parallel_mpc():
+def _test_node_2_to_jpm():
     """Quick function to test that the parallel MPC is working as expected"""
     random_seed = 0
     np.random.seed(random_seed)
@@ -333,5 +339,32 @@ def _test_parallel_mpc():
     )
 
 
+def _test_jpm_to_us_lab():
+    """Quick function to test that the parallel MPC is working as expected"""
+
+    random_seed = 0
+    np.random.seed(random_seed)
+    start_pose = [6, 0, 0.2, 0, 0, 1, 0]  # JPM
+    end_pose = [-0.063, -8.5355, 0, 0, 0, -np.sqrt(2) / 2, np.sqrt(2) / 2]  # US
+    bag_name = "top_handle_symmetric"
+    bag_mass = 10
+    n_vec_envs = 10
+    debug = True
+    use_deformable_main_sim = True
+    use_deformable_rollouts = False
+    parallel_mpc_main(
+        start_pose,
+        end_pose,
+        n_vec_envs,
+        bag_name,
+        bag_mass,
+        use_deformable_main_sim,
+        use_deformable_rollouts,
+        debug,
+        random_seed,
+    )
+
+
 if __name__ == "__main__":
-    _test_parallel_mpc()
+    # _test_node_2_to_jpm()
+    _test_jpm_to_us_lab()
