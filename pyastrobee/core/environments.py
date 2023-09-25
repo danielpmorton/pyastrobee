@@ -479,6 +479,10 @@ class AstrobeeMPCEnv(AstrobeeEnv):
 
         # If this is the primary simulation, we just follow the best trajectory we have
         # Rewrd for the primary simulation doesn't mean anything, so no computation needed
+        inertia_update_freq = 5
+        steps_per_inertia_update = round(
+            1 / (self.traj_plan.timestep * inertia_update_freq)
+        )
         if self.is_primary_simulation:
             for i in range(self.traj_plan.num_timesteps):
                 pos, orn, lin_vel, ang_vel = self.controller.get_current_state()
@@ -497,6 +501,16 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 self.robot.set_joint_angles(
                     self.arm_traj_plan.angles[i, :], self.arm_traj_plan.joint_ids
                 )
+                # TODO THIS KINDA SUCKS
+                if i % steps_per_inertia_update == 0:
+                    T_R2W = self.robot.tmat
+                    T_B2W = self.bag.tmat
+                    T_B2R = invert_transform_mat(T_R2W) @ T_B2W
+                    p = T_B2R[:3, 3]
+                    self.controller.inertia = self.robot.inertia + self.bag.mass * (
+                        np.dot(p, p) * np.eye(3) - np.outer(p, p)
+                    )
+
             reward = 0
         else:
             # We are in a rollout environment
@@ -528,6 +542,15 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                 self.robot.set_joint_angles(
                     self.arm_traj_plan.angles[i, :], self.arm_traj_plan.joint_ids
                 )
+                # TODO THIS KINDA SUCKS
+                if i % steps_per_inertia_update == 0:
+                    T_R2W = self.robot.tmat
+                    T_B2W = self.bag.tmat
+                    T_B2R = invert_transform_mat(T_R2W) @ T_B2W
+                    p = T_B2R[:3, 3]
+                    self.controller.inertia = self.robot.inertia + self.bag.mass * (
+                        np.dot(p, p) * np.eye(3) - np.outer(p, p)
+                    )
                 # *** COST FUNCTION ***
                 # Perform collision checking on every timestep
                 robot_bb = self.robot.bounding_box
