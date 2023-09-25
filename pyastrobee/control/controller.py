@@ -461,6 +461,7 @@ class ControlLogger:
         self,
         max_force: Optional[npt.ArrayLike] = None,
         max_torque: Optional[npt.ArrayLike] = None,
+        show: bool = True,
     ) -> Figure:
         """Plot the stored history of control inputs
 
@@ -469,12 +470,13 @@ class ControlLogger:
                 Defaults to None (Don't indicate the limit on the plots)
             max_torque (Optional[npt.ArrayLike]): Applied torque limits (Tx_max, Ty_max, Tz_max), shape (3,)
                 Defaults to None (Don't indicate the limit on the plots)
+            show (bool, optional): Whether or not to show the plot. Defaults to True
 
         Returns:
             Figure: Matplotlib figure containing the plots
         """
         return plot_control(
-            self.forces, self.torques, self.times, max_force, max_torque
+            self.forces, self.torques, self.times, max_force, max_torque, show
         )
 
 
