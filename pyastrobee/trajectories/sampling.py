@@ -2,6 +2,9 @@
 
 # TODO make a method that uses different reward weighting in the trajectory optimization (e.g. different weighting
 # between minimizing jerk and minimizing pathlength)
+# TODO make sample_joint_states function
+# TODO decide if time should be in the sample state function... And does it make sense to call this a "state" because
+#      in other places we call things "dynamics state" and don't include acceleration info for instance??
 
 import numpy as np
 import numpy.typing as npt
@@ -9,6 +12,51 @@ import numpy.typing as npt
 from pyastrobee.utils.math_utils import spherical_vonmises_sampling
 from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import local_planner
+
+
+def sample_state(
+    nominal_pos: npt.ArrayLike,
+    nominal_orn: npt.ArrayLike,
+    nominal_vel: npt.ArrayLike,
+    nominal_ang_vel: npt.ArrayLike,
+    nominal_accel: npt.ArrayLike,
+    nominal_alpha: npt.ArrayLike,
+    pos_stdev: float,
+    orn_stdev: float,
+    vel_stdev: float,
+    ang_vel_stdev: float,
+    accel_stdev: float,
+    alpha_stdev: float,
+) -> list[np.ndarray]:
+    """Generate a sample about a nominal state
+
+    Args:
+        nominal_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)
+        nominal_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)
+        nominal_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)
+        nominal_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)
+        nominal_accel (npt.ArrayLike): Nominal desired linear acceleration to sample about, shape (3,)
+        nominal_alpha (npt.ArrayLike): Nominal desired angular acceleration to sample about, shape (3,)
+        pos_stdev (float): Standard deviation of the position sampling distribution
+        orn_stdev (float): Standard deviation of the orientation sampling distribution
+        vel_stdev (float): Standard deviation of the velocity sampling distribution
+        ang_vel_stdev (float): Standard deviation of the angular velocity sampling distribution
+        accel_stdev (float): Standard deviation of the linear acceleration sampling distribution
+        alpha_stdev (float): Standard deviation of the angular acceleration sampling distribution
+
+    Returns:
+        list[np.ndarray]: Sampled state. Length = 6. Includes position, orientation,
+            velocity, angular velocity, acceleration, and angular acceleration
+    """
+    pos = np.random.multivariate_normal(nominal_pos, pos_stdev**2 * np.eye(3))
+    orn = spherical_vonmises_sampling(nominal_orn, 1 / (orn_stdev**2), 1)[0]
+    vel = np.random.multivariate_normal(nominal_vel, vel_stdev**2 * np.eye(3))
+    ang_vel = np.random.multivariate_normal(
+        nominal_ang_vel, ang_vel_stdev**2 * np.eye(3)
+    )
+    accel = np.random.multivariate_normal(nominal_accel, accel_stdev**2 * np.eye(3))
+    alpha = np.random.multivariate_normal(nominal_alpha, alpha_stdev**2 * np.eye(3))
+    return [pos, orn, vel, ang_vel, accel, alpha]
 
 
 # TODO
