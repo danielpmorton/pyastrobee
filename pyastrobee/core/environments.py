@@ -587,16 +587,13 @@ class AstrobeeMPCEnv(AstrobeeEnv):
                     bag_safe_set_cost += safe_set_weight * safe_set_cost(
                         bag_bb[1], self.safe_set.values()
                     )
-                # Penalizing bag velocities perpendicular to the robot's velocity during tracking
-                if i % steps_per_bag_vel_eval == 0:
-                    if self.flight_state == self.FlightStates.NOMINAL:
-                        # TODO move the bag dynamics eval
-                        bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
-                        bag_vel_cost += 30 * np.linalg.norm(bag_vel) - np.dot(
-                            lin_vel / np.linalg.norm(lin_vel), bag_vel
-                        )
-                    else:
-                        bag_vel_cost += 0
+            bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
+            # Penalizing bag velocities perpendicular to the robot's velocity at end of rollout
+            if self.flight_state == self.FlightStates.NOMINAL:
+                bag_vel_cost = 300 * (
+                    np.linalg.norm(bag_vel)
+                    - np.dot(lin_vel / np.linalg.norm(lin_vel), bag_vel)
+                )
 
             # End-of-rollout additional cost function evaluations
             # 1) Stabilize the motion of the bag with respect to the robot
@@ -604,7 +601,6 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             # Both of these are only relevant when we're at the end of the nominal trajectory
             # TODO tune all of the scaling factors on the costs
             if self.flight_state == self.FlightStates.STOPPING:
-                bag_pos, bag_orn, bag_vel, bag_ang_vel = self.bag.dynamics_state
                 angular_term = np.linalg.norm(ang_vel - bag_ang_vel)
                 r_r2b = bag_pos - pos  # Vector from robot to bag
                 linear_term = np.linalg.norm(
