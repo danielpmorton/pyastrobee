@@ -31,9 +31,9 @@ from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
 
 # Recording parameters
-RECORD_VIDEO = False
-VIDEO_LOCATION = (
-    f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
+RECORD_VIDEO = True
+VIDEO_DIRECTORY = (
+    f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
 )
 # Debug visualizer camera parameters: Dist, yaw, pitch, target
 NODE_2_VIEW = (1.40, -69.60, -19.00, (0.55, 0.00, -0.39))
@@ -128,17 +128,18 @@ def parallel_mpc_main(
     main_env.goal_pose = goal_pose
     vec_env.set_attr("goal_pose", goal_pose)
 
+    video_index = 0
+    camera_moved = False
     if RECORD_VIDEO:
         # main_env.client.resetDebugVisualizerCamera(*NODE_2_VIEW)
         main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)
-        camera_moved = False
         print("Ready to record video. Remember to maximize the GUI")
-        if Path(VIDEO_LOCATION).exists():
-            print_red("WARNING: Recording video will overwrite an existing file")
+        path = Path(VIDEO_DIRECTORY)
+        if Path(VIDEO_DIRECTORY).exists():
+            print_red("WARNING: Recording video will overwrite existing files")
+            # TODO decide if we should empty the directory
         input("Press Enter to begin")
-        log_id = main_env.client.startStateLogging(
-            main_env.client.STATE_LOGGING_VIDEO_MP4, VIDEO_LOCATION
-        )
+        path.mkdir(parents=True, exist_ok=True)
 
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
@@ -271,6 +272,11 @@ def parallel_mpc_main(
             main_env.set_arm_traj(
                 nominal_arm_traj.get_segment(cur_idx, cur_idx + n_execution_timesteps)
             )
+            if RECORD_VIDEO:
+                log_id = main_env.client.startStateLogging(
+                    main_env.client.STATE_LOGGING_VIDEO_MP4,
+                    f"{VIDEO_DIRECTORY}{video_index}.mp4",
+                )
             (
                 main_obs,
                 main_reward,
@@ -278,6 +284,10 @@ def parallel_mpc_main(
                 main_truncated,
                 main_info,
             ) = main_env.step(0)
+            if RECORD_VIDEO:
+                main_env.client.stopStateLogging(log_id)
+                video_index += 1
+
             robot_state, bag_state = main_obs
 
             # Update our knowledge of the last acceleration commands
