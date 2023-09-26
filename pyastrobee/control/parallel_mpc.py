@@ -31,10 +31,12 @@ from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
 
 # Recording parameters
-RECORD_VIDEO = True
-VIDEO_DIRECTORY = (
+RECORD_MAIN_ENV = False
+RECORD_DEBUG_ENV = True
+MAIN_VIDEO_DIRECTORY = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
 )
+DEBUG_VIDEO_DIRECTORY = MAIN_VIDEO_DIRECTORY.rstrip("/") + "_debug/"
 # Debug visualizer camera parameters: Dist, yaw, pitch, target
 NODE_2_VIEW = (1.40, -69.60, -19.00, (0.55, 0.00, -0.39))
 JPM_VIEW = (1.00, 64.40, -12.20, (6.44, -0.39, 0.07))
@@ -130,16 +132,28 @@ def parallel_mpc_main(
 
     video_index = 0
     camera_moved = False
-    if RECORD_VIDEO:
-        # main_env.client.resetDebugVisualizerCamera(*NODE_2_VIEW)
-        main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)
+    if RECORD_MAIN_ENV or RECORD_DEBUG_ENV:
+        main_env.client.resetDebugVisualizerCamera(*NODE_2_VIEW)
+        vec_env.env_method(
+            "send_client_command",
+            "resetDebugVisualizerCamera",
+            *NODE_2_VIEW,
+            indices=[debug_env_idx],
+        )
+        # main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)
         print("Ready to record video. Remember to maximize the GUI")
-        path = Path(VIDEO_DIRECTORY)
-        if Path(VIDEO_DIRECTORY).exists():
+        main_path = Path(MAIN_VIDEO_DIRECTORY)
+        debug_path = Path(DEBUG_VIDEO_DIRECTORY)
+        if (main_path.exists() and RECORD_MAIN_ENV) or (
+            debug_path.exists and RECORD_DEBUG_ENV
+        ):
             print_red("WARNING: Recording video will overwrite existing files")
-            # TODO decide if we should empty the directory
+            # TODO decide if we should empty the directory/directories
         input("Press Enter to begin")
-        path.mkdir(parents=True, exist_ok=True)
+        if RECORD_MAIN_ENV:
+            main_path.mkdir(parents=True, exist_ok=True)
+        if RECORD_DEBUG_ENV:
+            debug_path.mkdir(parents=True, exist_ok=True)
 
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
@@ -255,9 +269,25 @@ def parallel_mpc_main(
                 vec_env.env_method("show_traj_plan", 10, indices=[debug_env_idx])
             # Stepping in the vec env will follow the sampled trajectory
             # Action input in step(actions) is a dummy parameter for now, just for Gym compatibility
+            if RECORD_DEBUG_ENV:
+                debug_log_id = vec_env.env_method(
+                    "send_client_command",
+                    "startStateLogging",
+                    main_env.client.STATE_LOGGING_VIDEO_MP4,
+                    f"{DEBUG_VIDEO_DIRECTORY}{video_index}.mp4",
+                    indices=[debug_env_idx],
+                )[0]
             env_obs, env_rewards, env_dones, env_infos = vec_env.step(
                 np.zeros(n_vec_envs)
             )
+            if RECORD_DEBUG_ENV:
+                vec_env.env_method(
+                    "send_client_command",
+                    "stopStateLogging",
+                    debug_log_id,
+                    indices=[debug_env_idx],
+                )
+                video_index += 1
             best_traj: Trajectory = vec_env.get_attr(
                 "traj_plan", [int(np.argmax(env_rewards))]
             )[0]
@@ -272,10 +302,10 @@ def parallel_mpc_main(
             main_env.set_arm_traj(
                 nominal_arm_traj.get_segment(cur_idx, cur_idx + n_execution_timesteps)
             )
-            if RECORD_VIDEO:
-                log_id = main_env.client.startStateLogging(
+            if RECORD_MAIN_ENV:
+                main_log_id = main_env.client.startStateLogging(
                     main_env.client.STATE_LOGGING_VIDEO_MP4,
-                    f"{VIDEO_DIRECTORY}{video_index}.mp4",
+                    f"{MAIN_VIDEO_DIRECTORY}{video_index}.mp4",
                 )
             (
                 main_obs,
@@ -284,8 +314,8 @@ def parallel_mpc_main(
                 main_truncated,
                 main_info,
             ) = main_env.step(0)
-            if RECORD_VIDEO:
-                main_env.client.stopStateLogging(log_id)
+            if RECORD_MAIN_ENV:
+                main_env.client.stopStateLogging(main_log_id)
                 video_index += 1
 
             robot_state, bag_state = main_obs
@@ -304,12 +334,16 @@ def parallel_mpc_main(
             # Update the camera if we're taking video. These are hardcoded for the JPM motion
             # Switch cameras when the robot base passes x = 2.5
 
-            # if RECORD_VIDEO and not camera_moved and robot_state[0][0] >= 2.5:
-            #     main_env.client.resetDebugVisualizerCamera(*JPM_VIEW)
-            #     camera_moved = True
-            # if RECORD_VIDEO and not camera_moved and robot_state[0][0] <= -1:
-            #     main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW_2)
-            #     camera_moved = True
+            if (
+                (RECORD_MAIN_ENV or RECORD_DEBUG_ENV)
+                and not camera_moved
+                and robot_state[0][0] >= 2.5
+            ):
+                main_env.client.resetDebugVisualizerCamera(*JPM_VIEW)
+                vec_env.env_method(
+                    "send_client_command", "resetDebugVisualizerCamera", *JPM_VIEW
+                )
+                camera_moved = True
 
             # Check if we've successfully completed the trajectory
             if main_terminated:
@@ -329,8 +363,7 @@ def parallel_mpc_main(
 
         input("Complete. Press Enter to exit")
     finally:
-        if RECORD_VIDEO:
-            main_env.client.stopStateLogging(log_id)
+        # TODO Add video cleanup
         print("Closing environments")
         main_env.close()
         vec_env.close()
