@@ -29,6 +29,7 @@ from pyastrobee.trajectories.trajectory import Trajectory
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.arm_planner import plan_arm_traj
 from pyastrobee.utils.python_utils import print_red, print_green
+from pyastrobee.utils.video_concatenation import concatenate_videos
 
 # Recording parameters
 RECORD_MAIN_ENV = False
@@ -363,7 +364,10 @@ def parallel_mpc_main(
 
         input("Complete. Press Enter to exit")
     finally:
-        # TODO Add video cleanup
+        if RECORD_MAIN_ENV:
+            concatenate_videos(MAIN_VIDEO_DIRECTORY, cleanup=True)
+        if RECORD_DEBUG_ENV:
+            concatenate_videos(DEBUG_VIDEO_DIRECTORY, cleanup=True)
         print("Closing environments")
         main_env.close()
         vec_env.close()
