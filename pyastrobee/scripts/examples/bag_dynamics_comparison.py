@@ -11,7 +11,7 @@ from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.core.composite_bag import CompositeCargoBag
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
-
+from pyastrobee.control.multi_robot import step_controllers
 
 RECORD_VIDEO = False
 VIDEO_LOCATION = (
@@ -19,21 +19,6 @@ VIDEO_LOCATION = (
 )
 # Debug visualizer camera parameters: Dist, yaw, pitch, target
 CAMERA_VIEW = (1.80, 0.40, -14.60, (0, 0.2, -0.5))
-
-
-# TODO clean this up and move to multi robot control
-def step_controllers(
-    controllers: list[ForceTorqueController],
-    des_states: list[np.ndarray],
-    client,
-):
-    assert len(des_states) == len(controllers)
-    # HACKY: this assumes each state in des_states contains (in order):
-    # position, velocity, acceleration, quaternion, omega, alpha
-    for controller, des_state in zip(controllers, des_states):
-        pos, orn, vel, omega = controller.get_current_state()
-        controller.step(pos, vel, orn, omega, *des_state, step_sim=False)
-    client.stepSimulation()
 
 
 def main():

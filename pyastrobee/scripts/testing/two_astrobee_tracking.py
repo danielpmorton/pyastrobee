@@ -88,9 +88,7 @@ def independent_example():
     traj_1.visualize(10)
     traj_2.visualize(10)
 
-    multi_robot_control(
-        [robot_1, robot_2], [traj_1, traj_2], [controller_1, controller_2], False
-    )
+    multi_robot_control([controller_1, controller_2], [traj_1, traj_2], False)
 
 
 def bag_example():
@@ -167,9 +165,7 @@ def bag_example():
     traj_1.visualize(10)
     traj_2.visualize(10)
 
-    multi_robot_control(
-        [robot_1, robot_2], [traj_1, traj_2], [controller_1, controller_2], False
-    )
+    multi_robot_control([controller_1, controller_2], [traj_1, traj_2], False)
 
 
 # TODO tracking seems like it could be improved
@@ -229,9 +225,8 @@ def leader_follower_example():
     follower_traj.visualize(10)
 
     multi_robot_control(
-        [leader, follower],
-        [leader_traj, follower_traj],
         [leader_controller, follower_controller],
+        [leader_traj, follower_traj],
         True,
     )
 
@@ -299,9 +294,8 @@ def dual_trajectory_example():
     visualize_path(reference_traj.positions, n_viz, (1, 1, 1))
 
     multi_robot_control(
-        [robot_A, robot_B],
-        [traj_A, traj_B],
         [leader_controller, follower_controller],
+        [traj_A, traj_B],
         True,
     )
 
