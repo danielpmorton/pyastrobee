@@ -1,12 +1,7 @@
 """Script to visualize the dynamics of our different bag models under a initial disturbance"""
 
-# TODO for presentation:
-# - Record video
-# - Record wireframe
-# - Visualize the constraint attachment on the composite bag
-# - Capture a still frame with the bags in slightly different positions
-#   to help illustrate dynamics differences
-
+from pathlib import Path
+from datetime import datetime
 
 import numpy as np
 from pyastrobee.core.astrobee import Astrobee
@@ -16,6 +11,14 @@ from pyastrobee.core.rigid_bag import RigidCargoBag
 from pyastrobee.core.composite_bag import CompositeCargoBag
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
+
+
+RECORD_VIDEO = False
+VIDEO_LOCATION = (
+    f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
+)
+# Debug visualizer camera parameters: Dist, yaw, pitch, target
+CAMERA_VIEW = (1.80, 0.40, -14.60, (0, 0.2, -0.5))
 
 
 # TODO clean this up and move to multi robot control
@@ -40,8 +43,14 @@ def main():
     orn = (0, 0, 0, 1)
     client = initialize_pybullet()
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
+    client.resetDebugVisualizerCamera(*CAMERA_VIEW)
     bag_vel = 0.5 * np.random.rand(3)
     bag_omega = np.random.rand(3)
+    print(
+        "Initial velocity applied to the bags:\n"
+        + f"Velocity: {bag_vel}\n"
+        + f"Angular velocity: {bag_omega}"
+    )
     kp, kv, kq, kw = 20, 10, 5, 5
     robots = []
     controllers = []
@@ -71,9 +80,10 @@ def main():
                 dt,
             )
         )
+    client.stepSimulation()
+    for i in range(num_robots):
         bag_pos, bag_orn = client.getBasePositionAndOrientation(bags[i].id)
         bags[i].reset_dynamics(bag_pos, bag_orn, bag_vel, bag_omega)
-
     des_states = [
         (positions[i], np.zeros(3), np.zeros(3), orn, np.zeros(3), np.zeros(3))
         for i in range(num_robots)
@@ -85,21 +95,31 @@ def main():
     )
     points_uid = client.addUserDebugPoints(constraint_pos, rgbs, 10, 0)
 
-    while True:
-        step_controllers(controllers, des_states, client)
-        # Visualize constraints for the handles
-        points_uid = client.addUserDebugPoints(
-            np.vstack(
-                [
-                    bags[1].get_world_constraint_pos(0),
-                    bags[2].get_world_constraint_pos(0),
-                ]
-            ),
-            rgbs,
-            10,
-            0,
-            replaceItemUniqueId=points_uid,
+    if RECORD_VIDEO:
+        input("Ready to record video, press Enter to continue")
+        log_id = client.startStateLogging(
+            client.STATE_LOGGING_VIDEO_MP4, VIDEO_LOCATION
         )
+
+    try:
+        while True:
+            step_controllers(controllers, des_states, client)
+            # Visualize constraints for the handles
+            points_uid = client.addUserDebugPoints(
+                np.vstack(
+                    [
+                        bags[1].get_world_constraint_pos(0),
+                        bags[2].get_world_constraint_pos(0),
+                    ]
+                ),
+                rgbs,
+                10,
+                0,
+                replaceItemUniqueId=points_uid,
+            )
+    finally:
+        client.stopStateLogging(log_id)
+        client.disconnect()
 
 
 if __name__ == "__main__":
