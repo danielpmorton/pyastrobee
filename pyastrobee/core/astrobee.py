@@ -240,12 +240,20 @@ class Astrobee:
         Returns:
             np.ndarray: Position and quaternion, size (7,)
         """
+        return tmat_to_pos_quat(self.ee_tmat)
+
+    @property
+    def ee_tmat(self) -> np.ndarray:
+        """The current end-effector transformation matrix (gripper-to-world)
+
+        Returns:
+            np.ndarray: Transformation matrix, shape (4, 4)
+        """
         T_G2D = Astrobee.TRANSFORMS.GRIPPER_TO_ARM_DISTAL  # Gripper to distal
         T_D2W = self.get_link_transform(
             Astrobee.Links.ARM_DISTAL.value
         )  # Distal to world
-        T_G2W = T_D2W @ T_G2D  # Gripper to world
-        return tmat_to_pos_quat(T_G2W)
+        return T_D2W @ T_G2D
 
     @property
     def joint_angles(self) -> np.ndarray:

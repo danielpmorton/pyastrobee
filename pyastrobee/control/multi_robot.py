@@ -54,10 +54,10 @@ def multi_robot_control(
     if stop_at_end:
         des_states = [
             [
-                trajs[i].positions[t, :],
+                trajs[i].positions[-1, :],
                 np.zeros(3),
                 np.zeros(3),
-                trajs[i].quaternions[t, :],
+                trajs[i].quaternions[-1, :],
                 np.zeros(3),
                 np.zeros(3),
             ]
