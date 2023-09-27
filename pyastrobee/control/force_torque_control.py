@@ -238,6 +238,7 @@ class ForceTorqueController:
         des_orn: npt.ArrayLike,
         des_omega: npt.ArrayLike,
         des_alpha: npt.ArrayLike,
+        step_sim: bool = True,
     ) -> None:
         """Steps the controller and the simulation
 
@@ -252,6 +253,9 @@ class ForceTorqueController:
             des_orn (npt.ArrayLike): Desired orientation (XYZW quaternion), shape (4,)
             des_omega (npt.ArrayLike): Desired angular velocity, shape (3,)
             des_alpha (npt.ArrayLike): Desired angular acceleration, shape (3,)
+            step_sim (bool, optional): Whether to step the sim or not (This should almost always be true except for if
+                there are multiple active controllers in the simulation. In that case, the sim must be stepped manually
+                with this flag as False on each controller). Defaults to True.
         """
         force = self.get_force(pos, vel, des_pos, des_vel, des_accel)
         torque = self.get_torque(orn, omega, des_orn, des_omega, des_alpha)
@@ -269,7 +273,8 @@ class ForceTorqueController:
             self.id, -1, force, list(pos), pybullet.WORLD_FRAME
         )
         self.client.applyExternalTorque(self.id, -1, list(torque), pybullet.WORLD_FRAME)
-        self.client.stepSimulation()
+        if step_sim:
+            self.client.stepSimulation()
 
     def get_current_state(
         self,
