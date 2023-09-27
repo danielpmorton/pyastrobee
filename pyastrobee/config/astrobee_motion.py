@@ -1,5 +1,10 @@
 """Astrobee constants associated with motion planning and control
 
+Note: The nominal operating mode is good for most operations. Astrobee is in general very slow, so it is sometimes
+interesting to use the higher limits on velocity and acceleration. But, Astrobee is also pretty limited in the amount
+of force/torque it can provide, so if we're operating in a faster mode, this can lead to some highly dynamic motions
+that are hard to recover from.
+
 Sourced from:
 - astrobee/gds_configs/AllOperatingLimitsConfig.json
 - A Brief Guide to Astrobee
@@ -22,9 +27,7 @@ class FlightModes(Enum):
 
 
 # TODO: Update this parameter if testing a different mode
-# The maxed out flight mode is good for some of our planing methods, which can be a bit conservative
-# when enforcing these speed limits
-FLIGHT_MODE = FlightModes.MAXED_OUT
+FLIGHT_MODE = FlightModes.NOMINAL
 
 if FLIGHT_MODE == FlightModes.QUIET:
     LINEAR_SPEED_LIMIT = 0.02  # m/s
