@@ -17,7 +17,10 @@ from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.bullet_utils import create_box
 from pyastrobee.utils.transformations import make_transform_mat, transform_point
 from pyastrobee.utils.rotations import quat_to_rmat
-from pyastrobee.core.constraint_bag import form_constraint_grasp
+from pyastrobee.core.constraint_bag import (
+    form_constraint_grasp,
+    UNIT_CONSTRAINT_STRUCTURES,
+)
 
 
 class CompositeCargoBag(CargoBag):
@@ -86,22 +89,25 @@ class CompositeCargoBag(CargoBag):
         orig_rmat = original_grasp_transform[:3, :3]
         pos = self._center_aligned_block_structure()[handle_ijk]
         adjusted_grasp_transform = make_transform_mat(orig_rmat, pos)
-        structure = "tetrahedron"
-        n_constraints = 5  # For tetrahedron
         structure_scaling = 0.05
+        structure_type = "tetrahedron"
+        self.constraint_structure = (
+            UNIT_CONSTRAINT_STRUCTURES[structure_type] * structure_scaling
+        )
         primary_constraint_force = 3
         secondary_constraint_force = 2
         max_forces = np.concatenate(
             [
                 [primary_constraint_force],
-                secondary_constraint_force * np.ones(n_constraints - 1),
+                secondary_constraint_force
+                * np.ones(len(self.constraint_structure) - 1),
             ]
         )
         constraints = form_constraint_grasp(
             robot,
             handle_id,
             adjusted_grasp_transform,
-            structure,
+            structure_type,
             structure_scaling,
             max_forces,
             client=self.client,
@@ -360,6 +366,35 @@ class CompositeCargoBag(CargoBag):
             upper = np.maximum(upper, aabb[1])
         # TODO convert to Box instance?
         return np.array([lower, upper])
+
+    def get_local_constraint_pos(self, handle_index: int) -> np.ndarray:
+        """Determine the position of the handle's constraints in the bag frame
+
+        Args:
+            handle_index (int): Index of the handle of interest
+
+        Returns:
+            np.ndarray: Constraint positions, shape (n_constraints, 3)
+        """
+        return np.array(
+            [
+                transform_point(self.grasp_transforms[handle_index], pt)
+                for pt in self.constraint_structure
+            ]
+        )
+
+    def get_world_constraint_pos(self, handle_index: int) -> np.ndarray:
+        """Determine the position of the handle's constraints in the world frame
+
+        Args:
+            handle_index (int): Index of the handle of interest
+
+        Returns:
+            np.ndarray: Constraint positions, shape (n_constraints, 3)
+        """
+        tmat = self.tmat
+        local_constraint_pos = self.get_local_constraint_pos(handle_index)
+        return np.array([transform_point(tmat, pos) for pos in local_constraint_pos])
 
 
 def _main():
