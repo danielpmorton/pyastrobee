@@ -15,6 +15,8 @@ We use Portray to build the documentation. Note: if you'd like a local copy of t
 
 [Additional Installs](docs/additional_installs.md): Additional installs important for working with the project
 
+[Contributing](docs/contributing.md): Help develop new features!
+
 [Loading ISS Meshes](docs/loading_iss_meshes.md): Dealing with complex meshes and textures in Pybullet
 
 [Re-texturing](docs/retexturing.md): How to modify Astrobee meshes to load the URDF with a single texture file
