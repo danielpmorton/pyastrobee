@@ -6,15 +6,17 @@ as well as Nathan Sprague's Python translation
 # TODO decide if negative gains could actually be possible in the coupled case
 # TODO determine how to handle coupled gains in the integral case
 
-from typing import Optional
+from typing import Optional, Union
 
 import time
 import math
 
 import numpy as np
 import numpy.typing as npt
+import matplotlib.pyplot as plt
 
 from pyastrobee.utils.math_utils import is_diagonal, safe_divide
+from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
 class PID:
@@ -314,6 +316,66 @@ class PID:
         if self.n == 1:
             self._cmd = self._cmd[0]
         return self._cmd
+
+
+def plot_controller_history(
+    history: np.ndarray,
+    target: Union[npt.ArrayLike, float],
+    p_gain: Union[npt.ArrayLike, float, None] = None,
+    i_gain: Union[npt.ArrayLike, float, None] = None,
+    d_gain: Union[npt.ArrayLike, float, None] = None,
+):
+    """Plots the state history of variables controlled by a PID controller
+
+    Args:
+        history (np.ndarray): History of the variables through the duration of the control process,
+            in an array of shape (num_variables, num_timesteps)
+        target (Union[npt.ArrayLike, float]): Desired value(s) for the controlled variables
+        p_gain (Union[npt.ArrayLike, float, None], optional): Proportional gain(s).
+            Include this to print the gain value(s) onto the subplots. Defaults to None.
+        i_gain (Union[npt.ArrayLike, float, None], optional): Integral gain(s). Defaults to None.
+            Include this to print the gain value(s) onto the subplots. Defaults to None.
+        d_gain (Union[npt.ArrayLike, float, None], optional): Derivative gain(s). Defaults to None.
+            Include this to print the gain value(s) onto the subplots. Defaults to None.
+    """
+    # Ensure the dimensions of the arrays so that indexing works properly
+    history = np.atleast_2d(history)
+    target = np.atleast_1d(target)
+    if p_gain is not None:
+        p_gain = np.atleast_1d(p_gain)
+    if i_gain is not None:
+        i_gain = np.atleast_1d(i_gain)
+    if d_gain is not None:
+        d_gain = np.atleast_1d(d_gain)
+    n, nt = history.shape
+    fig_shape = num_subplots_to_shape(n)
+    plt.figure()
+    # Plot the history of each variable on its own subplot
+    for i in range(n):
+        ax = plt.subplot(*fig_shape, i + 1)
+        timesteps = range(nt)
+        plt.plot(timesteps, target[i] * np.ones(nt), "k--")
+        plt.plot(timesteps, history[i, :], "b")
+        title = f"Var. {i+1}"
+        # If the P/I/D gains are provided, include info about the gains for that
+        # control variable in the bottom right corner of the respective subplot
+        pid_info = ""
+        if p_gain is not None:
+            pid_info += f"P: {round(p_gain[i], 3)}\n"
+        if i_gain is not None:
+            pid_info += f"I: {round(i_gain[i], 3)}\n"
+        if d_gain is not None:
+            pid_info += f"D: {round(d_gain[i], 3)}"
+        plt.text(
+            0.98,
+            0.02,
+            pid_info,
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            transform=ax.transAxes,
+        )
+        plt.title(title)
+    plt.show()
 
 
 if __name__ == "__main__":

@@ -2,8 +2,7 @@
 
 import numpy as np
 
-from pyastrobee.control.pid import PID
-from pyastrobee.utils.plotting import plot_controller_history
+from pyastrobee.control.pid import PID, plot_controller_history
 
 
 def SISO_example():
