@@ -8,6 +8,8 @@
 <!-- (^ This workaround is not needed for pybullet, and if left in, pybullet adds in a "default" inertia) -->
 <!-- 3) Change meshes to OBJ files with the correct texture mapping -->
 <!-- 4) Add default_material parameter to prevent initial loading as entirely black -->
+<!-- 5) Manually modify top_aft joint: Make symmetric (it was misaligned before), update mass to match -->
+<!--    the overall quoted value for Astrobee -->
 
 <robot name="astrobee">
   <!-- BASE GEOMETRY -->
@@ -103,11 +105,14 @@
       </geometry>
     </collision>
   </link>
+  <!-- NOTE: this top aft link may be wrong -->
+  <!-- I manually modified the mass and the positioning -->
   <link name="honey_top_aft">
     <self_collide>false</self_collide>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.3078"/>
+      <!-- <mass value="0.3078"/> -->
+      <mass value="0.11225"/>
       <inertia ixx="0.02705" ixy="0.0" ixz="0.0" iyy="0.02705" iyz="0.0" izz="0.02705"/>
     </inertial>
     <visual>
@@ -120,7 +125,8 @@
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 -0.038125 0"/>
+      <!-- <origin rpy="0 0 0" xyz="0 -0.038125 0"/> -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <box size="0.090441 0.152400 0.076250"/>
       </geometry>
