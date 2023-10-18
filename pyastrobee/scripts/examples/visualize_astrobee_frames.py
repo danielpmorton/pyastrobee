@@ -7,7 +7,7 @@ from pyastrobee.utils.debug_visualizer import (
 )
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 
-client = initialize_pybullet(bg_color=[1, 1, 1])
+client = initialize_pybullet(bg_color=[0.5, 0.5, 0.5])
 robot = Astrobee()
 line_lengths = [0.5, 0.5, 0.25, 0.25, 0.1, 0.1, 0.1, 0.1]
 names = [

@@ -31,6 +31,7 @@ def test_state_space(use_sim_inertial_props: bool = False):
     np.random.seed(0)
     client = initialize_pybullet()
     robot = Astrobee(client=client)
+    robot.store_arm(force=True)
     dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
 
     if use_sim_inertial_props:
