@@ -402,3 +402,16 @@ def multiply(
             w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
         ]
     )
+
+
+def rotate(p: npt.ArrayLike, q: npt.ArrayLike) -> np.ndarray:
+    """Rotates a point p by a quaternion q, using p' = qpq*
+
+    Args:
+        p (npt.ArrayLike): Point to rotate, shape (3,)
+        q (npt.ArrayLike): XYZW quaternion describing the rotation, shape (4,)
+
+    Returns:
+        np.ndarray: Rotated point, shape (3,)
+    """
+    return (multiply(multiply(q, pure(p)), conjugate(q)))[:3]
