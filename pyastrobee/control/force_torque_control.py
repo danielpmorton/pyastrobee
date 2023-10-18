@@ -23,6 +23,7 @@ from pyastrobee.trajectories.trajectory import (
 )
 from pyastrobee.control.controller import ControlLogger
 from pyastrobee.utils.quaternions import quaternion_angular_error
+from pyastrobee.utils.rotations import quat_to_rmat
 
 
 class ForceTorqueController:
@@ -138,8 +139,11 @@ class ForceTorqueController:
         ang_err = quaternion_angular_error(cur_q * self.quat_sign, des_q)
         self.last_quat = cur_q
         ang_vel_err = cur_w - des_w
+        R = quat_to_rmat(cur_q)
+        world_inertia = R @ self.inertia @ R.T
         # Standard 3D free-body torque equation based on desired ang. accel and current ang. vel
-        torque = self.inertia @ des_a + np.cross(cur_w, self.inertia @ cur_w)
+        # Note: this ignores the m * r x a term
+        torque = world_inertia @ des_a + np.cross(cur_w, world_inertia @ cur_w)
         # Add in the proportional and derivative terms
         return torque - self.kw * ang_vel_err - self.kq * ang_err
 

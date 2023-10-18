@@ -2,6 +2,25 @@
 
 Note that any equations involving quaternions or angular velocity use our convention of XYZW quaternions and 
 world-frame angular velocity definition (to match Pybullet)
+
+Key equations:
+F = m * a
+T = I * alpha + omega x (I * omega) + m * r x a
+
+Notation:
+F: Force, in world frame
+m: Mass
+a: Linear acceleration of the body's center of mass, in world frame
+T = Torque, in world frame
+I = Inertia tensor of the body, in world frame
+alpha: Angular acceleration of the body, in world frame
+omega: Angular velocity of the body, in world frame
+r: Position of the body's center of mass w.r.t the point of interest on the body, in world frame
+
+Notes:
+- If the point of interest is the center of mass of the body, the third term in the torque expression is 0
+- For Astrobee, this point (the base frame) is sightly different from the center of mass, but they are close enough
+  that the errors are minimal
 """
 
 import numpy as np
@@ -48,8 +67,8 @@ def state_matrix(
     Args:
         q (npt.ArrayLike): XYZW quaternion, shape (4,)
         w (npt.ArrayLike): Angular velocity, shape (3,)
-        inertia (np.ndarray): Inertia tensor, shape (3, 3)
-        inv_inertia (np.ndarray): Inverse of the inertia tensor. This should be precomputed ahead of time for efficiency
+        inertia (np.ndarray): Inertia tensor (world frame), shape (3, 3)
+        inv_inertia (np.ndarray): Inverse of the inertia tensor (world frame), shape (3, 3).
 
     Returns:
         np.ndarray: The A (state) matrix
@@ -87,7 +106,7 @@ def control_matrix(mass: float, inv_inertia: np.ndarray) -> np.ndarray:
 
     Args:
         mass (float): Mass of the system
-        inv_inertia (np.ndarray): Inverse of the inertia tensor, shape (3, 3)
+        inv_inertia (np.ndarray): Inverse of the inertia tensor (world frame), shape (3, 3)
 
     Returns:
         np.ndarray: The B (control) matrix
@@ -105,7 +124,7 @@ def _jac_w_of_wxIw(I: np.ndarray, w: npt.ArrayLike) -> np.ndarray:
     with w and I defined symbolically w.r.t their components
 
     Args:
-        I (np.ndarray): Inertia tensor. Symmetric, positive semidefinite. Shape (3, 3)
+        I (np.ndarray): Inertia tensor (world frame). Symmetric, positive semidefinite. Shape (3, 3)
         w (npt.ArrayLike): Angular velocity vector, shape (3,)
 
     Returns:

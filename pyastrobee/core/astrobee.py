@@ -311,13 +311,31 @@ class Astrobee:
 
     @property
     def inertia(self) -> np.ndarray:
-        """Inertia tensor for the Astrobee, shape (3, 3)"""
+        """Body inertia tensor for the Astrobee, shape (3, 3)"""
         return self._inertia
 
     @property
     def inv_inertia(self) -> np.ndarray:
-        """Inverse of the Astrobee's inertia tensor, shape (3, 3)"""
+        """Inverse of the Astrobee's body inertia tensor, shape (3, 3)"""
         return self._inv_inertia
+
+    @property
+    def world_inertia(self) -> np.ndarray:
+        """World-frame inertia tensor of the Astrobee, shape (3, 3)
+        
+        This takes into account the current rotation of Astrobee
+        """
+        R = self.rmat
+        return R @ self.inertia @ R.T
+
+    @property
+    def world_inv_inertia(self) -> np.ndarray:
+        """Inverse of the world-frame inertia tensor of the Astrobee, shape (3, 3)
+        
+        This takes into account the current rotation of Astrobee
+        """
+        R = self.rmat
+        return R @ self.inv_inertia @ R.T
 
     @property
     def mass(self) -> float:
@@ -331,9 +349,7 @@ class Astrobee:
         We assume that the state x = [position, velocity, quaternion, angular velocity] ∈ R13
         and that the control u = [force, torque] ∈ R6
 
-        Note on nonlinearities (we linearize the system about the current state):
-        - The orientation component of state depends on the current quaternion/angular velocity
-        - The B matrix is generally a constant *unless* the inertia tensor is computed as a function of the joint angles
+        We linearize the system about the current state
 
         Returns:
             tuple[np.ndarray, np.ndarray]:
@@ -342,9 +358,13 @@ class Astrobee:
         """
         # TODO: decide if using the true joint-angle-based inertia tensor
         _, q, _, w = self.dynamics_state
+        R = self.rmat
+        # Use inertias defined in the world frame
+        inertia = R @ self.inertia @ R.T
+        inv_inertia = R @ self.inv_inertia @ R.T
         return (
-            state_matrix(q, w, self.inertia, self.inv_inertia),
-            control_matrix(self.mass, self.inv_inertia),
+            state_matrix(q, w, inertia, inv_inertia),
+            control_matrix(self.mass, inv_inertia),
         )
 
     @property
