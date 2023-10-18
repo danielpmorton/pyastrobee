@@ -20,7 +20,11 @@ import numpy.typing as npt
 
 
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
-from pyastrobee.utils.transformations import make_transform_mat, invert_transform_mat
+from pyastrobee.utils.transformations import (
+    make_transform_mat,
+    invert_transform_mat,
+    transform_point,
+)
 from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
@@ -146,6 +150,9 @@ class Astrobee:
         self._mass = 9.58  # kg
         self._inertia = np.diag([0.153, 0.143, 0.162])  # kg-m^2
         self._inv_inertia = np.linalg.inv(self._inertia)
+        self._local_com_position = np.zeros(3)  # Init, not accurate
+        # TODO decide if we should recompute automatically???
+        # self.recompute_inertial_properties()
         print_green("Astrobee is ready")
 
     def unload(self) -> None:
@@ -322,7 +329,7 @@ class Astrobee:
     @property
     def world_inertia(self) -> np.ndarray:
         """World-frame inertia tensor of the Astrobee, shape (3, 3)
-        
+
         This takes into account the current rotation of Astrobee
         """
         R = self.rmat
@@ -331,7 +338,7 @@ class Astrobee:
     @property
     def world_inv_inertia(self) -> np.ndarray:
         """Inverse of the world-frame inertia tensor of the Astrobee, shape (3, 3)
-        
+
         This takes into account the current rotation of Astrobee
         """
         R = self.rmat
@@ -341,6 +348,16 @@ class Astrobee:
     def mass(self) -> float:
         """Mass of the Astrobee"""
         return self._mass
+
+    @property
+    def local_com_position(self) -> np.ndarray:
+        """Position of the center of mass of the robot w.r.t. the base, in local frame. Shape (3,)"""
+        return self._local_com_position
+
+    @property
+    def world_com_position(self) -> np.ndarray:
+        """Position of the center of mass of the robot, in world frame. Shape (3,)"""
+        return transform_point(self.tmat, self.local_com_position)
 
     @property
     def state_space_matrices(self) -> tuple[np.ndarray, np.ndarray]:
@@ -668,11 +685,12 @@ class Astrobee:
         This is more accurate than the fixed, base-only values from NASA's documentation, but it is fairly expensive to
         compute and should NOT be done on every simulation step.
 
-        This will update the mass, inertia, and inv_inertia properties of the Astrobee instance
+        This will update the mass, inertia, inv_inertia, and center of mass
         """
         # Note: Mass will be fixed, but it is not necessarily the same value as provided by NASA
         mass = 0.0
         inertia = np.zeros((3, 3))
+        com = np.zeros(3)
         T_B2W = self.tmat  # Base to world
         for link in Astrobee.Links:
             link_info = pybullet.getDynamicsInfo(self.id, link.value)
@@ -680,13 +698,17 @@ class Astrobee:
             link_inertia_diagonal = link_info[2]
             if link.value == -1:  # Separate handling for base link
                 inertia += np.diag(link_inertia_diagonal)
+                com += link_mass * T_B2W[:3, 3]
             else:
                 T_L2W = self.get_link_transform(link.value)  # Link to world
                 T_L2B = invert_transform_mat(T_B2W) @ T_L2W  # Link to base
                 inertia += inertial_transformation(
                     link_mass, np.diag(link_inertia_diagonal), T_L2B
                 )
+                com += link_mass * T_L2W[:3, 3]
             mass += link_mass
+        com /= mass
+        self._local_com_position = T_B2W[:3, :3].T @ (com - T_B2W[:3, 3])
         self._mass = mass
         self._inertia = inertia
         self._inv_inertia = np.linalg.inv(inertia)
