@@ -4,8 +4,9 @@ on:
   # Allow us to manually build the documentation when desired
   workflow_dispatch:
   # Schedule the documentation to automatically build weekly if we forget to update it
-  schedule:
-    - cron: '32 13 * * 1' # Mondays at 9:32 AM Eastern (13:32 UTC) (launch time for Apollo 11 :D)
+  # (Uncomment the following lines to re-enable this)
+  # schedule:
+  #   - cron: '32 13 * * 1' # Mondays at 9:32 AM Eastern (13:32 UTC) (launch time for Apollo 11 :D)
 
 jobs:
   # Build the documentation and upload the static HTML files as an artifact.
