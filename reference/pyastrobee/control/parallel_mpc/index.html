@@ -1,0 +1,3423 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Parallel Mpc - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeecontrolparallel_mpc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Parallel Mpc
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Parallel Mpc
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Parallel Mpc
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parallel_mpc_main" class="md-nav__link">
+    parallel_mpc_main
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parallel_mpc_main" class="md-nav__link">
+    parallel_mpc_main
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/control/parallel_mpc.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeecontrolparallel_mpc">Module pyastrobee.control.parallel_mpc</h1>
+<p>MPC with vectorized environments running in parallel</p>
+<p>We create three different types of environments:
+1: The main simulation
+2: One parallel environment which evaluates the "nominal" trajectory
+3: Other parallel environments which evaluate deviations on the nominal value</p>
+<p>When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;MPC with vectorized environments running in parallel</span>
+
+<span class="sd">We create three different types of environments:</span>
+
+<span class="sd">1: The main simulation</span>
+
+<span class="sd">2: One parallel environment which evaluates the &quot;nominal&quot; trajectory</span>
+
+<span class="sd">3: Other parallel environments which evaluate deviations on the nominal value</span>
+
+<span class="sd">When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># TODO:</span>
+
+<span class="c1"># - Merge this with the main MPC file?</span>
+
+<span class="c1"># - Turn this into a controller class, or just leave as a script?</span>
+
+<span class="c1"># - Update the observation and action spaces to match what we&#39;re using</span>
+
+<span class="c1">#   (robot/bag state observations). We&#39;re using dummy action values right now but we could</span>
+
+<span class="c1">#   also let the action input be a trajectory, rather than sampling in the env</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">from</span> <span class="nn">stable_baselines3.common.env_util</span> <span class="kn">import</span> <span class="n">DummyVecEnv</span><span class="p">,</span> <span class="n">SubprocVecEnv</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.core.deformable_bag</span> <span class="kn">import</span> <span class="n">DeformableCargoBag</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.core.constraint_bag</span> <span class="kn">import</span> <span class="n">ConstraintCargoBag</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.core.environments</span> <span class="kn">import</span> <span class="n">AstrobeeMPCEnv</span><span class="p">,</span> <span class="n">make_vec_env</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.planner</span> <span class="kn">import</span> <span class="n">global_planner</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.arm_planner</span> <span class="kn">import</span> <span class="n">plan_arm_traj</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.python_utils</span> <span class="kn">import</span> <span class="n">print_red</span><span class="p">,</span> <span class="n">print_green</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.video_concatenation</span> <span class="kn">import</span> <span class="n">concatenate_videos</span>
+
+<span class="c1"># Recording parameters</span>
+
+<span class="n">RECORD_MAIN_ENV</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">RECORD_DEBUG_ENV</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">MAIN_VIDEO_DIRECTORY</span> <span class="o">=</span> <span class="p">(</span>
+
+    <span class="sa">f</span><span class="s2">&quot;artifacts/</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S_</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/&quot;</span>
+
+<span class="p">)</span>
+
+<span class="n">DEBUG_VIDEO_DIRECTORY</span> <span class="o">=</span> <span class="n">MAIN_VIDEO_DIRECTORY</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_debug/&quot;</span>
+
+<span class="c1"># Debug visualizer camera parameters: Dist, yaw, pitch, target</span>
+
+<span class="n">NODE_2_VIEW</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.40</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.60</span><span class="p">,</span> <span class="o">-</span><span class="mf">19.00</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.39</span><span class="p">))</span>
+
+<span class="n">JPM_VIEW</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">64.40</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.20</span><span class="p">,</span> <span class="p">(</span><span class="mf">6.44</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.39</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">))</span>
+
+<span class="n">EXTERNAL_VIEW</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.20</span><span class="p">,</span> <span class="mf">49.60</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.80</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.53</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.41</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">parallel_mpc_main</span><span class="p">(</span>
+
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">goal_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">n_vec_envs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">bag_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;top_handle&quot;</span><span class="p">,</span>
+
+    <span class="n">bag_mass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+
+    <span class="n">use_deformable_primary_sim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+
+    <span class="n">use_deformable_rollouts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+
+    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+
+    <span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+<span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between</span>
+
+<span class="sd">    two poses while carrying a cargo bag</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)</span>
+
+<span class="sd">        goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)</span>
+
+<span class="sd">        n_vec_envs (int): Number of vectorized environments to launch in parallel (&gt;= 1)</span>
+
+<span class="sd">        bag_name (str, optional): Type of cargo bag to load. Defaults to &quot;top_handle&quot;.</span>
+
+<span class="sd">        bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10</span>
+
+<span class="sd">        use_deformable_primary_sim (bool, optional): Whether to load the deformable bag in the main simulation env.</span>
+
+<span class="sd">            Defaults to True (load the deformable version)</span>
+
+<span class="sd">        use_deformable_rollouts (bool, optional): Whether to use the deformable bag for rollouts. Defaults to False</span>
+
+<span class="sd">            (perform rollouts with the simplified rigid bag)</span>
+
+<span class="sd">        debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize</span>
+
+<span class="sd">            some of the rollouts being evaluated. Defaults to False.</span>
+
+<span class="sd">        random_seed (Optional[int]): Seed for the random number generator, if desired. Defaults to None (unseeded)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">n_vec_envs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must have at least one environment for evaluating rollouts&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set up main environment</span>
+
+    <span class="n">main_env</span> <span class="o">=</span> <span class="n">AstrobeeMPCEnv</span><span class="p">(</span>
+
+        <span class="n">use_gui</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+
+        <span class="n">is_primary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+
+        <span class="n">robot_pose</span><span class="o">=</span><span class="n">start_pose</span><span class="p">,</span>
+
+        <span class="n">bag_name</span><span class="o">=</span><span class="n">bag_name</span><span class="p">,</span>
+
+        <span class="n">bag_mass</span><span class="o">=</span><span class="n">bag_mass</span><span class="p">,</span>
+
+        <span class="n">bag_type</span><span class="o">=</span><span class="n">DeformableCargoBag</span>
+
+        <span class="k">if</span> <span class="n">use_deformable_primary_sim</span>
+
+        <span class="k">else</span> <span class="n">ConstraintCargoBag</span><span class="p">,</span>
+
+        <span class="n">load_full_iss</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="c1"># Set up vectorized environments</span>
+
+    <span class="n">env_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="s2">&quot;use_gui&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+
+        <span class="s2">&quot;is_primary&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+
+        <span class="s2">&quot;robot_pose&quot;</span><span class="p">:</span> <span class="n">start_pose</span><span class="p">,</span>
+
+        <span class="s2">&quot;bag_name&quot;</span><span class="p">:</span> <span class="n">bag_name</span><span class="p">,</span>
+
+        <span class="s2">&quot;bag_mass&quot;</span><span class="p">:</span> <span class="n">bag_mass</span><span class="p">,</span>
+
+        <span class="s2">&quot;bag_type&quot;</span><span class="p">:</span> <span class="n">DeformableCargoBag</span>
+
+        <span class="k">if</span> <span class="n">use_deformable_rollouts</span>
+
+        <span class="k">else</span> <span class="n">ConstraintCargoBag</span><span class="p">,</span>
+
+        <span class="c1"># We need the full ISS loaded if using deformable rollouts so save/restore state sees the same envs</span>
+
+        <span class="s2">&quot;load_full_iss&quot;</span><span class="p">:</span> <span class="n">use_deformable_rollouts</span><span class="p">,</span>
+
+    <span class="p">}</span>
+
+    <span class="n">debug_env_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Enable GUI for one of the vec envs if debugging, and use this to test the nominal (non-sampled) trajs</span>
+
+    <span class="n">per_env_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">debug_env_idx</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;use_gui&quot;</span><span class="p">:</span> <span class="n">debug</span><span class="p">,</span> <span class="s2">&quot;nominal_rollouts&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span>
+
+    <span class="n">vec_env</span> <span class="o">=</span> <span class="n">make_vec_env</span><span class="p">(</span>
+
+        <span class="n">AstrobeeMPCEnv</span><span class="p">,</span>
+
+        <span class="n">n_vec_envs</span><span class="p">,</span>
+
+        <span class="n">random_seed</span><span class="p">,</span>
+
+        <span class="n">env_kwargs</span><span class="o">=</span><span class="n">env_kwargs</span><span class="p">,</span>
+
+        <span class="n">vec_env_cls</span><span class="o">=</span><span class="n">SubprocVecEnv</span> <span class="k">if</span> <span class="n">n_vec_envs</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">DummyVecEnv</span><span class="p">,</span>
+
+        <span class="n">per_env_kwargs</span><span class="o">=</span><span class="n">per_env_kwargs</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">main_env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="n">vec_env</span><span class="o">.</span><span class="kp">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="n">vec_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># Random seed included in make_vec_env</span>
+
+    <span class="c1"># Generate nominal trajectory</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">getPhysicsEngineParameters</span><span class="p">()[</span><span class="s2">&quot;fixedTimeStep&quot;</span><span class="p">]</span>
+
+    <span class="n">nominal_traj</span> <span class="o">=</span> <span class="n">global_planner</span><span class="p">(</span>
+
+        <span class="n">start_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+
+        <span class="n">start_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span>
+
+        <span class="n">goal_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+
+        <span class="n">goal_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span>
+
+        <span class="n">dt</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">nominal_arm_traj</span> <span class="o">=</span> <span class="n">plan_arm_traj</span><span class="p">(</span><span class="n">nominal_traj</span><span class="p">)</span>
+
+    <span class="c1"># Store the goal pose to determine stopping criteria</span>
+
+    <span class="c1"># TODO should this instead be an input to the environment?</span>
+
+    <span class="c1"># TODO it seems like this doesn&#39;t actually work properly</span>
+
+    <span class="n">main_env</span><span class="o">.</span><span class="n">goal_pose</span> <span class="o">=</span> <span class="n">goal_pose</span>
+
+    <span class="n">vec_env</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">&quot;goal_pose&quot;</span><span class="p">,</span> <span class="n">goal_pose</span><span class="p">)</span>
+
+    <span class="n">video_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">camera_moved</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">RECORD_MAIN_ENV</span> <span class="ow">or</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+        <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">resetDebugVisualizerCamera</span><span class="p">(</span><span class="o">*</span><span class="n">NODE_2_VIEW</span><span class="p">)</span>
+
+        <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+            <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+            <span class="s2">&quot;resetDebugVisualizerCamera&quot;</span><span class="p">,</span>
+
+            <span class="o">*</span><span class="n">NODE_2_VIEW</span><span class="p">,</span>
+
+            <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">],</span>
+
+        <span class="p">)</span>
+
+        <span class="c1"># main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ready to record video. Remember to maximize the GUI&quot;</span><span class="p">)</span>
+
+        <span class="n">main_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">MAIN_VIDEO_DIRECTORY</span><span class="p">)</span>
+
+        <span class="n">debug_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">DEBUG_VIDEO_DIRECTORY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">main_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">RECORD_MAIN_ENV</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+
+            <span class="n">debug_path</span><span class="o">.</span><span class="n">exists</span> <span class="ow">and</span> <span class="n">RECORD_DEBUG_ENV</span>
+
+        <span class="p">):</span>
+
+            <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;WARNING: Recording video will overwrite existing files&quot;</span><span class="p">)</span>
+
+            <span class="c1"># TODO decide if we should empty the directory/directories</span>
+
+        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Press Enter to begin&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+            <span class="n">main_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+            <span class="n">debug_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Time parameters (TODO make some of these inputs?)</span>
+
+    <span class="n">cur_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">traj_end_time</span> <span class="o">=</span> <span class="n">nominal_traj</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">max_stopping_time</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># seconds</span>
+
+    <span class="n">max_time</span> <span class="o">=</span> <span class="n">traj_end_time</span> <span class="o">+</span> <span class="n">max_stopping_time</span>
+
+    <span class="n">rollout_duration</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># seconds</span>
+
+    <span class="n">execution_duration</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># seconds (How much of the rollout to actually execute)</span>
+
+    <span class="c1"># TEMP, TESTING. IMPROVE THIS</span>
+
+    <span class="n">main_env</span><span class="o">.</span><span class="n">set_planning_duration</span><span class="p">(</span><span class="n">rollout_duration</span><span class="p">)</span>
+
+    <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;set_planning_duration&quot;</span><span class="p">,</span> <span class="n">rollout_duration</span><span class="p">)</span>
+
+    <span class="c1"># State machine</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">NOMINAL</span>
+
+    <span class="n">point_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">cur_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Execute the main MPC code in a try/finally block to make sure things close out / clean up when done</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="c1"># TODO handle the stopping mode better... Should we be &quot;stopping&quot; if the rollout or planned execution</span>
+
+            <span class="c1"># reaches the end of the trajectory? Or just when we&#39;ve fully reached the end?</span>
+
+            <span class="c1"># Determine the duration of the rollout and where on the trajectory we are interested</span>
+
+            <span class="n">remaining_traj_time</span> <span class="o">=</span> <span class="n">traj_end_time</span> <span class="o">-</span> <span class="n">cur_time</span>
+
+            <span class="n">remaining_total_time</span> <span class="o">=</span> <span class="n">max_time</span> <span class="o">-</span> <span class="n">cur_time</span>
+
+            <span class="n">out_of_time</span> <span class="o">=</span> <span class="n">remaining_total_time</span> <span class="o">&lt;=</span> <span class="n">dt</span>
+
+            <span class="c1"># Update our flight state machine (TODO improve logic, make separate method)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+
+                <span class="n">remaining_traj_time</span> <span class="o">&lt;=</span> <span class="n">rollout_duration</span>
+
+                <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">NOMINAL</span>
+
+            <span class="p">):</span>
+
+                <span class="c1"># Update this flag in our environments only once, when this changes</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting flight state to SLOWING&quot;</span><span class="p">)</span>
+
+                <span class="n">main_env</span><span class="o">.</span><span class="n">set_flight_state</span><span class="p">(</span><span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">SLOWING</span><span class="p">)</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;set_flight_state&quot;</span><span class="p">,</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">SLOWING</span>
+
+                <span class="p">)</span>
+
+                <span class="n">mode</span> <span class="o">=</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">SLOWING</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+
+                <span class="n">remaining_traj_time</span> <span class="o">&lt;=</span> <span class="n">dt</span>
+
+                <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">STOPPING</span>
+
+            <span class="p">):</span>
+
+                <span class="c1"># Update this flag in our environments only once, when this changes</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting flight state to STOPPING&quot;</span><span class="p">)</span>
+
+                <span class="n">main_env</span><span class="o">.</span><span class="n">set_flight_state</span><span class="p">(</span><span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">)</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;set_flight_state&quot;</span><span class="p">,</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">STOPPING</span>
+
+                <span class="p">)</span>
+
+                <span class="n">mode</span> <span class="o">=</span> <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">STOPPING</span>
+
+            <span class="k">if</span> <span class="n">out_of_time</span><span class="p">:</span>
+
+                <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;Terminating due to time limit&quot;</span><span class="p">)</span>
+
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">{</span>
+
+                <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">SLOWING</span><span class="p">,</span>
+
+                <span class="n">AstrobeeMPCEnv</span><span class="o">.</span><span class="n">FlightStates</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">,</span>
+
+            <span class="p">}:</span>
+
+                <span class="n">lookahead_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">lookahead_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">searchsorted</span><span class="p">(</span>
+
+                    <span class="n">nominal_traj</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">cur_time</span> <span class="o">+</span> <span class="n">rollout_duration</span>
+
+                <span class="p">)</span>
+
+            <span class="c1"># Clear any previously visualized trajectories before viewing the new plan</span>
+
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;unshow_traj_plan&quot;</span><span class="p">,</span> <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">point_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                    <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">point_ids</span><span class="p">:</span>
+
+                        <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                            <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span> <span class="s2">&quot;removeUserDebugItem&quot;</span><span class="p">,</span> <span class="n">pid</span>
+
+                        <span class="p">)</span>
+
+            <span class="c1"># THIS IS WEIRD</span>
+
+            <span class="c1"># The thinking here is that when we are slowing down we might have a plan that we will get to our goal in</span>
+
+            <span class="c1"># like 2 seconds even if the rollout duration is 5 seconds</span>
+
+            <span class="n">target_duration</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">remaining_traj_time</span><span class="p">),</span> <span class="n">rollout_duration</span><span class="p">)</span>
+
+            <span class="c1"># Set the desired state of the robot at the lookahead point</span>
+
+            <span class="n">target_state</span> <span class="o">=</span> <span class="p">[</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">quaternions</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">linear_velocities</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">angular_velocities</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">linear_accels</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">nominal_traj</span><span class="o">.</span><span class="n">angular_accels</span><span class="p">[</span><span class="n">lookahead_idx</span><span class="p">],</span>
+
+                <span class="n">target_duration</span><span class="p">,</span>
+
+            <span class="p">]</span>
+
+            <span class="n">main_env</span><span class="o">.</span><span class="n">set_target_state</span><span class="p">(</span><span class="o">*</span><span class="n">target_state</span><span class="p">)</span>
+
+            <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;set_target_state&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">target_state</span><span class="p">)</span>
+
+            <span class="c1"># Generate sampled trajectories within each vec env</span>
+
+            <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;sample_trajectory&quot;</span><span class="p">)</span>
+
+            <span class="c1"># HACK</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">&quot;traj_plan&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">num_timesteps</span>
+
+            <span class="c1"># Handle arm traj</span>
+
+            <span class="n">arm_traj_plan</span> <span class="o">=</span> <span class="n">nominal_arm_traj</span><span class="o">.</span><span class="n">get_segment</span><span class="p">(</span><span class="n">cur_idx</span><span class="p">,</span> <span class="n">cur_idx</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+
+            <span class="c1"># main_env.set_arm_traj(arm_traj_plan)</span>
+
+            <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;set_arm_traj&quot;</span><span class="p">,</span> <span class="n">arm_traj_plan</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+
+                <span class="n">env_state_samples</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">&quot;sampled_end_state&quot;</span><span class="p">)</span>
+
+                <span class="n">env_poss</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">env_state_samples</span><span class="p">]</span>
+
+                <span class="n">point_ids</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+                    <span class="s2">&quot;addUserDebugPoints&quot;</span><span class="p">,</span>
+
+                    <span class="n">env_poss</span><span class="p">,</span>
+
+                    <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">env_poss</span><span class="p">),</span>
+
+                    <span class="mi">10</span><span class="p">,</span>
+
+                    <span class="mi">0</span><span class="p">,</span>
+
+                    <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">],</span>
+
+                <span class="p">)</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;show_traj_plan&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">])</span>
+
+            <span class="c1"># Stepping in the vec env will follow the sampled trajectory</span>
+
+            <span class="c1"># Action input in step(actions) is a dummy parameter for now, just for Gym compatibility</span>
+
+            <span class="k">if</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+                <span class="n">debug_log_id</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+                    <span class="s2">&quot;startStateLogging&quot;</span><span class="p">,</span>
+
+                    <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">STATE_LOGGING_VIDEO_MP4</span><span class="p">,</span>
+
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DEBUG_VIDEO_DIRECTORY</span><span class="si">}{</span><span class="n">video_index</span><span class="si">}</span><span class="s2">.mp4&quot;</span><span class="p">,</span>
+
+                    <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">],</span>
+
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">env_obs</span><span class="p">,</span> <span class="n">env_rewards</span><span class="p">,</span> <span class="n">env_dones</span><span class="p">,</span> <span class="n">env_infos</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+
+                <span class="n">np</span><span class="o">.</span><span class="kp">zeros</span><span class="p">(</span><span class="n">n_vec_envs</span><span class="p">)</span>
+
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+                    <span class="s2">&quot;stopStateLogging&quot;</span><span class="p">,</span>
+
+                    <span class="n">debug_log_id</span><span class="p">,</span>
+
+                    <span class="kp">indices</span><span class="o">=</span><span class="p">[</span><span class="n">debug_env_idx</span><span class="p">],</span>
+
+                <span class="p">)</span>
+
+                <span class="n">video_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">best_traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span>
+
+                <span class="s2">&quot;traj_plan&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">argmax</span><span class="p">(</span><span class="n">env_rewards</span><span class="p">))]</span>
+
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Follow the best rollout in the main environment. (Use dummy action value in step call)</span>
+
+            <span class="n">n_execution_timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+
+                <span class="n">best_traj</span><span class="o">.</span><span class="n">num_timesteps</span> <span class="o">*</span> <span class="p">(</span><span class="n">execution_duration</span> <span class="o">/</span> <span class="n">rollout_duration</span><span class="p">)</span>
+
+            <span class="p">)</span>
+
+            <span class="c1"># print(&quot;N EXECUTION TIMESTEPS: &quot;, n_execution_timesteps)</span>
+
+            <span class="c1"># print(&quot;N ROLLOUT TIMESTEPS: &quot;, lookahead_idx - cur_idx)</span>
+
+            <span class="c1"># print(&quot;CUR IDX: &quot;, cur_idx)</span>
+
+            <span class="n">main_env</span><span class="o">.</span><span class="n">traj_plan</span> <span class="o">=</span> <span class="n">best_traj</span><span class="o">.</span><span class="n">get_segment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_execution_timesteps</span><span class="p">)</span>
+
+            <span class="n">main_env</span><span class="o">.</span><span class="n">set_arm_traj</span><span class="p">(</span>
+
+                <span class="n">nominal_arm_traj</span><span class="o">.</span><span class="n">get_segment</span><span class="p">(</span><span class="n">cur_idx</span><span class="p">,</span> <span class="n">cur_idx</span> <span class="o">+</span> <span class="n">n_execution_timesteps</span><span class="p">)</span>
+
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+                <span class="n">main_log_id</span> <span class="o">=</span> <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">startStateLogging</span><span class="p">(</span>
+
+                    <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">STATE_LOGGING_VIDEO_MP4</span><span class="p">,</span>
+
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_VIDEO_DIRECTORY</span><span class="si">}{</span><span class="n">video_index</span><span class="si">}</span><span class="s2">.mp4&quot;</span><span class="p">,</span>
+
+                <span class="p">)</span>
+
+            <span class="p">(</span>
+
+                <span class="n">main_obs</span><span class="p">,</span>
+
+                <span class="n">main_reward</span><span class="p">,</span>
+
+                <span class="n">main_terminated</span><span class="p">,</span>
+
+                <span class="n">main_truncated</span><span class="p">,</span>
+
+                <span class="n">main_info</span><span class="p">,</span>
+
+            <span class="p">)</span> <span class="o">=</span> <span class="n">main_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+                <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">stopStateLogging</span><span class="p">(</span><span class="n">main_log_id</span><span class="p">)</span>
+
+                <span class="n">video_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">robot_state</span><span class="p">,</span> <span class="n">bag_state</span> <span class="o">=</span> <span class="n">main_obs</span>
+
+            <span class="c1"># Update our knowledge of the last acceleration commands</span>
+
+            <span class="n">main_env</span><span class="o">.</span><span class="n">last_accel_cmd</span> <span class="o">=</span> <span class="n">best_traj</span><span class="o">.</span><span class="n">linear_accels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">main_env</span><span class="o">.</span><span class="n">last_alpha_cmd</span> <span class="o">=</span> <span class="n">best_traj</span><span class="o">.</span><span class="n">angular_accels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">vec_env</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">&quot;last_accel_cmd&quot;</span><span class="p">,</span> <span class="n">best_traj</span><span class="o">.</span><span class="n">linear_accels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">vec_env</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">&quot;last_alpha_cmd&quot;</span><span class="p">,</span> <span class="n">best_traj</span><span class="o">.</span><span class="n">angular_accels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># Update our time information</span>
+
+            <span class="n">cur_time</span> <span class="o">+=</span> <span class="n">execution_duration</span>
+
+            <span class="c1"># TODO should the cur_time value actually be times[cur_idx]????</span>
+
+            <span class="n">cur_idx</span> <span class="o">+=</span> <span class="n">n_execution_timesteps</span>
+
+            <span class="c1"># Update the camera if we&#39;re taking video. These are hardcoded for the JPM motion</span>
+
+            <span class="c1"># Switch cameras when the robot base passes x = 2.5</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+
+                <span class="p">(</span><span class="n">RECORD_MAIN_ENV</span> <span class="ow">or</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">)</span>
+
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">camera_moved</span>
+
+                <span class="ow">and</span> <span class="n">robot_state</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.5</span>
+
+            <span class="p">):</span>
+
+                <span class="n">main_env</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">resetDebugVisualizerCamera</span><span class="p">(</span><span class="o">*</span><span class="n">JPM_VIEW</span><span class="p">)</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span>
+
+                    <span class="s2">&quot;send_client_command&quot;</span><span class="p">,</span> <span class="s2">&quot;resetDebugVisualizerCamera&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">JPM_VIEW</span>
+
+                <span class="p">)</span>
+
+                <span class="n">camera_moved</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Check if we&#39;ve successfully completed the trajectory</span>
+
+            <span class="k">if</span> <span class="n">main_terminated</span><span class="p">:</span>
+
+                <span class="n">print_green</span><span class="p">(</span><span class="s2">&quot;Success! Stabilized at end of trajectory within tolerance&quot;</span><span class="p">)</span>
+
+                <span class="k">break</span>
+
+            <span class="c1"># We are not done, so reset the environments back to the same point as the main env</span>
+
+            <span class="c1"># Ensure that the vec envs start from the same point as the main simulation</span>
+
+            <span class="k">if</span> <span class="n">use_deformable_rollouts</span><span class="p">:</span>
+
+                <span class="c1"># If we are using the deformable bag for rollouts, we have to fully save the state to disk (slow)</span>
+
+                <span class="c1"># because there is no other way to restore the deformable</span>
+
+                <span class="n">saved_file</span> <span class="o">=</span> <span class="n">main_env</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;restore_state&quot;</span><span class="p">,</span> <span class="n">saved_file</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="c1"># If we&#39;re using the simple rigid bag for rollouts, we can just do a very simple reset mechanic</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;reset_robot_state&quot;</span><span class="p">,</span> <span class="n">robot_state</span><span class="p">)</span>
+
+                <span class="n">vec_env</span><span class="o">.</span><span class="n">env_method</span><span class="p">(</span><span class="s2">&quot;reset_bag_state&quot;</span><span class="p">,</span> <span class="n">bag_state</span><span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Complete. Press Enter to exit&quot;</span><span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+            <span class="n">concatenate_videos</span><span class="p">(</span><span class="n">MAIN_VIDEO_DIRECTORY</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+            <span class="n">concatenate_videos</span><span class="p">(</span><span class="n">DEBUG_VIDEO_DIRECTORY</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Closing environments&quot;</span><span class="p">)</span>
+
+        <span class="n">main_env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">vec_env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_test_node_2_to_jpm</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quick function to test that the parallel MPC is working as expected&quot;&quot;&quot;</span>
+
+    <span class="n">random_seed</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="kp">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="n">start_pose</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">end_pose</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Easy-to-reach location in JPM</span>
+
+    <span class="n">bag_name</span> <span class="o">=</span> <span class="s2">&quot;top_handle_symmetric&quot;</span>
+
+    <span class="n">bag_mass</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">n_vec_envs</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">use_deformable_main_sim</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">use_deformable_rollouts</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">parallel_mpc_main</span><span class="p">(</span>
+
+        <span class="n">start_pose</span><span class="p">,</span>
+
+        <span class="n">end_pose</span><span class="p">,</span>
+
+        <span class="n">n_vec_envs</span><span class="p">,</span>
+
+        <span class="n">bag_name</span><span class="p">,</span>
+
+        <span class="n">bag_mass</span><span class="p">,</span>
+
+        <span class="n">use_deformable_main_sim</span><span class="p">,</span>
+
+        <span class="n">use_deformable_rollouts</span><span class="p">,</span>
+
+        <span class="n">debug</span><span class="p">,</span>
+
+        <span class="n">random_seed</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_test_jpm_to_us_lab</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quick function to test that the parallel MPC is working as expected&quot;&quot;&quot;</span>
+
+    <span class="n">random_seed</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="kp">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="n">start_pose</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># JPM</span>
+
+    <span class="n">end_pose</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.063</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.5355</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="kp">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># US</span>
+
+    <span class="n">bag_name</span> <span class="o">=</span> <span class="s2">&quot;top_handle_symmetric&quot;</span>
+
+    <span class="n">bag_mass</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">n_vec_envs</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">use_deformable_main_sim</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">use_deformable_rollouts</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">parallel_mpc_main</span><span class="p">(</span>
+
+        <span class="n">start_pose</span><span class="p">,</span>
+
+        <span class="n">end_pose</span><span class="p">,</span>
+
+        <span class="n">n_vec_envs</span><span class="p">,</span>
+
+        <span class="n">bag_name</span><span class="p">,</span>
+
+        <span class="n">bag_mass</span><span class="p">,</span>
+
+        <span class="n">use_deformable_main_sim</span><span class="p">,</span>
+
+        <span class="n">use_deformable_rollouts</span><span class="p">,</span>
+
+        <span class="n">debug</span><span class="p">,</span>
+
+        <span class="n">random_seed</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># _test_node_2_to_jpm()</span>
+
+    <span class="n">_test_jpm_to_us_lab</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">DEBUG_VIDEO_DIRECTORY</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">EXTERNAL_VIEW</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">JPM_VIEW</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">MAIN_VIDEO_DIRECTORY</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">NODE_2_VIEW</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">RECORD_DEBUG_ENV</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">RECORD_MAIN_ENV</span>
+</code></pre></div>
+
+<h2 id="functions">Functions</h2>
+<h3 id="parallel_mpc_main">parallel_mpc_main</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">parallel_mpc_main</span><span class="p">(</span>
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">goal_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">n_vec_envs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">bag_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;top_handle&#39;</span><span class="p">,</span>
+    <span class="n">bag_mass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">use_deformable_primary_sim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_deformable_rollouts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between</p>
+<p>two poses while carrying a cargo bag</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_pose</td>
+<td>npt.ArrayLike</td>
+<td>Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>goal_pose</td>
+<td>npt.ArrayLike</td>
+<td>Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n_vec_envs</td>
+<td>int</td>
+<td>Number of vectorized environments to launch in parallel (&gt;= 1)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>bag_name</td>
+<td>str</td>
+<td>Type of cargo bag to load. Defaults to "top_handle".</td>
+<td>"top_handle"</td>
+</tr>
+<tr>
+<td>bag_mass</td>
+<td>float</td>
+<td>Mass of the cargo bag, in kg. Defaults to 10</td>
+<td>None</td>
+</tr>
+<tr>
+<td>use_deformable_primary_sim</td>
+<td>bool</td>
+<td>Whether to load the deformable bag in the main simulation env.<br>Defaults to True (load the deformable version)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>use_deformable_rollouts</td>
+<td>bool</td>
+<td>Whether to use the deformable bag for rollouts. Defaults to False<br>(perform rollouts with the simplified rigid bag)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>debug</td>
+<td>bool</td>
+<td>Whether to launch one of the vectorized environments with the GUI active, to visualize<br>some of the rollouts being evaluated. Defaults to False.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>random_seed</td>
+<td>Optional[int]</td>
+<td>Seed for the random number generator, if desired. Defaults to None (unseeded)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">parallel_mpc_main</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">start_pose</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">goal_pose</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">n_vec_envs</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">bag_name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;top_handle&quot;</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">bag_mass</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">use_deformable_primary_sim</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">use_deformable_rollouts</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">debug</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">random_seed</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">int</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="p">)</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Launches a series of environments in parallel and runs a model-predictive-controller to move Astrobee between</span>
+
+<span class="ss">    two poses while carrying a cargo bag</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        start_pose (npt.ArrayLike): Starting pose of the Astrobee (position and XYZW quaternion), shape (7,)</span>
+
+<span class="ss">        goal_pose (npt.ArrayLike): Ending pose of the Astrobee (position and XYZW quaternion), shape (7,)</span>
+
+<span class="ss">        n_vec_envs (int): Number of vectorized environments to launch in parallel (&gt;= 1)</span>
+
+<span class="ss">        bag_name (str, optional): Type of cargo bag to load. Defaults to &quot;</span><span class="n">top_handle</span><span class="ss">&quot;.</span>
+
+<span class="ss">        bag_mass (float): Mass of the cargo bag, in kg. Defaults to 10</span>
+
+<span class="ss">        use_deformable_primary_sim (bool, optional): Whether to load the deformable bag in the main simulation env.</span>
+
+<span class="ss">            Defaults to True (load the deformable version)</span>
+
+<span class="ss">        use_deformable_rollouts (bool, optional): Whether to use the deformable bag for rollouts. Defaults to False</span>
+
+<span class="ss">            (perform rollouts with the simplified rigid bag)</span>
+
+<span class="ss">        debug (bool, optional): Whether to launch one of the vectorized environments with the GUI active, to visualize</span>
+
+<span class="ss">            some of the rollouts being evaluated. Defaults to False.</span>
+
+<span class="ss">        random_seed (Optional[int]): Seed for the random number generator, if desired. Defaults to None (unseeded)</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">n_vec_envs</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="ss">&quot;Must have at least one environment for evaluating rollouts&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Set</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">environment</span>
+
+<span class="w">    </span><span class="n">main_env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">use_gui</span><span class="o">=</span><span class="k">True</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">is_primary</span><span class="o">=</span><span class="k">True</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">robot_pose</span><span class="o">=</span><span class="n">start_pose</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">bag_name</span><span class="o">=</span><span class="n">bag_name</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">bag_mass</span><span class="o">=</span><span class="n">bag_mass</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">bag_type</span><span class="o">=</span><span class="n">DeformableCargoBag</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">use_deformable_primary_sim</span>
+
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="n">ConstraintCargoBag</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">load_full_iss</span><span class="o">=</span><span class="k">True</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Set</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">vectorized</span><span class="w"> </span><span class="n">environments</span>
+
+<span class="w">    </span><span class="n">env_kwargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">        </span><span class="ss">&quot;use_gui&quot;</span><span class="err">:</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+
+<span class="w">        </span><span class="ss">&quot;is_primary&quot;</span><span class="err">:</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+
+<span class="w">        </span><span class="ss">&quot;robot_pose&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">start_pose</span><span class="p">,</span>
+
+<span class="w">        </span><span class="ss">&quot;bag_name&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">bag_name</span><span class="p">,</span>
+
+<span class="w">        </span><span class="ss">&quot;bag_mass&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">bag_mass</span><span class="p">,</span>
+
+<span class="w">        </span><span class="ss">&quot;bag_type&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">DeformableCargoBag</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">use_deformable_rollouts</span>
+
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="n">ConstraintCargoBag</span><span class="p">,</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">We</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">full</span><span class="w"> </span><span class="n">ISS</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">deformable</span><span class="w"> </span><span class="n">rollouts</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="k">save</span><span class="o">/</span><span class="k">restore</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="n">sees</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">envs</span>
+
+<span class="w">        </span><span class="ss">&quot;load_full_iss&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">use_deformable_rollouts</span><span class="p">,</span>
+
+<span class="w">    </span><span class="err">}</span>
+
+<span class="w">    </span><span class="n">debug_env_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Enable</span><span class="w"> </span><span class="n">GUI</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="n">envs</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">debugging</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">nominal</span><span class="w"> </span><span class="p">(</span><span class="n">non</span><span class="o">-</span><span class="n">sampled</span><span class="p">)</span><span class="w"> </span><span class="n">trajs</span>
+
+<span class="w">    </span><span class="n">per_env_kwargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">debug_env_idx</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="ss">&quot;use_gui&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">debug</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;nominal_rollouts&quot;</span><span class="err">:</span><span class="w"> </span><span class="k">True</span><span class="err">}}</span>
+
+<span class="w">    </span><span class="n">vec_env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">make_vec_env</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">AstrobeeMPCEnv</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">n_vec_envs</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">random_seed</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">env_kwargs</span><span class="o">=</span><span class="n">env_kwargs</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">vec_env_cls</span><span class="o">=</span><span class="n">SubprocVecEnv</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n_vec_envs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">DummyVecEnv</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">per_env_kwargs</span><span class="o">=</span><span class="n">per_env_kwargs</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">main_env</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">vec_env</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">vec_env</span><span class="p">.</span><span class="n">reset</span><span class="p">()</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="n">included</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">make_vec_env</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Generate</span><span class="w"> </span><span class="n">nominal</span><span class="w"> </span><span class="n">trajectory</span>
+
+<span class="w">    </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">main_env</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">getPhysicsEngineParameters</span><span class="p">()</span><span class="o">[</span><span class="n">&quot;fixedTimeStep&quot;</span><span class="o">]</span>
+
+<span class="w">    </span><span class="n">nominal_traj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">global_planner</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">start_pose</span><span class="o">[</span><span class="n">:3</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">start_pose</span><span class="o">[</span><span class="n">3:</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">goal_pose</span><span class="o">[</span><span class="n">:3</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">goal_pose</span><span class="o">[</span><span class="n">3:</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">dt</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">nominal_arm_traj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plan_arm_traj</span><span class="p">(</span><span class="n">nominal_traj</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Store</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">goal</span><span class="w"> </span><span class="n">pose</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">determine</span><span class="w"> </span><span class="n">stopping</span><span class="w"> </span><span class="n">criteria</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">instead</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">environment</span><span class="vm">?</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">seems</span><span class="w"> </span><span class="ow">like</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">doesn</span><span class="s1">&#39;t actually work properly</span>
+
+<span class="s1">    main_env.goal_pose = goal_pose</span>
+
+<span class="s1">    vec_env.set_attr(&quot;goal_pose&quot;, goal_pose)</span>
+
+<span class="s1">    video_index = 0</span>
+
+<span class="s1">    camera_moved = False</span>
+
+<span class="s1">    if RECORD_MAIN_ENV or RECORD_DEBUG_ENV:</span>
+
+<span class="s1">        main_env.client.resetDebugVisualizerCamera(*NODE_2_VIEW)</span>
+
+<span class="s1">        vec_env.env_method(</span>
+
+<span class="s1">            &quot;send_client_command&quot;,</span>
+
+<span class="s1">            &quot;resetDebugVisualizerCamera&quot;,</span>
+
+<span class="s1">            *NODE_2_VIEW,</span>
+
+<span class="s1">            indices=[debug_env_idx],</span>
+
+<span class="s1">        )</span>
+
+<span class="s1">        # main_env.client.resetDebugVisualizerCamera(*EXTERNAL_VIEW)</span>
+
+<span class="s1">        print(&quot;Ready to record video. Remember to maximize the GUI&quot;)</span>
+
+<span class="s1">        main_path = Path(MAIN_VIDEO_DIRECTORY)</span>
+
+<span class="s1">        debug_path = Path(DEBUG_VIDEO_DIRECTORY)</span>
+
+<span class="s1">        if (main_path.exists() and RECORD_MAIN_ENV) or (</span>
+
+<span class="s1">            debug_path.exists and RECORD_DEBUG_ENV</span>
+
+<span class="s1">        ):</span>
+
+<span class="s1">            print_red(&quot;WARNING: Recording video will overwrite existing files&quot;)</span>
+
+<span class="s1">            # TODO decide if we should empty the directory/directories</span>
+
+<span class="s1">        input(&quot;Press Enter to begin&quot;)</span>
+
+<span class="s1">        if RECORD_MAIN_ENV:</span>
+
+<span class="s1">            main_path.mkdir(parents=True, exist_ok=True)</span>
+
+<span class="s1">        if RECORD_DEBUG_ENV:</span>
+
+<span class="s1">            debug_path.mkdir(parents=True, exist_ok=True)</span>
+
+<span class="s1">    # Time parameters (TODO make some of these inputs?)</span>
+
+<span class="s1">    cur_time = 0.0</span>
+
+<span class="s1">    traj_end_time = nominal_traj.times[-1]</span>
+
+<span class="s1">    max_stopping_time = 30  # seconds</span>
+
+<span class="s1">    max_time = traj_end_time + max_stopping_time</span>
+
+<span class="s1">    rollout_duration = 5  # seconds</span>
+
+<span class="s1">    execution_duration = 1  # seconds (How much of the rollout to actually execute)</span>
+
+<span class="s1">    # TEMP, TESTING. IMPROVE THIS</span>
+
+<span class="s1">    main_env.set_planning_duration(rollout_duration)</span>
+
+<span class="s1">    vec_env.env_method(&quot;set_planning_duration&quot;, rollout_duration)</span>
+
+<span class="s1">    # State machine</span>
+
+<span class="s1">    mode = AstrobeeMPCEnv.FlightStates.NOMINAL</span>
+
+<span class="s1">    point_ids = None</span>
+
+<span class="s1">    cur_idx = 0</span>
+
+<span class="s1">    # Execute the main MPC code in a try/finally block to make sure things close out / clean up when done</span>
+
+<span class="s1">    try:</span>
+
+<span class="s1">        while True:</span>
+
+<span class="s1">            # TODO handle the stopping mode better... Should we be &quot;stopping&quot; if the rollout or planned execution</span>
+
+<span class="s1">            # reaches the end of the trajectory? Or just when we&#39;</span><span class="n">ve</span><span class="w"> </span><span class="n">fully</span><span class="w"> </span><span class="n">reached</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">end</span><span class="vm">?</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Determine</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">duration</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">rollout</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">interested</span>
+
+<span class="w">            </span><span class="n">remaining_traj_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traj_end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cur_time</span>
+
+<span class="w">            </span><span class="n">remaining_total_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cur_time</span>
+
+<span class="w">            </span><span class="n">out_of_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">remaining_total_time</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">dt</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">flight</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="n">machine</span><span class="w"> </span><span class="p">(</span><span class="n">TODO</span><span class="w"> </span><span class="n">improve</span><span class="w"> </span><span class="n">logic</span><span class="p">,</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">separate</span><span class="w"> </span><span class="k">method</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">remaining_traj_time</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">rollout_duration</span>
+
+<span class="w">                </span><span class="ow">and</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">NOMINAL</span>
+
+<span class="w">            </span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">environments</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">once</span><span class="p">,</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">changes</span>
+
+<span class="w">                </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;Setting flight state to SLOWING&quot;</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">main_env</span><span class="p">.</span><span class="n">set_flight_state</span><span class="p">(</span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">SLOWING</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;set_flight_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">SLOWING</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">SLOWING</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">remaining_traj_time</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">dt</span>
+
+<span class="w">                </span><span class="ow">and</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">STOPPING</span>
+
+<span class="w">            </span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">environments</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">once</span><span class="p">,</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">changes</span>
+
+<span class="w">                </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;Setting flight state to STOPPING&quot;</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">main_env</span><span class="p">.</span><span class="n">set_flight_state</span><span class="p">(</span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">STOPPING</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;set_flight_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">STOPPING</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">STOPPING</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">out_of_time</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">print_red</span><span class="p">(</span><span class="ss">&quot;Terminating due to time limit&quot;</span><span class="p">)</span>
+
+<span class="w">                </span><span class="k">break</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">                </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">SLOWING</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">AstrobeeMPCEnv</span><span class="p">.</span><span class="n">FlightStates</span><span class="p">.</span><span class="n">STOPPING</span><span class="p">,</span>
+
+<span class="w">            </span><span class="err">}:</span>
+
+<span class="w">                </span><span class="n">lookahead_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">lookahead_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">searchsorted</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">times</span><span class="p">,</span><span class="w"> </span><span class="n">cur_time</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rollout_duration</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Clear</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">previously</span><span class="w"> </span><span class="n">visualized</span><span class="w"> </span><span class="n">trajectories</span><span class="w"> </span><span class="k">before</span><span class="w"> </span><span class="n">viewing</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="k">plan</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">debug</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;unshow_traj_plan&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="o">=[</span><span class="n">debug_env_idx</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">point_ids</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">                    </span><span class="k">for</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">point_ids</span><span class="p">:</span>
+
+<span class="w">                        </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                            </span><span class="ss">&quot;send_client_command&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;removeUserDebugItem&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span>
+
+<span class="w">                        </span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="n">WEIRD</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">thinking</span><span class="w"> </span><span class="n">here</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">slowing</span><span class="w"> </span><span class="n">down</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">might</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">plan</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">goal</span><span class="w"> </span><span class="ow">in</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="ow">like</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">rollout</span><span class="w"> </span><span class="n">duration</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="n">seconds</span>
+
+<span class="w">            </span><span class="n">target_duration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="nf">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">remaining_traj_time</span><span class="p">),</span><span class="w"> </span><span class="n">rollout_duration</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Set</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">desired</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">robot</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">lookahead</span><span class="w"> </span><span class="n">point</span>
+
+<span class="w">            </span><span class="n">target_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
+
+<span class="n">                nominal_traj.positions[lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">quaternions</span><span class="o">[</span><span class="n">lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">linear_velocities</span><span class="o">[</span><span class="n">lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">angular_velocities</span><span class="o">[</span><span class="n">lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">linear_accels</span><span class="o">[</span><span class="n">lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_traj</span><span class="p">.</span><span class="n">angular_accels</span><span class="o">[</span><span class="n">lookahead_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">target_duration</span><span class="p">,</span>
+
+<span class="w">            </span><span class="err">]</span>
+
+<span class="w">            </span><span class="n">main_env</span><span class="p">.</span><span class="n">set_target_state</span><span class="p">(</span><span class="o">*</span><span class="n">target_state</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;set_target_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">target_state</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Generate</span><span class="w"> </span><span class="n">sampled</span><span class="w"> </span><span class="n">trajectories</span><span class="w"> </span><span class="k">within</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="n">env</span>
+
+<span class="w">            </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;sample_trajectory&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">HACK</span>
+
+<span class="w">            </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">get_attr</span><span class="p">(</span><span class="ss">&quot;traj_plan&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">)</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="n">num_timesteps</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Handle</span><span class="w"> </span><span class="n">arm</span><span class="w"> </span><span class="n">traj</span>
+
+<span class="w">            </span><span class="n">arm_traj_plan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nominal_arm_traj</span><span class="p">.</span><span class="n">get_segment</span><span class="p">(</span><span class="n">cur_idx</span><span class="p">,</span><span class="w"> </span><span class="n">cur_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">main_env</span><span class="p">.</span><span class="n">set_arm_traj</span><span class="p">(</span><span class="n">arm_traj_plan</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;set_arm_traj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">arm_traj_plan</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">debug</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">env_state_samples</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">get_attr</span><span class="p">(</span><span class="ss">&quot;sampled_end_state&quot;</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">env_poss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">s[0</span><span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">env_state_samples</span><span class="err">]</span>
+
+<span class="w">                </span><span class="n">point_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="ss">&quot;addUserDebugPoints&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">env_poss</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="o">[</span><span class="n">[1, 1, 1</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">env_poss</span><span class="p">),</span>
+
+<span class="w">                    </span><span class="mi">10</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="mi">0</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">indices</span><span class="o">=[</span><span class="n">debug_env_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;show_traj_plan&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="o">=[</span><span class="n">debug_env_idx</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Stepping</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">follow</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">sampled</span><span class="w"> </span><span class="n">trajectory</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Action</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">dummy</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">now</span><span class="p">,</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Gym</span><span class="w"> </span><span class="n">compatibility</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">debug_log_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="ss">&quot;startStateLogging&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">main_env</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">STATE_LOGGING_VIDEO_MP4</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;{DEBUG_VIDEO_DIRECTORY}{video_index}.mp4&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">indices</span><span class="o">=[</span><span class="n">debug_env_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">            </span><span class="n">env_obs</span><span class="p">,</span><span class="w"> </span><span class="n">env_rewards</span><span class="p">,</span><span class="w"> </span><span class="n">env_dones</span><span class="p">,</span><span class="w"> </span><span class="n">env_infos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">step</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_vec_envs</span><span class="p">)</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;send_client_command&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="ss">&quot;stopStateLogging&quot;</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">debug_log_id</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">indices</span><span class="o">=[</span><span class="n">debug_env_idx</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">video_index</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">            </span><span class="nl">best_traj</span><span class="p">:</span><span class="w"> </span><span class="n">Trajectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec_env</span><span class="p">.</span><span class="n">get_attr</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;traj_plan&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">[</span><span class="n">int(np.argmax(env_rewards))</span><span class="o">]</span>
+
+<span class="w">            </span><span class="p">)</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Follow</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">best</span><span class="w"> </span><span class="n">rollout</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">environment</span><span class="p">.</span><span class="w"> </span><span class="p">(</span><span class="k">Use</span><span class="w"> </span><span class="n">dummy</span><span class="w"> </span><span class="k">action</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="k">call</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">n_execution_timesteps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">int</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">best_traj</span><span class="p">.</span><span class="n">num_timesteps</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">execution_duration</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">rollout_duration</span><span class="p">)</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;N EXECUTION TIMESTEPS: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">n_execution_timesteps</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;N ROLLOUT TIMESTEPS: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lookahead_idx</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cur_idx</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;CUR IDX: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cur_idx</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">main_env</span><span class="p">.</span><span class="n">traj_plan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_traj</span><span class="p">.</span><span class="n">get_segment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_execution_timesteps</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">main_env</span><span class="p">.</span><span class="n">set_arm_traj</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">nominal_arm_traj</span><span class="p">.</span><span class="n">get_segment</span><span class="p">(</span><span class="n">cur_idx</span><span class="p">,</span><span class="w"> </span><span class="n">cur_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n_execution_timesteps</span><span class="p">)</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">main_log_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">main_env</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">startStateLogging</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">main_env</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">STATE_LOGGING_VIDEO_MP4</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;{MAIN_VIDEO_DIRECTORY}{video_index}.mp4&quot;</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">main_obs</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">main_reward</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">main_terminated</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">main_truncated</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">main_info</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">main_env</span><span class="p">.</span><span class="n">step</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">main_env</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">stopStateLogging</span><span class="p">(</span><span class="n">main_log_id</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">video_index</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">            </span><span class="n">robot_state</span><span class="p">,</span><span class="w"> </span><span class="n">bag_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">main_obs</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">knowledge</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">last</span><span class="w"> </span><span class="n">acceleration</span><span class="w"> </span><span class="n">commands</span>
+
+<span class="w">            </span><span class="n">main_env</span><span class="p">.</span><span class="n">last_accel_cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_traj</span><span class="p">.</span><span class="n">linear_accels</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span>
+
+<span class="w">            </span><span class="n">main_env</span><span class="p">.</span><span class="n">last_alpha_cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_traj</span><span class="p">.</span><span class="n">angular_accels</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span>
+
+<span class="w">            </span><span class="n">vec_env</span><span class="p">.</span><span class="n">set_attr</span><span class="p">(</span><span class="ss">&quot;last_accel_cmd&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">best_traj</span><span class="p">.</span><span class="n">linear_accels</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">vec_env</span><span class="p">.</span><span class="n">set_attr</span><span class="p">(</span><span class="ss">&quot;last_alpha_cmd&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">best_traj</span><span class="p">.</span><span class="n">angular_accels</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="nc">time</span><span class="w"> </span><span class="n">information</span>
+
+<span class="w">            </span><span class="n">cur_time</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">execution_duration</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">cur_time</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="n">actually</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">times</span><span class="o">[</span><span class="n">cur_idx</span><span class="o">]</span><span class="vm">????</span>
+
+<span class="w">            </span><span class="n">cur_idx</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">n_execution_timesteps</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">camera</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">we</span><span class="s1">&#39;re taking video. These are hardcoded for the JPM motion</span>
+
+<span class="s1">            # Switch cameras when the robot base passes x = 2.5</span>
+
+<span class="s1">            if (</span>
+
+<span class="s1">                (RECORD_MAIN_ENV or RECORD_DEBUG_ENV)</span>
+
+<span class="s1">                and not camera_moved</span>
+
+<span class="s1">                and robot_state[0][0] &gt;= 2.5</span>
+
+<span class="s1">            ):</span>
+
+<span class="s1">                main_env.client.resetDebugVisualizerCamera(*JPM_VIEW)</span>
+
+<span class="s1">                vec_env.env_method(</span>
+
+<span class="s1">                    &quot;send_client_command&quot;, &quot;resetDebugVisualizerCamera&quot;, *JPM_VIEW</span>
+
+<span class="s1">                )</span>
+
+<span class="s1">                camera_moved = True</span>
+
+<span class="s1">            # Check if we&#39;</span><span class="n">ve</span><span class="w"> </span><span class="n">successfully</span><span class="w"> </span><span class="n">completed</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">trajectory</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">main_terminated</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">print_green</span><span class="p">(</span><span class="ss">&quot;Success! Stabilized at end of trajectory within tolerance&quot;</span><span class="p">)</span>
+
+<span class="w">                </span><span class="k">break</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">We</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">done</span><span class="p">,</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">reset</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">environments</span><span class="w"> </span><span class="n">back</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">env</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Ensure</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="n">envs</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">simulation</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nl">use_deformable_rollouts</span><span class="p">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">deformable</span><span class="w"> </span><span class="n">bag</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">rollouts</span><span class="p">,</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">fully</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">disk</span><span class="w"> </span><span class="p">(</span><span class="n">slow</span><span class="p">)</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="n">because</span><span class="w"> </span><span class="n">there</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">way</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">restore</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">deformable</span>
+
+<span class="w">                </span><span class="n">saved_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">main_env</span><span class="p">.</span><span class="n">save_state</span><span class="p">()</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;restore_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">saved_file</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="n">we</span><span class="err">&#39;</span><span class="n">re</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">simple</span><span class="w"> </span><span class="n">rigid</span><span class="w"> </span><span class="n">bag</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">rollouts</span><span class="p">,</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">very</span><span class="w"> </span><span class="n">simple</span><span class="w"> </span><span class="n">reset</span><span class="w"> </span><span class="n">mechanic</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;reset_robot_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">robot_state</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">vec_env</span><span class="p">.</span><span class="n">env_method</span><span class="p">(</span><span class="ss">&quot;reset_bag_state&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bag_state</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">input</span><span class="p">(</span><span class="ss">&quot;Complete. Press Enter to exit&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nl">finally</span><span class="p">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_MAIN_ENV</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">concatenate_videos</span><span class="p">(</span><span class="n">MAIN_VIDEO_DIRECTORY</span><span class="p">,</span><span class="w"> </span><span class="n">cleanup</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">RECORD_DEBUG_ENV</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">concatenate_videos</span><span class="p">(</span><span class="n">DEBUG_VIDEO_DIRECTORY</span><span class="p">,</span><span class="w"> </span><span class="n">cleanup</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;Closing environments&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">main_env</span><span class="p">.</span><span class="k">close</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">vec_env</span><span class="p">.</span><span class="k">close</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../operational_space_control/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Operational Space Control" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Operational Space Control
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../physics_models/" class="md-footer__link md-footer__link--next" aria-label="Next: Physics Models" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Physics Models
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

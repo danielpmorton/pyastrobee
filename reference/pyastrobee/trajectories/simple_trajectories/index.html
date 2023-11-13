@@ -1,0 +1,2569 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Simple Trajectories - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeetrajectoriessimple_trajectories" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Simple Trajectories
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Simple Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Simple Trajectories
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_orn_pose_traj" class="md-nav__link">
+    fixed_orn_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_pos_pose_traj" class="md-nav__link">
+    fixed_pos_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpolation_pose_traj" class="md-nav__link">
+    interpolation_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point_and_move_pose_traj" class="md-nav__link">
+    point_and_move_pose_traj
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_orn_pose_traj" class="md-nav__link">
+    fixed_orn_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_pos_pose_traj" class="md-nav__link">
+    fixed_pos_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpolation_pose_traj" class="md-nav__link">
+    interpolation_pose_traj
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point_and_move_pose_traj" class="md-nav__link">
+    point_and_move_pose_traj
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/trajectories/simple_trajectories.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeetrajectoriessimple_trajectories">Module pyastrobee.trajectories.simple_trajectories</h1>
+<p>Simple examples of position/orientation trajectories</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Simple examples of position/orientation trajectories&quot;&quot;&quot;</span>
+
+<span class="c1"># TODO check out other motion planning libraries</span>
+
+<span class="c1"># https://github.com/stanford-iprl-lab/mob-manip/blob/main/mob_manip/utils/common/plan_control_traj.py</span>
+
+<span class="c1"># https://github.com/krishauser/Klampt</span>
+
+<span class="c1"># https://github.com/caelan/pybullet-planning</span>
+
+<span class="c1"># https://github.com/caelan/motion-planners</span>
+
+<span class="c1"># https://arxiv.org/pdf/2205.04422.pdf</span>
+
+<span class="c1"># https://ompl.kavrakilab.org/</span>
+
+<span class="c1"># https://github.com/lyfkyle/pybullet_ompl</span>
+
+<span class="c1"># https://github.com/schmrlng/MotionPlanning.jl/tree/master/src (convert to python?)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.quaternions</span> <span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">quaternion_slerp</span><span class="p">,</span>
+
+    <span class="n">get_closest_heading_quat</span><span class="p">,</span>
+
+    <span class="n">quaternion_dist</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.math_utils</span> <span class="kn">import</span> <span class="n">normalize</span>
+
+<span class="k">def</span> <span class="nf">point_and_move_pose_traj</span><span class="p">(</span>
+
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">end_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">pos_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">orn_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple pose-only trajectory where the robot points at the goal, moves along a straight line,</span>
+
+<span class="sd">    then aligns with the goal</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        start_pose (npt.ArrayLike): Starting position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="sd">        end_pose (npt.ArrayLike): Ending position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="sd">        pos_step (float): Position stepsize (meters)</span>
+
+<span class="sd">        orn_step (float): Orientation stepsize (quaternion distance)</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        np.ndarray: Trajectory, shape (n1 + n2 + n3, 7)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Interpolate the orientation, interpolate the position, interpolate the orientation</span>
+
+    <span class="n">start_position</span> <span class="o">=</span> <span class="n">start_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">start_quat</span> <span class="o">=</span> <span class="n">start_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+    <span class="n">end_position</span> <span class="o">=</span> <span class="n">end_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">end_quat</span> <span class="o">=</span> <span class="n">end_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+    <span class="c1"># Trajectory part 1: Maintain same pose, turn to point towards the final position</span>
+
+    <span class="c1"># First, need to find the quaternion to point in the right direction</span>
+
+    <span class="n">heading</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">end_position</span> <span class="o">-</span> <span class="n">start_position</span><span class="p">)</span>
+
+    <span class="n">heading_quat</span> <span class="o">=</span> <span class="n">get_closest_heading_quat</span><span class="p">(</span><span class="n">start_quat</span><span class="p">,</span> <span class="n">heading</span><span class="p">)</span>
+
+    <span class="c1"># Also determine the discretization based on this intermediate orientation</span>
+
+    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">ceil</span><span class="p">(</span><span class="n">quaternion_dist</span><span class="p">(</span><span class="n">start_quat</span><span class="p">,</span> <span class="n">heading_quat</span><span class="p">)</span> <span class="o">/</span> <span class="n">orn_step</span><span class="p">))</span>
+
+    <span class="n">traj_1</span> <span class="o">=</span> <span class="n">fixed_pos_pose_traj</span><span class="p">(</span><span class="n">start_position</span><span class="p">,</span> <span class="n">start_quat</span><span class="p">,</span> <span class="n">heading_quat</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span>
+
+    <span class="c1"># Trajectory part 2: Maintain the same orientation, move to final position</span>
+
+    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">end_position</span> <span class="o">-</span> <span class="n">start_position</span><span class="p">)</span> <span class="o">/</span> <span class="n">pos_step</span><span class="p">))</span>
+
+    <span class="n">traj_2</span> <span class="o">=</span> <span class="n">fixed_orn_pose_traj</span><span class="p">(</span><span class="n">start_position</span><span class="p">,</span> <span class="n">end_position</span><span class="p">,</span> <span class="n">heading_quat</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+
+    <span class="c1"># Trajectory part 3: Maintain the same final position, turn to goal orientation</span>
+
+    <span class="n">n3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">ceil</span><span class="p">(</span><span class="n">quaternion_dist</span><span class="p">(</span><span class="n">heading_quat</span><span class="p">,</span> <span class="n">end_quat</span><span class="p">)</span> <span class="o">/</span> <span class="n">orn_step</span><span class="p">))</span>
+
+    <span class="n">traj_3</span> <span class="o">=</span> <span class="n">fixed_pos_pose_traj</span><span class="p">(</span><span class="n">end_position</span><span class="p">,</span> <span class="n">heading_quat</span><span class="p">,</span> <span class="n">end_quat</span><span class="p">,</span> <span class="n">n3</span><span class="p">)</span>
+
+    <span class="c1"># Merge the trajectory components together</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">vstack</span><span class="p">((</span><span class="n">traj_1</span><span class="p">,</span> <span class="n">traj_2</span><span class="p">,</span> <span class="n">traj_3</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">fixed_orn_pose_traj</span><span class="p">(</span>
+
+    <span class="n">pos_1</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">pos_2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">quat</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple pose-only trajectory interpolated between two positions with a fixed orientation</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        pos_1 (npt.ArrayLike): Starting XYZ position, shape (3,)</span>
+
+<span class="sd">        pos_2 (npt.ArrayLike): Ending XYZ position, shape (3,)</span>
+
+<span class="sd">        quat (npt.ArrayLike): Fixed orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="sd">        n (int): Number of timesteps</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="n">pos_1</span><span class="p">,</span> <span class="n">pos_2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="n">quats</span> <span class="o">=</span> <span class="n">quat</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">hstack</span><span class="p">((</span><span class="n">positions</span><span class="p">,</span> <span class="n">quats</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">fixed_pos_pose_traj</span><span class="p">(</span>
+
+    <span class="n">pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple pose-only trajectory interpolated between two orientations with a fixed position</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        pos (npt.ArrayLike): Fixed XYZ position, shape (3,)</span>
+
+<span class="sd">        q1 (npt.ArrayLike): Starting orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="sd">        q2 (npt.ArrayLike): Ending orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="sd">        n (int): Number of timesteps</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">quats</span> <span class="o">=</span> <span class="n">quaternion_slerp</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">hstack</span><span class="p">((</span><span class="n">positions</span><span class="p">,</span> <span class="n">quats</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">interpolation_pose_traj</span><span class="p">(</span>
+
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">end_pose</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple pose-only trajectory, interpolates between two poses across n timesteps</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        start_pose (npt.ArrayLike): Starting position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="sd">        end_pose (npt.ArrayLike): Ending position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="sd">        n (int): Number of timesteps</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">start_position</span> <span class="o">=</span> <span class="n">start_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">start_quat</span> <span class="o">=</span> <span class="n">start_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+    <span class="n">end_position</span> <span class="o">=</span> <span class="n">end_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">end_quat</span> <span class="o">=</span> <span class="n">end_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="n">start_position</span><span class="p">,</span> <span class="n">end_position</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="n">quats</span> <span class="o">=</span> <span class="n">quaternion_slerp</span><span class="p">(</span><span class="n">start_quat</span><span class="p">,</span> <span class="n">end_quat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">hstack</span><span class="p">((</span><span class="n">positions</span><span class="p">,</span> <span class="n">quats</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="fixed_orn_pose_traj">fixed_orn_pose_traj</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fixed_orn_pose_traj</span><span class="p">(</span>
+    <span class="n">pos_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">pos_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">quat</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</code></pre></div>
+
+<p>Simple pose-only trajectory interpolated between two positions with a fixed orientation</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pos_1</td>
+<td>npt.ArrayLike</td>
+<td>Starting XYZ position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pos_2</td>
+<td>npt.ArrayLike</td>
+<td>Ending XYZ position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>quat</td>
+<td>npt.ArrayLike</td>
+<td>Fixed orientation (XYZW quaternion), shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n</td>
+<td>int</td>
+<td>Number of timesteps</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>np.ndarray</td>
+<td>Trajectory, shape (n, 7)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="nx">def</span><span class="w"> </span><span class="nx">fixed_orn_pose_traj</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nx">pos_1</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">pos_2</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">quat</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">:</span><span class="w"> </span><span class="nx">int</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Simple pose-only trajectory interpolated between two positions with a fixed orientation</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        pos_1 (npt.ArrayLike): Starting XYZ position, shape (3,)</span>
+
+<span class="s">        pos_2 (npt.ArrayLike): Ending XYZ position, shape (3,)</span>
+
+<span class="s">        quat (npt.ArrayLike): Fixed orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="s">        n (int): Number of timesteps</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nx">positions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">linspace</span><span class="p">(</span><span class="nx">pos_1</span><span class="p">,</span><span class="w"> </span><span class="nx">pos_2</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">quats</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">quat</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ones</span><span class="p">((</span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">hstack</span><span class="p">((</span><span class="nx">positions</span><span class="p">,</span><span class="w"> </span><span class="nx">quats</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h3 id="fixed_pos_pose_traj">fixed_pos_pose_traj</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fixed_pos_pose_traj</span><span class="p">(</span>
+    <span class="n">pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">q1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">q2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</code></pre></div>
+
+<p>Simple pose-only trajectory interpolated between two orientations with a fixed position</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pos</td>
+<td>npt.ArrayLike</td>
+<td>Fixed XYZ position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>q1</td>
+<td>npt.ArrayLike</td>
+<td>Starting orientation (XYZW quaternion), shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>q2</td>
+<td>npt.ArrayLike</td>
+<td>Ending orientation (XYZW quaternion), shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n</td>
+<td>int</td>
+<td>Number of timesteps</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>np.ndarray</td>
+<td>Trajectory, shape (n, 7)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="nx">def</span><span class="w"> </span><span class="nx">fixed_pos_pose_traj</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nx">pos</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">q1</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">q2</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">:</span><span class="w"> </span><span class="nx">int</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Simple pose-only trajectory interpolated between two orientations with a fixed position</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        pos (npt.ArrayLike): Fixed XYZ position, shape (3,)</span>
+
+<span class="s">        q1 (npt.ArrayLike): Starting orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="s">        q2 (npt.ArrayLike): Ending orientation (XYZW quaternion), shape (4,)</span>
+
+<span class="s">        n (int): Number of timesteps</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nx">positions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">pos</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ones</span><span class="p">((</span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span>
+
+<span class="w">    </span><span class="nx">quats</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">quaternion_slerp</span><span class="p">(</span><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">q2</span><span class="p">,</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">hstack</span><span class="p">((</span><span class="nx">positions</span><span class="p">,</span><span class="w"> </span><span class="nx">quats</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h3 id="interpolation_pose_traj">interpolation_pose_traj</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">interpolation_pose_traj</span><span class="p">(</span>
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">end_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</code></pre></div>
+
+<p>Simple pose-only trajectory, interpolates between two poses across n timesteps</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_pose</td>
+<td>npt.ArrayLike</td>
+<td>Starting position + xyzw quaternion pose, shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>end_pose</td>
+<td>npt.ArrayLike</td>
+<td>Ending position + xyzw quaternion pose, shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n</td>
+<td>int</td>
+<td>Number of timesteps</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>np.ndarray</td>
+<td>Trajectory, shape (n, 7)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="nx">def</span><span class="w"> </span><span class="nx">interpolation_pose_traj</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nx">start_pose</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">end_pose</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">:</span><span class="w"> </span><span class="nx">int</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Simple pose-only trajectory, interpolates between two poses across n timesteps</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        start_pose (npt.ArrayLike): Starting position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="s">        end_pose (npt.ArrayLike): Ending position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="s">        n (int): Number of timesteps</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        np.ndarray: Trajectory, shape (n, 7)</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nx">start_position</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">start_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">    </span><span class="nx">start_quat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">start_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+<span class="w">    </span><span class="nx">end_position</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">end_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">    </span><span class="nx">end_quat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">end_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+<span class="w">    </span><span class="nx">positions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">linspace</span><span class="p">(</span><span class="nx">start_position</span><span class="p">,</span><span class="w"> </span><span class="nx">end_position</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">quats</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">quaternion_slerp</span><span class="p">(</span><span class="nx">start_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">end_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">hstack</span><span class="p">((</span><span class="nx">positions</span><span class="p">,</span><span class="w"> </span><span class="nx">quats</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h3 id="point_and_move_pose_traj">point_and_move_pose_traj</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">point_and_move_pose_traj</span><span class="p">(</span>
+    <span class="n">start_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">end_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">pos_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">orn_step</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</code></pre></div>
+
+<p>Simple pose-only trajectory where the robot points at the goal, moves along a straight line,</p>
+<p>then aligns with the goal</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_pose</td>
+<td>npt.ArrayLike</td>
+<td>Starting position + xyzw quaternion pose, shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>end_pose</td>
+<td>npt.ArrayLike</td>
+<td>Ending position + xyzw quaternion pose, shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pos_step</td>
+<td>float</td>
+<td>Position stepsize (meters)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>orn_step</td>
+<td>float</td>
+<td>Orientation stepsize (quaternion distance)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>np.ndarray</td>
+<td>Trajectory, shape (n1 + n2 + n3, 7)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="nx">def</span><span class="w"> </span><span class="nx">point_and_move_pose_traj</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nx">start_pose</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nx">end_pose</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nx">pos_step</span><span class="p">:</span><span class="w"> </span><span class="nx">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nx">orn_step</span><span class="p">:</span><span class="w"> </span><span class="nx">float</span><span class="p">,</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ndarray</span><span class="p">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Simple pose-only trajectory where the robot points at the goal, moves along a straight line,</span>
+
+<span class="s">    then aligns with the goal</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        start_pose (npt.ArrayLike): Starting position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="s">        end_pose (npt.ArrayLike): Ending position + xyzw quaternion pose, shape (7,)</span>
+
+<span class="s">        pos_step (float): Position stepsize (meters)</span>
+
+<span class="s">        orn_step (float): Orientation stepsize (quaternion distance)</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        np.ndarray: Trajectory, shape (n1 + n2 + n3, 7)</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Interpolate</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">orientation</span><span class="p">,</span><span class="w"> </span><span class="nx">interpolate</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">position</span><span class="p">,</span><span class="w"> </span><span class="nx">interpolate</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">orientation</span>
+
+<span class="w">    </span><span class="nx">start_position</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">start_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">    </span><span class="nx">start_quat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">start_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+<span class="w">    </span><span class="nx">end_position</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">end_pose</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">    </span><span class="nx">end_quat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">end_pose</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Trajectory</span><span class="w"> </span><span class="nx">part</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="w"> </span><span class="nx">Maintain</span><span class="w"> </span><span class="nx">same</span><span class="w"> </span><span class="nx">pose</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">point</span><span class="w"> </span><span class="nx">towards</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="nx">position</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">First</span><span class="p">,</span><span class="w"> </span><span class="nx">need</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">find</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">quaternion</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">point</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">right</span><span class="w"> </span><span class="nx">direction</span>
+
+<span class="w">    </span><span class="nx">heading</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">normalize</span><span class="p">(</span><span class="nx">end_position</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">start_position</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">heading_quat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">get_closest_heading_quat</span><span class="p">(</span><span class="nx">start_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">heading</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Also</span><span class="w"> </span><span class="nx">determine</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">discretization</span><span class="w"> </span><span class="nx">based</span><span class="w"> </span><span class="nx">on</span><span class="w"> </span><span class="nx">this</span><span class="w"> </span><span class="nx">intermediate</span><span class="w"> </span><span class="nx">orientation</span>
+
+<span class="w">    </span><span class="nx">n1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">int</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">quaternion_dist</span><span class="p">(</span><span class="nx">start_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">heading_quat</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">orn_step</span><span class="p">))</span>
+
+<span class="w">    </span><span class="nx">traj_1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">fixed_pos_pose_traj</span><span class="p">(</span><span class="nx">start_position</span><span class="p">,</span><span class="w"> </span><span class="nx">start_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">heading_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">n1</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Trajectory</span><span class="w"> </span><span class="nx">part</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="w"> </span><span class="nx">Maintain</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">same</span><span class="w"> </span><span class="nx">orientation</span><span class="p">,</span><span class="w"> </span><span class="nx">move</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="nx">position</span>
+
+<span class="w">    </span><span class="nx">n2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">int</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">linalg</span><span class="p">.</span><span class="nx">norm</span><span class="p">(</span><span class="nx">end_position</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">start_position</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">pos_step</span><span class="p">))</span>
+
+<span class="w">    </span><span class="nx">traj_2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">fixed_orn_pose_traj</span><span class="p">(</span><span class="nx">start_position</span><span class="p">,</span><span class="w"> </span><span class="nx">end_position</span><span class="p">,</span><span class="w"> </span><span class="nx">heading_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">n2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Trajectory</span><span class="w"> </span><span class="nx">part</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span><span class="w"> </span><span class="nx">Maintain</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">same</span><span class="w"> </span><span class="k">final</span><span class="w"> </span><span class="nx">position</span><span class="p">,</span><span class="w"> </span><span class="nx">turn</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">goal</span><span class="w"> </span><span class="nx">orientation</span>
+
+<span class="w">    </span><span class="nx">n3</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">int</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">quaternion_dist</span><span class="p">(</span><span class="nx">heading_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">end_quat</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">orn_step</span><span class="p">))</span>
+
+<span class="w">    </span><span class="nx">traj_3</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">fixed_pos_pose_traj</span><span class="p">(</span><span class="nx">end_position</span><span class="p">,</span><span class="w"> </span><span class="nx">heading_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">end_quat</span><span class="p">,</span><span class="w"> </span><span class="nx">n3</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">Merge</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">trajectory</span><span class="w"> </span><span class="nx">components</span><span class="w"> </span><span class="nx">together</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">vstack</span><span class="p">((</span><span class="nx">traj_1</span><span class="p">,</span><span class="w"> </span><span class="nx">traj_2</span><span class="p">,</span><span class="w"> </span><span class="nx">traj_3</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../sampling/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Sampling" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Sampling
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../splines/" class="md-footer__link md-footer__link--next" aria-label="Next: Splines" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Splines
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

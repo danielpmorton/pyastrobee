@@ -1,0 +1,3312 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Splines - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeetrajectoriessplines" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Splines
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Splines
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Splines
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spline_trajectory_with_retiming" class="md-nav__link">
+    spline_trajectory_with_retiming
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compositebeziercurve" class="md-nav__link">
+    CompositeBezierCurve
+  </a>
+  
+    <nav class="md-nav" aria-label="CompositeBezierCurve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_segment" class="md-nav__link">
+    find_segment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spline_trajectory_with_retiming" class="md-nav__link">
+    spline_trajectory_with_retiming
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compositebeziercurve" class="md-nav__link">
+    CompositeBezierCurve
+  </a>
+  
+    <nav class="md-nav" aria-label="CompositeBezierCurve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_segment" class="md-nav__link">
+    find_segment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/trajectories/splines.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeetrajectoriessplines">Module pyastrobee.trajectories.splines</h1>
+<p>Splines / "composite Bezier curves" composed of multiple chained Bezier curves</p>
+<p>Initial boundary conditions are imposed on the start of the first curve, final B.C.s are imposed at the end of
+the third curve, and we enforce C2 derivative continuity at the knot points</p>
+<p>Reference:
+Fast Path Planning Through Large Collections of Safe Boxes
+https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/smooth.py
+https://web.stanford.edu/~boyd/papers/pdf/fpp.pdf</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="s2">&quot;&quot;&quot;Splines / &quot;</span><span class="s s-Atom">composite</span> <span class="nv">Bezier</span> <span class="s s-Atom">curves</span><span class="s2">&quot; composed of multiple chained Bezier curves</span>
+
+<span class="s2">Initial boundary conditions are imposed on the start of the first curve, final B.C.s are imposed at the end of</span>
+
+<span class="s2">the third curve, and we enforce C2 derivative continuity at the knot points</span>
+
+<span class="s2">Reference:</span>
+
+<span class="s2">Fast Path Planning Through Large Collections of Safe Boxes</span>
+
+<span class="s2">https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/smooth.py</span>
+
+<span class="s2">https://web.stanford.edu/~boyd/papers/pdf/fpp.pdf</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">typing</span> <span class="s s-Atom">import</span> <span class="nv">Optional</span><span class="p">,</span> <span class="nv">Union</span><span class="p">,</span> <span class="nv">Any</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">cvxpy</span> <span class="s s-Atom">as</span> <span class="s s-Atom">cp</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">numpy</span> <span class="s s-Atom">as</span> <span class="s s-Atom">np</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">numpy</span><span class="p">.</span><span class="s s-Atom">typing</span> <span class="s s-Atom">as</span> <span class="s s-Atom">npt</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">pybullet</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">trajectories</span><span class="p">.</span><span class="s s-Atom">bezier</span> <span class="s s-Atom">import</span> <span class="nv">BezierCurve</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">utils</span><span class="p">.</span><span class="s s-Atom">boxes</span> <span class="s s-Atom">import</span> <span class="nv">Box</span><span class="p">,</span> <span class="s s-Atom">visualize_3D_box</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">utils</span><span class="p">.</span><span class="s s-Atom">debug_visualizer</span> <span class="s s-Atom">import</span> <span class="s s-Atom">visualize_path</span><span class="p">,</span> <span class="s s-Atom">visualize_points</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">utils</span><span class="p">.</span><span class="s s-Atom">python_utils</span> <span class="s s-Atom">import</span> <span class="s s-Atom">print_red</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">trajectories</span><span class="p">.</span><span class="s s-Atom">timing</span> <span class="s s-Atom">import</span> <span class="s s-Atom">retiming</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">pyastrobee</span><span class="p">.</span><span class="s s-Atom">utils</span><span class="p">.</span><span class="s s-Atom">errors</span> <span class="s s-Atom">import</span> <span class="nv">OptimizationError</span>
+
+<span class="s s-Atom">class</span> <span class="nv">CompositeBezierCurve</span><span class="o">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Composite Bezier curve class for a continuous chain of connected Bezier curves</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        beziers (list[BezierCurve]): Consecutive Bezier curves composing the composite curve.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">beziers</span><span class="p">:</span> <span class="s s-Atom">list</span><span class="p">[</span><span class="nv">BezierCurve</span><span class="p">])</span><span class="o">:</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">bez1</span><span class="p">,</span> <span class="s s-Atom">bez2</span> <span class="s s-Atom">in</span> <span class="nf">zip</span><span class="p">(</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">:-</span><span class="mi">1</span><span class="p">],</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="p">])</span><span class="o">:</span>
+
+            <span class="s s-Atom">assert</span> <span class="s s-Atom">bez1</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">==</span> <span class="s s-Atom">bez2</span><span class="p">.</span><span class="s s-Atom">a</span>
+
+            <span class="s s-Atom">assert</span> <span class="s s-Atom">bez1</span><span class="p">.</span><span class="s s-Atom">d</span> <span class="o">==</span> <span class="s s-Atom">bez2</span><span class="p">.</span><span class="s s-Atom">d</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span> <span class="o">=</span> <span class="s s-Atom">beziers</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">d</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">d</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">a</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="s s-Atom">b</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">duration</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">beziers</span><span class="p">])</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">segment_durations</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">duration</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">beziers</span><span class="p">])</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">find_segment</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">#</span> <span class="s s-Atom">return</span> <span class="nf">min</span><span class="p">(</span><span class="nf">bisect</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="s s-Atom">#</span> <span class="nv">TODO</span> <span class="s s-Atom">check</span> <span class="s s-Atom">to</span> <span class="s s-Atom">see</span> <span class="s s-Atom">if</span> <span class="s s-Atom">this</span> <span class="s s-Atom">will</span> <span class="s s-Atom">work</span> <span class="s s-Atom">on</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cp</span> <span class="nf">variable</span> <span class="p">(</span><span class="s s-Atom">probably</span> <span class="o">not</span><span class="p">...)</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">minimum</span><span class="p">(</span>
+
+            <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">searchsorted</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">call__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">:</span> <span class="nv">Union</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">,</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="s s-Atom">ndarray</span><span class="p">])</span> <span class="s s-Atom">-&gt;</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="s s-Atom">ndarray</span><span class="p">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Evaluates the composite Bezier curve at specified points, by calling each of the child curves</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            t (Union[float, npt.ArrayLike]): Evaluation points (for instance, trajectory times)</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            np.ndarray: Points along the composite curve, shape (n_pts, dimension)</span>
+
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">seg_map</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nf">find_segment</span><span class="p">(</span><span class="s s-Atom">t</span><span class="p">)</span>
+
+        <span class="s s-Atom">evals</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span><span class="p">)</span><span class="o">:</span>
+
+            <span class="s s-Atom">evals</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">](</span><span class="s s-Atom">t</span><span class="p">[</span><span class="s s-Atom">seg_map</span> <span class="o">==</span> <span class="s s-Atom">i</span><span class="p">]))</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">row_stack</span><span class="p">(</span><span class="s s-Atom">evals</span><span class="p">)</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">start_point</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Starting point of the composite Bezier curve (the first point of the first curve)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">start_point</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">end_point</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Ending point of the composite Bezier curve (the last point of the last curve)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="s s-Atom">end_point</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">derivative</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Derivative of the composite Bezier curve (a composite Bezier curve of derivative curves)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="nv">CompositeBezierCurve</span><span class="p">([</span><span class="s s-Atom">b</span><span class="p">.</span><span class="s s-Atom">derivative</span> <span class="s s-Atom">for</span> <span class="s s-Atom">b</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">])</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">l2_squared_sum</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Union</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">,</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">Expression</span><span class="p">]</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Sum of the squared L2 norm for all curves&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="nf">sum</span><span class="p">(</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">l2_squared</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">)</span>
+
+<span class="s s-Atom">def</span> <span class="nf">spline_trajectory_with_retiming</span><span class="p">(</span>
+
+    <span class="s s-Atom">p0</span><span class="o">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">pf</span><span class="p">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">t0</span><span class="o">:</span> <span class="s s-Atom">float</span><span class="p">,</span>
+
+    <span class="s s-Atom">tf</span><span class="p">:</span> <span class="s s-Atom">float</span><span class="p">,</span>
+
+    <span class="s s-Atom">pts_per_curve</span><span class="o">:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+    <span class="s s-Atom">boxes</span><span class="p">:</span> <span class="s s-Atom">list</span><span class="p">[</span><span class="nv">Box</span><span class="p">],</span>
+
+    <span class="s s-Atom">initial_durations</span><span class="o">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">v0</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">vf</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">a0</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">af</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">v_max</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">a_max</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">kappa_min</span><span class="o">:</span> <span class="s s-Atom">float</span> <span class="o">=</span> <span class="mi">1</span><span class="s s-Atom">e</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+
+    <span class="s s-Atom">omega</span><span class="p">:</span> <span class="s s-Atom">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+
+    <span class="s s-Atom">max_retiming_iters</span><span class="o">:</span> <span class="s s-Atom">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+
+    <span class="s s-Atom">time_weight</span><span class="o">:</span> <span class="s s-Atom">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="s s-Atom">tuple</span><span class="p">[</span><span class="nv">CompositeBezierCurve</span><span class="p">,</span> <span class="s s-Atom">float</span><span class="p">]</span><span class="o">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time</span>
+
+<span class="s2">    interval. Use an iterative retiming method to refine the durations for each segment of the trajectory</span>
+
+<span class="s2">    We enforce continuity between curves up to the second derivative</span>
+
+<span class="s2">    Note: if position is unconstrained (no need for safe boxes), you should instead use a single Bezier curve</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        p0 (npt.ArrayLike): Initial position, shape (3,)</span>
+
+<span class="s2">        pf (npt.ArrayLike): Final position, shape (3,)</span>
+
+<span class="s2">        t0 (float): Starting time</span>
+
+<span class="s2">        tf (float): Ending time</span>
+
+<span class="s2">        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10</span>
+
+<span class="s2">        boxes (list[Box]): Sequential list of safe box regions pass through</span>
+
+<span class="s2">        initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These</span>
+
+<span class="s2">            will be refined during the retiming process. Shape (num_boxes,)</span>
+
+<span class="s2">        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)</span>
+
+<span class="s2">        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)</span>
+
+<span class="s2">        kappa_min (float, optional): Retiming trust region parameter: Defines the maximum change in adjacent scaling</span>
+
+<span class="s2">            factors. Defaults to 1e-2.</span>
+
+<span class="s2">        omega (float, optional): Retiming parameter: Defines the rate at which kappa decays after each iteration.</span>
+
+<span class="s2">            Must be &gt; 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)</span>
+
+<span class="s2">            are more effective otherwise. Defaults to 3.</span>
+
+<span class="s2">        max_retiming_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.</span>
+
+<span class="s2">        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.</span>
+
+<span class="s2">            Defaults to 0 (minimize jerk only). Note: this should be &gt; 0 if evaluating the free-final-time case</span>
+
+<span class="s2">    Returns:</span>
+
+<span class="s2">        tuple[CompositeBezierCurve, float]:</span>
+
+<span class="s2">            CompositeBezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives</span>
+
+<span class="s2">                can be evaluated using the curve.derivative property</span>
+
+<span class="s2">            float: The optimal cost of the objective function</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Handle</span> <span class="s s-Atom">inputs</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">tf</span> <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">t0</span><span class="o">:</span>
+
+        <span class="s s-Atom">raise</span> <span class="nv">ValueError</span><span class="p">(</span><span class="s s-Atom">f</span><span class="s2">&quot;Invalid time interval: ({t0}, {tf})&quot;</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">omega</span> <span class="s s-Atom">&lt;=</span> <span class="mi">1</span><span class="o">:</span>
+
+        <span class="s s-Atom">raise</span> <span class="nv">ValueError</span><span class="p">(</span><span class="s2">&quot;The retiming parameter omega must be &gt; 1&quot;</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">pts_per_curve</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="o">:</span>
+
+        <span class="nf">print_red</span><span class="p">(</span>
+
+            <span class="s2">&quot;WARNING: Curves with less than 6 control points may lead to infeasible constraints&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Store</span> <span class="s s-Atom">the</span> <span class="s s-Atom">curve</span> <span class="s s-Atom">parameters</span> <span class="s s-Atom">so</span> <span class="s s-Atom">that</span> <span class="s s-Atom">we</span> <span class="s s-Atom">can</span> <span class="s s-Atom">reuse</span> <span class="s s-Atom">these</span> <span class="s s-Atom">in</span> <span class="s s-Atom">the</span> <span class="s s-Atom">repeated</span> <span class="s s-Atom">calls</span> <span class="s s-Atom">to</span> <span class="s s-Atom">the</span> <span class="s s-Atom">spline</span> <span class="s s-Atom">function</span>
+
+    <span class="s s-Atom">curve_kwargs</span> <span class="o">=</span> <span class="nf">dict</span><span class="p">(</span>
+
+        <span class="s s-Atom">p0</span><span class="o">=</span><span class="s s-Atom">p0</span><span class="p">,</span>
+
+        <span class="s s-Atom">pf</span><span class="o">=</span><span class="s s-Atom">pf</span><span class="p">,</span>
+
+        <span class="s s-Atom">t0</span><span class="o">=</span><span class="s s-Atom">t0</span><span class="p">,</span>
+
+        <span class="s s-Atom">tf</span><span class="o">=</span><span class="s s-Atom">tf</span><span class="p">,</span>
+
+        <span class="s s-Atom">pts_per_curve</span><span class="o">=</span><span class="s s-Atom">pts_per_curve</span><span class="p">,</span>
+
+        <span class="s s-Atom">boxes</span><span class="o">=</span><span class="s s-Atom">boxes</span><span class="p">,</span>
+
+        <span class="s s-Atom">v0</span><span class="o">=</span><span class="s s-Atom">v0</span><span class="p">,</span>
+
+        <span class="s s-Atom">vf</span><span class="o">=</span><span class="s s-Atom">vf</span><span class="p">,</span>
+
+        <span class="s s-Atom">a0</span><span class="o">=</span><span class="s s-Atom">a0</span><span class="p">,</span>
+
+        <span class="s s-Atom">af</span><span class="o">=</span><span class="s s-Atom">af</span><span class="p">,</span>
+
+        <span class="s s-Atom">v_max</span><span class="o">=</span><span class="s s-Atom">v_max</span><span class="p">,</span>
+
+        <span class="s s-Atom">a_max</span><span class="o">=</span><span class="s s-Atom">a_max</span><span class="p">,</span>
+
+        <span class="s s-Atom">time_weight</span><span class="o">=</span><span class="s s-Atom">time_weight</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Solve</span> <span class="s s-Atom">a</span> <span class="s s-Atom">preliminary</span> <span class="s s-Atom">trajectory</span> <span class="s s-Atom">for</span> <span class="s s-Atom">this</span> <span class="s s-Atom">initial</span> <span class="s s-Atom">guess</span> <span class="s s-Atom">at</span> <span class="s s-Atom">the</span> <span class="s s-Atom">durations</span>
+
+    <span class="s s-Atom">durations</span> <span class="o">=</span> <span class="s s-Atom">initial_durations</span>
+
+    <span class="s s-Atom">curve_kwargs</span><span class="p">[</span><span class="s2">&quot;durations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">durations</span>
+
+    <span class="s s-Atom">best_curve</span><span class="p">,</span> <span class="s s-Atom">best_info</span> <span class="o">=</span> <span class="k">_</span><span class="nf">fixed_timing_spline</span><span class="p">(</span><span class="s s-Atom">**curve_kwargs</span><span class="p">)</span>
+
+    <span class="s s-Atom">kappa</span> <span class="o">=</span> <span class="mi">1</span>  <span class="s s-Atom">#</span> <span class="nv">Initialize</span> <span class="s s-Atom">the</span> <span class="s s-Atom">trust</span> <span class="s s-Atom">region</span> <span class="s s-Atom">parameter</span>
+
+    <span class="s s-Atom">for</span> <span class="k">_</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">max_retiming_iters</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">#</span> <span class="nv">Retime</span><span class="p">.</span>
+
+        <span class="s s-Atom">try</span><span class="p">:</span>
+
+            <span class="s s-Atom">new_durations</span><span class="p">,</span> <span class="s s-Atom">kappa_max</span> <span class="o">=</span> <span class="nf">retiming</span><span class="p">(</span>
+
+                <span class="s s-Atom">kappa</span><span class="p">,</span>
+
+                <span class="s s-Atom">best_info</span><span class="p">[</span><span class="s2">&quot;cost_breakdown&quot;</span><span class="p">],</span>
+
+                <span class="s s-Atom">durations</span><span class="p">,</span>
+
+                <span class="s s-Atom">best_info</span><span class="p">[</span><span class="s2">&quot;retiming_weights&quot;</span><span class="p">],</span>
+
+            <span class="p">)</span>
+
+        <span class="s s-Atom">except</span> <span class="nv">OptimizationError</span><span class="o">:</span>
+
+            <span class="nf">print_red</span><span class="p">(</span>
+
+                <span class="s2">&quot;Spline trajectory generation terminated due to failure to solve the retiming problem.\n&quot;</span>
+
+                <span class="o">+</span> <span class="s2">&quot;This can sometimes be due to a poor initialization of the curve durations, &quot;</span>
+
+                <span class="o">+</span> <span class="s2">&quot;or having a time horizon that is too short&quot;</span>
+
+            <span class="p">)</span>
+
+            <span class="s s-Atom">break</span>
+
+        <span class="s s-Atom">#</span> <span class="nv">Improve</span> <span class="nv">Bezier</span> <span class="s s-Atom">curves</span> <span class="s s-Atom">based</span> <span class="s s-Atom">on</span> <span class="s s-Atom">the</span> <span class="s s-Atom">retiming</span>
+
+        <span class="s s-Atom">curve_kwargs</span><span class="p">[</span><span class="s2">&quot;durations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">new_durations</span>
+
+        <span class="s s-Atom">new_curve</span><span class="p">,</span> <span class="s s-Atom">new_info</span> <span class="o">=</span> <span class="k">_</span><span class="nf">fixed_timing_spline</span><span class="p">(</span><span class="s s-Atom">**curve_kwargs</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="s2">&quot;Retiming cost: &quot;</span><span class="p">,</span> <span class="s s-Atom">new_info</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">])</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">new_info</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="s s-Atom">best_info</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span><span class="o">:</span>  <span class="s s-Atom">#</span> <span class="nv">Accept</span> <span class="s s-Atom">trajectory</span> <span class="s s-Atom">with</span> <span class="s s-Atom">new</span> <span class="s s-Atom">durations</span>
+
+            <span class="s s-Atom">durations</span> <span class="o">=</span> <span class="s s-Atom">new_durations</span>
+
+            <span class="s s-Atom">best_info</span> <span class="o">=</span> <span class="s s-Atom">new_info</span>
+
+            <span class="s s-Atom">best_curve</span> <span class="o">=</span> <span class="s s-Atom">new_curve</span>
+
+        <span class="s s-Atom">#</span> <span class="nv">Update</span> <span class="s s-Atom">trust</span> <span class="s s-Atom">region</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">kappa</span> <span class="o">&lt;</span> <span class="s s-Atom">kappa_min</span><span class="o">:</span>
+
+            <span class="s s-Atom">break</span>
+
+        <span class="s s-Atom">kappa</span> <span class="o">=</span> <span class="s s-Atom">kappa_max</span> <span class="o">/</span> <span class="s s-Atom">omega</span>
+
+    <span class="s s-Atom">else</span><span class="p">:</span>
+
+        <span class="nf">print_red</span><span class="p">(</span>
+
+            <span class="s2">&quot;Spline trajectory generation terminated due to reaching the maximum number of iterations&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">return</span> <span class="s s-Atom">best_curve</span><span class="p">,</span> <span class="s s-Atom">best_info</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span>
+
+<span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">fixed_timing_spline</span><span class="p">(</span>
+
+    <span class="s s-Atom">p0</span><span class="o">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">pf</span><span class="p">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">t0</span><span class="o">:</span> <span class="s s-Atom">float</span><span class="p">,</span>
+
+    <span class="s s-Atom">tf</span><span class="p">:</span> <span class="s s-Atom">float</span><span class="p">,</span>
+
+    <span class="s s-Atom">pts_per_curve</span><span class="o">:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+    <span class="s s-Atom">boxes</span><span class="p">:</span> <span class="s s-Atom">list</span><span class="p">[</span><span class="nv">Box</span><span class="p">],</span>
+
+    <span class="s s-Atom">durations</span><span class="p">:</span> <span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">,</span>
+
+    <span class="s s-Atom">v0</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">vf</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">a0</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">af</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">npt</span><span class="p">.</span><span class="nv">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">v_max</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">a_max</span><span class="o">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
+
+    <span class="s s-Atom">time_weight</span><span class="o">:</span> <span class="s s-Atom">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="s s-Atom">tuple</span><span class="p">[</span><span class="nv">CompositeBezierCurve</span><span class="p">,</span> <span class="s s-Atom">dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">]]</span><span class="o">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Generate a min-jerk spline based on chained Bezier curves through a set of safe boxes, for a fixed time</span>
+
+<span class="s2">    interval and fixed durations within each box</span>
+
+<span class="s2">    NOTE: This is NOT globally optimal if we don&#39;t use the retiming process to refine the time breakdown, which is</span>
+
+<span class="s2">    why this is a helper function that gets called within the trajectory-with-retiming function</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        p0 (npt.ArrayLike): Initial position, shape (3,)</span>
+
+<span class="s2">        pf (npt.ArrayLike): Final position, shape (3,)</span>
+
+<span class="s2">        t0 (float): Starting time</span>
+
+<span class="s2">        tf (float): Ending time</span>
+
+<span class="s2">        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10</span>
+
+<span class="s2">        boxes (list[Box]): Sequential list of safe box regions pass through</span>
+
+<span class="s2">        durations (npt.ArrayLike): Durations for each segment of the trajectory, shape (num_boxes,)</span>
+
+<span class="s2">        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="s2">        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)</span>
+
+<span class="s2">        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)</span>
+
+<span class="s2">        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.</span>
+
+<span class="s2">            Defaults to 0 (minimize jerk only). Note: this should be &gt; 0 if evaluating the free-final-time case</span>
+
+<span class="s2">    Returns:</span>
+
+<span class="s2">        tuple[CompositeBezierCurve, dict[str, Any]]:</span>
+
+<span class="s2">            CompositeBezierCurve: The solved position curve</span>
+
+<span class="s2">            dict[str, Any]: Solution info to use for retiming optimization</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">dim</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">p0</span><span class="p">)</span>
+
+    <span class="s s-Atom">n_curves</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">boxes</span><span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Construct</span> <span class="s s-Atom">our</span> <span class="s s-Atom">main</span> <span class="s s-Atom">optimization</span> <span class="s s-Atom">variable</span>
+
+    <span class="s s-Atom">all_control_points</span> <span class="o">=</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">Variable</span><span class="p">((</span><span class="s s-Atom">n_curves</span> <span class="o">*</span> <span class="s s-Atom">pts_per_curve</span><span class="p">,</span> <span class="s s-Atom">dim</span><span class="p">))</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Determine</span> <span class="s s-Atom">the</span> <span class="s s-Atom">knot</span> <span class="s s-Atom">times</span> <span class="s s-Atom">between</span> <span class="s s-Atom">trajectory</span> <span class="s s-Atom">segments</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Includes</span> <span class="s s-Atom">start</span><span class="o">/</span><span class="s s-Atom">end</span> <span class="s s-Atom">times</span> <span class="s s-Atom">as</span> <span class="s s-Atom">knots</span> <span class="s s-Atom">too</span><span class="p">,</span> <span class="s s-Atom">for</span> <span class="s s-Atom">ease</span> <span class="s s-Atom">of</span> <span class="s s-Atom">indexing</span>
+
+    <span class="s s-Atom">knot_times</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">concatenate</span><span class="p">([[</span><span class="s s-Atom">t0</span><span class="p">],</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">cumsum</span><span class="p">(</span><span class="s s-Atom">durations</span><span class="p">)])</span>
+
+    <span class="s s-Atom">knot_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">tf</span>  <span class="s s-Atom">#</span> <span class="nv">Fix</span> <span class="s s-Atom">floating</span> <span class="s s-Atom">pt</span> <span class="s s-Atom">issue</span> <span class="s s-Atom">with</span> <span class="s s-Atom">cumsum</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Indexing</span> <span class="s s-Atom">from</span> <span class="s s-Atom">the</span> <span class="s s-Atom">main</span> <span class="s s-Atom">cvxpy</span> <span class="s s-Atom">variable</span> <span class="s s-Atom">containing</span> <span class="s s-Atom">all</span> <span class="s s-Atom">of</span> <span class="s s-Atom">the</span> <span class="s s-Atom">control</span> <span class="s s-Atom">points</span>
+
+    <span class="s s-Atom">pos_pt_sets</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="s s-Atom">all_control_points</span><span class="p">[</span><span class="s s-Atom">pts_per_curve</span> <span class="o">*</span> <span class="s s-Atom">i</span> <span class="o">:</span> <span class="s s-Atom">pts_per_curve</span> <span class="o">*</span> <span class="p">(</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">pos_curves</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="nv">BezierCurve</span><span class="p">(</span><span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">],</span> <span class="s s-Atom">knot_times</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">],</span> <span class="s s-Atom">knot_times</span><span class="p">[</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Set</span> <span class="s s-Atom">up</span> <span class="s s-Atom">derivative</span> <span class="s s-Atom">curves</span> <span class="s s-Atom">and</span> <span class="s s-Atom">the</span> <span class="s s-Atom">points</span> <span class="s s-Atom">associated</span> <span class="s s-Atom">with</span> <span class="s s-Atom">them</span>
+
+    <span class="s s-Atom">vel_curves</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">pc</span><span class="p">.</span><span class="s s-Atom">derivative</span> <span class="s s-Atom">for</span> <span class="s s-Atom">pc</span> <span class="s s-Atom">in</span> <span class="s s-Atom">pos_curves</span><span class="p">]</span>
+
+    <span class="s s-Atom">accel_curves</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">vc</span><span class="p">.</span><span class="s s-Atom">derivative</span> <span class="s s-Atom">for</span> <span class="s s-Atom">vc</span> <span class="s s-Atom">in</span> <span class="s s-Atom">vel_curves</span><span class="p">]</span>
+
+    <span class="s s-Atom">jerk_curves</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">ac</span><span class="p">.</span><span class="s s-Atom">derivative</span> <span class="s s-Atom">for</span> <span class="s s-Atom">ac</span> <span class="s s-Atom">in</span> <span class="s s-Atom">accel_curves</span><span class="p">]</span>
+
+    <span class="s s-Atom">vel_pt_sets</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">vc</span><span class="p">.</span><span class="s s-Atom">points</span> <span class="s s-Atom">for</span> <span class="s s-Atom">vc</span> <span class="s s-Atom">in</span> <span class="s s-Atom">vel_curves</span><span class="p">]</span>
+
+    <span class="s s-Atom">accel_pt_sets</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">ac</span><span class="p">.</span><span class="s s-Atom">points</span> <span class="s s-Atom">for</span> <span class="s s-Atom">ac</span> <span class="s s-Atom">in</span> <span class="s s-Atom">accel_curves</span><span class="p">]</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Set</span> <span class="s s-Atom">up</span> <span class="s s-Atom">constraints</span>
+
+    <span class="s s-Atom">pos_continuity</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">vel_continuity</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="s s-Atom">vel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">vel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">accel_continuity</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="s s-Atom">accel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">accel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">continuity_constraints</span> <span class="o">=</span> <span class="s s-Atom">pos_continuity</span> <span class="o">+</span> <span class="s s-Atom">vel_continuity</span> <span class="o">+</span> <span class="s s-Atom">accel_continuity</span>
+
+    <span class="s s-Atom">bc_constraints</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">p0</span><span class="p">,</span> <span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">pf</span><span class="p">]</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">v0</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">bc_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">vel_pt_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">v0</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">a0</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">bc_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">accel_pt_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">a0</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">vf</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">bc_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">vel_pt_sets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">vf</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">af</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">bc_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">accel_pt_sets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s s-Atom">af</span><span class="p">)</span>
+
+    <span class="s s-Atom">box_constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="s s-Atom">for</span> <span class="s s-Atom">i</span><span class="p">,</span> <span class="s s-Atom">box</span> <span class="s s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s s-Atom">boxes</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">lower</span><span class="p">,</span> <span class="s s-Atom">upper</span> <span class="o">=</span> <span class="s s-Atom">box</span>
+
+        <span class="s s-Atom">n</span> <span class="o">=</span> <span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">].</span><span class="s s-Atom">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="s s-Atom">#</span> <span class="nv">Number</span> <span class="s s-Atom">of</span> <span class="s s-Atom">control</span> <span class="s s-Atom">points</span> <span class="s s-Atom">in</span> <span class="s s-Atom">ith</span> <span class="s s-Atom">curve</span>
+
+        <span class="s s-Atom">box_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">tile</span><span class="p">(</span><span class="s s-Atom">lower</span><span class="p">,</span> <span class="p">(</span><span class="s s-Atom">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="s s-Atom">box_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">tile</span><span class="p">(</span><span class="s s-Atom">upper</span><span class="p">,</span> <span class="p">(</span><span class="s s-Atom">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="s s-Atom">dyn_constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">v_max</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span><span class="o">:</span>
+
+            <span class="s s-Atom">dyn_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">cp</span><span class="p">.</span><span class="nf">norm2</span><span class="p">(</span><span class="s s-Atom">vel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">],</span> <span class="s s-Atom">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">v_max</span><span class="p">)</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">a_max</span> <span class="o">is</span> <span class="o">not</span> <span class="nv">None</span><span class="o">:</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span><span class="o">:</span>
+
+            <span class="s s-Atom">dyn_constraints</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">cp</span><span class="p">.</span><span class="nf">norm2</span><span class="p">(</span><span class="s s-Atom">accel_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">],</span> <span class="s s-Atom">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">a_max</span><span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Merge</span> <span class="s s-Atom">the</span> <span class="s s-Atom">lists</span> <span class="s s-Atom">of</span> <span class="s s-Atom">constraints</span> <span class="s s-Atom">together</span>
+
+    <span class="s s-Atom">constraints</span> <span class="o">=</span> <span class="p">(</span>
+
+        <span class="s s-Atom">continuity_constraints</span> <span class="o">+</span> <span class="s s-Atom">bc_constraints</span> <span class="o">+</span> <span class="s s-Atom">box_constraints</span> <span class="o">+</span> <span class="s s-Atom">dyn_constraints</span>
+
+    <span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Complete</span> <span class="s s-Atom">the</span> <span class="s s-Atom">problem</span> <span class="s s-Atom">formulation</span> <span class="s s-Atom">and</span> <span class="s s-Atom">solve</span> <span class="s s-Atom">it</span>
+
+    <span class="s s-Atom">jerk</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="s s-Atom">jc</span><span class="p">.</span><span class="s s-Atom">l2_squared</span> <span class="s s-Atom">for</span> <span class="s s-Atom">jc</span> <span class="s s-Atom">in</span> <span class="s s-Atom">jerk_curves</span><span class="p">)</span>
+
+    <span class="s s-Atom">objective</span> <span class="o">=</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">Minimize</span><span class="p">(</span><span class="s s-Atom">jerk</span> <span class="o">+</span> <span class="s s-Atom">time_weight</span> <span class="o">*</span> <span class="p">(</span><span class="s s-Atom">tf</span> <span class="o">-</span> <span class="s s-Atom">t0</span><span class="p">))</span>
+
+    <span class="s s-Atom">prob</span> <span class="o">=</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">Problem</span><span class="p">(</span><span class="s s-Atom">objective</span><span class="p">,</span> <span class="s s-Atom">constraints</span><span class="p">)</span>
+
+    <span class="s s-Atom">try</span><span class="p">:</span>
+
+        <span class="s s-Atom">prob</span><span class="p">.</span><span class="nf">solve</span><span class="p">(</span><span class="s s-Atom">solver</span><span class="o">=</span><span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">CLARABEL</span><span class="p">)</span>
+
+    <span class="s s-Atom">except</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="s s-Atom">error</span><span class="p">.</span><span class="nv">SolverError</span> <span class="s s-Atom">as</span> <span class="s s-Atom">e</span><span class="p">:</span>
+
+        <span class="s s-Atom">raise</span> <span class="nv">OptimizationError</span><span class="p">(</span><span class="s2">&quot;Cannot generate the trajectory - Solver error!&quot;</span><span class="p">)</span> <span class="s s-Atom">from</span> <span class="s s-Atom">e</span>
+
+    <span class="s s-Atom">if</span> <span class="s s-Atom">prob</span><span class="p">.</span><span class="s s-Atom">status</span> <span class="p">!</span><span class="o">=</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">OPTIMAL</span><span class="o">:</span>
+
+        <span class="s s-Atom">raise</span> <span class="nv">OptimizationError</span><span class="p">(</span>
+
+            <span class="s s-Atom">f</span><span class="s2">&quot;Unable to generate the trajectory (solver status: {prob.status}).\n&quot;</span>
+
+            <span class="o">+</span> <span class="s2">&quot;Check on the feasibility of the constraints&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Form</span> <span class="s s-Atom">info</span> <span class="s s-Atom">about</span> <span class="s s-Atom">the</span> <span class="s s-Atom">solution</span> <span class="s s-Atom">to</span> <span class="s s-Atom">match</span> <span class="s s-Atom">the</span> <span class="s s-Atom">methodology</span> <span class="s s-Atom">from</span> <span class="nv">FPP</span><span class="p">,</span> <span class="s s-Atom">so</span> <span class="s s-Atom">we</span> <span class="s s-Atom">can</span> <span class="s s-Atom">use</span> <span class="s s-Atom">this</span> <span class="s s-Atom">for</span> <span class="s s-Atom">retiming</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">For</span> <span class="s s-Atom">more</span> <span class="s s-Atom">details</span> <span class="s s-Atom">on</span> <span class="s s-Atom">this</span><span class="p">,</span> <span class="s s-Atom">refer</span> <span class="s s-Atom">to</span> <span class="s s-Atom">the</span> <span class="nv">FPP</span> <span class="s s-Atom">source</span> <span class="s s-Atom">code</span> <span class="s s-Atom">and</span> <span class="s s-Atom">paper</span>
+
+    <span class="s s-Atom">cost_breakdown</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="s s-Atom">for</span> <span class="s s-Atom">k</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">cost_breakdown</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="s s-Atom">cost_breakdown</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">jerk_curves</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">].</span><span class="s s-Atom">l2_squared</span><span class="p">.</span><span class="nb">val</span><span class="s s-Atom">ue</span>
+
+    <span class="s s-Atom">retiming_weights</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="s s-Atom">for</span> <span class="s s-Atom">k</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">retiming_weights</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="s s-Atom">vel_primal</span> <span class="o">=</span> <span class="s s-Atom">vel_curves</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">].</span><span class="s s-Atom">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nb">val</span><span class="s s-Atom">ue</span>
+
+        <span class="s s-Atom">vel_dual</span> <span class="o">=</span> <span class="s s-Atom">vel_continuity</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">].</span><span class="s s-Atom">dual_value</span>
+
+        <span class="s s-Atom">retiming_weights</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">vel_primal</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="s s-Atom">vel_dual</span><span class="p">)</span>
+
+        <span class="s s-Atom">accel_primal</span> <span class="o">=</span> <span class="s s-Atom">accel_curves</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">].</span><span class="s s-Atom">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nb">val</span><span class="s s-Atom">ue</span>
+
+        <span class="s s-Atom">accel_dual</span> <span class="o">=</span> <span class="s s-Atom">accel_continuity</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">].</span><span class="s s-Atom">dual_value</span>
+
+        <span class="s s-Atom">retiming_weights</span><span class="p">[</span><span class="s s-Atom">k</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">accel_primal</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="s s-Atom">accel_dual</span><span class="p">)</span>
+
+    <span class="s s-Atom">info</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="s2">&quot;cost&quot;</span><span class="o">:</span> <span class="s s-Atom">prob</span><span class="p">.</span><span class="nb">val</span><span class="s s-Atom">ue</span><span class="p">,</span>
+
+        <span class="s2">&quot;retiming_weights&quot;</span><span class="o">:</span> <span class="s s-Atom">retiming_weights</span><span class="p">,</span>
+
+        <span class="s2">&quot;cost_breakdown&quot;</span><span class="o">:</span> <span class="s s-Atom">cost_breakdown</span><span class="p">,</span>
+
+    <span class="p">}</span>
+
+    <span class="s s-Atom">#</span> <span class="nv">Construct</span> <span class="s s-Atom">the</span> <span class="nv">Bezier</span> <span class="s s-Atom">curves</span> <span class="s s-Atom">from</span> <span class="s s-Atom">the</span> <span class="s s-Atom">solved</span> <span class="s s-Atom">control</span> <span class="s s-Atom">points</span><span class="p">,</span>
+
+    <span class="s s-Atom">solved_pos_curves</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="nv">BezierCurve</span><span class="p">(</span><span class="s s-Atom">pos_pt_sets</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">].</span><span class="nb">val</span><span class="s s-Atom">ue</span><span class="p">,</span> <span class="s s-Atom">knot_times</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">],</span> <span class="s s-Atom">knot_times</span><span class="p">[</span><span class="s s-Atom">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">solved_pos_spline</span> <span class="o">=</span> <span class="nv">CompositeBezierCurve</span><span class="p">(</span><span class="s s-Atom">solved_pos_curves</span><span class="p">)</span>
+
+    <span class="s s-Atom">return</span> <span class="s s-Atom">solved_pos_spline</span><span class="p">,</span> <span class="s s-Atom">info</span>
+
+<span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">test_spline_trajectory</span><span class="p">()</span><span class="o">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Construct and visualize an optimal trajectory composed of three curves between safe sets&quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">p0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
+
+    <span class="s s-Atom">pf</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">]</span>
+
+    <span class="s s-Atom">t0</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="s s-Atom">tf</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="s s-Atom">pts_per_curve</span> <span class="o">=</span> <span class="mi">8</span>
+
+    <span class="s s-Atom">v0</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="s s-Atom">vf</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="s s-Atom">a0</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="s s-Atom">af</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="s s-Atom">boxes</span> <span class="o">=</span> <span class="p">[</span>
+
+        <span class="nv">Box</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+
+        <span class="nv">Box</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+
+        <span class="nv">Box</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+
+    <span class="p">]</span>
+
+    <span class="s s-Atom">n_curves</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">boxes</span><span class="p">)</span>
+
+    <span class="s s-Atom">durations</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">ones</span><span class="p">(</span><span class="s s-Atom">n_curves</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="s s-Atom">tf</span> <span class="o">-</span> <span class="s s-Atom">t0</span><span class="p">)</span> <span class="o">/</span> <span class="s s-Atom">n_curves</span>
+
+    <span class="s s-Atom">n_timesteps</span> <span class="o">=</span> <span class="mi">50</span>
+
+    <span class="s s-Atom">times</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="s s-Atom">t0</span><span class="p">,</span> <span class="s s-Atom">tf</span><span class="p">,</span> <span class="s s-Atom">n_timesteps</span><span class="p">,</span> <span class="s s-Atom">endpoint</span><span class="o">=</span><span class="nv">True</span><span class="p">)</span>
+
+    <span class="s s-Atom">pos_curve</span><span class="p">,</span> <span class="s s-Atom">*</span><span class="k">_</span> <span class="o">=</span> <span class="k">_</span><span class="nf">fixed_timing_spline</span><span class="p">(</span>
+
+        <span class="s s-Atom">p0</span><span class="p">,</span> <span class="s s-Atom">pf</span><span class="p">,</span> <span class="s s-Atom">t0</span><span class="p">,</span> <span class="s s-Atom">tf</span><span class="p">,</span> <span class="s s-Atom">pts_per_curve</span><span class="p">,</span> <span class="s s-Atom">boxes</span><span class="p">,</span> <span class="s s-Atom">durations</span><span class="p">,</span> <span class="s s-Atom">v0</span><span class="p">,</span> <span class="s s-Atom">vf</span><span class="p">,</span> <span class="s s-Atom">a0</span><span class="p">,</span> <span class="s s-Atom">af</span>
+
+    <span class="p">)</span>
+
+    <span class="s s-Atom">pos_pts</span> <span class="o">=</span> <span class="nf">pos_curve</span><span class="p">(</span><span class="s s-Atom">times</span><span class="p">)</span>
+
+    <span class="s s-Atom">pos_curve_retimed</span><span class="p">,</span> <span class="s s-Atom">cost</span> <span class="o">=</span> <span class="nf">spline_trajectory_with_retiming</span><span class="p">(</span>
+
+        <span class="s s-Atom">p0</span><span class="p">,</span> <span class="s s-Atom">pf</span><span class="p">,</span> <span class="s s-Atom">t0</span><span class="p">,</span> <span class="s s-Atom">tf</span><span class="p">,</span> <span class="s s-Atom">pts_per_curve</span><span class="p">,</span> <span class="s s-Atom">boxes</span><span class="p">,</span> <span class="s s-Atom">durations</span><span class="p">,</span> <span class="s s-Atom">v0</span><span class="p">,</span> <span class="s s-Atom">vf</span><span class="p">,</span> <span class="s s-Atom">a0</span><span class="p">,</span> <span class="s s-Atom">af</span>
+
+    <span class="p">)</span>
+
+    <span class="s s-Atom">pos</span> <span class="o">=</span> <span class="nf">pos_curve_retimed</span><span class="p">(</span><span class="s s-Atom">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="s s-Atom">t0</span><span class="p">,</span> <span class="s s-Atom">tf</span><span class="p">,</span> <span class="s s-Atom">n_timesteps</span><span class="p">))</span>
+
+    <span class="s s-Atom">pybullet</span><span class="p">.</span><span class="nf">connect</span><span class="p">(</span><span class="s s-Atom">pybullet</span><span class="p">.</span><span class="nv">GUI</span><span class="p">)</span>
+
+    <span class="nf">visualize_points</span><span class="p">(</span><span class="s s-Atom">np</span><span class="p">.</span><span class="nf">vstack</span><span class="p">([</span><span class="s s-Atom">p0</span><span class="p">,</span> <span class="s s-Atom">pf</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="s s-Atom">for</span> <span class="s s-Atom">box</span> <span class="s s-Atom">in</span> <span class="s s-Atom">boxes</span><span class="p">:</span>
+
+        <span class="nf">visualize_3D_box</span><span class="p">(</span><span class="s s-Atom">box</span><span class="p">)</span>
+
+    <span class="s s-Atom">simple_traj_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="s s-Atom">retimed_traj_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="nf">visualize_path</span><span class="p">(</span><span class="s s-Atom">pos_pts</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s s-Atom">simple_traj_color</span><span class="p">)</span>
+
+    <span class="nf">visualize_path</span><span class="p">(</span><span class="s s-Atom">pos</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s s-Atom">retimed_traj_color</span><span class="p">)</span>
+
+    <span class="s s-Atom">pybullet</span><span class="p">.</span><span class="nf">addUserDebugText</span><span class="p">(</span><span class="s2">&quot;Original curve&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">],</span> <span class="s s-Atom">simple_traj_color</span><span class="p">)</span>
+
+    <span class="s s-Atom">pybullet</span><span class="p">.</span><span class="nf">addUserDebugText</span><span class="p">(</span><span class="s2">&quot;Retimed curve&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">],</span> <span class="s s-Atom">retimed_traj_color</span><span class="p">)</span>
+
+    <span class="nf">input</span><span class="p">()</span>
+
+<span class="s s-Atom">if</span> <span class="k">__</span><span class="s s-Atom">name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="o">:</span>
+
+    <span class="s s-Atom">#</span> <span class="k">_</span><span class="nf">test_plotting_spline</span><span class="p">()</span>
+
+    <span class="k">_</span><span class="nf">test_spline_trajectory</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="spline_trajectory_with_retiming">spline_trajectory_with_retiming</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">spline_trajectory_with_retiming</span><span class="p">(</span>
+    <span class="n">p0</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">pf</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">tf</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">pts_per_curve</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">boxes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">],</span>
+    <span class="n">initial_durations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">v0</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">vf</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">a0</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">af</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">v_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">a_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">kappa_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">omega</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">max_retiming_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">time_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">trajectories</span><span class="o">.</span><span class="n">splines</span><span class="o">.</span><span class="n">CompositeBezierCurve</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time</p>
+<p>interval. Use an iterative retiming method to refine the durations for each segment of the trajectory</p>
+<p>We enforce continuity between curves up to the second derivative</p>
+<p>Note: if position is unconstrained (no need for safe boxes), you should instead use a single Bezier curve</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p0</td>
+<td>npt.ArrayLike</td>
+<td>Initial position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pf</td>
+<td>npt.ArrayLike</td>
+<td>Final position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>t0</td>
+<td>float</td>
+<td>Starting time</td>
+<td>None</td>
+</tr>
+<tr>
+<td>tf</td>
+<td>float</td>
+<td>Ending time</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pts_per_curve</td>
+<td>int</td>
+<td>Number of control points per Bezier curve. Generally, should be around 6-10</td>
+<td>None</td>
+</tr>
+<tr>
+<td>boxes</td>
+<td>list[Box]</td>
+<td>Sequential list of safe box regions pass through</td>
+<td>None</td>
+</tr>
+<tr>
+<td>initial_durations</td>
+<td>npt.ArrayLike</td>
+<td>Initial estimate of the durations for each segment of the trajectory. These<br>will be refined during the retiming process. Shape (num_boxes,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>v0</td>
+<td>Optional[npt.ArrayLike]</td>
+<td>Initial velocity, shape (3,). Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vf</td>
+<td>Optional[npt.ArrayLike]</td>
+<td>Final velocity, shape (3,). Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>a0</td>
+<td>Optional[npt.ArrayLike]</td>
+<td>Initial acceleration, shape (3,). Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>af</td>
+<td>Optional[npt.ArrayLike]</td>
+<td>Final acceleration, shape (3,). Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>v_max</td>
+<td>Optional[float]</td>
+<td>Maximum L2 norm of the velocity. Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>a_max</td>
+<td>Optional[float]</td>
+<td>Maximum L2 norm of the acceleration. Defaults to None (unconstrained)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>kappa_min</td>
+<td>float</td>
+<td>Retiming trust region parameter: Defines the maximum change in adjacent scaling<br>factors. Defaults to 1e-2.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>omega</td>
+<td>float</td>
+<td>Retiming parameter: Defines the rate at which kappa decays after each iteration.<br>Must be &gt; 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)<br>are more effective otherwise. Defaults to 3.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>max_retiming_iters</td>
+<td>int</td>
+<td>Maximum number of iterations for the retiming process. Defaults to 10.</td>
+<td>10</td>
+</tr>
+<tr>
+<td>time_weight</td>
+<td>float</td>
+<td>Objective function weight corresponding to a linear penalty on the duration.<br>Defaults to 0 (minimize jerk only). Note: this should be &gt; 0 if evaluating the free-final-time case</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tuple[CompositeBezierCurve, float]</td>
+<td>CompositeBezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives<br>    can be evaluated using the curve.derivative property<br>float: The optimal cost of the objective function</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">spline_trajectory_with_retiming</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">p0</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">pf</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">t0</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">tf</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">pts_per_curve</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">boxes</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Box</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">initial_durations</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">v0</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">npt.ArrayLike</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">vf</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">npt.ArrayLike</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">a0</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">npt.ArrayLike</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">af</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">npt.ArrayLike</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">v_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">a_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">kappa_min</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-2</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">omega</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">max_retiming_iters</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">time_weight</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">tuple</span><span class="o">[</span><span class="n">CompositeBezierCurve, float</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Generate a min-jerk trajectory based on chained Bezier curves through a set of safe boxes, for a set time</span>
+
+<span class="ss">    interval. Use an iterative retiming method to refine the durations for each segment of the trajectory</span>
+
+<span class="ss">    We enforce continuity between curves up to the second derivative</span>
+
+<span class="ss">    Note: if position is unconstrained (no need for safe boxes), you should instead use a single Bezier curve</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        p0 (npt.ArrayLike): Initial position, shape (3,)</span>
+
+<span class="ss">        pf (npt.ArrayLike): Final position, shape (3,)</span>
+
+<span class="ss">        t0 (float): Starting time</span>
+
+<span class="ss">        tf (float): Ending time</span>
+
+<span class="ss">        pts_per_curve (int): Number of control points per Bezier curve. Generally, should be around 6-10</span>
+
+<span class="ss">        boxes (list[Box]): Sequential list of safe box regions pass through</span>
+
+<span class="ss">        initial_durations (npt.ArrayLike): Initial estimate of the durations for each segment of the trajectory. These</span>
+
+<span class="ss">            will be refined during the retiming process. Shape (num_boxes,)</span>
+
+<span class="ss">        v0 (Optional[npt.ArrayLike]): Initial velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="ss">        vf (Optional[npt.ArrayLike]): Final velocity, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="ss">        a0 (Optional[npt.ArrayLike]): Initial acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="ss">        af (Optional[npt.ArrayLike]): Final acceleration, shape (3,). Defaults to None (unconstrained)</span>
+
+<span class="ss">        v_max (Optional[float]): Maximum L2 norm of the velocity. Defaults to None (unconstrained)</span>
+
+<span class="ss">        a_max (Optional[float]): Maximum L2 norm of the acceleration. Defaults to None (unconstrained)</span>
+
+<span class="ss">        kappa_min (float, optional): Retiming trust region parameter: Defines the maximum change in adjacent scaling</span>
+
+<span class="ss">            factors. Defaults to 1e-2.</span>
+
+<span class="ss">        omega (float, optional): Retiming parameter: Defines the rate at which kappa decays after each iteration.</span>
+
+<span class="ss">            Must be &gt; 1. Small values (~2) work well when transition time estimates are poor, but larger values (~5)</span>
+
+<span class="ss">            are more effective otherwise. Defaults to 3.</span>
+
+<span class="ss">        max_retiming_iters (int, optional): Maximum number of iterations for the retiming process. Defaults to 10.</span>
+
+<span class="ss">        time_weight (float, optional): Objective function weight corresponding to a linear penalty on the duration.</span>
+
+<span class="ss">            Defaults to 0 (minimize jerk only). Note: this should be &gt; 0 if evaluating the free-final-time case</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        tuple[CompositeBezierCurve, float]:</span>
+
+<span class="ss">            CompositeBezierCurve: The optimal curve for the position component of the trajectory. Note: derivatives</span>
+
+<span class="ss">                can be evaluated using the curve.derivative property</span>
+
+<span class="ss">            float: The optimal cost of the objective function</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Handle</span><span class="w"> </span><span class="n">inputs</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">tf</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nl">t0</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Invalid time interval: ({t0}, {tf})&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">omega</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="ss">&quot;The retiming parameter omega must be &gt; 1&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">pts_per_curve</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">6</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">print_red</span><span class="p">(</span>
+
+<span class="w">            </span><span class="ss">&quot;WARNING: Curves with less than 6 control points may lead to infeasible constraints&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Store</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">curve</span><span class="w"> </span><span class="k">parameters</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">reuse</span><span class="w"> </span><span class="n">these</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">repeated</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">spline</span><span class="w"> </span><span class="k">function</span>
+
+<span class="w">    </span><span class="n">curve_kwargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">pf</span><span class="o">=</span><span class="n">pf</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">tf</span><span class="o">=</span><span class="n">tf</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">pts_per_curve</span><span class="o">=</span><span class="n">pts_per_curve</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">boxes</span><span class="o">=</span><span class="n">boxes</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">v0</span><span class="o">=</span><span class="n">v0</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">vf</span><span class="o">=</span><span class="n">vf</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">af</span><span class="o">=</span><span class="n">af</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">v_max</span><span class="o">=</span><span class="n">v_max</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">a_max</span><span class="o">=</span><span class="n">a_max</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">time_weight</span><span class="o">=</span><span class="n">time_weight</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Solve</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">preliminary</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">initial</span><span class="w"> </span><span class="n">guess</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">durations</span>
+
+<span class="w">    </span><span class="n">durations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_durations</span>
+
+<span class="w">    </span><span class="n">curve_kwargs</span><span class="o">[</span><span class="n">&quot;durations&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">durations</span>
+
+<span class="w">    </span><span class="n">best_curve</span><span class="p">,</span><span class="w"> </span><span class="n">best_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_fixed_timing_spline</span><span class="p">(</span><span class="o">**</span><span class="n">curve_kwargs</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">kappa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="k">Initialize</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">trust</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="k">parameter</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">max_retiming_iters</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Retime</span><span class="p">.</span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">new_durations</span><span class="p">,</span><span class="w"> </span><span class="n">kappa_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">retiming</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">kappa</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">best_info</span><span class="o">[</span><span class="n">&quot;cost_breakdown&quot;</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">durations</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">best_info</span><span class="o">[</span><span class="n">&quot;retiming_weights&quot;</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="nl">OptimizationError</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">print_red</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;Spline trajectory generation terminated due to failure to solve the retiming problem.\n&quot;</span>
+
+<span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;This can sometimes be due to a poor initialization of the curve durations, &quot;</span>
+
+<span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;or having a time horizon that is too short&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">break</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Improve</span><span class="w"> </span><span class="n">Bezier</span><span class="w"> </span><span class="n">curves</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">retiming</span>
+
+<span class="w">        </span><span class="n">curve_kwargs</span><span class="o">[</span><span class="n">&quot;durations&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_durations</span>
+
+<span class="w">        </span><span class="n">new_curve</span><span class="p">,</span><span class="w"> </span><span class="n">new_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_fixed_timing_spline</span><span class="p">(</span><span class="o">**</span><span class="n">curve_kwargs</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="ss">&quot;Retiming cost: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">new_info</span><span class="o">[</span><span class="n">&quot;cost&quot;</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">new_info</span><span class="o">[</span><span class="n">&quot;cost&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">best_info</span><span class="o">[</span><span class="n">&quot;cost&quot;</span><span class="o">]</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Accept</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">durations</span>
+
+<span class="w">            </span><span class="n">durations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_durations</span>
+
+<span class="w">            </span><span class="n">best_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_info</span>
+
+<span class="w">            </span><span class="n">best_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_curve</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Update</span><span class="w"> </span><span class="n">trust</span><span class="w"> </span><span class="n">region</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">kappa</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nl">kappa_min</span><span class="p">:</span>
+
+<span class="w">            </span><span class="k">break</span>
+
+<span class="w">        </span><span class="n">kappa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kappa_max</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">omega</span>
+
+<span class="w">    </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">print_red</span><span class="p">(</span>
+
+<span class="w">            </span><span class="ss">&quot;Spline trajectory generation terminated due to reaching the maximum number of iterations&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">best_curve</span><span class="p">,</span><span class="w"> </span><span class="n">best_info</span><span class="o">[</span><span class="n">&quot;cost&quot;</span><span class="o">]</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="compositebeziercurve">CompositeBezierCurve</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">CompositeBezierCurve</span><span class="p">(</span>
+    <span class="n">beziers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">trajectories</span><span class="o">.</span><span class="n">bezier</span><span class="o">.</span><span class="n">BezierCurve</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Composite Bezier curve class for a continuous chain of connected Bezier curves</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>beziers</td>
+<td>list[BezierCurve]</td>
+<td>Consecutive Bezier curves composing the composite curve.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="s s-Atom">class</span> <span class="nv">CompositeBezierCurve</span><span class="o">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Composite Bezier curve class for a continuous chain of connected Bezier curves</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        beziers (list[BezierCurve]): Consecutive Bezier curves composing the composite curve.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">beziers</span><span class="p">:</span> <span class="s s-Atom">list</span><span class="p">[</span><span class="nv">BezierCurve</span><span class="p">])</span><span class="o">:</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">bez1</span><span class="p">,</span> <span class="s s-Atom">bez2</span> <span class="s s-Atom">in</span> <span class="nf">zip</span><span class="p">(</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">:-</span><span class="mi">1</span><span class="p">],</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="p">])</span><span class="o">:</span>
+
+            <span class="s s-Atom">assert</span> <span class="s s-Atom">bez1</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">==</span> <span class="s s-Atom">bez2</span><span class="p">.</span><span class="s s-Atom">a</span>
+
+            <span class="s s-Atom">assert</span> <span class="s s-Atom">bez1</span><span class="p">.</span><span class="s s-Atom">d</span> <span class="o">==</span> <span class="s s-Atom">bez2</span><span class="p">.</span><span class="s s-Atom">d</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span> <span class="o">=</span> <span class="s s-Atom">beziers</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">d</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">d</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">a</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">=</span> <span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="s s-Atom">b</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">duration</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">a</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">b</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">beziers</span><span class="p">])</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">segment_durations</span> <span class="o">=</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">duration</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">beziers</span><span class="p">])</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">find_segment</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s s-Atom">#</span> <span class="s s-Atom">return</span> <span class="nf">min</span><span class="p">(</span><span class="nf">bisect</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="s s-Atom">#</span> <span class="nv">TODO</span> <span class="s s-Atom">check</span> <span class="s s-Atom">to</span> <span class="s s-Atom">see</span> <span class="s s-Atom">if</span> <span class="s s-Atom">this</span> <span class="s s-Atom">will</span> <span class="s s-Atom">work</span> <span class="s s-Atom">on</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cp</span> <span class="nf">variable</span> <span class="p">(</span><span class="s s-Atom">probably</span> <span class="o">not</span><span class="p">...)</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">minimum</span><span class="p">(</span>
+
+            <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">searchsorted</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">transition_times</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">call__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">t</span><span class="p">:</span> <span class="nv">Union</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">,</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="s s-Atom">ndarray</span><span class="p">])</span> <span class="s s-Atom">-&gt;</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="s s-Atom">ndarray</span><span class="p">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Evaluates the composite Bezier curve at specified points, by calling each of the child curves</span>
+
+<span class="s2">        Args:</span>
+
+<span class="s2">            t (Union[float, npt.ArrayLike]): Evaluation points (for instance, trajectory times)</span>
+
+<span class="s2">        Returns:</span>
+
+<span class="s2">            np.ndarray: Points along the composite curve, shape (n_pts, dimension)</span>
+
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">seg_map</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nf">find_segment</span><span class="p">(</span><span class="s s-Atom">t</span><span class="p">)</span>
+
+        <span class="s s-Atom">evals</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="nv">N</span><span class="p">)</span><span class="o">:</span>
+
+            <span class="s s-Atom">evals</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">](</span><span class="s s-Atom">t</span><span class="p">[</span><span class="s s-Atom">seg_map</span> <span class="o">==</span> <span class="s s-Atom">i</span><span class="p">]))</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">np</span><span class="p">.</span><span class="nf">row_stack</span><span class="p">(</span><span class="s s-Atom">evals</span><span class="p">)</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">start_point</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Starting point of the composite Bezier curve (the first point of the first curve)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="s s-Atom">start_point</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">end_point</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Ending point of the composite Bezier curve (the last point of the last curve)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="s s-Atom">end_point</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">derivative</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Derivative of the composite Bezier curve (a composite Bezier curve of derivative curves)&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="nv">CompositeBezierCurve</span><span class="p">([</span><span class="s s-Atom">b</span><span class="p">.</span><span class="s s-Atom">derivative</span> <span class="s s-Atom">for</span> <span class="s s-Atom">b</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">])</span>
+
+    <span class="s s-Atom">@property</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">l2_squared_sum</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Union</span><span class="p">[</span><span class="s s-Atom">float</span><span class="p">,</span> <span class="s s-Atom">cp</span><span class="p">.</span><span class="nv">Expression</span><span class="p">]</span><span class="o">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Sum of the squared L2 norm for all curves&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="nf">sum</span><span class="p">(</span><span class="s s-Atom">bez</span><span class="p">.</span><span class="s s-Atom">l2_squared</span> <span class="s s-Atom">for</span> <span class="s s-Atom">bez</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">beziers</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="instance-variables">Instance variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">derivative</span>
+</code></pre></div>
+
+<p>Derivative of the composite Bezier curve (a composite Bezier curve of derivative curves)</p>
+<div class="codehilite"><pre><span></span><code><span class="n">end_point</span>
+</code></pre></div>
+
+<p>Ending point of the composite Bezier curve (the last point of the last curve)</p>
+<div class="codehilite"><pre><span></span><code><span class="n">l2_squared_sum</span>
+</code></pre></div>
+
+<p>Sum of the squared L2 norm for all curves</p>
+<div class="codehilite"><pre><span></span><code><span class="n">start_point</span>
+</code></pre></div>
+
+<p>Starting point of the composite Bezier curve (the first point of the first curve)</p>
+<h4 id="methods">Methods</h4>
+<h4 id="find_segment">find_segment</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">find_segment</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">t</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">find_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">):</span>
+
+<span class="w">        </span><span class="c1"># return min(bisect(self.transition_times, t) - 1, self.N - 1)</span>
+
+<span class="w">        </span><span class="c1"># TODO check to see if this will work on a cp variable (probably not...)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transition_times</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;right&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">        </span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../simple_trajectories/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Simple Trajectories" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Simple Trajectories
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../timing/" class="md-footer__link md-footer__link--next" aria-label="Next: Timing" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Timing
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

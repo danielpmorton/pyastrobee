@@ -1,0 +1,3095 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Camera Utils - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeeutilscamera_utils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Camera Utils
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Camera Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Camera Utils
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_camera_config" class="md-nav__link">
+    get_camera_config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#numpyencoder" class="md-nav__link">
+    NumpyEncoder
+  </a>
+  
+    <nav class="md-nav" aria-label="NumpyEncoder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default" class="md-nav__link">
+    default
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    encode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iterencode" class="md-nav__link">
+    iterencode
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cameraconfig" class="md-nav__link">
+    cameraConfig
+  </a>
+  
+    <nav class="md-nav" aria-label="cameraConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from_file" class="md-nav__link">
+    from_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump_json" class="md-nav__link">
+    dump_json
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_as_dict" class="md-nav__link">
+    get_as_dict
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_json" class="md-nav__link">
+    load_json
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_camera_config" class="md-nav__link">
+    get_camera_config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#numpyencoder" class="md-nav__link">
+    NumpyEncoder
+  </a>
+  
+    <nav class="md-nav" aria-label="NumpyEncoder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default" class="md-nav__link">
+    default
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    encode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iterencode" class="md-nav__link">
+    iterencode
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cameraconfig" class="md-nav__link">
+    cameraConfig
+  </a>
+  
+    <nav class="md-nav" aria-label="cameraConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from_file" class="md-nav__link">
+    from_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump_json" class="md-nav__link">
+    dump_json
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_as_dict" class="md-nav__link">
+    get_as_dict
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_json" class="md-nav__link">
+    load_json
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/utils/camera_utils.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeeutilscamera_utils">Module pyastrobee.utils.camera_utils</h1>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Utility class for managing camera configuration parameters</span>
+
+<span class="c1">#</span>
+
+<span class="c1"># @edwin-pan</span>
+
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">class</span> <span class="nc">NumpyEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Makes numpy arrays serializable&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="kp">tolist</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_camera_config</span><span class="p">(</span><span class="n">sim</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grabs camera config from sim &amp; constructs a cameraConfig object&quot;&quot;&quot;</span>
+
+    <span class="p">(</span>
+
+        <span class="n">_</span><span class="p">,</span>
+
+        <span class="n">_</span><span class="p">,</span>
+
+        <span class="n">view_matrix</span><span class="p">,</span>
+
+        <span class="n">proj_matrix</span><span class="p">,</span>
+
+        <span class="n">_</span><span class="p">,</span>
+
+        <span class="n">cam_forward</span><span class="p">,</span>
+
+        <span class="n">cam_horiz</span><span class="p">,</span>
+
+        <span class="n">cam_vert</span><span class="p">,</span>
+
+        <span class="n">_</span><span class="p">,</span>
+
+        <span class="n">_</span><span class="p">,</span>
+
+        <span class="n">cam_dist</span><span class="p">,</span>
+
+        <span class="n">cam_tgt</span><span class="p">,</span>
+
+    <span class="p">)</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">getDebugVisualizerCamera</span><span class="p">()</span>
+
+    <span class="n">camera_config</span> <span class="o">=</span> <span class="n">cameraConfig</span><span class="p">(</span>
+
+        <span class="n">view_matrix</span><span class="o">=</span><span class="n">view_matrix</span><span class="p">,</span>
+
+        <span class="n">proj_matrix</span><span class="o">=</span><span class="n">proj_matrix</span><span class="p">,</span>
+
+        <span class="n">cam_forward</span><span class="o">=</span><span class="n">cam_forward</span><span class="p">,</span>
+
+        <span class="n">cam_horiz</span><span class="o">=</span><span class="n">cam_horiz</span><span class="p">,</span>
+
+        <span class="n">cam_vert</span><span class="o">=</span><span class="n">cam_vert</span><span class="p">,</span>
+
+        <span class="n">cam_dist</span><span class="o">=</span><span class="n">cam_dist</span><span class="p">,</span>
+
+        <span class="n">cam_tgt</span><span class="o">=</span><span class="n">cam_tgt</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">camera_config</span>
+
+<span class="k">class</span> <span class="nc">cameraConfig</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+
+        <span class="bp">self</span><span class="p">,</span>
+
+        <span class="n">view_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">proj_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">cam_forward</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">cam_horiz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">cam_vert</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">cam_dist</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+        <span class="n">cam_tgt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+        <span class="n">file_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a camera config object w/ values&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span> <span class="o">=</span> <span class="n">view_matrix</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">proj_matrix</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span> <span class="o">=</span> <span class="n">cam_forward</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span> <span class="o">=</span> <span class="n">cam_horiz</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span> <span class="o">=</span> <span class="n">cam_vert</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span> <span class="o">=</span> <span class="n">cam_dist</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span> <span class="o">=</span> <span class="n">cam_tgt</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_location</span> <span class="o">=</span> <span class="n">file_location</span>
+
+    <span class="nd">@classmethod</span>
+
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="kp">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">view_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_forward</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_horiz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_dist</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+        <span class="n">cam_tgt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Construct class object</span>
+
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+
+            <span class="n">view_matrix</span><span class="p">,</span>
+
+            <span class="n">proj_matrix</span><span class="p">,</span>
+
+            <span class="n">cam_forward</span><span class="p">,</span>
+
+            <span class="n">cam_horiz</span><span class="p">,</span>
+
+            <span class="n">cam_vert</span><span class="p">,</span>
+
+            <span class="n">cam_dist</span><span class="p">,</span>
+
+            <span class="n">cam_tgt</span><span class="p">,</span>
+
+            <span class="n">file_location</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cfg</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Custom camera config. location:(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_location</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+
+            <span class="sa">f</span><span class="s2">&quot;[view_matrix, proj_matrix, cam_forward, cam_horiz, cam_vert, </span><span class="se">\</span>
+
+                  <span class="n">cam_dist</span><span class="p">,</span> <span class="n">cam_tgt</span><span class="p">]</span><span class="s2">&quot;</span>
+
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;[ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="si">}</span><span class="s2"> , </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="si">}</span><span class="s2"> , </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="si">}</span><span class="se">\</span>
+
+                <span class="p">,</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="p">}</span> <span class="p">,</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="p">}</span> <span class="p">,</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="p">}</span>\
+
+                <span class="p">,</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="p">}</span> <span class="p">]</span><span class="s2">&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">cam_config</span> <span class="o">=</span> <span class="p">{</span>
+
+            <span class="s2">&quot;view_matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="p">,</span>
+
+            <span class="s2">&quot;proj_matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="p">,</span>
+
+            <span class="s2">&quot;cam_forward&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="p">,</span>
+
+            <span class="s2">&quot;cam_horiz&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="p">,</span>
+
+            <span class="s2">&quot;cam_vert&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="p">,</span>
+
+            <span class="s2">&quot;cam_dist&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="p">,</span>
+
+            <span class="s2">&quot;cam_tgt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="p">,</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">cam_config</span>
+
+    <span class="k">def</span> <span class="nf">dump_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">):</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">json</span><span class="o">.</span><span class="kp">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_as_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_location</span> <span class="o">=</span> <span class="n">destination_path</span>
+
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_path</span><span class="p">):</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="kp">loads</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span>
+
+    <span class="nd">@staticmethod</span>
+
+    <span class="k">def</span> <span class="nf">_load_json</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="kp">loads</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+
+        <span class="n">view_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_forward</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_horiz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+        <span class="n">cam_dist</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+        <span class="n">cam_tgt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+
+            <span class="n">view_matrix</span><span class="p">,</span>
+
+            <span class="n">proj_matrix</span><span class="p">,</span>
+
+            <span class="n">cam_forward</span><span class="p">,</span>
+
+            <span class="n">cam_horiz</span><span class="p">,</span>
+
+            <span class="n">cam_vert</span><span class="p">,</span>
+
+            <span class="n">cam_dist</span><span class="p">,</span>
+
+            <span class="n">cam_tgt</span><span class="p">,</span>
+
+        <span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="get_camera_config">get_camera_config</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_camera_config</span><span class="p">(</span>
+    <span class="n">sim</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Grabs camera config from sim &amp; constructs a cameraConfig object</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">get_camera_config</span><span class="p">(</span><span class="n">sim</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grabs camera config from sim &amp; constructs a cameraConfig object&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">_</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">_</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">_</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">_</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">_</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sim</span><span class="o">.</span><span class="n">getDebugVisualizerCamera</span><span class="p">()</span>
+
+<span class="w">    </span><span class="n">camera_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cameraConfig</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="o">=</span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="o">=</span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="o">=</span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="o">=</span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="o">=</span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="o">=</span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="o">=</span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">camera_config</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="numpyencoder">NumpyEncoder</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">NumpyEncoder</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">skipkeys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">check_circular</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">allow_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">separators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Makes numpy arrays serializable</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">NumpyEncoder</span>(<span class="n">json</span>.<span class="n">JSONEncoder</span>):
+
+    <span class="s">&quot;&quot;&quot;Makes numpy arrays serializable&quot;&quot;&quot;</span>
+
+    <span class="n">def</span> <span class="k">default</span>(<span class="nb">self</span>, <span class="n">obj</span>):
+
+        <span class="k">if</span> <span class="n">isinstance</span>(<span class="n">obj</span>, <span class="n">np</span>.<span class="n">ndarray</span>):
+
+            <span class="k">return</span> <span class="n">obj</span>.<span class="n">tolist</span>()
+
+        <span class="k">return</span> <span class="n">json</span>.<span class="n">JSONEncoder</span>.<span class="k">default</span>(<span class="nb">self</span>, <span class="n">obj</span>)
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>json.encoder.JSONEncoder</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">item_separator</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">key_separator</span>
+</code></pre></div>
+
+<h4 id="methods">Methods</h4>
+<h4 id="default">default</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">default</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">obj</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Implement this method in a subclass such that it returns</p>
+<p>a serializable object for <code>o</code>, or calls the base implementation
+(to raise a <code>TypeError</code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this::</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">def</span><span class="w"> </span><span class="nv">default</span><span class="ss">(</span><span class="nv">self</span>,<span class="w"> </span><span class="nv">o</span><span class="ss">)</span>:
+<span class="w">    </span><span class="nv">try</span>:
+<span class="w">        </span><span class="nv">iterable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">iter</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span>
+<span class="w">    </span><span class="nv">except</span><span class="w"> </span><span class="nv">TypeError</span>:
+<span class="w">        </span><span class="nv">pass</span>
+<span class="w">    </span><span class="k">else</span>:
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nv">list</span><span class="ss">(</span><span class="nv">iterable</span><span class="ss">)</span>
+<span class="w">    </span>#<span class="w"> </span><span class="nv">Let</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">base</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">default</span><span class="w"> </span><span class="nv">method</span><span class="w"> </span><span class="nv">raise</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">TypeError</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nv">JSONEncoder</span>.<span class="nv">default</span><span class="ss">(</span><span class="nv">self</span>,<span class="w"> </span><span class="nv">o</span><span class="ss">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">def</span><span class="w"> </span><span class="nv">default</span><span class="ss">(</span><span class="nv">self</span>,<span class="w"> </span><span class="nv">obj</span><span class="ss">)</span>:
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nv">isinstance</span><span class="ss">(</span><span class="nv">obj</span>,<span class="w"> </span><span class="nv">np</span>.<span class="nv">ndarray</span><span class="ss">)</span>:
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nv">obj</span>.<span class="nv">tolist</span><span class="ss">()</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nv">json</span>.<span class="nv">JSONEncoder</span>.<span class="nv">default</span><span class="ss">(</span><span class="nv">self</span>,<span class="w"> </span><span class="nv">obj</span><span class="ss">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="encode">encode</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">encode</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">o</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Return a JSON string representation of a Python data structure.</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>from json.encoder import JSONEncoder
+JSONEncoder().encode({"foo": ["bar", "baz"]})
+'{"foo": ["bar", "baz"]}'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a JSON string representation of a Python data structure.</span>
+
+<span class="sd">        &gt;&gt;&gt; from json.encoder import JSONEncoder</span>
+
+<span class="sd">        &gt;&gt;&gt; JSONEncoder().encode({&quot;foo&quot;: [&quot;bar&quot;, &quot;baz&quot;]})</span>
+
+<span class="sd">        &#39;{&quot;foo&quot;: [&quot;bar&quot;, &quot;baz&quot;]}&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># This is for extremely simple cases and benchmarks.</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_ascii</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">encode_basestring_ascii</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">encode_basestring</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+        <span class="c1"># This doesn&#39;t pass the iterator directly to &#39;&#39;.join() because the</span>
+
+        <span class="c1"># exceptions aren&#39;t as detailed.  The list call should be roughly</span>
+
+        <span class="c1"># equivalent to the PySequence_Fast that &#39;&#39;.join() would do.</span>
+
+        <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterencode</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">_one_shot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+
+            <span class="n">chunks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="iterencode">iterencode</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">iterencode</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">,</span>
+    <span class="n">_one_shot</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Encode the given object and yield each string</p>
+<p>representation as available.</p>
+<p>For example::</p>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="nv">chunk</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">JSONEncoder</span><span class="ss">()</span>.<span class="nv">iterencode</span><span class="ss">(</span><span class="nv">bigobject</span><span class="ss">)</span>:
+<span class="w">    </span><span class="nv">mysocket</span>.<span class="nv">write</span><span class="ss">(</span><span class="nv">chunk</span><span class="ss">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">iterencode</span><span class="p">(</span><span class="kp">self</span><span class="p">,</span><span class="w"> </span><span class="nx">o</span><span class="p">,</span><span class="w"> </span><span class="nx">_one_shot</span><span class="p">=</span><span class="nx">False</span><span class="p">):</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;Encode the given object and yield each string</span>
+
+<span class="s">        representation as available.</span>
+
+<span class="s">        For example::</span>
+
+<span class="s">            for chunk in JSONEncoder().iterencode(bigobject):</span>
+
+<span class="s">                mysocket.write(chunk)</span>
+
+<span class="s">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">check_circular</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nx">markers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nx">markers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">None</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">ensure_ascii</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nx">_encoder</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">encode_basestring_ascii</span>
+
+<span class="w">        </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nx">_encoder</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">encode_basestring</span>
+
+<span class="w">        </span><span class="nx">def</span><span class="w"> </span><span class="nx">floatstr</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="w"> </span><span class="nx">allow_nan</span><span class="p">=</span><span class="kp">self</span><span class="p">.</span><span class="nx">allow_nan</span><span class="p">,</span>
+
+<span class="w">                </span><span class="nx">_repr</span><span class="p">=</span><span class="nx">float</span><span class="p">.</span><span class="nx">__repr__</span><span class="p">,</span><span class="w"> </span><span class="nx">_inf</span><span class="p">=</span><span class="nx">INFINITY</span><span class="p">,</span><span class="w"> </span><span class="nx">_neginf</span><span class="p">=</span><span class="o">-</span><span class="nx">INFINITY</span><span class="p">):</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="nx">Check</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">specials</span><span class="p">.</span><span class="w">  </span><span class="nx">Note</span><span class="w"> </span><span class="nx">that</span><span class="w"> </span><span class="nx">this</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">processor</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">and</span><span class="o">/</span><span class="k">or</span><span class="w"> </span><span class="nx">platform</span><span class="o">-</span><span class="nx">specific</span><span class="p">,</span><span class="w"> </span><span class="nx">so</span><span class="w"> </span><span class="nx">do</span><span class="w"> </span><span class="nx">tests</span><span class="w"> </span><span class="nx">which</span><span class="w"> </span><span class="nx">don</span><span class="err">&#39;</span><span class="nx">t</span><span class="w"> </span><span class="nx">depend</span><span class="w"> </span><span class="nx">on</span><span class="w"> </span><span class="nx">the</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="nx">internals</span><span class="p">.</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">o</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">o</span><span class="p">:</span>
+
+<span class="w">                </span><span class="nx">text</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">NaN</span><span class="err">&#39;</span>
+
+<span class="w">            </span><span class="nx">elif</span><span class="w"> </span><span class="nx">o</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">_inf</span><span class="p">:</span>
+
+<span class="w">                </span><span class="nx">text</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">Infinity</span><span class="err">&#39;</span>
+
+<span class="w">            </span><span class="nx">elif</span><span class="w"> </span><span class="nx">o</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">_neginf</span><span class="p">:</span>
+
+<span class="w">                </span><span class="nx">text</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">&#39;</span><span class="o">-</span><span class="nx">Infinity</span><span class="err">&#39;</span>
+
+<span class="w">            </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nx">_repr</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="nx">allow_nan</span><span class="p">:</span>
+
+<span class="w">                </span><span class="nx">raise</span><span class="w"> </span><span class="nx">ValueError</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="s">&quot;Out of range float values are not JSON compliant: &quot;</span><span class="w"> </span><span class="o">+</span>
+
+<span class="w">                    </span><span class="nx">repr</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nx">text</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">_one_shot</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="nx">c_make_encoder</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="nx">None</span>
+
+<span class="w">                </span><span class="k">and</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">indent</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">None</span><span class="p">):</span>
+
+<span class="w">            </span><span class="nx">_iterencode</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">c_make_encoder</span><span class="p">(</span>
+
+<span class="w">                </span><span class="nx">markers</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="k">default</span><span class="p">,</span><span class="w"> </span><span class="nx">_encoder</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">indent</span><span class="p">,</span>
+
+<span class="w">                </span><span class="kp">self</span><span class="p">.</span><span class="nx">key_separator</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">item_separator</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">sort_keys</span><span class="p">,</span>
+
+<span class="w">                </span><span class="kp">self</span><span class="p">.</span><span class="nx">skipkeys</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">allow_nan</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">            </span><span class="nx">_iterencode</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">_make_iterencode</span><span class="p">(</span>
+
+<span class="w">                </span><span class="nx">markers</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="k">default</span><span class="p">,</span><span class="w"> </span><span class="nx">_encoder</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">indent</span><span class="p">,</span><span class="w"> </span><span class="nx">floatstr</span><span class="p">,</span>
+
+<span class="w">                </span><span class="kp">self</span><span class="p">.</span><span class="nx">key_separator</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">item_separator</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">sort_keys</span><span class="p">,</span>
+
+<span class="w">                </span><span class="kp">self</span><span class="p">.</span><span class="nx">skipkeys</span><span class="p">,</span><span class="w"> </span><span class="nx">_one_shot</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">_iterencode</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="cameraconfig">cameraConfig</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">cameraConfig</span><span class="p">(</span>
+    <span class="n">view_matrix</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">proj_matrix</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">cam_forward</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">cam_horiz</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">cam_vert</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">cam_dist</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">cam_tgt</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">file_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">cameraConfig</span><span class="p">:</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="p">:</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">file_location</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a camera config object w/ values&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view_matrix</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proj_matrix</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cam_forward</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cam_horiz</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cam_vert</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cam_dist</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cam_tgt</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">file_location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">file_location</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_file</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">with</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="c1"># Construct class object</span>
+
+<span class="w">        </span><span class="n">cfg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cls</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">file_location</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cfg</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;Custom camera config. location:({self.file_location})&quot;</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">f</span><span class="s2">&quot;[view_matrix, proj_matrix, cam_forward, cam_horiz, cam_vert, </span><span class="se">\</span>
+
+<span class="w">                  </span><span class="n">cam_dist</span><span class="p">,</span><span class="w"> </span><span class="n">cam_tgt</span><span class="p">]</span><span class="s2">&quot;</span>
+
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;[ {self.view_matrix} , {self.proj_matrix} , {self.cam_forward}</span><span class="se">\</span>
+
+<span class="w">                </span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="p">}</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="p">}</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="p">}</span>\
+
+<span class="w">                </span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="s2">&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">cam_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">            </span><span class="s2">&quot;view_matrix&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;cam_forward&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;cam_vert&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;cam_dist&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">            </span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cam_config</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dump_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">destination_path</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">with</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_as_dict</span><span class="p">(),</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">file_location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">destination_path</span>
+
+<span class="w">        </span><span class="k">return</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">load_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">source_path</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="k">return</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">staticmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_load_json</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">        </span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="static-methods">Static methods</h4>
+<h4 id="from_file">from_file</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span>
+    <span class="n">file</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="err">@</span><span class="n">classmethod</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_file</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">with</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+<span class="w">        </span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="c1"># Construct class object</span>
+
+<span class="w">        </span><span class="n">cfg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cls</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">view_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">proj_matrix</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_forward</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_horiz</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_vert</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_dist</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">cam_tgt</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">file_location</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">cfg</span>
+</code></pre></div>
+
+</details>
+<h4 id="methods_1">Methods</h4>
+<h4 id="dump_json">dump_json</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">dump_json</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">destination_path</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    def dump_json(self, destination_path):
+
+        with open(destination_path, &quot;w&quot;) as f:
+
+            json.dump(self.get_as_dict(), f, indent=4, cls=NumpyEncoder)
+
+        f.close()
+
+        self.file_location = destination_path
+
+        return
+</code></pre></div>
+
+</details>
+<h4 id="get_as_dict">get_as_dict</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_as_dict</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    def get_as_dict(self):
+
+        cam_config = {
+
+            &quot;view_matrix&quot;: self.view_matrix,
+
+            &quot;proj_matrix&quot;: self.proj_matrix,
+
+            &quot;cam_forward&quot;: self.cam_forward,
+
+            &quot;cam_horiz&quot;: self.cam_horiz,
+
+            &quot;cam_vert&quot;: self.cam_vert,
+
+            &quot;cam_dist&quot;: self.cam_dist,
+
+            &quot;cam_tgt&quot;: self.cam_tgt,
+
+        }
+
+        return cam_config
+</code></pre></div>
+
+</details>
+<h4 id="load_json">load_json</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">source_path</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">load_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">source_path</span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">view_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;view_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">proj_matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;proj_matrix&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_forward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_forward&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_horiz&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_vert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_vert&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_dist&quot;</span><span class="p">]</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">cam_tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;cam_tgt&quot;</span><span class="p">])</span>
+
+<span class="w">        </span><span class="k">return</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../bullet_utils/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Bullet Utils" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Bullet Utils
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../coordinates/" class="md-footer__link md-footer__link--next" aria-label="Next: Coordinates" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Coordinates
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

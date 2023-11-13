@@ -1,0 +1,2650 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Bezier Slerp - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeetrajectoriesbezier_slerp" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Bezier Slerp
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Bezier Slerp
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Bezier Slerp
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bezier_interpolation_curve" class="md-nav__link">
+    bezier_interpolation_curve
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bezier_slerp" class="md-nav__link">
+    bezier_slerp
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bezier_interpolation_curve" class="md-nav__link">
+    bezier_interpolation_curve
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bezier_slerp" class="md-nav__link">
+    bezier_slerp
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/trajectories/bezier_slerp.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeetrajectoriesbezier_slerp">Module pyastrobee.trajectories.bezier_slerp</h1>
+<p>Using Bezier curves to optimize SLERPs with constrained derivatives and derivative magnitudes</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Using Bezier curves to optimize SLERPs with constrained derivatives and derivative magnitudes&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cp</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.errors</span> <span class="kn">import</span> <span class="n">OptimizationError</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.quaternion_class</span> <span class="kn">import</span> <span class="n">Quaternion</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.quaternions</span> <span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">quaternion_slerp</span><span class="p">,</span>
+
+    <span class="n">quaternion_dist</span><span class="p">,</span>
+
+    <span class="n">random_quaternion</span><span class="p">,</span>
+
+    <span class="n">quats_to_angular_velocities</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.bezier</span> <span class="kn">import</span> <span class="n">BezierCurve</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.curve_utils</span> <span class="kn">import</span> <span class="n">plot_1d_bezier_curve</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+
+<span class="k">def</span> <span class="nf">bezier_slerp</span><span class="p">(</span>
+
+    <span class="n">q1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">],</span>
+
+    <span class="n">q2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">],</span>
+
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">T</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">w_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">dw_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+<span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SLERP based on a Bezier-curve discretization with 0 first and second derivative at either end,</span>
+
+<span class="sd">    and limits on the maximum angular velocity/acceleration (if desired)</span>
+
+<span class="sd">    The angular velocity vector has a fixed direction since this is a limitation of a single SLERP arc</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,</span>
+
+<span class="sd">            must be in XYZW order (length = 4)</span>
+
+<span class="sd">        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,</span>
+
+<span class="sd">            must be in XYZW order (length = 4)</span>
+
+<span class="sd">        n (int): Number of points at which to evaluate the SLERP</span>
+
+<span class="sd">        T (float): Time period for the SLERP. Used in conjunction with the w_max and dw_max parameters. If</span>
+
+<span class="sd">            this is not of interest, set T = 1</span>
+
+<span class="sd">        w_max (Optional[float]): Maximum angular velocity magnitude. Defaults to None (unconstrained).</span>
+
+<span class="sd">        dw_max (Optional[float]): Maximum angular acceleration magnitude. Defaults to None (unconstrained).</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        np.ndarray: The interpolated XYZW quaternions, shape = (n, 4)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">):</span>
+
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">q1</span><span class="o">.</span><span class="n">xyzw</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">):</span>
+
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">q2</span><span class="o">.</span><span class="n">xyzw</span>
+
+    <span class="c1"># If we have constraints on the max velocity/acceleration, bump up the degree of the curve by a lot to make sure</span>
+
+    <span class="c1"># that the convex hull of the control points will be a tighter bound on the curve (so that our constraints are not</span>
+
+    <span class="c1"># overly restrictive)</span>
+
+    <span class="k">if</span> <span class="n">w_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dw_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">n_control_pts</span> <span class="o">=</span> <span class="mi">20</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">n_control_pts</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="c1"># Determine the maximum derivatives of the interpolation curve based on the quaternion distance metric</span>
+
+    <span class="n">q_dist</span> <span class="o">=</span> <span class="n">quaternion_dist</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">)</span>
+
+    <span class="n">d_max</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">w_max</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">w_max</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="n">q_dist</span>
+
+    <span class="n">d2_max</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dw_max</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dw_max</span> <span class="o">*</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">q_dist</span>
+
+    <span class="n">solved_curve</span> <span class="o">=</span> <span class="n">bezier_interpolation_curve</span><span class="p">(</span><span class="n">n_control_pts</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">d_max</span><span class="p">,</span> <span class="n">d2_max</span><span class="p">)</span>
+
+    <span class="n">pcts</span> <span class="o">=</span> <span class="n">solved_curve</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="c1"># Clamp between 0 and 1 to account for any numerical issues, and convert to 1d array</span>
+
+    <span class="n">pcts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">ravel</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">clip</span><span class="p">(</span><span class="n">pcts</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">quaternion_slerp</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">pcts</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">bezier_interpolation_curve</span><span class="p">(</span>
+
+    <span class="n">n_control_pts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">d0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">df</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">d20</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">d2f</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">d_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">d2_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BezierCurve</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use a min-jerk Bezier curve to define discretization percentages between two interpolated points</span>
+
+<span class="sd">    Interpolation percentages can be found by evaluating the curve on an array with uniform-spaced</span>
+
+<span class="sd">    times between 0 and 1</span>
+
+<span class="sd">    This curve will satisfy derivative boundary conditions and constraints on maximum derivatives (as specified)</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        n_control_pts (int): Number of control points of the Bezier curve. Must be at least the number of constraints</span>
+
+<span class="sd">            that are specified. More control points (~20) will lead to a tighter convex hull of the curve,</span>
+
+<span class="sd">            meaning constraints on maximum velocity/acceleration will be more precise</span>
+
+<span class="sd">        d0 (Optional[float]): Initial derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">        df (Optional[float]): Final derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">        d20 (Optional[float]): Initial second derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">        d2f (Optional[float]): Final second derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">        d_max (Optional[float]): Maximum derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">        d2_max (Optional[float]): Maximum second derivative. Defaults to None (unconstrained).</span>
+
+<span class="sd">    Raises:</span>
+
+<span class="sd">        OptimizationError: If a solution cannot be found. If this happens, try increasing the number of control</span>
+
+<span class="sd">            points, which may lead to a more feasible constraints. Otherwise, the problem may have no solution</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        BezierCurve: Curve to use for interpolation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">tf</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Unit time</span>
+
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="n">n_control_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">curve</span> <span class="o">=</span> <span class="n">BezierCurve</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span><span class="p">)</span>
+
+    <span class="n">d_curve</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">derivative</span>
+
+    <span class="n">d_pts</span> <span class="o">=</span> <span class="n">d_curve</span><span class="o">.</span><span class="n">points</span>
+
+    <span class="n">d2_curve</span> <span class="o">=</span> <span class="n">d_curve</span><span class="o">.</span><span class="n">derivative</span>
+
+    <span class="n">d2_pts</span> <span class="o">=</span> <span class="n">d2_curve</span><span class="o">.</span><span class="n">points</span>
+
+    <span class="n">d3_curve</span> <span class="o">=</span> <span class="n">d2_curve</span><span class="o">.</span><span class="n">derivative</span>
+
+    <span class="c1"># Form the constraint list depending on what was specified in the inputs</span>
+
+    <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">d0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">d_pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">d0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">d_pts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">df</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d20</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">d2_pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">d20</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d2f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">d2_pts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">d2f</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="kp">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="kp">abs</span><span class="p">(</span><span class="n">d_pts</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">d_max</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d2_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">constraints</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="kp">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="kp">abs</span><span class="p">(</span><span class="n">d2_pts</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">d2_max</span><span class="p">)</span>
+
+    <span class="c1"># Form the problem and solve it</span>
+
+    <span class="n">jerk</span> <span class="o">=</span> <span class="n">d3_curve</span><span class="o">.</span><span class="n">l2_squared</span>
+
+    <span class="n">objective</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Minimize</span><span class="p">(</span><span class="n">jerk</span><span class="p">)</span>
+
+    <span class="n">prob</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">constraints</span><span class="p">)</span>
+
+    <span class="c1"># Note: Clarabel is apparently better for quadratic objectives (like our jerk criteria)</span>
+
+    <span class="n">prob</span><span class="o">.</span><span class="kp">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">cp</span><span class="o">.</span><span class="n">CLARABEL</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">prob</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">cp</span><span class="o">.</span><span class="n">OPTIMAL</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="n">OptimizationError</span><span class="p">(</span>
+
+            <span class="sa">f</span><span class="s2">&quot;Unable to generate the trajectory (solver status: </span><span class="si">{</span><span class="n">prob</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="o">+</span> <span class="s2">&quot;Check on the feasibility of the constraints&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="c1"># Construct the Bezier curves from the solved control points, and return their evaluations at each time</span>
+
+    <span class="n">solved_curve</span> <span class="o">=</span> <span class="n">BezierCurve</span><span class="p">(</span><span class="n">pts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">solved_curve</span>
+
+<span class="k">def</span> <span class="nf">_test_constraint_example</span><span class="p">():</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="kp">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">q1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># random_quaternion()</span>
+
+    <span class="n">q2</span> <span class="o">=</span> <span class="n">random_quaternion</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quaternion distance: &quot;</span><span class="p">,</span> <span class="n">quaternion_dist</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">500</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">n</span>
+
+    <span class="n">w_max</span> <span class="o">=</span> <span class="mf">0.40</span>
+
+    <span class="n">dw_max</span> <span class="o">=</span> <span class="mf">0.20</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum angular velocity constraint: &quot;</span><span class="p">,</span> <span class="n">w_max</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum angular acceleration constraint: &quot;</span><span class="p">,</span> <span class="n">dw_max</span><span class="p">)</span>
+
+    <span class="n">quats</span> <span class="o">=</span> <span class="n">bezier_slerp</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">w_max</span><span class="p">,</span> <span class="n">dw_max</span><span class="p">)</span>
+
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">quats_to_angular_velocities</span><span class="p">(</span><span class="n">quats</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">gradient</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+
+        <span class="s2">&quot;Maximum angular velocity from curve: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+
+        <span class="s2">&quot;Maximum angular acceleration from curve: &quot;</span><span class="p">,</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="kp">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+
+    <span class="p">)</span>
+
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">quats</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+
+    <span class="n">traj</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_test_1d_interpolation</span><span class="p">():</span>
+
+    <span class="n">curve</span> <span class="o">=</span> <span class="n">bezier_interpolation_curve</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plot_1d_bezier_curve</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Position&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plot_1d_bezier_curve</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">derivative</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Velocity&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plot_1d_bezier_curve</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">derivative</span><span class="o">.</span><span class="n">derivative</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Acceleration&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">_test_constraint_example</span><span class="p">()</span>
+
+    <span class="n">_test_1d_interpolation</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="bezier_interpolation_curve">bezier_interpolation_curve</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">bezier_interpolation_curve</span><span class="p">(</span>
+    <span class="n">n_control_pts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">d0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">d20</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">d2f</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">d_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">d2_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">trajectories</span><span class="o">.</span><span class="n">bezier</span><span class="o">.</span><span class="n">BezierCurve</span>
+</code></pre></div>
+
+<p>Use a min-jerk Bezier curve to define discretization percentages between two interpolated points</p>
+<p>Interpolation percentages can be found by evaluating the curve on an array with uniform-spaced
+times between 0 and 1</p>
+<p>This curve will satisfy derivative boundary conditions and constraints on maximum derivatives (as specified)</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n_control_pts</td>
+<td>int</td>
+<td>Number of control points of the Bezier curve. Must be at least the number of constraints<br>that are specified. More control points (~20) will lead to a tighter convex hull of the curve,<br>meaning constraints on maximum velocity/acceleration will be more precise</td>
+<td>None</td>
+</tr>
+<tr>
+<td>d0</td>
+<td>Optional[float]</td>
+<td>Initial derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>df</td>
+<td>Optional[float]</td>
+<td>Final derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>d20</td>
+<td>Optional[float]</td>
+<td>Initial second derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>d2f</td>
+<td>Optional[float]</td>
+<td>Final second derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>d_max</td>
+<td>Optional[float]</td>
+<td>Maximum derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>d2_max</td>
+<td>Optional[float]</td>
+<td>Maximum second derivative. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BezierCurve</td>
+<td>Curve to use for interpolation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OptimizationError</td>
+<td>If a solution cannot be found. If this happens, try increasing the number of control<br>points, which may lead to a more feasible constraints. Otherwise, the problem may have no solution</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">bezier_interpolation_curve</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">n_control_pts</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">d0</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">df</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">d20</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">d2f</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">d_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">d2_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">BezierCurve</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Use a min-jerk Bezier curve to define discretization percentages between two interpolated points</span>
+
+<span class="ss">    Interpolation percentages can be found by evaluating the curve on an array with uniform-spaced</span>
+
+<span class="ss">    times between 0 and 1</span>
+
+<span class="ss">    This curve will satisfy derivative boundary conditions and constraints on maximum derivatives (as specified)</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        n_control_pts (int): Number of control points of the Bezier curve. Must be at least the number of constraints</span>
+
+<span class="ss">            that are specified. More control points (~20) will lead to a tighter convex hull of the curve,</span>
+
+<span class="ss">            meaning constraints on maximum velocity/acceleration will be more precise</span>
+
+<span class="ss">        d0 (Optional[float]): Initial derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">        df (Optional[float]): Final derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">        d20 (Optional[float]): Initial second derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">        d2f (Optional[float]): Final second derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">        d_max (Optional[float]): Maximum derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">        d2_max (Optional[float]): Maximum second derivative. Defaults to None (unconstrained).</span>
+
+<span class="ss">    Raises:</span>
+
+<span class="ss">        OptimizationError: If a solution cannot be found. If this happens, try increasing the number of control</span>
+
+<span class="ss">            points, which may lead to a more feasible constraints. Otherwise, the problem may have no solution</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        BezierCurve: Curve to use for interpolation</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">t0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">    </span><span class="n">tf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Unit</span><span class="w"> </span><span class="nc">time</span>
+
+<span class="w">    </span><span class="n">pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cp</span><span class="p">.</span><span class="k">Variable</span><span class="p">((</span><span class="n">n_control_pts</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BezierCurve</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">tf</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">d_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curve</span><span class="p">.</span><span class="n">derivative</span>
+
+<span class="w">    </span><span class="n">d_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d_curve</span><span class="p">.</span><span class="n">points</span>
+
+<span class="w">    </span><span class="n">d2_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d_curve</span><span class="p">.</span><span class="n">derivative</span>
+
+<span class="w">    </span><span class="n">d2_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d2_curve</span><span class="p">.</span><span class="n">points</span>
+
+<span class="w">    </span><span class="n">d3_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d2_curve</span><span class="p">.</span><span class="n">derivative</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Form</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">depending</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">inputs</span>
+
+<span class="w">    </span><span class="k">constraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">pts[0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">pts</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="err">]</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d0</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_pts</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">d0</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_pts</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">df</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d20</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2_pts</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">d20</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d2f</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2_pts</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">d2f</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">cp</span><span class="p">.</span><span class="nf">max</span><span class="p">(</span><span class="n">cp</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">d_pts</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">d_max</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d2_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">cp</span><span class="p">.</span><span class="nf">max</span><span class="p">(</span><span class="n">cp</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">d2_pts</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">d2_max</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Form</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">problem</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">solve</span><span class="w"> </span><span class="n">it</span>
+
+<span class="w">    </span><span class="n">jerk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d3_curve</span><span class="p">.</span><span class="n">l2_squared</span>
+
+<span class="w">    </span><span class="n">objective</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cp</span><span class="p">.</span><span class="n">Minimize</span><span class="p">(</span><span class="n">jerk</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cp</span><span class="p">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span><span class="w"> </span><span class="k">constraints</span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nl">Note</span><span class="p">:</span><span class="w"> </span><span class="n">Clarabel</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">apparently</span><span class="w"> </span><span class="n">better</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">quadratic</span><span class="w"> </span><span class="n">objectives</span><span class="w"> </span><span class="p">(</span><span class="ow">like</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">jerk</span><span class="w"> </span><span class="n">criteria</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">prob</span><span class="p">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">cp</span><span class="p">.</span><span class="n">CLARABEL</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">prob</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">cp</span><span class="p">.</span><span class="nl">OPTIMAL</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">OptimizationError</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;Unable to generate the trajectory (solver status: {prob.status}).\n&quot;</span>
+
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;Check on the feasibility of the constraints&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Construct</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Bezier</span><span class="w"> </span><span class="n">curves</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">solved</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">their</span><span class="w"> </span><span class="n">evaluations</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="nc">time</span>
+
+<span class="w">    </span><span class="n">solved_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BezierCurve</span><span class="p">(</span><span class="n">pts</span><span class="p">.</span><span class="k">value</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">tf</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">solved_curve</span>
+</code></pre></div>
+
+</details>
+<h3 id="bezier_slerp">bezier_slerp</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">bezier_slerp</span><span class="p">(</span>
+    <span class="n">q1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quaternion_class</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">],</span>
+    <span class="n">q2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quaternion_class</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">w_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dw_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>SLERP based on a Bezier-curve discretization with 0 first and second derivative at either end,</p>
+<p>and limits on the maximum angular velocity/acceleration (if desired)</p>
+<p>The angular velocity vector has a fixed direction since this is a limitation of a single SLERP arc</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>q1</td>
+<td>Union[Quaternion, npt.ArrayLike]</td>
+<td>Starting quaternion. If passing in a np array,<br>must be in XYZW order (length = 4)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>q2</td>
+<td>Union[Quaternion, npt.ArrayLike]</td>
+<td>Ending quaternion. If passing in a np array,<br>must be in XYZW order (length = 4)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n</td>
+<td>int</td>
+<td>Number of points at which to evaluate the SLERP</td>
+<td>None</td>
+</tr>
+<tr>
+<td>T</td>
+<td>float</td>
+<td>Time period for the SLERP. Used in conjunction with the w_max and dw_max parameters. If<br>this is not of interest, set T = 1</td>
+<td>None</td>
+</tr>
+<tr>
+<td>w_max</td>
+<td>Optional[float]</td>
+<td>Maximum angular velocity magnitude. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+<tr>
+<td>dw_max</td>
+<td>Optional[float]</td>
+<td>Maximum angular acceleration magnitude. Defaults to None (unconstrained).</td>
+<td>None (unconstrained)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>np.ndarray</td>
+<td>The interpolated XYZW quaternions, shape = (n, 4)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">bezier_slerp</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">q1</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">npt.ArrayLike, Quaternion</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">q2</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">npt.ArrayLike, Quaternion</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">n</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">T</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">w_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">dw_max</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">float</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span>
+
+<span class="p">)</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;SLERP based on a Bezier-curve discretization with 0 first and second derivative at either end,</span>
+
+<span class="ss">    and limits on the maximum angular velocity/acceleration (if desired)</span>
+
+<span class="ss">    The angular velocity vector has a fixed direction since this is a limitation of a single SLERP arc</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,</span>
+
+<span class="ss">            must be in XYZW order (length = 4)</span>
+
+<span class="ss">        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,</span>
+
+<span class="ss">            must be in XYZW order (length = 4)</span>
+
+<span class="ss">        n (int): Number of points at which to evaluate the SLERP</span>
+
+<span class="ss">        T (float): Time period for the SLERP. Used in conjunction with the w_max and dw_max parameters. If</span>
+
+<span class="ss">            this is not of interest, set T = 1</span>
+
+<span class="ss">        w_max (Optional[float]): Maximum angular velocity magnitude. Defaults to None (unconstrained).</span>
+
+<span class="ss">        dw_max (Optional[float]): Maximum angular acceleration magnitude. Defaults to None (unconstrained).</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        np.ndarray: The interpolated XYZW quaternions, shape = (n, 4)</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">q1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q1</span><span class="p">.</span><span class="n">xyzw</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">q2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q2</span><span class="p">.</span><span class="n">xyzw</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="k">constraints</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="nf">max</span><span class="w"> </span><span class="n">velocity</span><span class="o">/</span><span class="n">acceleration</span><span class="p">,</span><span class="w"> </span><span class="n">bump</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">degree</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">curve</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">lot</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">sure</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">convex</span><span class="w"> </span><span class="n">hull</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">points</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">tighter</span><span class="w"> </span><span class="n">bound</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">curve</span><span class="w"> </span><span class="p">(</span><span class="n">so</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="k">constraints</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="ow">not</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">overly</span><span class="w"> </span><span class="n">restrictive</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">w_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">dw_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">n_control_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
+
+<span class="w">    </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">n_control_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Determine</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="n">derivatives</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">interpolation</span><span class="w"> </span><span class="n">curve</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">quaternion</span><span class="w"> </span><span class="n">distance</span><span class="w"> </span><span class="n">metric</span>
+
+<span class="w">    </span><span class="n">q_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">quaternion_dist</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="w"> </span><span class="n">q2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">d_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">w_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">w_max</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">q_dist</span>
+
+<span class="w">    </span><span class="n">d2_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">dw_max</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">dw_max</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">q_dist</span>
+
+<span class="w">    </span><span class="n">solved_curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bezier_interpolation_curve</span><span class="p">(</span><span class="n">n_control_pts</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">d_max</span><span class="p">,</span><span class="w"> </span><span class="n">d2_max</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">pcts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solved_curve</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Clamp</span><span class="w"> </span><span class="ow">between</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">numerical</span><span class="w"> </span><span class="n">issues</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">convert</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="mi">1</span><span class="n">d</span><span class="w"> </span><span class="k">array</span>
+
+<span class="w">    </span><span class="n">pcts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">clip</span><span class="p">(</span><span class="n">pcts</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">quaternion_slerp</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="w"> </span><span class="n">q2</span><span class="p">,</span><span class="w"> </span><span class="n">pcts</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../bezier/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Bezier" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Bezier
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../box_paths/" class="md-footer__link md-footer__link--next" aria-label="Next: Box Paths" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Box Paths
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

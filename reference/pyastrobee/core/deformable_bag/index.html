@@ -1,0 +1,3659 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Deformable Bag - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeecoredeformable_bag" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deformable Bag
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Deformable Bag
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Deformable Bag
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deformablecargobag" class="md-nav__link">
+    DeformableCargoBag
+  </a>
+  
+    <nav class="md-nav" aria-label="DeformableCargoBag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attach_to" class="md-nav__link">
+    attach_to
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detach" class="md-nav__link">
+    detach
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detach_robot" class="md-nav__link">
+    detach_robot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset_dynamics" class="md-nav__link">
+    reset_dynamics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset_to_handle_pose" class="md-nav__link">
+    reset_to_handle_pose
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unload" class="md-nav__link">
+    unload
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deformablecargobag" class="md-nav__link">
+    DeformableCargoBag
+  </a>
+  
+    <nav class="md-nav" aria-label="DeformableCargoBag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attach_to" class="md-nav__link">
+    attach_to
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detach" class="md-nav__link">
+    detach
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detach_robot" class="md-nav__link">
+    detach_robot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset_dynamics" class="md-nav__link">
+    reset_dynamics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset_to_handle_pose" class="md-nav__link">
+    reset_to_handle_pose
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unload" class="md-nav__link">
+    unload
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/core/deformable_bag.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeecoredeformable_bag">Module pyastrobee.core.deformable_bag</h1>
+<p>Deformable cargo bag, implemented via a tetrahedral (volumetric) mesh</p>
+<p>Documentation for inherited methods can be found in the base class</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Deformable cargo bag, implemented via a tetrahedral (volumetric) mesh</span>
+
+<span class="sd">Documentation for inherited methods can be found in the base class</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># TODO !! Fix the softbody velocity issue</span>
+
+<span class="c1"># TODO ! the unloading mechanic is currently broken since it only removes the softbody and not the visual</span>
+
+<span class="c1"># TODO If the reliability of the softbody position/orientation is not good, use the get_bag_frame() function I made</span>
+
+<span class="c1"># TODO decide if the bag_props import can be handled better</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">pybullet_utils.bullet_client</span> <span class="kn">import</span> <span class="n">BulletClient</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.core.abstract_bag</span> <span class="kn">import</span> <span class="n">CargoBag</span>
+
+<span class="kn">import</span> <span class="nn">pyastrobee.config.bag_properties</span> <span class="k">as</span> <span class="nn">bag_props</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.core.astrobee</span> <span class="kn">import</span> <span class="n">Astrobee</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.bullet_utils</span> <span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">load_deformable_object</span><span class="p">,</span>
+
+    <span class="n">create_anchor</span><span class="p">,</span>
+
+    <span class="n">initialize_pybullet</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.mesh_utils</span> <span class="kn">import</span> <span class="n">get_mesh_data</span><span class="p">,</span> <span class="n">get_closest_mesh_vertex</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.python_utils</span> <span class="kn">import</span> <span class="n">print_green</span><span class="p">,</span> <span class="kp">flatten</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.quaternions</span> <span class="kn">import</span> <span class="n">quats_to_angular_velocities</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.poses</span> <span class="kn">import</span> <span class="n">pos_quat_to_tmat</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.transformations</span> <span class="kn">import</span> <span class="n">transform_point</span>
+
+<span class="k">class</span> <span class="nc">DeformableCargoBag</span><span class="p">(</span><span class="n">CargoBag</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for loading and managing properties associated with the deformable cargo bags</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        bag_name (str): Type of cargo bag to load. Single handle: &quot;front_handle&quot;, &quot;right_handle&quot;, &quot;top_handle&quot;.</span>
+
+<span class="sd">            Dual handle: &quot;front_back_handle&quot;, &quot;right_left_handle&quot;, &quot;top_bottom_handle&quot;</span>
+
+<span class="sd">        mass (float): Mass of the cargo bag, in kg</span>
+
+<span class="sd">        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)</span>
+
+<span class="sd">        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)</span>
+
+<span class="sd">        client (BulletClient, optional): If connecting to multiple physics servers, include the client</span>
+
+<span class="sd">            (the class instance, not just the ID) here. Defaults to None (use default connected client)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_objs</span> <span class="o">=</span> <span class="p">[</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">MESH_DIR</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.obj&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">]</span>
+
+    <span class="n">_vtks</span> <span class="o">=</span> <span class="p">[</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">MESH_DIR</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">]</span>
+
+    <span class="n">OBJS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">,</span> <span class="n">_objs</span><span class="p">))</span>
+
+    <span class="n">VTKS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">,</span> <span class="n">_vtks</span><span class="p">))</span>
+
+    <span class="n">BAG_CORNER_VERTS</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="s2">&quot;front_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">FRONT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+        <span class="s2">&quot;right_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">RIGHT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+        <span class="s2">&quot;top_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">TOP_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+        <span class="s2">&quot;front_back_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">FRONT_BACK_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+        <span class="s2">&quot;right_left_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">RIGHT_LEFT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+        <span class="s2">&quot;top_bottom_handle&quot;</span><span class="p">:</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">TOP_BOTTOM_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+
+        <span class="bp">self</span><span class="p">,</span>
+
+        <span class="n">bag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+        <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+        <span class="n">pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+
+        <span class="n">orn</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+
+        <span class="n">client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulletClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">bag_name</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">orn</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+        <span class="c1"># Initializations</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">print_green</span><span class="p">(</span><span class="s2">&quot;Bag is ready&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read-only physical properties defined at initialization of the bag</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">num_mesh_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of vertices in the bag&#39;s mesh&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Mesh has not been loaded&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span> <span class="o">=</span> <span class="n">get_mesh_data</span><span class="p">(</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">mesh_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Positions of the mesh vertices, shape (n, 3)&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Mesh has not been loaded&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span> <span class="o">=</span> <span class="n">get_mesh_data</span><span class="p">(</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">bending_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody bending stiffness parameter&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">BENDING_STIFFNESS</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">damping_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody damping stiffness parameter&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">DAMPING_STIFFNESS</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">elastic_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody elastic stiffness parameter&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">ELASTIC_STIFFNESS</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">friction_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody friction coefficient&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">bag_props</span><span class="o">.</span><span class="n">FRICTION_COEFF</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">anchors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Anchor IDs and IDs of their associated visual geometries&quot;&quot;&quot;</span>
+
+        <span class="c1"># Unpack the list of lists in the anchor dictionaries</span>
+
+        <span class="k">return</span> <span class="kp">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="kp">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">obj_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to the .OBJ triangular mesh file&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">OBJS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">vtk_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to the .VTK tetrahedral mesh file&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">VTKS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+    <span class="c1"># NOTE: Any methods associated with velocity or angular velocity have special handling for the deformable</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current [vx, vy, vz] velocity of the cargo bag&#39;s COM frame</span>
+
+<span class="sd">        - If both velocity and angular velocity are desired, use the dynamics_state property instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_state</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">angular_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current [wx, wy, wz] angular velocity of the cargo bag&#39;s COM frame</span>
+
+<span class="sd">        - If both velocity and angular velocity are desired, use the dynamics_state property instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">dynamics_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current state of the bag dynamics: Position, orientation, linear vel, and angular vel</span>
+
+<span class="sd">        - NOTE this moves the simulation forward by 1 step</span>
+
+<span class="sd">        - Bullet&#39;s velocity definition for softbodies is incorrect or not implemented. I&#39;ve tried</span>
+
+<span class="sd">          implementing this myself in the C++, but it is also not reliable. So instead, we&#39;ll need to step</span>
+
+<span class="sd">          the sim in this call to do our own calculations</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:</span>
+
+<span class="sd">                np.ndarray: Position, shape (3,)</span>
+
+<span class="sd">                np.ndarray: XYZW quaternion orientation, shape (4,)</span>
+
+<span class="sd">                np.ndarray: Linear velocity, shape (3,)</span>
+
+<span class="sd">                np.ndarray: Angular velocity, shape (3,)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">old_pos</span><span class="p">,</span> <span class="n">old_orn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">getBasePositionAndOrientation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># Step the sim to get a second reference frame we can use to determine velocity</span>
+
+        <span class="c1"># This is not ideal, but it&#39;s the best way to do this until Pybullet&#39;s getBaseVelocity for softbodies works</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+
+        <span class="n">new_pos</span><span class="p">,</span> <span class="n">new_orn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">getBasePositionAndOrientation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">lin_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">subtract</span><span class="p">(</span><span class="n">new_pos</span><span class="p">,</span> <span class="n">old_pos</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+
+        <span class="n">ang_vel</span> <span class="o">=</span> <span class="n">quats_to_angular_velocities</span><span class="p">(</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">row_stack</span><span class="p">([</span><span class="n">old_orn</span><span class="p">,</span> <span class="n">new_orn</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ang_vel</span><span class="o">.</span><span class="kp">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">ang_vel</span> <span class="o">=</span> <span class="n">ang_vel</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># Return the stepped-ahead position since it&#39;s the most recent state we know about</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">new_pos</span><span class="p">),</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">new_orn</span><span class="p">),</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">lin_vel</span><span class="p">),</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">ang_vel</span><span class="p">),</span>
+
+        <span class="p">)</span>
+
+    <span class="c1"># TODO decide if the non-mesh-based implementation from CargoBag works with the deformable??</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">corner_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">BAG_CORNER_VERTS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">orn</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+        <span class="n">texture</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">scale</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">self_collision</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">load_deformable_object</span><span class="p">(</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_file</span><span class="p">,</span>
+
+            <span class="n">texture</span><span class="p">,</span>
+
+            <span class="n">scale</span><span class="p">,</span>
+
+            <span class="n">pos</span><span class="p">,</span>
+
+            <span class="n">orn</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">bending_stiffness</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">damping_stiffness</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">elastic_stiffness</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">friction_coeff</span><span class="p">,</span>
+
+            <span class="n">self_collision</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">vtk_file</span><span class="p">,</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span>
+
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">:</span> <span class="n">Astrobee</span><span class="p">,</span> <span class="n">handle_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">del</span> <span class="n">handle_index</span>  <span class="c1"># Unused for the deformable bag</span>
+
+        <span class="c1"># Generate the constraints between the bag and the robot</span>
+
+        <span class="c1"># Originally, we made two anchors at the vertices closest to the gripper points</span>
+
+        <span class="c1"># But, this seemed too &quot;floppy&quot; so I tried using 4 anchors</span>
+
+        <span class="c1"># However, 4 anchors introduced weird disturbance forces when things weren&#39;t perfectly</span>
+
+        <span class="c1"># symmetric and in the locations where they were expected to be</span>
+
+        <span class="c1"># First, find the points on the mesh on either side</span>
+
+        <span class="c1"># of the handle (Using the left/right gripper link frames as reference points), then create the anchors</span>
+
+        <span class="n">pos_1</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">get_link_transform</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">GRIPPER_LEFT_DISTAL</span><span class="p">)[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+        <span class="c1"># pos_2 = robot.get_link_transform(robot.Links.GRIPPER_RIGHT_DISTAL)[:3, 3]</span>
+
+        <span class="n">ee_tmat</span> <span class="o">=</span> <span class="n">pos_quat_to_tmat</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">ee_pose</span><span class="p">)</span>
+
+        <span class="c1"># Dist from grasp position to the link</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ee_tmat</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_1</span><span class="p">)</span>
+
+        <span class="c1"># First two points correspond to the left and right side of the gripper, second two are front and back</span>
+
+        <span class="n">local_pts</span> <span class="o">=</span> <span class="p">(</span>
+
+            <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span>
+
+                <span class="p">[</span>
+
+                    <span class="c1"># [0, 1, 0], # Uncomment to change the configuration</span>
+
+                    <span class="c1"># [0, -1, 0],</span>
+
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+
+                <span class="p">]</span>
+
+            <span class="p">)</span>
+
+            <span class="o">*</span> <span class="n">dist</span>
+
+        <span class="p">)</span>
+
+        <span class="n">world_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">transform_point</span><span class="p">(</span><span class="n">ee_tmat</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">local_pts</span><span class="p">]</span>
+
+        <span class="n">anchor_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">geom_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">world_pts</span><span class="p">:</span>
+
+            <span class="n">v_pos</span><span class="p">,</span> <span class="n">v_id</span> <span class="o">=</span> <span class="n">get_closest_mesh_vertex</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_vertices</span><span class="p">)</span>
+
+            <span class="n">a_id</span><span class="p">,</span> <span class="n">g_id</span> <span class="o">=</span> <span class="n">create_anchor</span><span class="p">(</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+
+                <span class="n">v_id</span><span class="p">,</span>
+
+                <span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+
+                <span class="n">robot</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">ARM_DISTAL</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+
+                <span class="n">add_geom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+
+                <span class="n">geom_pos</span><span class="o">=</span><span class="n">v_pos</span><span class="p">,</span>
+
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="n">anchor_ids</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span>
+
+            <span class="n">geom_ids</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">g_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">anchor_ids</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">geom_ids</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attached</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">anchors</span><span class="p">,</span> <span class="n">anchor_objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anchors</span>
+
+        <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="n">anchors</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">anchor_objects</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attached</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">detach_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">robot_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot detach robot: ID unknown&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="p">[</span><span class="n">robot_id</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="p">[</span><span class="n">robot_id</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attached</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_main</span><span class="p">():</span>
+
+    <span class="c1"># Very simple example of loading the bag and attaching a robot</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">initialize_pybullet</span><span class="p">(</span><span class="n">bg_color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">))</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Astrobee</span><span class="p">()</span>
+
+    <span class="n">bag</span> <span class="o">=</span> <span class="n">DeformableCargoBag</span><span class="p">(</span><span class="s2">&quot;top_handle_symmetric&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">bag</span><span class="o">.</span><span class="n">attach_to</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="n">client</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">120</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">_main</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="deformablecargobag">DeformableCargoBag</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">DeformableCargoBag</span><span class="p">(</span>
+    <span class="n">bag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">orn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pybullet_utils</span><span class="o">.</span><span class="n">bullet_client</span><span class="o">.</span><span class="n">BulletClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Class for loading and managing properties associated with the deformable cargo bags</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bag_name</td>
+<td>str</td>
+<td>Type of cargo bag to load. Single handle: "front_handle", "right_handle", "top_handle".<br>Dual handle: "front_back_handle", "right_left_handle", "top_bottom_handle"</td>
+<td>None</td>
+</tr>
+<tr>
+<td>mass</td>
+<td>float</td>
+<td>Mass of the cargo bag, in kg</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pos</td>
+<td>npt.ArrayLike</td>
+<td>Initial XYZ position to load the bag. Defaults to (0, 0, 0)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>orn</td>
+<td>npt.ArrayLike</td>
+<td>Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>client</td>
+<td>BulletClient</td>
+<td>If connecting to multiple physics servers, include the client<br>(the class instance, not just the ID) here. Defaults to None (use default connected client)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">DeformableCargoBag</span><span class="p">(</span><span class="n">CargoBag</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for loading and managing properties associated with the deformable cargo bags</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        bag_name (str): Type of cargo bag to load. Single handle: &quot;front_handle&quot;, &quot;right_handle&quot;, &quot;top_handle&quot;.</span>
+
+<span class="sd">            Dual handle: &quot;front_back_handle&quot;, &quot;right_left_handle&quot;, &quot;top_bottom_handle&quot;</span>
+
+<span class="sd">        mass (float): Mass of the cargo bag, in kg</span>
+
+<span class="sd">        pos (npt.ArrayLike, optional): Initial XYZ position to load the bag. Defaults to (0, 0, 0)</span>
+
+<span class="sd">        orn (npt.ArrayLike, optional): Initial XYZW quaternion to load the bag. Defaults to (0, 0, 0, 1)</span>
+
+<span class="sd">        client (BulletClient, optional): If connecting to multiple physics servers, include the client</span>
+
+<span class="sd">            (the class instance, not just the ID) here. Defaults to None (use default connected client)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">_objs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">MESH_DIR</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;.obj&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">]</span>
+
+<span class="w">    </span><span class="n">_vtks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">MESH_DIR</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;.vtk&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">]</span>
+
+<span class="w">    </span><span class="n">OBJS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">,</span><span class="w"> </span><span class="n">_objs</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">VTKS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">CargoBag</span><span class="o">.</span><span class="n">BAG_NAMES</span><span class="p">,</span><span class="w"> </span><span class="n">_vtks</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">BAG_CORNER_VERTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="s2">&quot;front_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">FRONT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">        </span><span class="s2">&quot;right_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">RIGHT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">        </span><span class="s2">&quot;top_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">TOP_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">        </span><span class="s2">&quot;front_back_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">FRONT_BACK_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">        </span><span class="s2">&quot;right_left_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">RIGHT_LEFT_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">        </span><span class="s2">&quot;top_bottom_handle&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">TOP_BOTTOM_HANDLE_BAG_CORNERS</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">bag_name</span><span class="p">:</span><span class="w"> </span><span class="nb">str</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">mass</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">pos</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">orn</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">client</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="p">[</span><span class="n">BulletClient</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">):</span>
+
+<span class="w">        </span><span class="n">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">bag_name</span><span class="p">,</span><span class="w"> </span><span class="n">mass</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="n">orn</span><span class="p">,</span><span class="w"> </span><span class="n">client</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1"># Initializations</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+
+<span class="w">        </span><span class="n">print_green</span><span class="p">(</span><span class="s2">&quot;Bag is ready&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># Read-only physical properties defined at initialization of the bag</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">num_mesh_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of vertices in the bag&#39;s mesh&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">AttributeError</span><span class="p">(</span><span class="s2">&quot;Mesh has not been loaded&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_mesh_data</span><span class="p">(</span>
+
+<span class="w">                </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">mesh_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Positions of the mesh vertices, shape (n, 3)&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">AttributeError</span><span class="p">(</span><span class="s2">&quot;Mesh has not been loaded&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_num_mesh_vertices</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_mesh_data</span><span class="p">(</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_vertices</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">bending_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody bending stiffness parameter&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">BENDING_STIFFNESS</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">damping_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody damping stiffness parameter&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">DAMPING_STIFFNESS</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">elastic_stiffness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody elastic stiffness parameter&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">ELASTIC_STIFFNESS</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">friction_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Softbody friction coefficient&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">bag_props</span><span class="o">.</span><span class="n">FRICTION_COEFF</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">anchors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">tuple</span><span class="p">[</span><span class="n">list</span><span class="p">[</span><span class="nb nb-Type">int</span><span class="p">],</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="nb nb-Type">int</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Anchor IDs and IDs of their associated visual geometries&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="c1"># Unpack the list of lists in the anchor dictionaries</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span><span class="w"> </span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">obj_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb">str</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to the .OBJ triangular mesh file&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">OBJS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">vtk_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb">str</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to the .VTK tetrahedral mesh file&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">VTKS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+<span class="w">    </span><span class="c1"># NOTE: Any methods associated with velocity or angular velocity have special handling for the deformable</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current [vx, vy, vz] velocity of the cargo bag&#39;s COM frame</span>
+
+<span class="sd">        - If both velocity and angular velocity are desired, use the dynamics_state property instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">dynamics_state</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">angular_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current [wx, wy, wz] angular velocity of the cargo bag&#39;s COM frame</span>
+
+<span class="sd">        - If both velocity and angular velocity are desired, use the dynamics_state property instead</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">dynamics_state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dynamics_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current state of the bag dynamics: Position, orientation, linear vel, and angular vel</span>
+
+<span class="sd">        - NOTE this moves the simulation forward by 1 step</span>
+
+<span class="sd">        - Bullet&#39;s velocity definition for softbodies is incorrect or not implemented. I&#39;ve tried</span>
+
+<span class="sd">          implementing this myself in the C++, but it is also not reliable. So instead, we&#39;ll need to step</span>
+
+<span class="sd">          the sim in this call to do our own calculations</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:</span>
+
+<span class="sd">                np.ndarray: Position, shape (3,)</span>
+
+<span class="sd">                np.ndarray: XYZW quaternion orientation, shape (4,)</span>
+
+<span class="sd">                np.ndarray: Linear velocity, shape (3,)</span>
+
+<span class="sd">                np.ndarray: Angular velocity, shape (3,)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">old_pos</span><span class="p">,</span><span class="w"> </span><span class="n">old_orn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">getBasePositionAndOrientation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1"># Step the sim to get a second reference frame we can use to determine velocity</span>
+
+<span class="w">        </span><span class="c1"># This is not ideal, but it&#39;s the best way to do this until Pybullet&#39;s getBaseVelocity for softbodies works</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">new_pos</span><span class="p">,</span><span class="w"> </span><span class="n">new_orn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">getBasePositionAndOrientation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">lin_vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">new_pos</span><span class="p">,</span><span class="w"> </span><span class="n">old_pos</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+
+<span class="w">        </span><span class="n">ang_vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">quats_to_angular_velocities</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">row_stack</span><span class="p">([</span><span class="n">old_orn</span><span class="p">,</span><span class="w"> </span><span class="n">new_orn</span><span class="p">]),</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">ang_vel</span><span class="o">.</span><span class="n">ndim</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">ang_vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ang_vel</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">:]</span>
+
+<span class="w">        </span><span class="c1"># Return the stepped-ahead position since it&#39;s the most recent state we know about</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_pos</span><span class="p">),</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_orn</span><span class="p">),</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lin_vel</span><span class="p">),</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ang_vel</span><span class="p">),</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># TODO decide if the non-mesh-based implementation from CargoBag works with the deformable??</span>
+
+<span class="w">    </span><span class="err">@</span><span class="n">property</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">corner_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_vertices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">BAG_CORNER_VERTS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="n">orn</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+
+<span class="w">        </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">        </span><span class="n">self_collision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">False</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">load_deformable_object</span><span class="p">(</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">obj_file</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">texture</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">scale</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">pos</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">bending_stiffness</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">damping_stiffness</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">elastic_stiffness</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">friction_coeff</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">self_collision</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">vtk_file</span><span class="p">,</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">robot</span><span class="p">:</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">,</span><span class="w"> </span><span class="n">handle_index</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">del</span><span class="w"> </span><span class="n">handle_index</span><span class="w">  </span><span class="c1"># Unused for the deformable bag</span>
+
+<span class="w">        </span><span class="c1"># Generate the constraints between the bag and the robot</span>
+
+<span class="w">        </span><span class="c1"># Originally, we made two anchors at the vertices closest to the gripper points</span>
+
+<span class="w">        </span><span class="c1"># But, this seemed too &quot;floppy&quot; so I tried using 4 anchors</span>
+
+<span class="w">        </span><span class="c1"># However, 4 anchors introduced weird disturbance forces when things weren&#39;t perfectly</span>
+
+<span class="w">        </span><span class="c1"># symmetric and in the locations where they were expected to be</span>
+
+<span class="w">        </span><span class="c1"># First, find the points on the mesh on either side</span>
+
+<span class="w">        </span><span class="c1"># of the handle (Using the left/right gripper link frames as reference points), then create the anchors</span>
+
+<span class="w">        </span><span class="n">pos_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot</span><span class="o">.</span><span class="n">get_link_transform</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">GRIPPER_LEFT_DISTAL</span><span class="p">)[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span>
+
+<span class="w">        </span><span class="c1"># pos_2 = robot.get_link_transform(robot.Links.GRIPPER_RIGHT_DISTAL)[:3, 3]</span>
+
+<span class="w">        </span><span class="n">ee_tmat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pos_quat_to_tmat</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">ee_pose</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1"># Dist from grasp position to the link</span>
+
+<span class="w">        </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ee_tmat</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pos_1</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1"># First two points correspond to the left and right side of the gripper, second two are front and back</span>
+
+<span class="w">        </span><span class="n">local_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+
+<span class="w">                </span><span class="p">[</span>
+
+<span class="w">                    </span><span class="c1"># [0, 1, 0], # Uncomment to change the configuration</span>
+
+<span class="w">                    </span><span class="c1"># [0, -1, 0],</span>
+
+<span class="w">                    </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span>
+
+<span class="w">                    </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+
+<span class="w">                </span><span class="p">]</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="o">*</span><span class="w"> </span><span class="n">dist</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">world_pts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">transform_point</span><span class="p">(</span><span class="n">ee_tmat</span><span class="p">,</span><span class="w"> </span><span class="n">pt</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">pt</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">local_pts</span><span class="p">]</span>
+
+<span class="w">        </span><span class="n">anchor_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="n">geom_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">pt</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">world_pts</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">v_pos</span><span class="p">,</span><span class="w"> </span><span class="n">v_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_closest_mesh_vertex</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_vertices</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">a_id</span><span class="p">,</span><span class="w"> </span><span class="n">g_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_anchor</span><span class="p">(</span>
+
+<span class="w">                </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">v_id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">robot</span><span class="o">.</span><span class="n">Links</span><span class="o">.</span><span class="n">ARM_DISTAL</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">add_geom</span><span class="o">=</span><span class="n">True</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">geom_pos</span><span class="o">=</span><span class="n">v_pos</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">anchor_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">geom_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="n">anchor_ids</span><span class="p">})</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="n">geom_ids</span><span class="p">})</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_attached</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="n">anchors</span><span class="p">,</span><span class="w"> </span><span class="n">anchor_objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">anchors</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">cid</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">anchors</span><span class="p">:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">anchor_objects</span><span class="p">:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_attached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detach_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">robot_id</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">robot_id</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot detach robot: ID unknown&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">cid</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="p">[</span><span class="n">robot_id</span><span class="p">]:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="p">[</span><span class="n">robot_id</span><span class="p">]:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchors</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_anchor_objects</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_attached</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>pyastrobee.core.abstract_bag.CargoBag</li>
+<li>abc.ABC</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">BAG_CORNER_VERTS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">BAG_NAMES</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">DUAL_HANDLE_BAGS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">HANDLE_TRANSFORMS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">HEIGHT</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">LENGTH</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">MESH_DIR</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">OBJS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">SINGLE_HANDLE_BAGS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">URDF_DIR</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">VTKS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">WIDTH</span>
+</code></pre></div>
+
+<h4 id="instance-variables">Instance variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">anchors</span>
+</code></pre></div>
+
+<p>Anchor IDs and IDs of their associated visual geometries</p>
+<div class="codehilite"><pre><span></span><code><span class="n">angular_velocity</span>
+</code></pre></div>
+
+<p>Current [wx, wy, wz] angular velocity of the cargo bag's COM frame</p>
+<ul>
+<li>If both velocity and angular velocity are desired, use the dynamics_state property instead</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">attached</span>
+</code></pre></div>
+
+<p>ID(s) of the robot (or robots) grasping the bag. Empty if no robots are attached</p>
+<div class="codehilite"><pre><span></span><code><span class="n">bending_stiffness</span>
+</code></pre></div>
+
+<p>Softbody bending stiffness parameter</p>
+<div class="codehilite"><pre><span></span><code><span class="n">bounding_box</span>
+</code></pre></div>
+
+<p>Current axis-aligned bounding box of the bag (or just the main compartment), shape (2, 3)</p>
+<div class="codehilite"><pre><span></span><code><span class="n">corner_positions</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">damping_stiffness</span>
+</code></pre></div>
+
+<p>Softbody damping stiffness parameter</p>
+<div class="codehilite"><pre><span></span><code><span class="n">dynamics_state</span>
+</code></pre></div>
+
+<p>Current state of the bag dynamics: Position, orientation, linear vel, and angular vel</p>
+<ul>
+<li>NOTE this moves the simulation forward by 1 step</li>
+<li>Bullet's velocity definition for softbodies is incorrect or not implemented. I've tried
+  implementing this myself in the C++, but it is also not reliable. So instead, we'll need to step
+  the sim in this call to do our own calculations</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">elastic_stiffness</span>
+</code></pre></div>
+
+<p>Softbody elastic stiffness parameter</p>
+<div class="codehilite"><pre><span></span><code><span class="n">friction_coeff</span>
+</code></pre></div>
+
+<p>Softbody friction coefficient</p>
+<div class="codehilite"><pre><span></span><code><span class="n">grasp_transforms</span>
+</code></pre></div>
+
+<p>Transformation matrices "handle to bag" representing the grasp locations on the handles to the bag COM</p>
+<p>In the case of a single-handled bag, this list will only have one entry</p>
+<div class="codehilite"><pre><span></span><code><span class="n">mass</span>
+</code></pre></div>
+
+<p>Mass of the cargo bag</p>
+<div class="codehilite"><pre><span></span><code><span class="n">mesh_vertices</span>
+</code></pre></div>
+
+<p>Positions of the mesh vertices, shape (n, 3)</p>
+<div class="codehilite"><pre><span></span><code><span class="n">name</span>
+</code></pre></div>
+
+<p>Type of cargo bag</p>
+<div class="codehilite"><pre><span></span><code><span class="n">num_handles</span>
+</code></pre></div>
+
+<p>Number of handles on the cargo bag</p>
+<div class="codehilite"><pre><span></span><code><span class="n">num_mesh_vertices</span>
+</code></pre></div>
+
+<p>Number of vertices in the bag's mesh</p>
+<div class="codehilite"><pre><span></span><code><span class="n">obj_file</span>
+</code></pre></div>
+
+<p>Path to the .OBJ triangular mesh file</p>
+<div class="codehilite"><pre><span></span><code><span class="n">orientation</span>
+</code></pre></div>
+
+<p>Current XYZW quaternion orientation of the cargo bag's COM frame</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pose</span>
+</code></pre></div>
+
+<p>Current position + XYZW quaternion pose of the bag</p>
+<div class="codehilite"><pre><span></span><code><span class="n">position</span>
+</code></pre></div>
+
+<p>Current XYZ position of the origin (COM frame) of the cargo bag</p>
+<div class="codehilite"><pre><span></span><code><span class="n">tmat</span>
+</code></pre></div>
+
+<p>Current transformation matrix for the cargo bag: (Bag to world)</p>
+<div class="codehilite"><pre><span></span><code><span class="n">velocity</span>
+</code></pre></div>
+
+<p>Current [vx, vy, vz] velocity of the cargo bag's COM frame</p>
+<ul>
+<li>If both velocity and angular velocity are desired, use the dynamics_state property instead</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">vtk_file</span>
+</code></pre></div>
+
+<p>Path to the .VTK tetrahedral mesh file</p>
+<h4 id="methods">Methods</h4>
+<h4 id="attach_to">attach_to</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">attach_to</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">robot_or_robots</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">astrobee</span><span class="o">.</span><span class="n">Astrobee</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">astrobee</span><span class="o">.</span><span class="n">Astrobee</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">astrobee</span><span class="o">.</span><span class="n">Astrobee</span><span class="p">]],</span>
+    <span class="n">object_to_move</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;robot&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Attaches a robot (or multiple robots) to the handle(s) of the bag</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>robot_or_robots</td>
+<td>Union[Astrobee, list[Astrobee], tuple[Astrobee]]</td>
+<td>Robot(s) to attach to the bag</td>
+<td>None</td>
+</tr>
+<tr>
+<td>object_to_move</td>
+<td>str</td>
+<td>Either "robot" or "bag". This dictates what object will get its position<br>reset in order to make the grasp connection. In general, it makes more sense to move the robot to the<br>bag (default behavior)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ValueError</td>
+<td>For invalid inputs, or if the bag does not have enough handles for each robot</td>
+</tr>
+<tr>
+<td>NotImplementedError</td>
+<td>Multi-robot case with &gt;2 robots</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">attach_to</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">robot_or_robots</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">Astrobee, list[Astrobee</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tuple</span><span class="o">[</span><span class="n">Astrobee</span><span class="o">]</span><span class="err">]</span><span class="p">,</span>
+
+<span class="w">        </span><span class="nl">object_to_move</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;robot&quot;</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Attaches a robot (or multiple robots) to the handle(s) of the bag</span>
+
+<span class="ss">        Args:</span>
+
+<span class="ss">            robot_or_robots (Union[Astrobee, list[Astrobee], tuple[Astrobee]]): Robot(s) to attach to the bag</span>
+
+<span class="ss">            object_to_move (str, optional): Either &quot;</span><span class="n">robot</span><span class="ss">&quot; or &quot;</span><span class="n">bag</span><span class="ss">&quot;. This dictates what object will get its position</span>
+
+<span class="ss">                reset in order to make the grasp connection. In general, it makes more sense to move the robot to the</span>
+
+<span class="ss">                bag (default behavior)</span>
+
+<span class="ss">        Raises:</span>
+
+<span class="ss">            ValueError: For invalid inputs, or if the bag does not have enough handles for each robot</span>
+
+<span class="ss">            NotImplementedError: Multi-robot case with &gt;2 robots</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Handle</span><span class="w"> </span><span class="n">inputs</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">robot_or_robots</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">)</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Single</span><span class="w"> </span><span class="n">robot</span>
+
+<span class="w">            </span><span class="n">num_robots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">robot_or_robots</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">tuple</span><span class="p">))</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Multi</span><span class="o">-</span><span class="n">robot</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">all</span><span class="p">(</span><span class="n">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">robot_or_robots</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="ss">&quot;Non-Astrobee input detected&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">num_robots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">robot_or_robots</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">num_handles</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nl">num_robots</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;Bag does not have enough handles to support {num_robots} robots&quot;</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">num_robots</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Edge</span><span class="w"> </span><span class="k">case</span><span class="err">:</span><span class="w"> </span><span class="n">Unpack</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">robot</span>
+
+<span class="w">                </span><span class="n">robot_or_robots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_or_robots</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;Invalid input: Must provide either an Astrobee or a list of multiple Astrobees&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">object_to_move</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="err">{</span><span class="ss">&quot;robot&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;bag&quot;</span><span class="err">}:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="ss">&quot;Invalid object to move: Must be either &#39;robot&#39; or &#39;bag&#39;.&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">bag_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pos_quat_to_tmat</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">pose</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_robots</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">robot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_or_robots</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Unpack</span><span class="w"> </span><span class="n">list</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">object_to_move</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;robot&quot;</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="n">Reset</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">robot</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">interface</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">handle</span>
+
+<span class="w">                </span><span class="n">handle_to_bag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">grasp_transforms</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">                </span><span class="n">handle_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bag_to_world</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">handle_to_bag</span>
+
+<span class="w">                </span><span class="n">handle_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmat_to_pos_quat</span><span class="p">(</span><span class="n">handle_to_world</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">robot</span><span class="p">.</span><span class="n">reset_to_ee_pose</span><span class="p">(</span><span class="n">handle_pose</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Move</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">bag</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">robot</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">reset_to_handle_pose</span><span class="p">(</span><span class="n">robot</span><span class="p">.</span><span class="n">ee_pose</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">_attach</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">num_robots</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">robot_1</span><span class="p">,</span><span class="w"> </span><span class="n">robot_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_or_robots</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Unpack</span><span class="w"> </span><span class="n">list</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">object_to_move</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;robot&quot;</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="n">Reset</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="n">robot</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">interface</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="n">handles</span>
+
+<span class="w">                </span><span class="n">handle_1_to_bag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">grasp_transforms</span><span class="o">[</span><span class="n">0</span><span class="o">]</span>
+
+<span class="w">                </span><span class="n">handle_2_to_bag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">grasp_transforms</span><span class="o">[</span><span class="n">1</span><span class="o">]</span>
+
+<span class="w">                </span><span class="n">handle_1_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bag_to_world</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">handle_1_to_bag</span>
+
+<span class="w">                </span><span class="n">handle_2_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bag_to_world</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">handle_2_to_bag</span>
+
+<span class="w">                </span><span class="n">robot_1</span><span class="p">.</span><span class="n">reset_to_ee_pose</span><span class="p">(</span><span class="n">tmat_to_pos_quat</span><span class="p">(</span><span class="n">handle_1_to_world</span><span class="p">))</span>
+
+<span class="w">                </span><span class="n">robot_2</span><span class="p">.</span><span class="n">reset_to_ee_pose</span><span class="p">(</span><span class="n">tmat_to_pos_quat</span><span class="p">(</span><span class="n">handle_2_to_world</span><span class="p">))</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">_attach</span><span class="p">(</span><span class="n">robot_1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">_attach</span><span class="p">(</span><span class="n">robot_2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Move</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">bag</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="n">leaving</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">robots</span><span class="w"> </span><span class="k">static</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="ss">&quot;Attaching the bag to multiple robots requires moving at least 1 robot&quot;</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;The multi-robot case is only implemented for 2 Astrobees&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="detach">detach</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">detach</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Detach all connections to the bag</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detach</span><span class="p">(</span><span class="kr">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="n">anchors</span><span class="p">,</span><span class="w"> </span><span class="n">anchor_objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">anchors</span>
+
+<span class="w">        </span><span class="n">for</span><span class="w"> </span><span class="n">cid</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">anchors</span><span class="o">:</span>
+
+<span class="w">            </span><span class="kr">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">for</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">anchor_objects</span><span class="o">:</span>
+
+<span class="w">            </span><span class="kr">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">_anchors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">_anchor_objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">_attached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+</code></pre></div>
+
+</details>
+<h4 id="detach_robot">detach_robot</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">detach_robot</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">robot_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Detaches a specific robot from the bag</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>robot_id</td>
+<td>int</td>
+<td>Pybullet ID of the robot to detach</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detach_robot</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">robot_id</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">robot_id</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">attached</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="ss">&quot;Cannot detach robot: ID unknown&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">cid</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_anchors</span><span class="o">[</span><span class="n">robot_id</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">removeConstraint</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_anchor_objects</span><span class="o">[</span><span class="n">robot_id</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_anchors</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_anchor_objects</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_attached</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">robot_id</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="reset_dynamics">reset_dynamics</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">reset_dynamics</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">orn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">lin_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">ang_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Resets the pose and velocities of the bag</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pos</td>
+<td>npt.ArrayLike</td>
+<td>Position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>orn</td>
+<td>npt.ArrayLike</td>
+<td>XYZW quaternion orientation, shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>lin_vel</td>
+<td>npt.ArrayLike</td>
+<td>Linear velocity, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>ang_vel</td>
+<td>npt.ArrayLike</td>
+<td>Angular velocity, shape (3,)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">reset_dynamics</span><span class="p">(</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">pos</span><span class="o">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">orn</span><span class="o">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">lin_vel</span><span class="o">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">ang_vel</span><span class="o">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;Resets the pose and velocities of the bag</span>
+
+<span class="s">        Args:</span>
+
+<span class="s">            pos (npt.ArrayLike): Position, shape (3,)</span>
+
+<span class="s">            orn (npt.ArrayLike): XYZW quaternion orientation, shape (4,)</span>
+
+<span class="s">            lin_vel (npt.ArrayLike): Linear velocity, shape (3,)</span>
+
+<span class="s">            ang_vel (npt.ArrayLike): Angular velocity, shape (3,)</span>
+
+<span class="s">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">resetBasePositionAndOrientation</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="n">orn</span><span class="p">)</span>
+
+<span class="w">        </span><span class="kr">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">resetBaseVelocity</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">lin_vel</span><span class="p">,</span><span class="w"> </span><span class="n">ang_vel</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="reset_to_handle_pose">reset_to_handle_pose</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">reset_to_handle_pose</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">handle_pose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">handle_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Resets the position of the bag so that the handle is positioned at a desired pose</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>handle_pose</td>
+<td>npt.ArrayLike</td>
+<td>Desired pose of the handle ("handle-to-world"), shape (7,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>handle_index</td>
+<td>int</td>
+<td>Index of the handle to align to the desired pose. Defaults to 0.</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">reset_to_handle_pose</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">handle_pose</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nl">handle_index</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Resets the position of the bag so that the handle is positioned at a desired pose</span>
+
+<span class="ss">        Args:</span>
+
+<span class="ss">            handle_pose (npt.ArrayLike): Desired pose of the handle (&quot;</span><span class="n">handle</span><span class="o">-</span><span class="k">to</span><span class="o">-</span><span class="n">world</span><span class="ss">&quot;), shape (7,)</span>
+
+<span class="ss">            handle_index (int, optional): Index of the handle to align to the desired pose. Defaults to 0.</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">handle_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pos_quat_to_tmat</span><span class="p">(</span><span class="n">handle_pose</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">bag_to_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">invert_transform_mat</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">grasp_transforms</span><span class="o">[</span><span class="n">handle_index</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">bag_to_world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handle_to_world</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">bag_to_handle</span>
+
+<span class="w">        </span><span class="n">bag_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmat_to_pos_quat</span><span class="p">(</span><span class="n">bag_to_world</span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">assumes</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">want</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">bag</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">stationary</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">reset_dynamics</span><span class="p">(</span><span class="n">bag_pose</span><span class="o">[</span><span class="n">:3</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bag_pose</span><span class="o">[</span><span class="n">3:</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h4 id="unload">unload</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">unload</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Removes the cargo bag from the simulation</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">unload</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the cargo bag from the simulation&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../constraint_bag/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Constraint Bag" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Constraint Bag
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../environments/" class="md-footer__link md-footer__link--next" aria-label="Next: Environments" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Environments
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

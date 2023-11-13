@@ -1,0 +1,2829 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Sampling - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeetrajectoriessampling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sampling
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Sampling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Sampling
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate_trajs" class="md-nav__link">
+    generate_trajs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample_state" class="md-nav__link">
+    sample_state
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate_trajs" class="md-nav__link">
+    generate_trajs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample_state" class="md-nav__link">
+    sample_state
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/trajectories/sampling.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeetrajectoriessampling">Module pyastrobee.trajectories.sampling</h1>
+<p>Methods for sampling candidate trajectories about a reference state or trajectory</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Methods for sampling candidate trajectories about a reference state or trajectory&quot;&quot;&quot;</span>
+
+<span class="c1"># TODO make a method that uses different reward weighting in the trajectory optimization (e.g. different weighting</span>
+
+<span class="c1"># between minimizing jerk and minimizing pathlength)</span>
+
+<span class="c1"># TODO make sample_joint_states function</span>
+
+<span class="c1"># TODO decide if time should be in the sample state function... And does it make sense to call this a &quot;state&quot; because</span>
+
+<span class="c1">#      in other places we call things &quot;dynamics state&quot; and don&#39;t include acceleration info for instance??</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.math_utils</span> <span class="kn">import</span> <span class="n">spherical_vonmises_sampling</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.trajectories.planner</span> <span class="kn">import</span> <span class="n">local_planner</span>
+
+<span class="k">def</span> <span class="nf">sample_state</span><span class="p">(</span>
+
+    <span class="n">nominal_pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_orn</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_ang_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_accel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_alpha</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">pos_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">orn_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">vel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">ang_vel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">accel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">alpha_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a sample about a nominal state</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        nominal_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)</span>
+
+<span class="sd">        nominal_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_accel (npt.ArrayLike): Nominal desired linear acceleration to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_alpha (npt.ArrayLike): Nominal desired angular acceleration to sample about, shape (3,)</span>
+
+<span class="sd">        pos_stdev (float): Standard deviation of the position sampling distribution</span>
+
+<span class="sd">        orn_stdev (float): Standard deviation of the orientation sampling distribution</span>
+
+<span class="sd">        vel_stdev (float): Standard deviation of the velocity sampling distribution</span>
+
+<span class="sd">        ang_vel_stdev (float): Standard deviation of the angular velocity sampling distribution</span>
+
+<span class="sd">        accel_stdev (float): Standard deviation of the linear acceleration sampling distribution</span>
+
+<span class="sd">        alpha_stdev (float): Standard deviation of the angular acceleration sampling distribution</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        list[np.ndarray]: Sampled state. Length = 6. Includes position, orientation,</span>
+
+<span class="sd">            velocity, angular velocity, acceleration, and angular acceleration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_pos</span><span class="p">,</span> <span class="n">pos_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">orn</span> <span class="o">=</span> <span class="n">spherical_vonmises_sampling</span><span class="p">(</span><span class="n">nominal_orn</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">orn_stdev</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_vel</span><span class="p">,</span> <span class="n">vel_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">ang_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_ang_vel</span><span class="p">,</span> <span class="n">ang_vel_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="p">)</span>
+
+    <span class="n">accel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_accel</span><span class="p">,</span> <span class="n">accel_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_alpha</span><span class="p">,</span> <span class="n">alpha_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">pos</span><span class="p">,</span> <span class="n">orn</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">ang_vel</span><span class="p">,</span> <span class="n">accel</span><span class="p">,</span> <span class="n">alpha</span><span class="p">]</span>
+
+<span class="c1"># TODO</span>
+
+<span class="c1"># - Decide if we should be passing in covariance matrices or arrays instead of scalars</span>
+
+<span class="c1"># - Decide if the &quot;orientation stdev&quot; should be replaced by the von Mises kappa parameter</span>
+
+<span class="k">def</span> <span class="nf">generate_trajs</span><span class="p">(</span>
+
+    <span class="n">cur_pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">cur_orn</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">cur_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">cur_ang_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">cur_accel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>  <span class="c1"># Optional?</span>
+
+    <span class="n">cur_alpha</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>  <span class="c1"># Optional?</span>
+
+    <span class="n">nominal_target_pos</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_target_orn</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_target_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_target_ang_vel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+    <span class="n">nominal_target_accel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>  <span class="c1"># Optional?</span>
+
+    <span class="n">nominal_target_alpha</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>  <span class="c1"># Optional?</span>
+
+    <span class="n">pos_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">orn_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">vel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">ang_vel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">accel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">alpha_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">n_trajs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+    <span class="n">include_nominal_traj</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Trajectory</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a number of trajectories from the current state to a sampled state about a nominal target</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        cur_pos (npt.ArrayLike): Current position, shape (3,)</span>
+
+<span class="sd">        cur_orn (npt.ArrayLike): Current XYZW quaternion orientation, shape (4,)</span>
+
+<span class="sd">        cur_vel (npt.ArrayLike): Current linear velocity, shape (3,)</span>
+
+<span class="sd">        cur_ang_vel (npt.ArrayLike): Current angular velocity, shape (3,)</span>
+
+<span class="sd">        nominal_target_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_target_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)</span>
+
+<span class="sd">        nominal_target_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_target_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)</span>
+
+<span class="sd">        pos_sampling_stdev (float): Standard deviation of the position sampling distribution</span>
+
+<span class="sd">        orn_sampling_stdev (float): Standard deviation of the orientation sampling distribution</span>
+
+<span class="sd">        vel_sampling_stdev (float): Standard deviation of the velocity sampling distribution</span>
+
+<span class="sd">        ang_vel_sampling_stdev (float): Standard deviation of the angular velocity sampling distribution</span>
+
+<span class="sd">        n_trajs (int): Number of trajectories to generate</span>
+
+<span class="sd">        duration (float): Trajectory duration, in seconds</span>
+
+<span class="sd">        dt (float): Timestep</span>
+
+<span class="sd">        include_nominal_traj (bool): Whether or not to include the nominal (non-sampled) trajectory in the output</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        list[Trajectory]: Sampled trajectories, length n_trajs</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">trajs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">include_nominal_traj</span><span class="p">:</span>
+
+        <span class="c1"># Let the first generated trajectory use the mean of all of the distributions</span>
+
+        <span class="n">trajs</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span>
+
+            <span class="n">local_planner</span><span class="p">(</span>
+
+                <span class="n">cur_pos</span><span class="p">,</span>
+
+                <span class="n">cur_orn</span><span class="p">,</span>
+
+                <span class="n">cur_vel</span><span class="p">,</span>
+
+                <span class="n">cur_ang_vel</span><span class="p">,</span>
+
+                <span class="n">cur_accel</span><span class="p">,</span>
+
+                <span class="n">cur_alpha</span><span class="p">,</span>
+
+                <span class="n">nominal_target_pos</span><span class="p">,</span>
+
+                <span class="n">nominal_target_orn</span><span class="p">,</span>
+
+                <span class="n">nominal_target_vel</span><span class="p">,</span>
+
+                <span class="n">nominal_target_ang_vel</span><span class="p">,</span>
+
+                <span class="n">nominal_target_accel</span><span class="p">,</span>
+
+                <span class="n">nominal_target_alpha</span><span class="p">,</span>
+
+                <span class="n">duration</span><span class="p">,</span>
+
+                <span class="n">dt</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+        <span class="p">)</span>
+
+        <span class="c1"># Reduce the number of trajectories to sample since we have added this nominal traj</span>
+
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_trajs</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c1"># Sample all of the trajectories</span>
+
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_trajs</span>
+
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">trajs</span>
+
+    <span class="c1"># Sample endpoints for the candidate trajectories about the nominal targets</span>
+
+    <span class="n">sampled_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_target_pos</span><span class="p">,</span> <span class="n">pos_sampling_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="n">sampled_quats</span> <span class="o">=</span> <span class="n">spherical_vonmises_sampling</span><span class="p">(</span>
+
+        <span class="n">nominal_target_orn</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">orn_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="n">sampled_vels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_target_vel</span><span class="p">,</span> <span class="n">vel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="n">sampled_ang_vels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_target_ang_vel</span><span class="p">,</span> <span class="n">ang_vel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="n">sampled_accels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_target_accel</span><span class="p">,</span> <span class="n">accel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="n">sampled_alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+        <span class="n">nominal_target_alpha</span><span class="p">,</span> <span class="n">alpha_sampling_stdev</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="kp">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">n_samples</span>
+
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+
+        <span class="n">trajs</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span>
+
+            <span class="n">local_planner</span><span class="p">(</span>
+
+                <span class="n">cur_pos</span><span class="p">,</span>
+
+                <span class="n">cur_orn</span><span class="p">,</span>
+
+                <span class="n">cur_vel</span><span class="p">,</span>
+
+                <span class="n">cur_ang_vel</span><span class="p">,</span>
+
+                <span class="n">cur_accel</span><span class="p">,</span>
+
+                <span class="n">cur_alpha</span><span class="p">,</span>
+
+                <span class="n">sampled_positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">sampled_quats</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">sampled_vels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">sampled_ang_vels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">sampled_accels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">sampled_alphas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+
+                <span class="n">duration</span><span class="p">,</span>
+
+                <span class="n">dt</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">trajs</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="generate_trajs">generate_trajs</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">generate_trajs</span><span class="p">(</span>
+    <span class="n">cur_pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">cur_orn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">cur_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">cur_ang_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">cur_accel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">cur_alpha</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_orn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_ang_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_accel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_target_alpha</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">pos_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">orn_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">vel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">ang_vel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">accel_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">alpha_sampling_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">n_trajs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">include_nominal_traj</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">trajectories</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Generate a number of trajectories from the current state to a sampled state about a nominal target</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cur_pos</td>
+<td>npt.ArrayLike</td>
+<td>Current position, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>cur_orn</td>
+<td>npt.ArrayLike</td>
+<td>Current XYZW quaternion orientation, shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>cur_vel</td>
+<td>npt.ArrayLike</td>
+<td>Current linear velocity, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>cur_ang_vel</td>
+<td>npt.ArrayLike</td>
+<td>Current angular velocity, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_target_pos</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired position to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_target_orn</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired XYZW quaternion to sample about, shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_target_vel</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired linear velocity to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_target_ang_vel</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired angular velocity to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pos_sampling_stdev</td>
+<td>float</td>
+<td>Standard deviation of the position sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>orn_sampling_stdev</td>
+<td>float</td>
+<td>Standard deviation of the orientation sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vel_sampling_stdev</td>
+<td>float</td>
+<td>Standard deviation of the velocity sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>ang_vel_sampling_stdev</td>
+<td>float</td>
+<td>Standard deviation of the angular velocity sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>n_trajs</td>
+<td>int</td>
+<td>Number of trajectories to generate</td>
+<td>None</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>float</td>
+<td>Trajectory duration, in seconds</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dt</td>
+<td>float</td>
+<td>Timestep</td>
+<td>None</td>
+</tr>
+<tr>
+<td>include_nominal_traj</td>
+<td>bool</td>
+<td>Whether or not to include the nominal (non-sampled) trajectory in the output</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list[Trajectory]</td>
+<td>Sampled trajectories, length n_trajs</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">generate_trajs</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">cur_pos</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">cur_orn</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">cur_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">cur_ang_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">cur_accel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Optional</span><span class="vm">?</span>
+
+<span class="w">    </span><span class="nl">cur_alpha</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Optional</span><span class="vm">?</span>
+
+<span class="w">    </span><span class="nl">nominal_target_pos</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">nominal_target_orn</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">nominal_target_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">nominal_target_ang_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">nominal_target_accel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Optional</span><span class="vm">?</span>
+
+<span class="w">    </span><span class="nl">nominal_target_alpha</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Optional</span><span class="vm">?</span>
+
+<span class="w">    </span><span class="nl">pos_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">orn_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">vel_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">ang_vel_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">accel_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">alpha_sampling_stdev</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">n_trajs</span><span class="p">:</span><span class="w"> </span><span class="nc">int</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">duration</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">dt</span><span class="p">:</span><span class="w"> </span><span class="nc">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="nl">include_nominal_traj</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="p">,</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Trajectory</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Generate a number of trajectories from the current state to a sampled state about a nominal target</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        cur_pos (npt.ArrayLike): Current position, shape (3,)</span>
+
+<span class="ss">        cur_orn (npt.ArrayLike): Current XYZW quaternion orientation, shape (4,)</span>
+
+<span class="ss">        cur_vel (npt.ArrayLike): Current linear velocity, shape (3,)</span>
+
+<span class="ss">        cur_ang_vel (npt.ArrayLike): Current angular velocity, shape (3,)</span>
+
+<span class="ss">        nominal_target_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)</span>
+
+<span class="ss">        nominal_target_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)</span>
+
+<span class="ss">        nominal_target_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)</span>
+
+<span class="ss">        nominal_target_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)</span>
+
+<span class="ss">        pos_sampling_stdev (float): Standard deviation of the position sampling distribution</span>
+
+<span class="ss">        orn_sampling_stdev (float): Standard deviation of the orientation sampling distribution</span>
+
+<span class="ss">        vel_sampling_stdev (float): Standard deviation of the velocity sampling distribution</span>
+
+<span class="ss">        ang_vel_sampling_stdev (float): Standard deviation of the angular velocity sampling distribution</span>
+
+<span class="ss">        n_trajs (int): Number of trajectories to generate</span>
+
+<span class="ss">        duration (float): Trajectory duration, in seconds</span>
+
+<span class="ss">        dt (float): Timestep</span>
+
+<span class="ss">        include_nominal_traj (bool): Whether or not to include the nominal (non-sampled) trajectory in the output</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        list[Trajectory]: Sampled trajectories, length n_trajs</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">trajs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">include_nominal_traj</span><span class="p">:</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Let</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">first</span><span class="w"> </span><span class="n">generated</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">distributions</span>
+
+<span class="w">        </span><span class="n">trajs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">local_planner</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">cur_pos</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_orn</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_ang_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_accel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_alpha</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_pos</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_orn</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_ang_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_accel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">nominal_target_alpha</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">duration</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">dt</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Reduce</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">trajectories</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">sample</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">added</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">nominal</span><span class="w"> </span><span class="n">traj</span>
+
+<span class="w">        </span><span class="n">n_samples</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_trajs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">    </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Sample</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">trajectories</span>
+
+<span class="w">        </span><span class="n">n_samples</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_trajs</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">n_samples</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">trajs</span>
+
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Sample</span><span class="w"> </span><span class="n">endpoints</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">candidate</span><span class="w"> </span><span class="n">trajectories</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">nominal</span><span class="w"> </span><span class="n">targets</span>
+
+<span class="w">    </span><span class="n">sampled_positions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_pos</span><span class="p">,</span><span class="w"> </span><span class="n">pos_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">sampled_quats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spherical_vonmises_sampling</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_orn</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">orn_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">sampled_vels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_vel</span><span class="p">,</span><span class="w"> </span><span class="n">vel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">sampled_ang_vels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_ang_vel</span><span class="p">,</span><span class="w"> </span><span class="n">ang_vel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">sampled_accels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_accel</span><span class="p">,</span><span class="w"> </span><span class="n">accel_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">sampled_alphas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_target_alpha</span><span class="p">,</span><span class="w"> </span><span class="n">alpha_sampling_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_samples</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="n">trajs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">local_planner</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">cur_pos</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_orn</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_ang_vel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_accel</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">cur_alpha</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_positions</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_quats</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_vels</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_ang_vels</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_accels</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">sampled_alphas</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">duration</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">dt</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">trajs</span>
+</code></pre></div>
+
+</details>
+<h3 id="sample_state">sample_state</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">sample_state</span><span class="p">(</span>
+    <span class="n">nominal_pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_orn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_ang_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_accel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">nominal_alpha</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">pos_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">orn_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">vel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">ang_vel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">accel_stdev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">alpha_stdev</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Generate a sample about a nominal state</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nominal_pos</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired position to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_orn</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired XYZW quaternion to sample about, shape (4,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_vel</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired linear velocity to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_ang_vel</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired angular velocity to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_accel</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired linear acceleration to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>nominal_alpha</td>
+<td>npt.ArrayLike</td>
+<td>Nominal desired angular acceleration to sample about, shape (3,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pos_stdev</td>
+<td>float</td>
+<td>Standard deviation of the position sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>orn_stdev</td>
+<td>float</td>
+<td>Standard deviation of the orientation sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vel_stdev</td>
+<td>float</td>
+<td>Standard deviation of the velocity sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>ang_vel_stdev</td>
+<td>float</td>
+<td>Standard deviation of the angular velocity sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>accel_stdev</td>
+<td>float</td>
+<td>Standard deviation of the linear acceleration sampling distribution</td>
+<td>None</td>
+</tr>
+<tr>
+<td>alpha_stdev</td>
+<td>float</td>
+<td>Standard deviation of the angular acceleration sampling distribution</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list[np.ndarray]</td>
+<td>Sampled state. Length = 6. Includes position, orientation,<br>velocity, angular velocity, acceleration, and angular acceleration</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">sample_state</span><span class="p">(</span>
+
+<span class="w">    </span><span class="n">nominal_pos</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">nominal_orn</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">nominal_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">nominal_ang_vel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">nominal_accel</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">nominal_alpha</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">pos_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">orn_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">vel_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">ang_vel_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">accel_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">alpha_stdev</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">,</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a sample about a nominal state</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        nominal_pos (npt.ArrayLike): Nominal desired position to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_orn (npt.ArrayLike): Nominal desired XYZW quaternion to sample about, shape (4,)</span>
+
+<span class="sd">        nominal_vel (npt.ArrayLike): Nominal desired linear velocity to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_ang_vel (npt.ArrayLike): Nominal desired angular velocity to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_accel (npt.ArrayLike): Nominal desired linear acceleration to sample about, shape (3,)</span>
+
+<span class="sd">        nominal_alpha (npt.ArrayLike): Nominal desired angular acceleration to sample about, shape (3,)</span>
+
+<span class="sd">        pos_stdev (float): Standard deviation of the position sampling distribution</span>
+
+<span class="sd">        orn_stdev (float): Standard deviation of the orientation sampling distribution</span>
+
+<span class="sd">        vel_stdev (float): Standard deviation of the velocity sampling distribution</span>
+
+<span class="sd">        ang_vel_stdev (float): Standard deviation of the angular velocity sampling distribution</span>
+
+<span class="sd">        accel_stdev (float): Standard deviation of the linear acceleration sampling distribution</span>
+
+<span class="sd">        alpha_stdev (float): Standard deviation of the angular acceleration sampling distribution</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        list[np.ndarray]: Sampled state. Length = 6. Includes position, orientation,</span>
+
+<span class="sd">            velocity, angular velocity, acceleration, and angular acceleration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_pos</span><span class="p">,</span><span class="w"> </span><span class="n">pos_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">orn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spherical_vonmises_sampling</span><span class="p">(</span><span class="n">nominal_orn</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">orn_stdev</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="w">    </span><span class="n">vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_vel</span><span class="p">,</span><span class="w"> </span><span class="n">vel_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">ang_vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">nominal_ang_vel</span><span class="p">,</span><span class="w"> </span><span class="n">ang_vel_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="w">    </span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">accel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_accel</span><span class="p">,</span><span class="w"> </span><span class="n">accel_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">nominal_alpha</span><span class="p">,</span><span class="w"> </span><span class="n">alpha_stdev</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="n">orn</span><span class="p">,</span><span class="w"> </span><span class="n">vel</span><span class="p">,</span><span class="w"> </span><span class="n">ang_vel</span><span class="p">,</span><span class="w"> </span><span class="n">accel</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">]</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../quaternion_interpolation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quaternion Interpolation" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Quaternion Interpolation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../simple_trajectories/" class="md-footer__link md-footer__link--next" aria-label="Next: Simple Trajectories" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Simple Trajectories
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

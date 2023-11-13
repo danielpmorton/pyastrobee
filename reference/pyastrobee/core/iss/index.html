@@ -1,0 +1,2780 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Iss - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeecoreiss" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Iss
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Iss
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Iss
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iss" class="md-nav__link">
+    ISS
+  </a>
+  
+    <nav class="md-nav" aria-label="ISS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hide_safe_set" class="md-nav__link">
+    hide_safe_set
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show_safe_set" class="md-nav__link">
+    show_safe_set
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iss" class="md-nav__link">
+    ISS
+  </a>
+  
+    <nav class="md-nav" aria-label="ISS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hide_safe_set" class="md-nav__link">
+    hide_safe_set
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show_safe_set" class="md-nav__link">
+    show_safe_set
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/core/iss.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeecoreiss">Module pyastrobee.core.iss</h1>
+<p>Functions related to loading the ISS modules into pybullet</p>
+<p>Notes:
+- If any of the ISS meshes are updated (such as a reorientation or repositioning in Blender), the default orientation
+    should be changed in the loading functions
+- If the mesh directory gets changed, the hardcoded relative paths need to be updated</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Functions related to loading the ISS modules into pybullet</span>
+
+<span class="sd">Notes:</span>
+
+<span class="sd">- If any of the ISS meshes are updated (such as a reorientation or repositioning in Blender), the default orientation</span>
+
+<span class="sd">    should be changed in the loading functions</span>
+
+<span class="sd">- If the mesh directory gets changed, the hardcoded relative paths need to be updated</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pybullet</span>
+
+<span class="kn">from</span> <span class="nn">pybullet_utils.bullet_client</span> <span class="kn">import</span> <span class="n">BulletClient</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.bullet_utils</span> <span class="kn">import</span> <span class="n">initialize_pybullet</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.errors</span> <span class="kn">import</span> <span class="n">PybulletError</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.python_utils</span> <span class="kn">import</span> <span class="n">print_green</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.config.iss_safe_boxes</span> <span class="kn">import</span> <span class="n">FULL_SAFE_SET</span><span class="p">,</span> <span class="n">ROBOT_SAFE_SET</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.config.iss_paths</span> <span class="kn">import</span> <span class="n">GRAPH</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.boxes</span> <span class="kn">import</span> <span class="n">visualize_3D_box</span>
+
+<span class="k">class</span> <span class="nc">ISS</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ISS, as represented in the original NASA/astrobee repo</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        debug (bool, optional): Whether or not to visualize just the collision bodies. Defaults to False</span>
+
+<span class="sd">        client (BulletClient, optional): If connecting to multiple physics servers, include the client</span>
+
+<span class="sd">            (the class instance, not just the ID) here. Defaults to None (use default connected client)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Modules</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enumerates the different ISS modules</span>
+
+<span class="sd">        - The naming of these corresponds with NASA code and mesh filenames (typically lowercase)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">CUPOLA</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">EU_LAB</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">JPM</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="n">NODE_1</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">NODE_2</span> <span class="o">=</span> <span class="mi">4</span>
+
+        <span class="n">NODE_3</span> <span class="o">=</span> <span class="mi">5</span>
+
+        <span class="n">US_LAB</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulletClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span> <span class="n">pybullet</span> <span class="o">=</span> <span class="n">pybullet</span> <span class="k">if</span> <span class="n">client</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">client</span>
+
+        <span class="c1"># The meshes have a weird orientation so we need to use this orientation to rotate them to lay flat</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_safe_set</span> <span class="o">=</span> <span class="n">FULL_SAFE_SET</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_safe_set</span> <span class="o">=</span> <span class="n">ROBOT_SAFE_SET</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GRAPH</span>  <span class="c1"># Precomputed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">ISS</span><span class="o">.</span><span class="n">Modules</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_module</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+
+        <span class="n">print_green</span><span class="p">(</span><span class="s2">&quot;ISS is ready&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">show_safe_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_robot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualizes the collision-free regions inside the ISS</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            for_robot (bool, optional): Whether to shrink the safe set to account for the collision radius of the</span>
+
+<span class="sd">                Astrobee&#39;s body. Defaults to False (Show the full safe set)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">boxes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_safe_set</span> <span class="k">if</span> <span class="n">for_robot</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_safe_set</span>
+
+        <span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">boxes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">visualize_3D_box</span><span class="p">(</span><span class="n">box</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">hide_safe_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the visualization of the collision-free regions&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">box_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">box_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_load_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="n">Modules</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads a single ISS module. For example, US_LAB</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            module (Modules): The module to load. For example, Modules.CUPOLA / .EU_LAB / .JPM / ...</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            int: The Pybullet ID for the multibody associated with the VHACD collision object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Locate the paths to all of the meshes for the module</span>
+
+        <span class="n">vhacd_path</span><span class="p">,</span> <span class="n">part_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_mesh_files</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="c1"># If we&#39;re debugging the collision info, just load the VHACD results as both the collision and visual</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+
+            <span class="n">visual_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createVisualShape</span><span class="p">(</span>
+
+                <span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+                <span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+                <span class="n">visualFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="n">collision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span>
+
+                <span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+                <span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+                <span class="n">collisionFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="n">rigid_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createMultiBody</span><span class="p">(</span>
+
+                <span class="n">baseMass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># Fixed position</span>
+
+                <span class="n">baseCollisionShapeIndex</span><span class="o">=</span><span class="n">collision_id</span><span class="p">,</span>
+
+                <span class="n">baseVisualShapeIndex</span><span class="o">=</span><span class="n">visual_id</span><span class="p">,</span>
+
+                <span class="n">baseInertialFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">rigid_id</span>
+
+        <span class="c1"># Load the module:</span>
+
+        <span class="c1"># Each part of the module will load the visual for the associated body</span>
+
+        <span class="c1"># If we&#39;re dealing with the first part, load the VHACD file as the collision body.</span>
+
+        <span class="c1"># For the remaining parts, we won&#39;t provide any collision information</span>
+
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">part_paths</span><span class="p">):</span>
+
+            <span class="c1"># Every part will have an associated visual shape</span>
+
+            <span class="c1"># When the path points to an OBJ, it will load colors via the associated MTL file in the same directory</span>
+
+            <span class="n">visual_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createVisualShape</span><span class="p">(</span>
+
+                <span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+                <span class="n">fileName</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+
+                <span class="n">visualFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">visual_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">raise</span> <span class="n">PybulletError</span><span class="p">(</span>
+
+                    <span class="sa">f</span><span class="s2">&quot;Could not load the visual shape for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">visual_id</span>
+
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="c1"># Load the VHACD results as the collision info</span>
+
+                <span class="n">collision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span>
+
+                    <span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+                    <span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+                    <span class="n">collisionFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">collision_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                    <span class="k">raise</span> <span class="n">PybulletError</span><span class="p">(</span>
+
+                        <span class="sa">f</span><span class="s2">&quot;Could not load the collision shape for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">collision_id</span>
+
+                    <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">collision_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># -1 means no collision bodies will be generated</span>
+
+            <span class="n">rigid_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createMultiBody</span><span class="p">(</span>
+
+                <span class="n">baseMass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># Fixed position</span>
+
+                <span class="n">baseCollisionShapeIndex</span><span class="o">=</span><span class="n">collision_id</span><span class="p">,</span>
+
+                <span class="n">baseVisualShapeIndex</span><span class="o">=</span><span class="n">visual_id</span><span class="p">,</span>
+
+                <span class="n">baseInertialFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+            <span class="p">)</span>
+
+            <span class="n">ids</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">rigid_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Just the ID for the VHACD object</span>
+
+    <span class="k">def</span> <span class="nf">_find_mesh_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="n">Modules</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function to locate the paths to the ISS module meshes</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            ValueError: If an invalid ISS module name is provided</span>
+
+<span class="sd">            NotADirectoryError: If the module&#39;s mesh directory cannot be found</span>
+
+<span class="sd">            FileNotFoundError: If either the vhacd obj file or the obj2sdf objs cannot be found in the mesh directory</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            tuple[str, list[str]]:</span>
+
+<span class="sd">                str: The path to the VHACD collision mesh for the module</span>
+
+<span class="sd">                list[str]: Paths to all of the decomposed visual meshes for the module</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Extract the name from the enum</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># Get the paths for all files in the directory (visual and collision)</span>
+
+        <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="n">directory</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cwd</span><span class="si">}</span><span class="s2">/pyastrobee/assets/meshes/iss/obj/</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+
+            <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span>
+
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> is not valid.</span><span class="se">\n</span><span class="s2">Check on the input, </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">, or current working directory, </span><span class="si">{</span><span class="n">cwd</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="n">part_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">vhacd_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;decomp.obj&quot;</span><span class="p">:</span>
+
+                <span class="n">vhacd_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">):</span>
+
+                <span class="n">part_paths</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vhacd_path</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+
+                <span class="s2">&quot;Could not find the VHACD OBJ file for collision info&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">part_paths</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+
+                <span class="s2">&quot;Could not find the OBJ files for the ISS visual info&quot;</span>
+
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vhacd_path</span><span class="p">,</span> <span class="n">part_paths</span>
+
+<span class="k">def</span> <span class="nf">_main</span><span class="p">():</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">initialize_pybullet</span><span class="p">()</span>
+
+    <span class="n">iss</span> <span class="o">=</span> <span class="n">ISS</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="n">iss</span><span class="o">.</span><span class="n">show_safe_set</span><span class="p">()</span>
+
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Press Enter to hide the safe set visualization&quot;</span><span class="p">)</span>
+
+    <span class="n">iss</span><span class="o">.</span><span class="n">hide_safe_set</span><span class="p">()</span>
+
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Press Enter to exit&quot;</span><span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">_main</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">FULL_SAFE_SET</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">GRAPH</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">ROBOT_SAFE_SET</span>
+</code></pre></div>
+
+<h2 id="classes">Classes</h2>
+<h3 id="iss">ISS</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">ISS</span><span class="p">(</span>
+    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pybullet_utils</span><span class="o">.</span><span class="n">bullet_client</span><span class="o">.</span><span class="n">BulletClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>The ISS, as represented in the original NASA/astrobee repo</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>debug</td>
+<td>bool</td>
+<td>Whether or not to visualize just the collision bodies. Defaults to False</td>
+<td>None</td>
+</tr>
+<tr>
+<td>client</td>
+<td>BulletClient</td>
+<td>If connecting to multiple physics servers, include the client<br>(the class instance, not just the ID) here. Defaults to None (use default connected client)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ISS</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ISS, as represented in the original NASA/astrobee repo</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        debug (bool, optional): Whether or not to visualize just the collision bodies. Defaults to False</span>
+
+<span class="sd">        client (BulletClient, optional): If connecting to multiple physics servers, include the client</span>
+
+<span class="sd">            (the class instance, not just the ID) here. Defaults to None (use default connected client)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="n">Modules</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enumerates the different ISS modules</span>
+
+<span class="sd">        - The naming of these corresponds with NASA code and mesh filenames (typically lowercase)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">CUPOLA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">        </span><span class="n">EU_LAB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">        </span><span class="n">JPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="w">        </span><span class="n">NODE_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="w">        </span><span class="n">NODE_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+
+<span class="w">        </span><span class="n">NODE_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="w">        </span><span class="n">US_LAB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">debug</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">False</span><span class="p">,</span><span class="w"> </span><span class="n">client</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="p">[</span><span class="n">BulletClient</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span><span class="p">):</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debug</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span><span class="w"> </span><span class="n">pybullet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pybullet</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">client</span>
+
+<span class="w">        </span><span class="c1"># The meshes have a weird orientation so we need to use this orientation to rotate them to lay flat</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">full_safe_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FULL_SAFE_SET</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">robot_safe_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ROBOT_SAFE_SET</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GRAPH</span><span class="w">  </span><span class="c1"># Precomputed</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ISS</span><span class="o">.</span><span class="n">Modules</span><span class="p">:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_module</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+
+<span class="w">        </span><span class="n">print_green</span><span class="p">(</span><span class="s2">&quot;ISS is ready&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">show_safe_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">for_robot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">False</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualizes the collision-free regions inside the ISS</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            for_robot (bool, optional): Whether to shrink the safe set to account for the collision radius of the</span>
+
+<span class="sd">                Astrobee&#39;s body. Defaults to False (Show the full safe set)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">boxes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">robot_safe_set</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">for_robot</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">full_safe_set</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">boxes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">visualize_3D_box</span><span class="p">(</span><span class="n">box</span><span class="p">))</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">hide_safe_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">None</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the visualization of the collision-free regions&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">box_id</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="p">:</span>
+
+<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">box_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="bp">self</span><span class="o">.</span><span class="n">_debug_box_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_load_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">module</span><span class="p">:</span><span class="w"> </span><span class="n">Modules</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads a single ISS module. For example, US_LAB</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            module (Modules): The module to load. For example, Modules.CUPOLA / .EU_LAB / .JPM / ...</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            int: The Pybullet ID for the multibody associated with the VHACD collision object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="c1"># Locate the paths to all of the meshes for the module</span>
+
+<span class="w">        </span><span class="n">vhacd_path</span><span class="p">,</span><span class="w"> </span><span class="n">part_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_find_mesh_files</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1"># If we&#39;re debugging the collision info, just load the VHACD results as both the collision and visual</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">visual_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createVisualShape</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">visualFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">collision_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">collisionFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">rigid_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createMultiBody</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">baseMass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w">  </span><span class="c1"># Fixed position</span>
+
+<span class="w">                </span><span class="n">baseCollisionShapeIndex</span><span class="o">=</span><span class="n">collision_id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">baseVisualShapeIndex</span><span class="o">=</span><span class="n">visual_id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">baseInertialFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">rigid_id</span>
+
+<span class="w">        </span><span class="c1"># Load the module:</span>
+
+<span class="w">        </span><span class="c1"># Each part of the module will load the visual for the associated body</span>
+
+<span class="w">        </span><span class="c1"># If we&#39;re dealing with the first part, load the VHACD file as the collision body.</span>
+
+<span class="w">        </span><span class="c1"># For the remaining parts, we won&#39;t provide any collision information</span>
+
+<span class="w">        </span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">enumerate</span><span class="p">(</span><span class="n">part_paths</span><span class="p">):</span>
+
+<span class="w">            </span><span class="c1"># Every part will have an associated visual shape</span>
+
+<span class="w">            </span><span class="c1"># When the path points to an OBJ, it will load colors via the associated MTL file in the same directory</span>
+
+<span class="w">            </span><span class="n">visual_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createVisualShape</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">fileName</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">visualFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">visual_id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">PybulletError</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">f</span><span class="s2">&quot;Could not load the visual shape for {path}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">visual_id</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+
+<span class="w">                </span><span class="c1"># Load the VHACD results as the collision info</span>
+
+<span class="w">                </span><span class="n">collision_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">shapeType</span><span class="o">=</span><span class="n">pybullet</span><span class="o">.</span><span class="n">GEOM_MESH</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">fileName</span><span class="o">=</span><span class="n">vhacd_path</span><span class="p">,</span>
+
+<span class="w">                    </span><span class="n">collisionFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">collision_id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+
+<span class="w">                    </span><span class="n">raise</span><span class="w"> </span><span class="n">PybulletError</span><span class="p">(</span>
+
+<span class="w">                        </span><span class="n">f</span><span class="s2">&quot;Could not load the collision shape for {path}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">collision_id</span>
+
+<span class="w">                    </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">collision_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w">  </span><span class="c1"># -1 means no collision bodies will be generated</span>
+
+<span class="w">            </span><span class="n">rigid_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">createMultiBody</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">baseMass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w">  </span><span class="c1"># Fixed position</span>
+
+<span class="w">                </span><span class="n">baseCollisionShapeIndex</span><span class="o">=</span><span class="n">collision_id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">baseVisualShapeIndex</span><span class="o">=</span><span class="n">visual_id</span><span class="p">,</span>
+
+<span class="w">                </span><span class="n">baseInertialFrameOrientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_orn</span><span class="p">,</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rigid_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="c1"># Just the ID for the VHACD object</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_find_mesh_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">module</span><span class="p">:</span><span class="w"> </span><span class="n">Modules</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function to locate the paths to the ISS module meshes</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            module (ISSModule): The module to load. For example, ISSModule.CUPOLA / .EU_LAB / .JPM / ...</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            ValueError: If an invalid ISS module name is provided</span>
+
+<span class="sd">            NotADirectoryError: If the module&#39;s mesh directory cannot be found</span>
+
+<span class="sd">            FileNotFoundError: If either the vhacd obj file or the obj2sdf objs cannot be found in the mesh directory</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            tuple[str, list[str]]:</span>
+
+<span class="sd">                str: The path to the VHACD collision mesh for the module</span>
+
+<span class="sd">                list[str]: Paths to all of the decomposed visual meshes for the module</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="c1"># Extract the name from the enum</span>
+
+<span class="w">        </span><span class="n">module_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+<span class="w">        </span><span class="c1"># Get the paths for all files in the directory (visual and collision)</span>
+
+<span class="w">        </span><span class="n">cwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">directory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="s2">&quot;{cwd}/pyastrobee/assets/meshes/iss/obj/{module_name}&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">NotADirectoryError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="s2">&quot;{directory} is not valid.</span><span class="se">\n</span><span class="s2">Check on the input, {module}, or current working directory, {cwd}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">part_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="w">        </span><span class="n">vhacd_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;decomp.obj&quot;</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">vhacd_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">elif</span><span class="w"> </span><span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">):</span>
+
+<span class="w">                </span><span class="n">part_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">))</span>
+
+<span class="w">            </span><span class="k">else</span><span class="p">:</span>
+
+<span class="w">                </span><span class="k">continue</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">vhacd_path</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FileNotFoundError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="s2">&quot;Could not find the VHACD OBJ file for collision info&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">part_paths</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">FileNotFoundError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="s2">&quot;Could not find the OBJ files for the ISS visual info&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">vhacd_path</span><span class="p">,</span><span class="w"> </span><span class="n">part_paths</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">Modules</span>
+</code></pre></div>
+
+<h4 id="methods">Methods</h4>
+<h4 id="hide_safe_set">hide_safe_set</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">hide_safe_set</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Removes the visualization of the collision-free regions</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">hide_safe_set</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">None:</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;Removes the visualization of the collision-free regions&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">box_id</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">_debug_box_ids:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">removeBody</span><span class="p">(</span><span class="n">box_id</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_debug_box_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+</code></pre></div>
+
+</details>
+<h4 id="show_safe_set">show_safe_set</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">show_safe_set</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">for_robot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+<p>Visualizes the collision-free regions inside the ISS</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>for_robot</td>
+<td>bool</td>
+<td>Whether to shrink the safe set to account for the collision radius of the<br>Astrobee's body. Defaults to False (Show the full safe set)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">show_safe_set</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">for_robot:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">False</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">None:</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;Visualizes the collision-free regions inside the ISS</span>
+
+<span class="w">        </span><span class="nl">Args:</span>
+
+<span class="w">            </span><span class="n">for_robot</span><span class="w"> </span><span class="p">(</span><span class="n">bool</span><span class="p">,</span><span class="w"> </span><span class="n">optional</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Whether</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">shrink</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">safe</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">collision</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span>
+
+<span class="w">                </span><span class="n">Astrobee</span><span class="p">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="p">(</span><span class="n">Show</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">full</span><span class="w"> </span><span class="n">safe</span><span class="w"> </span><span class="n">set</span><span class="p">)</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">boxes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">robot_safe_set</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">for_robot</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">full_safe_set</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">boxes</span><span class="p">.</span><span class="n">values</span><span class="p">()</span><span class="o">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">_debug_box_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">visualize_3D_box</span><span class="p">(</span><span class="n">box</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Index" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Index
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../rigid_bag/" class="md-footer__link md-footer__link--next" aria-label="Next: Rigid Bag" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Rigid Bag
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

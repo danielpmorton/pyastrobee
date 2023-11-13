@@ -1,0 +1,3471 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Boxes - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeeutilsboxes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Boxes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/keyboard_controller/" class="md-nav__link">
+        Keyboard Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../control/pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Boxes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Boxes
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check_box_containment" class="md-nav__link">
+    check_box_containment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check_box_intersection" class="md-nav__link">
+    check_box_intersection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute_graph" class="md-nav__link">
+    compute_graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contract_box" class="md-nav__link">
+    contract_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expand_box" class="md-nav__link">
+    expand_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_containing_box" class="md-nav__link">
+    find_containing_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_containing_box_name" class="md-nav__link">
+    find_containing_box_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intersect_boxes" class="md-nav__link">
+    intersect_boxes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_in_box" class="md-nav__link">
+    is_in_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot_2d_box" class="md-nav__link">
+    plot_2D_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualize_3d_box" class="md-nav__link">
+    visualize_3D_box
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#box" class="md-nav__link">
+    Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check_box_containment" class="md-nav__link">
+    check_box_containment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check_box_intersection" class="md-nav__link">
+    check_box_intersection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute_graph" class="md-nav__link">
+    compute_graph
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contract_box" class="md-nav__link">
+    contract_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expand_box" class="md-nav__link">
+    expand_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_containing_box" class="md-nav__link">
+    find_containing_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find_containing_box_name" class="md-nav__link">
+    find_containing_box_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intersect_boxes" class="md-nav__link">
+    intersect_boxes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_in_box" class="md-nav__link">
+    is_in_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot_2d_box" class="md-nav__link">
+    plot_2D_box
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualize_3d_box" class="md-nav__link">
+    visualize_3D_box
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#box" class="md-nav__link">
+    Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/utils/boxes.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeeutilsboxes">Module pyastrobee.utils.boxes</h1>
+<p>Boxes and associated utility functions</p>
+<p>These are currently used as the definition of the safe sets in the trajectory optimization</p>
+<p>Based on: https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/boxes.py</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Boxes and associated utility functions</span>
+
+<span class="sd">These are currently used as the definition of the safe sets in the trajectory optimization</span>
+
+<span class="sd">Based on: https://github.com/cvxgrp/fastpathplanning/blob/main/fastpathplanning/boxes.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">pyastrobee.utils.bullet_utils</span> <span class="kn">import</span> <span class="n">create_box</span>
+
+<span class="k">class</span> <span class="nc">Box</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of a box defined by lower/upper limits on its coordinates</span>
+
+<span class="sd">    Unpackable as (lower, upper) = box</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        lower (npt.ArrayLike): Lower limits on the box coordinates, shape (box_dim,)</span>
+
+<span class="sd">        upper (npt.ArrayLike): Upper limits on the box coordinates, shape (box_dim,)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">ravel</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">ravel</span><span class="p">(</span><span class="n">upper</span><span class="p">)</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Lower: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span><span class="si">}</span><span class="s2">, Upper: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(lower=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span><span class="si">}</span><span class="s2">, upper=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">):</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid input dimensions&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="kp">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper</span><span class="p">):</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid inputs: Mismatched order of lower/upper points&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">expand_box</span><span class="p">(</span><span class="n">box</span><span class="p">:</span> <span class="n">Box</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Box</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Increases the size of a box by a given distance</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        box (Box): The reference box</span>
+
+<span class="sd">        distance (float): Amount to increase the size of the box in all dimensions</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        Box: The increased-size box</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">Box</span><span class="p">(</span><span class="n">box</span><span class="o">.</span><span class="n">lower</span> <span class="o">-</span> <span class="n">distance</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span> <span class="o">+</span> <span class="n">distance</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">contract_box</span><span class="p">(</span><span class="n">box</span><span class="p">:</span> <span class="n">Box</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Box</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduces the size of a box by a given distance</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        box (Box): The reference box</span>
+
+<span class="sd">        distance (float): Amount to decrease the size of the box in all dimensions</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        Box: The reduced-size box</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">Box</span><span class="p">(</span><span class="n">box</span><span class="o">.</span><span class="n">lower</span> <span class="o">+</span> <span class="n">distance</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span> <span class="o">-</span> <span class="n">distance</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">intersect_boxes</span><span class="p">(</span><span class="n">b1</span><span class="p">:</span> <span class="n">Box</span><span class="p">,</span> <span class="n">b2</span><span class="p">:</span> <span class="n">Box</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Box</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the intersection of two boxes</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        b1 (Box): First box</span>
+
+<span class="sd">        b2 (Box): Second box</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        Box: The intersection region</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">Box</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">maximum</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">b2</span><span class="o">.</span><span class="n">lower</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="kp">minimum</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="n">b2</span><span class="o">.</span><span class="n">upper</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">check_box_intersection</span><span class="p">(</span><span class="n">b1</span><span class="p">:</span> <span class="n">Box</span><span class="p">,</span> <span class="n">b2</span><span class="p">:</span> <span class="n">Box</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate if two boxes intersect or not</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        b1 (Box): First box</span>
+
+<span class="sd">        b2 (Box): Second box</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        bool: True if the boxes intersect, False if not</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">maximum</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">b2</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">minimum</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="n">b2</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">u</span> <span class="o">&gt;=</span> <span class="n">l</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">is_in_box</span><span class="p">(</span><span class="n">point</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">box</span><span class="p">:</span> <span class="n">Box</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate if a point lies within a box</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        point (npt.ArrayLike): Point to evaluate, shape (box_dim,)</span>
+
+<span class="sd">        box (Box): Box to test</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        bool: True if the point is inside the bounds of the box, False otherwise</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="kp">size</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="o">==</span> <span class="n">box</span><span class="o">.</span><span class="n">dim</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">find_containing_box</span><span class="p">(</span>
+
+    <span class="n">point</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">boxes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Box</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">]</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the index of the first box which contains a certain point</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        point (npt.ArrayLike): Point to evaluate</span>
+
+<span class="sd">        boxes (Union[list[Box], npt.ArrayLike]): Boxes to search. If an array, must be of shape (n_boxes, 2, box_dim)</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        Optional[int]: Index of the first box which contains the point. None if the point is not in any box</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">box</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">boxes</span><span class="p">):</span>
+
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">box</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&gt;=</span> <span class="n">lower</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">i</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">find_containing_box_name</span><span class="p">(</span>
+
+    <span class="n">point</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">boxes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Box</span><span class="p">]</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the name of the first box which contains a certain point</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        point (npt.ArrayLike): Point to evaluate</span>
+
+<span class="sd">        boxes (dict[str, Box]): Boxes to search. Key/value: (box name) -&gt; box</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        Optional[str]: Name of the first box which contains the point. None if the point is not in any box</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">boxes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">point</span> <span class="o">&lt;=</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">name</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">visualize_3D_box</span><span class="p">(</span>
+
+    <span class="n">box</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Box</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">],</span>
+
+    <span class="n">padding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">rgba</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize a box in Pybullet</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        box (Union[Box, npt.ArrayLike]): Box to visualize. If an array, must be of shape (1, 2, box_dim)</span>
+
+<span class="sd">        padding (Optional[npt.ArrayLike]): If expanding (or contracting) the boxes by a certain amount, include the</span>
+
+<span class="sd">            (x, y, z) padding distances here (shape (3,)). Defaults to None.</span>
+
+<span class="sd">        rgba (npt.ArrayLike): Color of the box (RGB + alpha), shape (4,). Defaults to (1, 0, 0, 0.5).</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        int: Pybullet ID of the box</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">box</span>
+
+    <span class="k">if</span> <span class="n">padding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">lower</span> <span class="o">-=</span> <span class="n">padding</span>
+
+        <span class="n">upper</span> <span class="o">+=</span> <span class="n">padding</span>
+
+    <span class="k">return</span> <span class="n">create_box</span><span class="p">(</span>
+
+        <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="n">lower</span> <span class="o">+</span> <span class="p">(</span><span class="n">upper</span> <span class="o">-</span> <span class="n">lower</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>  <span class="c1"># Midpoint</span>
+
+        <span class="n">orn</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+
+        <span class="n">mass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+
+        <span class="n">sidelengths</span><span class="o">=</span><span class="p">(</span><span class="n">upper</span> <span class="o">-</span> <span class="n">lower</span><span class="p">),</span>
+
+        <span class="n">use_collision</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+
+        <span class="n">rgba</span><span class="o">=</span><span class="n">rgba</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plot_2D_box</span><span class="p">(</span>
+
+    <span class="n">box</span><span class="p">:</span> <span class="n">Box</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots the boundary of a 2D box</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        box (Box): 2D box to plot</span>
+
+<span class="sd">        ax (Optional[plt.Axes]): If re-using existing plotting axes, include them here. Defaults to None.</span>
+
+<span class="sd">        show (bool, optional): Whether or not to show the plot. Defaults to True.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        plt.Axes: The plotting axes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">box</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span>
+
+        <span class="p">[</span>
+
+            <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+
+            <span class="p">[</span><span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+
+            <span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span>
+
+            <span class="p">[</span><span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+
+            <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+
+        <span class="p">]</span>
+
+    <span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">pts</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="k">def</span> <span class="nf">compute_graph</span><span class="p">(</span><span class="n">boxes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Box</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the graph between a set of boxes</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        dict[str, list[str]]: Adjacency list / graph dictating safe paths within the boxes. Key/value pair is:</span>
+
+<span class="sd">            (name of the box) -&gt; (list of names of all neighbors of that box)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">boxes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">check_box_intersection</span><span class="p">(</span><span class="n">boxes</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">boxes</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">j</span><span class="p">]]):</span>
+
+                <span class="n">adj</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+                <span class="n">adj</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">adj</span>
+
+<span class="k">def</span> <span class="nf">check_box_containment</span><span class="p">(</span>
+
+    <span class="n">bounding_box</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Box</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">safe_set</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Box</span><span class="p">]</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if the bounding box of an object is fully contained within a safe set</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        bounding_box (Union[Box, npt.ArrayLike]): Axis-aligned bounding box. If ArrayLike, must be of shape (2, 3)</span>
+
+<span class="sd">            e.g. the lower and upper XYZ values defining the box</span>
+
+<span class="sd">        safe_set (list[Box]): Boxes to check containment</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        bool: True if the bounding box is contained in the safe set, False otherwise</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">bounding_box</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">box</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">bounding_box</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">box</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">safe_set</span>
+
+    <span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="check_box_containment">check_box_containment</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">check_box_containment</span><span class="p">(</span>
+    <span class="n">bounding_box</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">safe_set</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+<p>Determine if the bounding box of an object is fully contained within a safe set</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bounding_box</td>
+<td>Union[Box, npt.ArrayLike]</td>
+<td>Axis-aligned bounding box. If ArrayLike, must be of shape (2, 3)<br>e.g. the lower and upper XYZ values defining the box</td>
+<td>None</td>
+</tr>
+<tr>
+<td>safe_set</td>
+<td>list[Box]</td>
+<td>Boxes to check containment</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bool</td>
+<td>True if the bounding box is contained in the safe set, False otherwise</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">check_box_containment</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">bounding_box</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">Box, npt.ArrayLike</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">safe_set</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">Box</span><span class="o">]</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">bool</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Determine if the bounding box of an object is fully contained within a safe set</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        bounding_box (Union[Box, npt.ArrayLike]): Axis-aligned bounding box. If ArrayLike, must be of shape (2, 3)</span>
+
+<span class="ss">            e.g. the lower and upper XYZ values defining the box</span>
+
+<span class="ss">        safe_set (list[Box]): Boxes to check containment</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        bool: True if the bounding box is contained in the safe set, False otherwise</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="ow">any</span><span class="p">(</span>
+
+<span class="w">        </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">bounding_box</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="nf">lower</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">bounding_box</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="nf">upper</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">safe_set</span>
+
+<span class="w">    </span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="check_box_intersection">check_box_intersection</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">check_box_intersection</span><span class="p">(</span>
+    <span class="n">b1</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span>
+    <span class="n">b2</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+<p>Evaluate if two boxes intersect or not</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b1</td>
+<td>Box</td>
+<td>First box</td>
+<td>None</td>
+</tr>
+<tr>
+<td>b2</td>
+<td>Box</td>
+<td>Second box</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bool</td>
+<td>True if the boxes intersect, False if not</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">check_box_intersection</span><span class="p">(</span><span class="n">b1</span><span class="o">:</span><span class="w"> </span><span class="n">Box</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="o">:</span><span class="w"> </span><span class="n">Box</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">bool</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Evaluate if two boxes intersect or not</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        b1 (Box): First box</span>
+
+<span class="s">        b2 (Box): Second box</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        bool: True if the boxes intersect, False if not</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">b1</span><span class="p">.</span><span class="n">lower</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="p">.</span><span class="n">lower</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">b1</span><span class="p">.</span><span class="n">upper</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="p">.</span><span class="n">upper</span><span class="p">)</span>
+
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="kr">all</span><span class="p">(</span><span class="n">u</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="compute_graph">compute_graph</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">compute_graph</span><span class="p">(</span>
+    <span class="n">boxes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+</code></pre></div>
+
+<p>Computes the graph between a set of boxes</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dict[str, list[str]]</td>
+<td>Adjacency list / graph dictating safe paths within the boxes. Key/value pair is:<br>(name of the box) -&gt; (list of names of all neighbors of that box)</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">compute_graph</span><span class="p">(</span><span class="nl">boxes</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Box</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, list[str</span><span class="o">]</span><span class="err">]:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Computes the graph between a set of boxes</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        dict[str, list[str]]: Adjacency list / graph dictating safe paths within the boxes. Key/value pair is:</span>
+
+<span class="ss">            (name of the box) -&gt; (list of names of all neighbors of that box)</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="n">boxes</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="k">names</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">adj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">defaultdict</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">check_box_intersection</span><span class="p">(</span><span class="n">boxes</span><span class="o">[</span><span class="n">names[i</span><span class="o">]</span><span class="err">]</span><span class="p">,</span><span class="w"> </span><span class="n">boxes</span><span class="o">[</span><span class="n">names[j</span><span class="o">]</span><span class="err">]</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">adj</span><span class="o">[</span><span class="n">names[i</span><span class="o">]</span><span class="err">]</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">names</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">adj</span><span class="o">[</span><span class="n">names[j</span><span class="o">]</span><span class="err">]</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">names</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">adj</span>
+</code></pre></div>
+
+</details>
+<h3 id="contract_box">contract_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">contract_box</span><span class="p">(</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span>
+    <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+</code></pre></div>
+
+<p>Reduces the size of a box by a given distance</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>box</td>
+<td>Box</td>
+<td>The reference box</td>
+<td>None</td>
+</tr>
+<tr>
+<td>distance</td>
+<td>float</td>
+<td>Amount to decrease the size of the box in all dimensions</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Box</td>
+<td>The reduced-size box</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">contract_box</span><span class="p">(</span><span class="n">box</span><span class="o">:</span><span class="w"> </span><span class="n">Box</span><span class="p">,</span><span class="w"> </span><span class="n">distance</span><span class="o">:</span><span class="w"> </span><span class="n">float</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Box</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Reduces the size of a box by a given distance</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        box (Box): The reference box</span>
+
+<span class="s">        distance (float): Amount to decrease the size of the box in all dimensions</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        Box: The reduced-size box</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="n">Box</span><span class="p">(</span><span class="n">box</span><span class="p">.</span><span class="n">lower</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">distance</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="n">upper</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">distance</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="expand_box">expand_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">expand_box</span><span class="p">(</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span>
+    <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+</code></pre></div>
+
+<p>Increases the size of a box by a given distance</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>box</td>
+<td>Box</td>
+<td>The reference box</td>
+<td>None</td>
+</tr>
+<tr>
+<td>distance</td>
+<td>float</td>
+<td>Amount to increase the size of the box in all dimensions</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Box</td>
+<td>The increased-size box</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">expand_box</span><span class="p">(</span><span class="n">box</span><span class="o">:</span><span class="w"> </span><span class="n">Box</span><span class="p">,</span><span class="w"> </span><span class="n">distance</span><span class="o">:</span><span class="w"> </span><span class="n">float</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Box</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Increases the size of a box by a given distance</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        box (Box): The reference box</span>
+
+<span class="s">        distance (float): Amount to increase the size of the box in all dimensions</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        Box: The increased-size box</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="n">Box</span><span class="p">(</span><span class="n">box</span><span class="p">.</span><span class="n">lower</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">distance</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="n">upper</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">distance</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="find_containing_box">find_containing_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">find_containing_box</span><span class="p">(</span>
+    <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">boxes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Find the index of the first box which contains a certain point</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>point</td>
+<td>npt.ArrayLike</td>
+<td>Point to evaluate</td>
+<td>None</td>
+</tr>
+<tr>
+<td>boxes</td>
+<td>Union[list[Box], npt.ArrayLike]</td>
+<td>Boxes to search. If an array, must be of shape (n_boxes, 2, box_dim)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optional[int]</td>
+<td>Index of the first box which contains the point. None if the point is not in any box</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">find_containing_box</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">point</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nl">boxes</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">list[Box</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="err">]</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">int</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Find the index of the first box which contains a certain point</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        point (npt.ArrayLike): Point to evaluate</span>
+
+<span class="ss">        boxes (Union[list[Box], npt.ArrayLike]): Boxes to search. If an array, must be of shape (n_boxes, 2, box_dim)</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        Optional[int]: Index of the first box which contains the point. None if the point is not in any box</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">enumerate</span><span class="p">(</span><span class="n">boxes</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="nf">lower</span><span class="p">,</span><span class="w"> </span><span class="nf">upper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">box</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nf">lower</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nf">upper</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">i</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">None</span>
+</code></pre></div>
+
+</details>
+<h3 id="find_containing_box_name">find_containing_box_name</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">find_containing_box_name</span><span class="p">(</span>
+    <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">boxes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Find the name of the first box which contains a certain point</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>point</td>
+<td>npt.ArrayLike</td>
+<td>Point to evaluate</td>
+<td>None</td>
+</tr>
+<tr>
+<td>boxes</td>
+<td>dict[str, Box]</td>
+<td>Boxes to search. Key/value: (box name) -&gt; box</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optional[str]</td>
+<td>Name of the first box which contains the point. None if the point is not in any box</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">find_containing_box_name</span><span class="p">(</span>
+
+<span class="w">    </span><span class="nl">point</span><span class="p">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nl">boxes</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str, Box</span><span class="o">]</span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Find the name of the first box which contains a certain point</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        point (npt.ArrayLike): Point to evaluate</span>
+
+<span class="ss">        boxes (dict[str, Box]): Boxes to search. Key/value: (box name) -&gt; box</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        Optional[str]: Name of the first box which contains the point. None if the point is not in any box</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">boxes</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="nf">lower</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="ow">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="nf">upper</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">name</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">None</span>
+</code></pre></div>
+
+</details>
+<h3 id="intersect_boxes">intersect_boxes</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">intersect_boxes</span><span class="p">(</span>
+    <span class="n">b1</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span>
+    <span class="n">b2</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+</code></pre></div>
+
+<p>Calculate the intersection of two boxes</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b1</td>
+<td>Box</td>
+<td>First box</td>
+<td>None</td>
+</tr>
+<tr>
+<td>b2</td>
+<td>Box</td>
+<td>Second box</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Box</td>
+<td>The intersection region</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">intersect_boxes</span><span class="p">(</span><span class="nl">b1:</span><span class="w"> </span><span class="n">Box</span><span class="p">,</span><span class="w"> </span><span class="nl">b2:</span><span class="w"> </span><span class="n">Box</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">Box:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Calculate the intersection of two boxes</span>
+
+<span class="w">    </span><span class="nl">Args:</span>
+
+<span class="w">        </span><span class="n">b1</span><span class="w"> </span><span class="p">(</span><span class="n">Box</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">First</span><span class="w"> </span><span class="n">box</span>
+
+<span class="w">        </span><span class="n">b2</span><span class="w"> </span><span class="p">(</span><span class="n">Box</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Second</span><span class="w"> </span><span class="n">box</span>
+
+<span class="w">    </span><span class="nl">Returns:</span>
+
+<span class="w">        </span><span class="nl">Box:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">intersection</span><span class="w"> </span><span class="n">region</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Box</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">b1</span><span class="p">.</span><span class="n">lower</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="p">.</span><span class="n">lower</span><span class="p">),</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">b1</span><span class="p">.</span><span class="n">upper</span><span class="p">,</span><span class="w"> </span><span class="n">b2</span><span class="p">.</span><span class="n">upper</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+<h3 id="is_in_box">is_in_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_in_box</span><span class="p">(</span>
+    <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+<p>Evaluate if a point lies within a box</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>point</td>
+<td>npt.ArrayLike</td>
+<td>Point to evaluate, shape (box_dim,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>box</td>
+<td>Box</td>
+<td>Box to test</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bool</td>
+<td>True if the point is inside the bounds of the box, False otherwise</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">is_in_box</span><span class="p">(</span><span class="n">point</span><span class="o">:</span><span class="w"> </span><span class="n">npt</span><span class="p">.</span><span class="n">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="o">:</span><span class="w"> </span><span class="n">Box</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">bool</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Evaluate if a point lies within a box</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        point (npt.ArrayLike): Point to evaluate, shape (box_dim,)</span>
+
+<span class="s">        box (Box): Box to test</span>
+
+<span class="s">    Returns:</span>
+
+<span class="s">        bool: True if the point is inside the bounds of the box, False otherwise</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="kr">assert</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">size</span><span class="p">(</span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="n">dim</span>
+
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="kr">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="n">lower</span><span class="p">)</span><span class="w"> </span><span class="kr">and</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="kr">all</span><span class="p">(</span><span class="n">point</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">box</span><span class="p">.</span><span class="n">upper</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h3 id="plot_2d_box">plot_2D_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">plot_2D_box</span><span class="p">(</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">Axes</span>
+</code></pre></div>
+
+<p>Plots the boundary of a 2D box</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>box</td>
+<td>Box</td>
+<td>2D box to plot</td>
+<td>None</td>
+</tr>
+<tr>
+<td>ax</td>
+<td>Optional[plt.Axes]</td>
+<td>If re-using existing plotting axes, include them here. Defaults to None.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>show</td>
+<td>bool</td>
+<td>Whether or not to show the plot. Defaults to True.</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>plt.Axes</td>
+<td>The plotting axes</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>def plot_2D_box(
+
+    box: Box, ax: Optional[plt.Axes] = None, show: bool = True, <span class="gs">*args, *</span>*kwargs
+
+) -&gt; plt.Axes:
+
+    &quot;&quot;&quot;Plots the boundary of a 2D box
+
+    Args:
+
+        box (Box): 2D box to plot
+
+        ax (Optional[plt.Axes]): If re-using existing plotting axes, include them here. Defaults to None.
+
+        show (bool, optional): Whether or not to show the plot. Defaults to True.
+
+    Returns:
+
+        plt.Axes: The plotting axes
+
+    &quot;&quot;&quot;
+
+    assert box.dim == 2
+
+    if ax is None:
+
+        ax = plt.gca()
+
+    pts = np.array(
+
+        [
+
+            box.lower,
+
+            [box.lower[0], box.upper[1]],
+
+            box.upper,
+
+            [box.upper[0], box.lower[1]],
+
+            box.lower,
+
+        ]
+
+    )
+
+    ax.plot(*pts.T, <span class="gs">*args, *</span>*kwargs)
+
+    if show:
+
+        plt.show()
+
+    return ax
+</code></pre></div>
+
+</details>
+<h3 id="visualize_3d_box">visualize_3D_box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">visualize_3D_box</span><span class="p">(</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pyastrobee</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">boxes</span><span class="o">.</span><span class="n">Box</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rgba</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+<p>Visualize a box in Pybullet</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>box</td>
+<td>Union[Box, npt.ArrayLike]</td>
+<td>Box to visualize. If an array, must be of shape (1, 2, box_dim)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>padding</td>
+<td>Optional[npt.ArrayLike]</td>
+<td>If expanding (or contracting) the boxes by a certain amount, include the<br>(x, y, z) padding distances here (shape (3,)). Defaults to None.</td>
+<td>None</td>
+</tr>
+<tr>
+<td>rgba</td>
+<td>npt.ArrayLike</td>
+<td>Color of the box (RGB + alpha), shape (4,). Defaults to (1, 0, 0, 0.5).</td>
+<td>(1, 0, 0, 0.5)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int</td>
+<td>Pybullet ID of the box</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="nt">def</span><span class="w"> </span><span class="nt">visualize_3D_box</span><span class="o">(</span>
+
+<span class="w">    </span><span class="nt">box</span><span class="o">:</span><span class="w"> </span><span class="nt">Union</span><span class="cp">[</span><span class="nx">Box</span><span class="p">,</span><span class="w"> </span><span class="nx">npt.ArrayLike</span><span class="cp">]</span><span class="o">,</span>
+
+<span class="w">    </span><span class="nt">padding</span><span class="o">:</span><span class="w"> </span><span class="nt">Optional</span><span class="cp">[</span><span class="nx">npt.ArrayLike</span><span class="cp">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nt">None</span><span class="o">,</span>
+
+<span class="w">    </span><span class="nt">rgba</span><span class="o">:</span><span class="w"> </span><span class="nt">npt</span><span class="p">.</span><span class="nc">ArrayLike</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="nt">1</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="p">.</span><span class="nc">5</span><span class="o">),</span>
+
+<span class="o">)</span><span class="w"> </span><span class="nt">-</span><span class="o">&gt;</span><span class="w"> </span><span class="nt">int</span><span class="o">:</span>
+
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Visualize a box in Pybullet</span>
+
+<span class="s2">    Args:</span>
+
+<span class="s2">        box (Union</span><span class="cp">[</span><span class="nx">Box</span><span class="p">,</span><span class="w"> </span><span class="nx">npt.ArrayLike</span><span class="cp">]</span><span class="s2">): Box to visualize. If an array, must be of shape (1, 2, box_dim)</span>
+
+<span class="s2">        padding (Optional</span><span class="cp">[</span><span class="nx">npt.ArrayLike</span><span class="cp">]</span><span class="s2">): If expanding (or contracting) the boxes by a certain amount, include the</span>
+
+<span class="s2">            (x, y, z) padding distances here (shape (3,)). Defaults to None.</span>
+
+<span class="s2">        rgba (npt.ArrayLike): Color of the box (RGB + alpha), shape (4,). Defaults to (1, 0, 0, 0.5).</span>
+
+<span class="s2">    Returns:</span>
+
+<span class="s2">        int: Pybullet ID of the box</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nt">lower</span><span class="o">,</span><span class="w"> </span><span class="nt">upper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nt">box</span>
+
+<span class="w">    </span><span class="nt">if</span><span class="w"> </span><span class="nt">padding</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">not</span><span class="w"> </span><span class="nt">None</span><span class="o">:</span>
+
+<span class="w">        </span><span class="nt">lower</span><span class="w"> </span><span class="nt">-</span><span class="o">=</span><span class="w"> </span><span class="nt">padding</span>
+
+<span class="w">        </span><span class="nt">upper</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nt">padding</span>
+
+<span class="w">    </span><span class="nt">return</span><span class="w"> </span><span class="nt">create_box</span><span class="o">(</span>
+
+<span class="w">        </span><span class="nt">pos</span><span class="o">=(</span><span class="nt">lower</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">(</span><span class="nt">upper</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">lower</span><span class="o">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nt">2</span><span class="o">),</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nt">Midpoint</span>
+
+<span class="w">        </span><span class="nt">orn</span><span class="o">=(</span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">1</span><span class="o">),</span>
+
+<span class="w">        </span><span class="nt">mass</span><span class="o">=</span><span class="nt">0</span><span class="o">,</span>
+
+<span class="w">        </span><span class="nt">sidelengths</span><span class="o">=(</span><span class="nt">upper</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">lower</span><span class="o">),</span>
+
+<span class="w">        </span><span class="nt">use_collision</span><span class="o">=</span><span class="nt">False</span><span class="o">,</span>
+
+<span class="w">        </span><span class="nt">rgba</span><span class="o">=</span><span class="nt">rgba</span><span class="o">,</span>
+
+<span class="w">    </span><span class="o">)</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="box">Box</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">Box</span><span class="p">(</span>
+    <span class="n">lower</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]],</span>
+    <span class="n">upper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_array_like</span><span class="o">.</span><span class="n">_SupportsArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">_typing</span><span class="o">.</span><span class="n">_nested_sequence</span><span class="o">.</span><span class="n">_NestedSequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Representation of a box defined by lower/upper limits on its coordinates</p>
+<p>Unpackable as (lower, upper) = box</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lower</td>
+<td>npt.ArrayLike</td>
+<td>Lower limits on the box coordinates, shape (box_dim,)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>upper</td>
+<td>npt.ArrayLike</td>
+<td>Upper limits on the box coordinates, shape (box_dim,)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nx">Box</span><span class="p">:</span>
+
+<span class="w">    </span><span class="s">&quot;&quot;&quot;Representation of a box defined by lower/upper limits on its coordinates</span>
+
+<span class="s">    Unpackable as (lower, upper) = box</span>
+
+<span class="s">    Args:</span>
+
+<span class="s">        lower (npt.ArrayLike): Lower limits on the box coordinates, shape (box_dim,)</span>
+
+<span class="s">        upper (npt.ArrayLike): Upper limits on the box coordinates, shape (box_dim,)</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">__init__</span><span class="p">(</span><span class="kp">self</span><span class="p">,</span><span class="w"> </span><span class="nx">lower</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">,</span><span class="w"> </span><span class="nx">upper</span><span class="p">:</span><span class="w"> </span><span class="nx">npt</span><span class="p">.</span><span class="nx">ArrayLike</span><span class="p">):</span>
+
+<span class="w">        </span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ravel</span><span class="p">(</span><span class="nx">lower</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">float64</span><span class="p">)</span>
+
+<span class="w">        </span><span class="kp">self</span><span class="p">.</span><span class="nx">upper</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">ravel</span><span class="p">(</span><span class="nx">upper</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">float64</span><span class="p">)</span>
+
+<span class="w">        </span><span class="kp">self</span><span class="p">.</span><span class="nx">_validate</span><span class="p">()</span>
+
+<span class="w">        </span><span class="kp">self</span><span class="p">.</span><span class="nx">center</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">upper</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="w">        </span><span class="kp">self</span><span class="p">.</span><span class="nx">dim</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">len</span><span class="p">(</span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">__iter__</span><span class="p">(</span><span class="kp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">iter</span><span class="p">([</span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="p">,</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">upper</span><span class="p">])</span>
+
+<span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">__str__</span><span class="p">(</span><span class="kp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">f</span><span class="s">&quot;Lower: {list(self.lower)}, Upper: {list(self.upper)}&quot;</span>
+
+<span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">__repr__</span><span class="p">(</span><span class="kp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">            </span><span class="nx">f</span><span class="s">&quot;{type(self).__name__}(lower={list(self.lower)}, upper={list(self.upper)})&quot;</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">def</span><span class="w"> </span><span class="nx">_validate</span><span class="p">(</span><span class="kp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">len</span><span class="p">(</span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">len</span><span class="p">(</span><span class="kp">self</span><span class="p">.</span><span class="nx">upper</span><span class="p">):</span>
+
+<span class="w">            </span><span class="nx">raise</span><span class="w"> </span><span class="nx">ValueError</span><span class="p">(</span><span class="s">&quot;Invalid input dimensions&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">np</span><span class="p">.</span><span class="nx">any</span><span class="p">(</span><span class="kp">self</span><span class="p">.</span><span class="nx">lower</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="kp">self</span><span class="p">.</span><span class="nx">upper</span><span class="p">):</span>
+
+<span class="w">            </span><span class="nx">raise</span><span class="w"> </span><span class="nx">ValueError</span><span class="p">(</span><span class="s">&quot;Invalid inputs: Mismatched order of lower/upper points&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<hr />
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../bag_frame/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Bag Frame" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Bag Frame
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../bullet_utils/" class="md-footer__link md-footer__link--next" aria-label="Next: Bullet Utils" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Bullet Utils
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>

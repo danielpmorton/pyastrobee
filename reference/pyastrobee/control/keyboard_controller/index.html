@@ -1,0 +1,3370 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.4">
+    
+    
+      
+        <title>Keyboard Controller - pyastrobee</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.80dcb947.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-pyastrobeecontrolkeyboard_controller" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="pyastrobee" class="md-header__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyastrobee
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Keyboard Controller
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="pyastrobee" class="md-nav__button md-logo" aria-label="pyastrobee" data-md-component="logo">
+      
+  <img src="../../../../images/favicon_large.png" alt="logo">
+
+    </a>
+    pyastrobee
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/danielpmorton/pyastrobee" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pyastrobee
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/additional_installs/" class="md-nav__link">
+        Additional Installs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/bag_dynamics/" class="md-nav__link">
+        Bag Dynamics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/getting_started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/loading_iss_meshes/" class="md-nav__link">
+        Loading Iss Meshes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/meshing/" class="md-nav__link">
+        Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/nasa_sim/" class="md-nav__link">
+        Nasa Sim
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/pybullet_tips/" class="md-nav__link">
+        Pybullet Tips
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/references/" class="md-nav__link">
+        References
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/retexturing/" class="md-nav__link">
+        Retexturing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../docs/tet_meshing/" class="md-nav__link">
+        Tet Meshing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1" type="checkbox" id="__nav_14_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1">
+          Pyastrobee
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pyastrobee" data-md-level="2">
+        <label class="md-nav__title" for="__nav_14_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pyastrobee
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_2" type="checkbox" id="__nav_14_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_2">
+          Config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Config" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Config
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_geom/" class="md-nav__link">
+        Astrobee Geom
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_motion/" class="md-nav__link">
+        Astrobee Motion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/astrobee_transforms/" class="md-nav__link">
+        Astrobee Transforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/bag_properties/" class="md-nav__link">
+        Bag Properties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_paths/" class="md-nav__link">
+        Iss Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/iss_safe_boxes/" class="md-nav__link">
+        Iss Safe Boxes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_3" type="checkbox" id="__nav_14_1_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_3">
+          Control
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Control" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Control
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attitude_dynamics/" class="md-nav__link">
+        Attitude Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controller/" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_functions/" class="md-nav__link">
+        Cost Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dlqr_test/" class="md-nav__link">
+        Dlqr Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force_torque_control/" class="md-nav__link">
+        Force Torque Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Keyboard Controller
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Keyboard Controller
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keyboardcontroller" class="md-nav__link">
+    KeyboardController
+  </a>
+  
+    <nav class="md-nav" aria-label="KeyboardController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on_press" class="md-nav__link">
+    on_press
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on_release" class="md-nav__link">
+    on_release
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start_listening" class="md-nav__link">
+    start_listening
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step" class="md-nav__link">
+    step
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mpc/" class="md-nav__link">
+        Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_robot/" class="md-nav__link">
+        Multi Robot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operational_space_control/" class="md-nav__link">
+        Operational Space Control
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel_mpc/" class="md-nav__link">
+        Parallel Mpc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../physics_models/" class="md-nav__link">
+        Physics Models
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pid/" class="md-nav__link">
+        Pid
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_4" type="checkbox" id="__nav_14_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_4">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/abstract_bag/" class="md-nav__link">
+        Abstract Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/astrobee/" class="md-nav__link">
+        Astrobee
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/composite_bag/" class="md-nav__link">
+        Composite Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/constraint_bag/" class="md-nav__link">
+        Constraint Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/deformable_bag/" class="md-nav__link">
+        Deformable Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/environments/" class="md-nav__link">
+        Environments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/hybrid_bag/" class="md-nav__link">
+        Hybrid Bag
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/iss/" class="md-nav__link">
+        Iss
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/rigid_bag/" class="md-nav__link">
+        Rigid Bag
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_5" type="checkbox" id="__nav_14_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_5">
+          Trajectories
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Trajectories" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Trajectories
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/arm_planner/" class="md-nav__link">
+        Arm Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier/" class="md-nav__link">
+        Bezier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/bezier_slerp/" class="md-nav__link">
+        Bezier Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/box_paths/" class="md-nav__link">
+        Box Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/curve_utils/" class="md-nav__link">
+        Curve Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/decasteljau_slerp/" class="md-nav__link">
+        Decasteljau Slerp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/face_forward/" class="md-nav__link">
+        Face Forward
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/multi_robot_trajs/" class="md-nav__link">
+        Multi Robot Trajs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/planner/" class="md-nav__link">
+        Planner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/polynomials/" class="md-nav__link">
+        Polynomials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/quaternion_interpolation/" class="md-nav__link">
+        Quaternion Interpolation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/simple_trajectories/" class="md-nav__link">
+        Simple Trajectories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/splines/" class="md-nav__link">
+        Splines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/timing/" class="md-nav__link">
+        Timing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/trajectory/" class="md-nav__link">
+        Trajectory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trajectories/variable_time_curves/" class="md-nav__link">
+        Variable Time Curves
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_6" type="checkbox" id="__nav_14_1_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_6">
+          Utils
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_6">
+          <span class="md-nav__icon md-icon"></span>
+          Utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/algos/" class="md-nav__link">
+        Algos
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bag_frame/" class="md-nav__link">
+        Bag Frame
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/boxes/" class="md-nav__link">
+        Boxes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/bullet_utils/" class="md-nav__link">
+        Bullet Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/camera_utils/" class="md-nav__link">
+        Camera Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/coordinates/" class="md-nav__link">
+        Coordinates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/debug_visualizer/" class="md-nav__link">
+        Debug Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dynamics/" class="md-nav__link">
+        Dynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/errors/" class="md-nav__link">
+        Errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math_utils/" class="md-nav__link">
+        Math Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/mesh_utils/" class="md-nav__link">
+        Mesh Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/plotting/" class="md-nav__link">
+        Plotting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/poses/" class="md-nav__link">
+        Poses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/process_camera/" class="md-nav__link">
+        Process Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/python_utils/" class="md-nav__link">
+        Python Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_class/" class="md-nav__link">
+        Quaternion Class
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternion_derivatives/" class="md-nav__link">
+        Quaternion Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/quaternions/" class="md-nav__link">
+        Quaternions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/rotations/" class="md-nav__link">
+        Rotations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/transformations/" class="md-nav__link">
+        Transformations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/video_concatenation/" class="md-nav__link">
+        Video Concatenation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14_1_7" type="checkbox" id="__nav_14_1_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14_1_7">
+          Vision
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vision" data-md-level="3">
+        <label class="md-nav__title" for="__nav_14_1_7">
+          <span class="md-nav__icon md-icon"></span>
+          Vision
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/camera/" class="md-nav__link">
+        Camera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vision/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keyboardcontroller" class="md-nav__link">
+    KeyboardController
+  </a>
+  
+    <nav class="md-nav" aria-label="KeyboardController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on_press" class="md-nav__link">
+    on_press
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on_release" class="md-nav__link">
+    on_release
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start_listening" class="md-nav__link">
+    start_listening
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step" class="md-nav__link">
+    step
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/danielpmorton/pyastrobee/edit/main/reference/pyastrobee/control/keyboard_controller.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="module-pyastrobeecontrolkeyboard_controller">Module pyastrobee.control.keyboard_controller</h1>
+<p>Class/script for controlling the Astrobee via keyboard presses</p>
+<p>Usage:
+- Positional control via WASDQE
+    - w: +x
+    - s: -x
+    - a: +y
+    - d: -y
+    - e: +z
+    - q: -z
+- Angular control via IJKLUO
+    - l: + roll
+    - j: - roll
+    - i: + pitch
+    - k: - pitch
+    - u: + yaw
+    - o: - yaw
+- Arm control via arrow keys
+    - Up: + proximal angle
+    - Down: - proximal angle
+    - Right: + distal angle
+    - Left: - distal angle
+- Toggle opening/closing the gripper with G
+- Record a waypoint with P
+- Coarse control of position/orientation with capital letters (via Shift)
+- Coarse control of the arm positioning via C
+- Press Space to switch reference frames (global &lt;=&gt; robot)
+- Press Esc to exit</p>
+<p>Motions are only recorded on a button release to prevent over-queueing actions</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="ss">&quot;&quot;&quot;Class/script for controlling the Astrobee via keyboard presses</span>
+
+<span class="ss">Usage:</span>
+
+<span class="ss">- Positional control via WASDQE</span>
+
+<span class="ss">    - w: +x</span>
+
+<span class="ss">    - s: -x</span>
+
+<span class="ss">    - a: +y</span>
+
+<span class="ss">    - d: -y</span>
+
+<span class="ss">    - e: +z</span>
+
+<span class="ss">    - q: -z</span>
+
+<span class="ss">- Angular control via IJKLUO</span>
+
+<span class="ss">    - l: + roll</span>
+
+<span class="ss">    - j: - roll</span>
+
+<span class="ss">    - i: + pitch</span>
+
+<span class="ss">    - k: - pitch</span>
+
+<span class="ss">    - u: + yaw</span>
+
+<span class="ss">    - o: - yaw</span>
+
+<span class="ss">- Arm control via arrow keys</span>
+
+<span class="ss">    - Up: + proximal angle</span>
+
+<span class="ss">    - Down: - proximal angle</span>
+
+<span class="ss">    - Right: + distal angle</span>
+
+<span class="ss">    - Left: - distal angle</span>
+
+<span class="ss">- Toggle opening/closing the gripper with G</span>
+
+<span class="ss">- Record a waypoint with P</span>
+
+<span class="ss">- Coarse control of position/orientation with capital letters (via Shift)</span>
+
+<span class="ss">- Coarse control of the arm positioning via C</span>
+
+<span class="ss">- Press Space to switch reference frames (global &lt;=&gt; robot)</span>
+
+<span class="ss">- Press Esc to exit</span>
+
+<span class="ss">Motions are only recorded on a button release to prevent over-queueing actions</span>
+
+<span class="ss">&quot;&quot;&quot;</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">TODO</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Unify</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">coarse</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">toggling</span><span class="w"> </span><span class="ow">between</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">arm</span><span class="w"> </span><span class="n">control</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">Add</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">toggle</span><span class="w"> </span><span class="ow">between</span><span class="w"> </span><span class="n">methods</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">Add</span><span class="w"> </span><span class="n">back</span><span class="w"> </span><span class="n">finer</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">gripper</span><span class="w"> </span><span class="n">rather</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="k">open</span><span class="o">/</span><span class="k">close</span><span class="w"> </span><span class="n">toggle</span><span class="vm">?</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Velocity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="n">control</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Angle</span><span class="w"> </span><span class="n">snapping</span><span class="vm">?</span>
+
+<span class="err">#</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Toggle</span><span class="w"> </span><span class="ow">between</span><span class="w"> </span><span class="n">gripper</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">robot</span><span class="w"> </span><span class="n">frame</span><span class="vm">?</span>
+
+<span class="n">import</span><span class="w"> </span><span class="nc">time</span>
+
+<span class="n">import</span><span class="w"> </span><span class="n">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">np</span>
+
+<span class="n">import</span><span class="w"> </span><span class="n">pybullet</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pynput</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">keyboard</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pyastrobee</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">astrobee</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">Astrobee</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pyastrobee</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">poses</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="p">(</span>
+
+<span class="w">    </span><span class="n">pos_euler_xyz_to_pos_quat</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">add_local_pose_delta</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">add_global_pose_delta</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pyastrobee</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">iss</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">ISS</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pyastrobee</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">debug_visualizer</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">get_viz_camera_params</span>
+
+<span class="k">from</span><span class="w"> </span><span class="n">pyastrobee</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">python_utils</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">print_green</span><span class="p">,</span><span class="w"> </span><span class="n">print_red</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">angular</span><span class="w"> </span><span class="n">speeds</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">inputs</span><span class="vm">?</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nl">KeyboardController</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Class to encompass the keyboard listening and corresponding robot actions</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        robot (Astrobee): The Astrobee to control</span>
+
+<span class="ss">        pov (bool, optional): Whether to use a &quot;</span><span class="n">third</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">view</span><span class="ss">&quot; perspective that follows the</span>
+
+<span class="ss">            robot around. Defaults to True.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">robot</span><span class="p">:</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">,</span><span class="w"> </span><span class="nl">pov</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">isConnected</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ConnectionError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;Connect to pybullet before starting the keyboard controller&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">keyboard</span><span class="w"> </span><span class="n">shortcuts</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">pybullet</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">doesn</span><span class="s1">&#39;t do anything weird while we&#39;</span><span class="n">re</span><span class="w"> </span><span class="n">controlling</span><span class="w"> </span><span class="n">it</span>
+
+<span class="w">        </span><span class="n">pybullet</span><span class="p">.</span><span class="n">configureDebugVisualizer</span><span class="p">(</span><span class="n">pybullet</span><span class="p">.</span><span class="n">COV_ENABLE_KEYBOARD_SHORTCUTS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">pov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pov</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_is_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot</span><span class="p">.</span><span class="n">gripper_position</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">90</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Copying</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">original</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Astrobee</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="p">(</span><span class="ow">and</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="n">controller</span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">switch</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">controller</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">constraint_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">createConstraint</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">JOINT_FIXED</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">droll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dpitch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dyaw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">djoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">non</span><span class="o">-</span><span class="k">position</span><span class="o">/</span><span class="n">angular</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">keys</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">frame_switch_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">space</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">exit_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">esc</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;g&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">waypoint_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;p&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">coarse_control_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;c&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">arm_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">up</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">down</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">right</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">left</span><span class="p">,</span>
+
+<span class="w">        </span><span class="err">}</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Coarse</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">multiplier</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">mult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">States</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">in_robot_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">in_coarse_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Initialize</span><span class="w"> </span><span class="n">listener</span><span class="p">,</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="n">started</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">listener</span><span class="p">:</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">Listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Timestep</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">getPhysicsEngineParameters</span><span class="p">()</span><span class="o">[</span><span class="n">&quot;fixedTimeStep&quot;</span><span class="o">]</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Having</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">position</span><span class="o">/</span><span class="n">Euler</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">interpretable</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="k">position</span><span class="o">/</span><span class="n">quaternion</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Also</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">easier</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="n">Euler</span><span class="w"> </span><span class="n">angles</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">quaternions</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">coarse</span><span class="w"> </span><span class="n">control</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="n">multiplying</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">quaternion</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">constant</span><span class="w"> </span><span class="n">won</span><span class="s1">&#39;t change the rotation it represents)</span>
+
+<span class="s1">        self.pos_euler_deltas_lowercase = {</span>
+
+<span class="s1">            &quot;w&quot;: np.array([self.dx, 0, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;s&quot;: np.array([-self.dx, 0, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;a&quot;: np.array([0, self.dy, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;d&quot;: np.array([0, -self.dy, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;e&quot;: np.array([0, 0, self.dz, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;q&quot;: np.array([0, 0, -self.dz, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;l&quot;: np.array([0, 0, 0, self.droll, 0, 0]),</span>
+
+<span class="s1">            &quot;j&quot;: np.array([0, 0, 0, -self.droll, 0, 0]),</span>
+
+<span class="s1">            &quot;i&quot;: np.array([0, 0, 0, 0, self.dpitch, 0]),</span>
+
+<span class="s1">            &quot;k&quot;: np.array([0, 0, 0, 0, -self.dpitch, 0]),</span>
+
+<span class="s1">            &quot;u&quot;: np.array([0, 0, 0, 0, 0, self.dyaw]),</span>
+
+<span class="s1">            &quot;o&quot;: np.array([0, 0, 0, 0, 0, -self.dyaw]),</span>
+
+<span class="s1">        }</span>
+
+<span class="s1">        # Change the keys to be in pynput Key format, and add coarse control for uppercase letters</span>
+
+<span class="s1">        self.pose_deltas = {}</span>
+
+<span class="s1">        for key, delta in self.pos_euler_deltas_lowercase.items():</span>
+
+<span class="s1">            self.pose_deltas[</span>
+
+<span class="s1">                keyboard.KeyCode.from_char(key)</span>
+
+<span class="s1">            ] = pos_euler_xyz_to_pos_quat(delta)</span>
+
+<span class="s1">            self.pose_deltas[</span>
+
+<span class="s1">                keyboard.KeyCode.from_char(key.upper())</span>
+
+<span class="s1">            ] = pos_euler_xyz_to_pos_quat(self.mult * delta)</span>
+
+<span class="s1">    def _print_commands(self):</span>
+
+<span class="s1">        &quot;&quot;&quot;Prints the keyboard/control action mapping information&quot;&quot;&quot;</span>
+
+<span class="s1">        print(</span>
+
+<span class="s1">            &quot;Commands:\n&quot;</span>
+
+<span class="s1">            + &quot;w/s: +/- x\n&quot;</span>
+
+<span class="s1">            + &quot;a/d: +/- y\n&quot;</span>
+
+<span class="s1">            + &quot;e/q: +/- z\n&quot;</span>
+
+<span class="s1">            + &quot;l/j: +/- roll\n&quot;</span>
+
+<span class="s1">            + &quot;i/k: +/- pitch\n&quot;</span>
+
+<span class="s1">            + &quot;u/o: +/- yaw\n&quot;</span>
+
+<span class="s1">            + &quot;up/down: +/- arm proximal joint angle\n&quot;</span>
+
+<span class="s1">            + &quot;right/left: +/- arm distal joint angle\n&quot;</span>
+
+<span class="s1">            + &quot;c: Toggle coarse control for the arm\n&quot;</span>
+
+<span class="s1">            + &quot;g: Open/close the gripper\n&quot;</span>
+
+<span class="s1">            + &quot;p: Record a pose\n&quot;</span>
+
+<span class="s1">            + &quot;Space: Switch reference frames\n&quot;</span>
+
+<span class="s1">            + &quot;Esc: Stop listening&quot;</span>
+
+<span class="s1">        )</span>
+
+<span class="s1">    def start_listening(self):</span>
+
+<span class="s1">        &quot;&quot;&quot;Starts the keyboard listener in a new thread&quot;&quot;&quot;</span>
+
+<span class="s1">        print_green(&quot;Now listening&quot;)</span>
+
+<span class="s1">        self._print_commands()</span>
+
+<span class="s1">        self.listener = keyboard.Listener(</span>
+
+<span class="s1">            on_press=self.on_press, on_release=self.on_release</span>
+
+<span class="s1">        )</span>
+
+<span class="s1">        self.listener.start()</span>
+
+<span class="s1">    @property</span>
+
+<span class="s1">    def is_listening(self) -&gt; bool:</span>
+
+<span class="s1">        &quot;&quot;&quot;Whether or not the pynput Listener has been initialized&quot;&quot;&quot;</span>
+
+<span class="s1">        return self.listener is not None</span>
+
+<span class="s1">    def on_press(self, key: keyboard.Key):</span>
+
+<span class="s1">        &quot;&quot;&quot;Callback for a keypress</span>
+
+<span class="s1">        Args:</span>
+
+<span class="s1">            key (Key): Key that was pressed</span>
+
+<span class="s1">        Returns:</span>
+
+<span class="s1">            bool: False when the &quot;stop listening&quot; key (Esc) is pressed</span>
+
+<span class="s1">        &quot;&quot;&quot;</span>
+
+<span class="s1">        if key == keyboard.Key.esc:</span>
+
+<span class="s1">            print_red(&quot;\nLISTENER STOPPED&quot;)</span>
+
+<span class="s1">            print(&quot;Simulation will remain active until killed&quot;)</span>
+
+<span class="s1">            return False  # Returning false from a callback stops pynput</span>
+
+<span class="s1">    def on_release(self, key: keyboard.Key):</span>
+
+<span class="s1">        &quot;&quot;&quot;Callback for when a key is released</span>
+
+<span class="s1">        Args:</span>
+
+<span class="s1">            key (Key): Key that was pressed</span>
+
+<span class="s1">        &quot;&quot;&quot;</span>
+
+<span class="s1">        # If the key is associated with a motion,</span>
+
+<span class="s1">        if key in self.pose_deltas:</span>
+
+<span class="s1">            init_pose = self.robot.pose</span>
+
+<span class="s1">            # Get the pose delta that key is associated with</span>
+
+<span class="s1">            pose_delta = self.pose_deltas[key]</span>
+
+<span class="s1">            if self.in_robot_frame:</span>
+
+<span class="s1">                new_pose = add_local_pose_delta(init_pose, pose_delta)</span>
+
+<span class="s1">                pybullet.changeConstraint(</span>
+
+<span class="s1">                    self.constraint_id, new_pose[:3], new_pose[3:]</span>
+
+<span class="s1">                )</span>
+
+<span class="s1">            else:</span>
+
+<span class="s1">                new_pose = add_global_pose_delta(init_pose, pose_delta)</span>
+
+<span class="s1">                pybullet.changeConstraint(</span>
+
+<span class="s1">                    self.constraint_id, new_pose[:3], new_pose[3:]</span>
+
+<span class="s1">                )</span>
+
+<span class="s1">        elif key == self.frame_switch_key:</span>
+
+<span class="s1">            # Toggle the reference frame and update our knowledge of the state</span>
+
+<span class="s1">            self.in_robot_frame = not self.in_robot_frame</span>
+
+<span class="s1">            print(</span>
+
+<span class="s1">                f&quot;\nFRAME SWITCHED. Now in {&#39;</span><span class="n">robot</span><span class="s1">&#39; if self.in_robot_frame else &#39;</span><span class="n">world</span><span class="s1">&#39;} frame&quot;</span>
+
+<span class="s1">            )</span>
+
+<span class="s1">        elif key == self.gripper_key:</span>
+
+<span class="s1">            # Toggle the gripper and update our knowledge of the state</span>
+
+<span class="s1">            if self.gripper_is_open:</span>
+
+<span class="s1">                self.robot.close_gripper()</span>
+
+<span class="s1">                self.gripper_is_open = False</span>
+
+<span class="s1">            else:</span>
+
+<span class="s1">                self.robot.open_gripper()</span>
+
+<span class="s1">                self.gripper_is_open = True</span>
+
+<span class="s1">            print(f&quot;\nGRIPPER {&#39;</span><span class="n">OPENED</span><span class="s1">&#39; if self.gripper_is_open else &#39;</span><span class="n">CLOSED</span><span class="s1">&#39;}&quot;)</span>
+
+<span class="s1">        elif key == self.waypoint_key:</span>
+
+<span class="s1">            # Record a waypoint and print the info to the terminal</span>
+
+<span class="s1">            print(f&quot;\nPose recorded: {self.robot.pose}&quot;)</span>
+
+<span class="s1">            print(f&quot;Gripper position: {self.robot.gripper_position}&quot;)</span>
+
+<span class="s1">            print(f&quot;Arm joints: {self.robot.arm_joint_angles}&quot;)</span>
+
+<span class="s1">        elif key == self.coarse_control_key:</span>
+
+<span class="s1">            # Toggle coarse control mode</span>
+
+<span class="s1">            self.in_coarse_mode = not self.in_coarse_mode</span>
+
+<span class="s1">            print(</span>
+
+<span class="s1">                f&quot;\nCoarse control {&#39;</span><span class="n">ACTIVATED</span><span class="s1">&#39; if self.in_coarse_mode else &#39;</span><span class="n">DEACTIVATED</span><span class="err">&#39;}</span><span class="ss">&quot;</span>
+
+<span class="ss">            )</span>
+
+<span class="ss">        elif key in self.arm_keys:</span>
+
+<span class="ss">            cur_prox, cur_dist = self.robot.arm_joint_angles</span>
+
+<span class="ss">            prox_idx, dist_idx = self.robot.ARM_JOINT_IDXS</span>
+
+<span class="ss">            delta = self.djoint * (self.mult if self.in_coarse_mode else 1)</span>
+
+<span class="ss">            if key == keyboard.Key.up:</span>
+
+<span class="ss">                # Raise the proximal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    min(cur_prox + delta, Astrobee.JOINT_POS_LIMITS[prox_idx, 1]),</span>
+
+<span class="ss">                    prox_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.down:</span>
+
+<span class="ss">                # Lower the proximal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    max(cur_prox - delta, Astrobee.JOINT_POS_LIMITS[prox_idx, 0]),</span>
+
+<span class="ss">                    prox_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.right:</span>
+
+<span class="ss">                # Raise the distal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    min(cur_dist + delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 1]),</span>
+
+<span class="ss">                    dist_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.left:</span>
+
+<span class="ss">                # Lower the distal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    max(cur_dist - delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 0]),</span>
+
+<span class="ss">                    dist_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">    def step(self):</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="n">Updates</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">simulation</span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        pybullet.stepSimulation()</span>
+
+<span class="ss">        if self.pov:</span>
+
+<span class="ss">            # Update the camera view so we maintain our same perspective on the robot as it moves</span>
+
+<span class="ss">            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))</span>
+
+<span class="ss">        time.sleep(self.dt)</span>
+
+<span class="ss">    def run(self):</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="n">Runs</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">simulation</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">keyboard</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="n">active</span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        if not self.is_listening:</span>
+
+<span class="ss">            self.start_listening()</span>
+
+<span class="ss">        try:</span>
+
+<span class="ss">            while True:</span>
+
+<span class="ss">                self.step()</span>
+
+<span class="ss">        finally:</span>
+
+<span class="ss">            self.listener.stop()</span>
+
+<span class="ss">def _main():</span>
+
+<span class="ss">    pybullet.connect(pybullet.GUI)</span>
+
+<span class="ss">    # Turn off additional GUI windows</span>
+
+<span class="ss">    pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)</span>
+
+<span class="ss">    iss = ISS(debug=False)</span>
+
+<span class="ss">    robot = Astrobee()</span>
+
+<span class="ss">    robot.store_arm(force=True)</span>
+
+<span class="ss">    controller = KeyboardController(robot, pov=True)</span>
+
+<span class="ss">    controller.run()</span>
+
+<span class="ss">if __name__ == &quot;</span><span class="n">__main__</span><span class="err">&quot;:</span>
+
+<span class="w">    </span><span class="n">_main</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="keyboardcontroller">KeyboardController</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">KeyboardController</span><span class="p">(</span>
+    <span class="n">robot</span><span class="p">:</span> <span class="n">pyastrobee</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">astrobee</span><span class="o">.</span><span class="n">Astrobee</span><span class="p">,</span>
+    <span class="n">pov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Class to encompass the keyboard listening and corresponding robot actions</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>robot</td>
+<td>Astrobee</td>
+<td>The Astrobee to control</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pov</td>
+<td>bool</td>
+<td>Whether to use a "third person point of view" perspective that follows the<br>robot around. Defaults to True.</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nl">KeyboardController</span><span class="p">:</span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Class to encompass the keyboard listening and corresponding robot actions</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        robot (Astrobee): The Astrobee to control</span>
+
+<span class="ss">        pov (bool, optional): Whether to use a &quot;</span><span class="n">third</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">view</span><span class="ss">&quot; perspective that follows the</span>
+
+<span class="ss">            robot around. Defaults to True.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">robot</span><span class="p">:</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">,</span><span class="w"> </span><span class="nl">pov</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">isConnected</span><span class="p">()</span><span class="err">:</span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ConnectionError</span><span class="p">(</span>
+
+<span class="w">                </span><span class="ss">&quot;Connect to pybullet before starting the keyboard controller&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">keyboard</span><span class="w"> </span><span class="n">shortcuts</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">pybullet</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">doesn</span><span class="s1">&#39;t do anything weird while we&#39;</span><span class="n">re</span><span class="w"> </span><span class="n">controlling</span><span class="w"> </span><span class="n">it</span>
+
+<span class="w">        </span><span class="n">pybullet</span><span class="p">.</span><span class="n">configureDebugVisualizer</span><span class="p">(</span><span class="n">pybullet</span><span class="p">.</span><span class="n">COV_ENABLE_KEYBOARD_SHORTCUTS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">pov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pov</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_is_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot</span><span class="p">.</span><span class="n">gripper_position</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">90</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Copying</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">original</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Astrobee</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="p">(</span><span class="ow">and</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="n">controller</span><span class="p">)</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">switch</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">controller</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">constraint_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">createConstraint</span><span class="p">(</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">JOINT_FIXED</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="w">        </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">m</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">droll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dpitch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dyaw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">djoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">rad</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">non</span><span class="o">-</span><span class="k">position</span><span class="o">/</span><span class="n">angular</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">keys</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">frame_switch_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">space</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">exit_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">esc</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;g&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">waypoint_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;p&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">coarse_control_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">from_char</span><span class="p">(</span><span class="ss">&quot;c&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">arm_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">up</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="n">down</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">right</span><span class="p">,</span>
+
+<span class="w">            </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">left</span><span class="p">,</span>
+
+<span class="w">        </span><span class="err">}</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Coarse</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">multiplier</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">mult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">States</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">in_robot_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">in_coarse_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Initialize</span><span class="w"> </span><span class="n">listener</span><span class="p">,</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="n">started</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">listener</span><span class="p">:</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="n">Listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Timestep</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pybullet</span><span class="p">.</span><span class="n">getPhysicsEngineParameters</span><span class="p">()</span><span class="o">[</span><span class="n">&quot;fixedTimeStep&quot;</span><span class="o">]</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Having</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">position</span><span class="o">/</span><span class="n">Euler</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">interpretable</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="k">position</span><span class="o">/</span><span class="n">quaternion</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Also</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">easier</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="n">Euler</span><span class="w"> </span><span class="n">angles</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">quaternions</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">coarse</span><span class="w"> </span><span class="n">control</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="n">multiplying</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">quaternion</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">constant</span><span class="w"> </span><span class="n">won</span><span class="s1">&#39;t change the rotation it represents)</span>
+
+<span class="s1">        self.pos_euler_deltas_lowercase = {</span>
+
+<span class="s1">            &quot;w&quot;: np.array([self.dx, 0, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;s&quot;: np.array([-self.dx, 0, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;a&quot;: np.array([0, self.dy, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;d&quot;: np.array([0, -self.dy, 0, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;e&quot;: np.array([0, 0, self.dz, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;q&quot;: np.array([0, 0, -self.dz, 0, 0, 0]),</span>
+
+<span class="s1">            &quot;l&quot;: np.array([0, 0, 0, self.droll, 0, 0]),</span>
+
+<span class="s1">            &quot;j&quot;: np.array([0, 0, 0, -self.droll, 0, 0]),</span>
+
+<span class="s1">            &quot;i&quot;: np.array([0, 0, 0, 0, self.dpitch, 0]),</span>
+
+<span class="s1">            &quot;k&quot;: np.array([0, 0, 0, 0, -self.dpitch, 0]),</span>
+
+<span class="s1">            &quot;u&quot;: np.array([0, 0, 0, 0, 0, self.dyaw]),</span>
+
+<span class="s1">            &quot;o&quot;: np.array([0, 0, 0, 0, 0, -self.dyaw]),</span>
+
+<span class="s1">        }</span>
+
+<span class="s1">        # Change the keys to be in pynput Key format, and add coarse control for uppercase letters</span>
+
+<span class="s1">        self.pose_deltas = {}</span>
+
+<span class="s1">        for key, delta in self.pos_euler_deltas_lowercase.items():</span>
+
+<span class="s1">            self.pose_deltas[</span>
+
+<span class="s1">                keyboard.KeyCode.from_char(key)</span>
+
+<span class="s1">            ] = pos_euler_xyz_to_pos_quat(delta)</span>
+
+<span class="s1">            self.pose_deltas[</span>
+
+<span class="s1">                keyboard.KeyCode.from_char(key.upper())</span>
+
+<span class="s1">            ] = pos_euler_xyz_to_pos_quat(self.mult * delta)</span>
+
+<span class="s1">    def _print_commands(self):</span>
+
+<span class="s1">        &quot;&quot;&quot;Prints the keyboard/control action mapping information&quot;&quot;&quot;</span>
+
+<span class="s1">        print(</span>
+
+<span class="s1">            &quot;Commands:\n&quot;</span>
+
+<span class="s1">            + &quot;w/s: +/- x\n&quot;</span>
+
+<span class="s1">            + &quot;a/d: +/- y\n&quot;</span>
+
+<span class="s1">            + &quot;e/q: +/- z\n&quot;</span>
+
+<span class="s1">            + &quot;l/j: +/- roll\n&quot;</span>
+
+<span class="s1">            + &quot;i/k: +/- pitch\n&quot;</span>
+
+<span class="s1">            + &quot;u/o: +/- yaw\n&quot;</span>
+
+<span class="s1">            + &quot;up/down: +/- arm proximal joint angle\n&quot;</span>
+
+<span class="s1">            + &quot;right/left: +/- arm distal joint angle\n&quot;</span>
+
+<span class="s1">            + &quot;c: Toggle coarse control for the arm\n&quot;</span>
+
+<span class="s1">            + &quot;g: Open/close the gripper\n&quot;</span>
+
+<span class="s1">            + &quot;p: Record a pose\n&quot;</span>
+
+<span class="s1">            + &quot;Space: Switch reference frames\n&quot;</span>
+
+<span class="s1">            + &quot;Esc: Stop listening&quot;</span>
+
+<span class="s1">        )</span>
+
+<span class="s1">    def start_listening(self):</span>
+
+<span class="s1">        &quot;&quot;&quot;Starts the keyboard listener in a new thread&quot;&quot;&quot;</span>
+
+<span class="s1">        print_green(&quot;Now listening&quot;)</span>
+
+<span class="s1">        self._print_commands()</span>
+
+<span class="s1">        self.listener = keyboard.Listener(</span>
+
+<span class="s1">            on_press=self.on_press, on_release=self.on_release</span>
+
+<span class="s1">        )</span>
+
+<span class="s1">        self.listener.start()</span>
+
+<span class="s1">    @property</span>
+
+<span class="s1">    def is_listening(self) -&gt; bool:</span>
+
+<span class="s1">        &quot;&quot;&quot;Whether or not the pynput Listener has been initialized&quot;&quot;&quot;</span>
+
+<span class="s1">        return self.listener is not None</span>
+
+<span class="s1">    def on_press(self, key: keyboard.Key):</span>
+
+<span class="s1">        &quot;&quot;&quot;Callback for a keypress</span>
+
+<span class="s1">        Args:</span>
+
+<span class="s1">            key (Key): Key that was pressed</span>
+
+<span class="s1">        Returns:</span>
+
+<span class="s1">            bool: False when the &quot;stop listening&quot; key (Esc) is pressed</span>
+
+<span class="s1">        &quot;&quot;&quot;</span>
+
+<span class="s1">        if key == keyboard.Key.esc:</span>
+
+<span class="s1">            print_red(&quot;\nLISTENER STOPPED&quot;)</span>
+
+<span class="s1">            print(&quot;Simulation will remain active until killed&quot;)</span>
+
+<span class="s1">            return False  # Returning false from a callback stops pynput</span>
+
+<span class="s1">    def on_release(self, key: keyboard.Key):</span>
+
+<span class="s1">        &quot;&quot;&quot;Callback for when a key is released</span>
+
+<span class="s1">        Args:</span>
+
+<span class="s1">            key (Key): Key that was pressed</span>
+
+<span class="s1">        &quot;&quot;&quot;</span>
+
+<span class="s1">        # If the key is associated with a motion,</span>
+
+<span class="s1">        if key in self.pose_deltas:</span>
+
+<span class="s1">            init_pose = self.robot.pose</span>
+
+<span class="s1">            # Get the pose delta that key is associated with</span>
+
+<span class="s1">            pose_delta = self.pose_deltas[key]</span>
+
+<span class="s1">            if self.in_robot_frame:</span>
+
+<span class="s1">                new_pose = add_local_pose_delta(init_pose, pose_delta)</span>
+
+<span class="s1">                pybullet.changeConstraint(</span>
+
+<span class="s1">                    self.constraint_id, new_pose[:3], new_pose[3:]</span>
+
+<span class="s1">                )</span>
+
+<span class="s1">            else:</span>
+
+<span class="s1">                new_pose = add_global_pose_delta(init_pose, pose_delta)</span>
+
+<span class="s1">                pybullet.changeConstraint(</span>
+
+<span class="s1">                    self.constraint_id, new_pose[:3], new_pose[3:]</span>
+
+<span class="s1">                )</span>
+
+<span class="s1">        elif key == self.frame_switch_key:</span>
+
+<span class="s1">            # Toggle the reference frame and update our knowledge of the state</span>
+
+<span class="s1">            self.in_robot_frame = not self.in_robot_frame</span>
+
+<span class="s1">            print(</span>
+
+<span class="s1">                f&quot;\nFRAME SWITCHED. Now in {&#39;</span><span class="n">robot</span><span class="s1">&#39; if self.in_robot_frame else &#39;</span><span class="n">world</span><span class="s1">&#39;} frame&quot;</span>
+
+<span class="s1">            )</span>
+
+<span class="s1">        elif key == self.gripper_key:</span>
+
+<span class="s1">            # Toggle the gripper and update our knowledge of the state</span>
+
+<span class="s1">            if self.gripper_is_open:</span>
+
+<span class="s1">                self.robot.close_gripper()</span>
+
+<span class="s1">                self.gripper_is_open = False</span>
+
+<span class="s1">            else:</span>
+
+<span class="s1">                self.robot.open_gripper()</span>
+
+<span class="s1">                self.gripper_is_open = True</span>
+
+<span class="s1">            print(f&quot;\nGRIPPER {&#39;</span><span class="n">OPENED</span><span class="s1">&#39; if self.gripper_is_open else &#39;</span><span class="n">CLOSED</span><span class="s1">&#39;}&quot;)</span>
+
+<span class="s1">        elif key == self.waypoint_key:</span>
+
+<span class="s1">            # Record a waypoint and print the info to the terminal</span>
+
+<span class="s1">            print(f&quot;\nPose recorded: {self.robot.pose}&quot;)</span>
+
+<span class="s1">            print(f&quot;Gripper position: {self.robot.gripper_position}&quot;)</span>
+
+<span class="s1">            print(f&quot;Arm joints: {self.robot.arm_joint_angles}&quot;)</span>
+
+<span class="s1">        elif key == self.coarse_control_key:</span>
+
+<span class="s1">            # Toggle coarse control mode</span>
+
+<span class="s1">            self.in_coarse_mode = not self.in_coarse_mode</span>
+
+<span class="s1">            print(</span>
+
+<span class="s1">                f&quot;\nCoarse control {&#39;</span><span class="n">ACTIVATED</span><span class="s1">&#39; if self.in_coarse_mode else &#39;</span><span class="n">DEACTIVATED</span><span class="err">&#39;}</span><span class="ss">&quot;</span>
+
+<span class="ss">            )</span>
+
+<span class="ss">        elif key in self.arm_keys:</span>
+
+<span class="ss">            cur_prox, cur_dist = self.robot.arm_joint_angles</span>
+
+<span class="ss">            prox_idx, dist_idx = self.robot.ARM_JOINT_IDXS</span>
+
+<span class="ss">            delta = self.djoint * (self.mult if self.in_coarse_mode else 1)</span>
+
+<span class="ss">            if key == keyboard.Key.up:</span>
+
+<span class="ss">                # Raise the proximal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    min(cur_prox + delta, Astrobee.JOINT_POS_LIMITS[prox_idx, 1]),</span>
+
+<span class="ss">                    prox_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.down:</span>
+
+<span class="ss">                # Lower the proximal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    max(cur_prox - delta, Astrobee.JOINT_POS_LIMITS[prox_idx, 0]),</span>
+
+<span class="ss">                    prox_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.right:</span>
+
+<span class="ss">                # Raise the distal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    min(cur_dist + delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 1]),</span>
+
+<span class="ss">                    dist_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">            elif key == keyboard.Key.left:</span>
+
+<span class="ss">                # Lower the distal joint</span>
+
+<span class="ss">                self.robot.set_joint_angles(</span>
+
+<span class="ss">                    max(cur_dist - delta, Astrobee.JOINT_POS_LIMITS[dist_idx, 0]),</span>
+
+<span class="ss">                    dist_idx,</span>
+
+<span class="ss">                )</span>
+
+<span class="ss">    def step(self):</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="n">Updates</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">simulation</span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        pybullet.stepSimulation()</span>
+
+<span class="ss">        if self.pov:</span>
+
+<span class="ss">            # Update the camera view so we maintain our same perspective on the robot as it moves</span>
+
+<span class="ss">            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(self.robot.tmat))</span>
+
+<span class="ss">        time.sleep(self.dt)</span>
+
+<span class="ss">    def run(self):</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="n">Runs</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">simulation</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">keyboard</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="n">active</span><span class="ss">&quot;&quot;</span><span class="err">&quot;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">is_listening</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">start_listening</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span>
+
+<span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="k">True</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="w">        </span><span class="nl">finally</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">listener</span><span class="p">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="instance-variables">Instance variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">is_listening</span>
+</code></pre></div>
+
+<p>Whether or not the pynput Listener has been initialized</p>
+<h4 id="methods">Methods</h4>
+<h4 id="on_press">on_press</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">on_press</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">pynput</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">_xorg</span><span class="o">.</span><span class="n">Key</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Callback for a keypress</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td>Key</td>
+<td>Key that was pressed</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bool</td>
+<td>False when the "stop listening" key (Esc) is pressed</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    def on_press(self, key: keyboard.Key):
+
+        &quot;&quot;&quot;Callback for a keypress
+
+        Args:
+
+            key (Key): Key that was pressed
+
+        Returns:
+
+            bool: False when the &quot;stop listening&quot; key (Esc) is pressed
+
+        &quot;&quot;&quot;
+
+        if key == keyboard.Key.esc:
+
+            print_red(&quot;\nLISTENER STOPPED&quot;)
+
+            print(&quot;Simulation will remain active until killed&quot;)
+
+            return False  # Returning false from a callback stops pynput
+</code></pre></div>
+
+</details>
+<h4 id="on_release">on_release</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">on_release</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">pynput</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">_xorg</span><span class="o">.</span><span class="n">Key</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Callback for when a key is released</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td>Key</td>
+<td>Key that was pressed</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">on_release</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">key</span><span class="err">:</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Callback for when a key is released</span>
+
+<span class="ss">        Args:</span>
+
+<span class="ss">            key (Key): Key that was pressed</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">associated</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">motion</span><span class="p">,</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">pose_deltas</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">init_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">pose</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Get</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">pose</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">associated</span><span class="w"> </span><span class="k">with</span>
+
+<span class="w">            </span><span class="n">pose_delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">pose_deltas</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">in_robot_frame</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">new_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add_local_pose_delta</span><span class="p">(</span><span class="n">init_pose</span><span class="p">,</span><span class="w"> </span><span class="n">pose_delta</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">pybullet</span><span class="p">.</span><span class="n">changeConstraint</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">self</span><span class="p">.</span><span class="n">constraint_id</span><span class="p">,</span><span class="w"> </span><span class="n">new_pose</span><span class="o">[</span><span class="n">:3</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">new_pose</span><span class="o">[</span><span class="n">3:</span><span class="o">]</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">new_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add_global_pose_delta</span><span class="p">(</span><span class="n">init_pose</span><span class="p">,</span><span class="w"> </span><span class="n">pose_delta</span><span class="p">)</span>
+
+<span class="w">                </span><span class="n">pybullet</span><span class="p">.</span><span class="n">changeConstraint</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="n">self</span><span class="p">.</span><span class="n">constraint_id</span><span class="p">,</span><span class="w"> </span><span class="n">new_pose</span><span class="o">[</span><span class="n">:3</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">new_pose</span><span class="o">[</span><span class="n">3:</span><span class="o">]</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">frame_switch_key</span><span class="p">:</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Toggle</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">knowledge</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">state</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">in_robot_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">in_robot_frame</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;\nFRAME SWITCHED. Now in {&#39;robot&#39; if self.in_robot_frame else &#39;world&#39;} frame&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">gripper_key</span><span class="p">:</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Toggle</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">gripper</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">knowledge</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">state</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">gripper_is_open</span><span class="p">:</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">close_gripper</span><span class="p">()</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_is_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">open_gripper</span><span class="p">()</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">gripper_is_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;\nGRIPPER {&#39;OPENED&#39; if self.gripper_is_open else &#39;CLOSED&#39;}&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">waypoint_key</span><span class="p">:</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Record</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">waypoint</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">terminal</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;\nPose recorded: {self.robot.pose}&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Gripper position: {self.robot.gripper_position}&quot;</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Arm joints: {self.robot.arm_joint_angles}&quot;</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">coarse_control_key</span><span class="p">:</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Toggle</span><span class="w"> </span><span class="n">coarse</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">mode</span>
+
+<span class="w">            </span><span class="n">self</span><span class="p">.</span><span class="n">in_coarse_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">in_coarse_mode</span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;\nCoarse control {&#39;ACTIVATED&#39; if self.in_coarse_mode else &#39;DEACTIVATED&#39;}&quot;</span>
+
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">arm_keys</span><span class="p">:</span>
+
+<span class="w">            </span><span class="n">cur_prox</span><span class="p">,</span><span class="w"> </span><span class="n">cur_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">arm_joint_angles</span>
+
+<span class="w">            </span><span class="n">prox_idx</span><span class="p">,</span><span class="w"> </span><span class="n">dist_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">ARM_JOINT_IDXS</span>
+
+<span class="w">            </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">djoint</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">mult</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">in_coarse_mode</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nl">up</span><span class="p">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="n">Raise</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">proximal</span><span class="w"> </span><span class="n">joint</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">set_joint_angles</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="nf">min</span><span class="p">(</span><span class="n">cur_prox</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">delta</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">.</span><span class="n">JOINT_POS_LIMITS</span><span class="o">[</span><span class="n">prox_idx, 1</span><span class="o">]</span><span class="p">),</span>
+
+<span class="w">                    </span><span class="n">prox_idx</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nl">down</span><span class="p">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="nf">Lower</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">proximal</span><span class="w"> </span><span class="n">joint</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">set_joint_angles</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="nf">max</span><span class="p">(</span><span class="n">cur_prox</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">delta</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">.</span><span class="n">JOINT_POS_LIMITS</span><span class="o">[</span><span class="n">prox_idx, 0</span><span class="o">]</span><span class="p">),</span>
+
+<span class="w">                    </span><span class="n">prox_idx</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">right</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="n">Raise</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">distal</span><span class="w"> </span><span class="n">joint</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">set_joint_angles</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="nf">min</span><span class="p">(</span><span class="n">cur_dist</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">delta</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">.</span><span class="n">JOINT_POS_LIMITS</span><span class="o">[</span><span class="n">dist_idx, 1</span><span class="o">]</span><span class="p">),</span>
+
+<span class="w">                    </span><span class="n">dist_idx</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">keyboard</span><span class="p">.</span><span class="k">Key</span><span class="p">.</span><span class="nf">left</span><span class="err">:</span>
+
+<span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="nf">Lower</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">distal</span><span class="w"> </span><span class="n">joint</span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">robot</span><span class="p">.</span><span class="n">set_joint_angles</span><span class="p">(</span>
+
+<span class="w">                    </span><span class="nf">max</span><span class="p">(</span><span class="n">cur_dist</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">delta</span><span class="p">,</span><span class="w"> </span><span class="n">Astrobee</span><span class="p">.</span><span class="n">JOINT_POS_LIMITS</span><span class="o">[</span><span class="n">dist_idx, 0</span><span class="o">]</span><span class="p">),</span>
+
+<span class="w">                    </span><span class="n">dist_idx</span><span class="p">,</span>
+
+<span class="w">                </span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+<h4 id="run">run</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Runs the simulation loop with the keyboard listener active</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    def run(self):
+
+        &quot;&quot;&quot;Runs the simulation loop with the keyboard listener active&quot;&quot;&quot;
+
+        if not self.is_listening:
+
+            self.start_listening()
+
+        try:
+
+            while True:
+
+                self.step()
+
+        finally:
+
+            self.listener.stop()
+</code></pre></div>
+
+</details>
+<h4 id="start_listening">start_listening</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">start_listening</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Starts the keyboard listener in a new thread</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code>    def start_listening(self):
+
+        &quot;&quot;&quot;Starts the keyboard listener in a new thread&quot;&quot;&quot;
+
+        print_green(&quot;Now listening&quot;)
+
+        self._print_commands()
+
+        self.listener = keyboard.Listener(
+
+            on_press=self.on_press, on_release=self.on_release
+
+        )
+
+        self.listener.start()
+</code></pre></div>
+
+</details>
+<h4 id="step">step</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">step</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Updates one step of the simulation</p>
+<details class="example">
+<summary>View Source</summary>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">step</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="err">:</span>
+
+<span class="w">        </span><span class="s">&quot;&quot;</span><span class="s2">&quot;Updates one step of the simulation&quot;</span><span class="s">&quot;&quot;</span>
+
+<span class="w">        </span><span class="n">pybullet</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="n">pov</span><span class="err">:</span>
+
+<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">Update</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="nb">camera</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">maintain</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="k">perspective</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">robot</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">moves</span>
+
+<span class="w">            </span><span class="n">pybullet</span><span class="o">.</span><span class="n">resetDebugVisualizerCamera</span><span class="p">(</span><span class="o">*</span><span class="n">get_viz_camera_params</span><span class="p">(</span><span class="n">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tmat</span><span class="p">))</span>
+
+<span class="w">        </span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+    
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Index" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Previous
+                </span>
+                Index
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../mpc/" class="md-footer__link md-footer__link--next" aria-label="Next: Mpc" rel="next">
+            <div class="md-footer__title">
+              <div class="md-ellipsis">
+                <span class="md-footer__direction">
+                  Next
+                </span>
+                Mpc
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+            
+            Powered by
+            <a href="http://timothycrosley.github.io/portray">portray.</a>
+            You too can
+            <a href="http://timothycrosley.github.io/portray">
+              portray</a>
+            your Python project well using automatic documentation.
+          </div>
+        
+      </div>
+    </div>
+  </footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      
+    
+  </body>
+</html>
