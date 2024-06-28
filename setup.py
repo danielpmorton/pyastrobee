@@ -6,6 +6,7 @@ NOTE Pybullet is a key dependency of the project, but we want to be working with
 including some custom changes, which may not be available on pypi for some time. We'll use a manually built version
 of pybullet from source instead.
 """
+
 # TODO add specific versions to the package requirements
 # TODO add obj2mjcf to the dev requirements?
 # TODO add beautifulsoup4 back in if parsing XML/URDFs
@@ -20,7 +21,7 @@ setup(
     version="0.0.1",
     install_requires=[
         # "pybullet",  # Simulation. See notes about locally-built version
-        "numpy",  # Needs to be installed before Pybullet to enable speedup for matrix ops
+        "numpy==1.26.4",  # Needs to be installed before Pybullet to enable speedup for matrix ops
         "wheel",  # For helping build Pybullet
         "opencv-python",  # Vision
         "matplotlib",  # Plotting
