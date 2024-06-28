@@ -11,6 +11,7 @@ from typing import Optional, Union
 import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
+from pybullet_utils.bullet_client import BulletClient
 
 from pyastrobee.utils.bullet_utils import create_box
 
@@ -158,6 +159,7 @@ def visualize_3D_box(
     box: Union[Box, npt.ArrayLike],
     padding: Optional[npt.ArrayLike] = None,
     rgba: npt.ArrayLike = (1, 0, 0, 0.5),
+    client: Optional[BulletClient] = None,
 ) -> int:
     """Visualize a box in Pybullet
 
@@ -166,6 +168,8 @@ def visualize_3D_box(
         padding (Optional[npt.ArrayLike]): If expanding (or contracting) the boxes by a certain amount, include the
             (x, y, z) padding distances here (shape (3,)). Defaults to None.
         rgba (npt.ArrayLike): Color of the box (RGB + alpha), shape (4,). Defaults to (1, 0, 0, 0.5).
+        client (BulletClient, optional): If connecting to multiple physics servers, include the client
+            (the class instance, not just the ID) here. Defaults to None (use default connected client)
 
     Returns:
         int: Pybullet ID of the box
@@ -181,6 +185,7 @@ def visualize_3D_box(
         sidelengths=(upper - lower),
         use_collision=False,
         rgba=rgba,
+        client=client,
     )
 
 
