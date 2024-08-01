@@ -229,10 +229,10 @@ class DeformableCargoBag(CargoBag):
         local_pts = (
             np.array(
                 [
-                    # [0, 1, 0], # Uncomment to change the configuration
-                    # [0, -1, 0],
-                    [0, 0, 1],
-                    [0, 0, -1],
+                    [0, 1, 0],  # Uncomment to change the configuration
+                    [0, -1, 0],
+                    # [0, 0, 1],
+                    # [0, 0, -1],
                 ]
             )
             * dist
@@ -281,10 +281,12 @@ class DeformableCargoBag(CargoBag):
 
 def _main():
     # Very simple example of loading the bag and attaching a robot
-    client = initialize_pybullet(bg_color=(0.5, 0.5, 0.75))
+    client = initialize_pybullet(bg_color=(0, 0, 0))
     robot = Astrobee()
     bag = DeformableCargoBag("top_handle_symmetric", 10)
     bag.attach_to(robot)
+    client.resetDebugVisualizerCamera(1.23, 28.40, -27.40, (-0.37, 0.80, -0.30))
+    input()
     while True:
         client.stepSimulation()
         time.sleep(1 / 120)

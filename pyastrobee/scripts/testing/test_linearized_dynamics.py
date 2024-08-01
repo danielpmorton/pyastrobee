@@ -6,7 +6,7 @@ including the arm positioning) does reduce the tracking error for the angular ve
 However, the angular velocity error does still seem a little high... Maybe this is acceptable given good values for
 the other parameters
 """
-
+import time
 import pybullet
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,6 +41,7 @@ def test_state_space(use_sim_inertial_props: bool = False):
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     pos, orn, vel, omega = robot.dynamics_state
+    start_time = time.time()
     traj = local_planner(
         pos,
         orn,
@@ -57,6 +58,7 @@ def test_state_space(use_sim_inertial_props: bool = False):
         5,
         dt,
     )
+    print("Local planner time: ", time.time() - start_time)
     state_dim = 13
     control_dim = 6
     x_log = np.zeros((traj.num_timesteps, state_dim))

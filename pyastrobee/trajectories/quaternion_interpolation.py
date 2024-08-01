@@ -256,6 +256,7 @@ def _get_dw(q, dq, ddq):
 
 
 def _main():
+    import time
     import matplotlib.pyplot as plt  # pylint: disable=import-outside-toplevel
 
     # Calculate and plot an example interpolation
@@ -271,7 +272,9 @@ def _main():
     dwf = np.zeros(3)  # Final angular acceleration
     dt = 1 / 350  # Timestep (set to the pybullet physics timestep we're using)
     n = round(T / dt)  # Number of timesteps
+    start_time = time.time()
     qs = quaternion_interpolation_with_bcs(qi, qf, wi, wf, dwi, dwf, T, n)
+    print("Quaternion time: ", time.time() - start_time)
     ws = quats_to_angular_velocities(qs, dt)
     dws = np.gradient(ws, dt, axis=0)
 

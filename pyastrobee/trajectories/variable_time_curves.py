@@ -21,6 +21,7 @@ Notes on the search method for the duration:
   functions). Maybe there is a better formulation out there...
 """
 
+import time
 from typing import Optional, Callable, Any
 
 import numpy as np
@@ -70,6 +71,7 @@ def left_quadratic_fit_search(
             list[Any]: Additional outputs of the function being optimized at the best x value. Empty list if there
                 are no additional outputs
     """
+    start_time = time.time()
     # Mutable dicts to keep track of the optimization process
     best = {"x": None, "cost": np.inf, "out": []}  # init
     log = {"iters": 0, "feasibility_bound": 0}  # init
@@ -157,6 +159,7 @@ def left_quadratic_fit_search(
 
     if best["x"] is None:
         raise OptimizationError("Unable to find a feasible solution")
+    print("Quadratic fit time: ", time.time() - start_time)
     return best["x"], best["cost"], best["out"]
 
 

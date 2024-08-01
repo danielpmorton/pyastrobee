@@ -300,6 +300,7 @@ def bezier_trajectory(
             + "Check on the feasibility of the constraints"
         )
     # Construct the Bezier curve from the solved control points
+    print("Bezier time: ", prob.solver_stats.solve_time)
     return BezierCurve(pos_pts.value, t0, tf), prob.value
 
 

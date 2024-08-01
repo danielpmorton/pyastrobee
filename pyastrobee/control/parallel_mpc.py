@@ -33,7 +33,7 @@ from pyastrobee.utils.video_concatenation import concatenate_videos
 
 # Recording parameters
 RECORD_MAIN_ENV = False
-RECORD_DEBUG_ENV = True
+RECORD_DEBUG_ENV = False
 MAIN_VIDEO_DIRECTORY = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
 )
@@ -408,7 +408,33 @@ def _test_jpm_to_us_lab():
     bag_name = "top_handle_symmetric"
     bag_mass = 10
     n_vec_envs = 10
-    debug = True
+    debug = False
+    use_deformable_main_sim = True
+    use_deformable_rollouts = False
+    parallel_mpc_main(
+        start_pose,
+        end_pose,
+        n_vec_envs,
+        bag_name,
+        bag_mass,
+        use_deformable_main_sim,
+        use_deformable_rollouts,
+        debug,
+        random_seed,
+    )
+
+
+def _test_node_2_to_us_lab():
+    """Quick function to test that the parallel MPC is working as expected"""
+
+    random_seed = 0
+    np.random.seed(random_seed)
+    start_pose = [0, 0, 0, 0, 0, -np.sqrt(2) / 2, np.sqrt(2) / 2]  # N2
+    end_pose = [-0.063, -8.5355, 0, 0, 0, -np.sqrt(2) / 2, np.sqrt(2) / 2]  # US
+    bag_name = "top_handle_symmetric"
+    bag_mass = 10
+    n_vec_envs = 10
+    debug = False
     use_deformable_main_sim = True
     use_deformable_rollouts = False
     parallel_mpc_main(
@@ -425,5 +451,6 @@ def _test_jpm_to_us_lab():
 
 
 if __name__ == "__main__":
-    # _test_node_2_to_jpm()
-    _test_jpm_to_us_lab()
+    _test_node_2_to_jpm()
+    # _test_jpm_to_us_lab()
+    # _test_node_2_to_us_lab()

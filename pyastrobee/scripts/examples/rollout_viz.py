@@ -18,8 +18,8 @@ np.random.seed(0)
 client = initialize_pybullet()
 dt = client.getPhysicsEngineParameters()["fixedTimeStep"]
 client.resetDebugVisualizerCamera(8, 136.40, -16.20, (4.84, -4.29, -1.93))
-for box in FULL_SAFE_SET.values():
-    visualize_3D_box(box, rgba=(1, 0, 0, 0.25))
+# for box in FULL_SAFE_SET.values():
+#     visualize_3D_box(box, rgba=(1, 0, 0, 0.25))
 start_pos = (10, 0, 0)
 start_orn = rmat_to_quat(Rz(np.pi))
 client.stepSimulation()
@@ -65,6 +65,7 @@ for i in range(n_trajs):
         )
     )
     visualize_path(trajs[-1].positions, 20, (1, 1, 1), 2)
+input()
 n_rollout_bots = 3
 traj_idxs = np.random.randint(0, n_trajs, n_rollout_bots)
 traj_terminal_idxs = [

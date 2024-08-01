@@ -142,6 +142,7 @@ def retiming(
 
     # New candidate for kappa.
     kappa_max = max(np.abs(eta.value[1:] - eta.value[:-1]))
+    print("Retiming time: ", prob.solver_stats.solve_time)
 
     return new_durations, kappa_max
 

@@ -264,7 +264,7 @@ def _visualize_safe_set_cost():
     plot_2D_box(new_boxes[0], None, False, "b--")
     plot_2D_box(new_boxes[1], None, False, "b--")
     plt.colorbar(heatmap)
-    plt.title("Safe Set Deviation")
+    plt.title("Safe Set Cost")
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.show()

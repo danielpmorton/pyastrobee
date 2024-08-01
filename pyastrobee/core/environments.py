@@ -246,7 +246,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
         # TODO figure out how to handle controller parameters
         # Just fixing the gains here for now
         # TODO should these be functions of the bag mass???
-        kp, kv, kq, kw = 20, 5, 5, 0.1  # TODO make parameters
+        # NOTE there is a best set of values here if we just have the robot, or if we have the robot and the bag
+        # If we just have the robot, it seems these value should be about 20, 10, 5, 5
+        kp, kv, kq, kw = 20, 10, 5, 5  # TODO make parameters
         p = self.bag.position - self.robot.position
         self.controller = ForceTorqueController(
             self.robot.id,

@@ -353,6 +353,7 @@ def _fixed_timing_spline(
         "retiming_weights": retiming_weights,
         "cost_breakdown": cost_breakdown,
     }
+    print("Spline time: ", prob.solver_stats.solve_time)
     # Construct the Bezier curves from the solved control points,
     solved_pos_curves = [
         BezierCurve(pos_pt_sets[i].value, knot_times[i], knot_times[i + 1])

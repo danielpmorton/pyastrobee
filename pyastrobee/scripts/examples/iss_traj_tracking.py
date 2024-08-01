@@ -21,6 +21,7 @@ from pyastrobee.utils.rotations import rmat_to_quat, Rz
 from pyastrobee.utils.debug_visualizer import visualize_path, get_viz_camera_params
 from pyastrobee.trajectories.trajectory import stopping_criteria
 from pyastrobee.core.iss import ISS
+from pyastrobee.trajectories.planner import global_planner
 
 
 def plan_path(p0, pf, T, n_timesteps):
@@ -57,31 +58,32 @@ def face_forward_test(record_video: bool = False):
     # There seems to be something weird going on with my relationship between quaternions
     # and headings since it does an odd spin if we move to the cupola... (TODO debug)
 
-    pf = ROBOT_SAFE_SET["node_1"].center
+    pf = ROBOT_SAFE_SET["cupola"].center
     T = 30
     q0 = rmat_to_quat(Rz(-np.pi))
     pybullet.connect(pybullet.GUI)
     pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False)
     pybullet.configureDebugVisualizer(rgbBackground=(0, 0, 0))
     iss = ISS()
-    dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+    # dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
+    dt = 1 / 10
     robot = Astrobee([*p0, *q0])
     robot.store_arm(force=True)
-    kp, kv, kq, kw = 20, 5, 1, 0.1
+    kp, kv, kq, kw = 20, 10, 5, 5
     controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
     n_timesteps = round(T / dt)
-    path = plan_path(p0, pf, T, n_timesteps)
+    traj = global_planner(p0, (0, 0, 0, 1), pf, (0, 0, 0, 1), dt)
     if record_video:
         log_id = pybullet.startStateLogging(
-            pybullet.STATE_LOGGING_VIDEO_MP4, "artifacts/iss_traj.mp4"
+            pybullet.STATE_LOGGING_VIDEO_MP4, "artifacts/iss_traj_new.mp4"
         )
-    visualize_path(path, 30)
-    traj = face_forward_traj(path, q0, np.zeros(3), np.zeros(3), dt)
+    visualize_path(traj.positions, 30)
+    ff_traj = face_forward_traj(traj.positions, q0, np.zeros(3), np.zeros(3), dt)
 
-    # follow_traj_with_sleep(traj, controller, True, 1 / 120)
-    follow_traj_forced(traj, robot)
+    # follow_traj_with_sleep(traj, controller, True, 0)
+    follow_traj_forced(ff_traj, robot)
     if record_video:
         pybullet.stopStateLogging(log_id)
 
