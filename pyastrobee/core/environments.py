@@ -5,6 +5,7 @@ NOTE:
   non-vectorized environment will be reflected in all non-vectorized environments, but not the vectorized ones.
   You'd have to explicitly call the set_attr method for that)
 """
+
 # TODO
 # - See if there is a faster way to save/restore state in the case that we're using the rigid bag
 # - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
@@ -22,10 +23,8 @@ import numpy as np
 import numpy.typing as npt
 import gymnasium as gym
 from gymnasium.core import ObsType, ActType
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv, VecEnv
-from stable_baselines3.common.vec_env.patch_gym import _patch_env
 
+from pyastrobee.utils.sb3 import Monitor, DummyVecEnv, SubprocVecEnv, VecEnv, _patch_env
 from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.core.astrobee import Astrobee

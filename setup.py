@@ -34,7 +34,7 @@ setup(
         "control",  # Control systems reference code
         "cvxpy",  # Optimization
         "clarabel",  # More optimization
-        "stable-baselines3",  # Environments
+        # "stable-baselines3",  # Environments
         "gymnasium",  # Environments
         "portray",  # Documentation
     ],

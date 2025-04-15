@@ -7,6 +7,7 @@ We create three different types of environments:
 
 When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan
 """
+
 # TODO:
 # - Merge this with the main MPC file?
 # - Turn this into a controller class, or just leave as a script?
@@ -20,8 +21,8 @@ from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
-from stable_baselines3.common.env_util import DummyVecEnv, SubprocVecEnv
 
+from pyastrobee.utils.sb3 import DummyVecEnv, SubprocVecEnv
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
 from pyastrobee.core.environments import AstrobeeMPCEnv, make_vec_env
@@ -33,7 +34,7 @@ from pyastrobee.utils.video_concatenation import concatenate_videos
 
 # Recording parameters
 RECORD_MAIN_ENV = False
-RECORD_DEBUG_ENV = True
+RECORD_DEBUG_ENV = False
 MAIN_VIDEO_DIRECTORY = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
 )
@@ -81,9 +82,9 @@ def parallel_mpc_main(
         robot_pose=start_pose,
         bag_name=bag_name,
         bag_mass=bag_mass,
-        bag_type=DeformableCargoBag
-        if use_deformable_primary_sim
-        else ConstraintCargoBag,
+        bag_type=(
+            DeformableCargoBag if use_deformable_primary_sim else ConstraintCargoBag
+        ),
         load_full_iss=True,
     )
     # Set up vectorized environments
@@ -93,9 +94,9 @@ def parallel_mpc_main(
         "robot_pose": start_pose,
         "bag_name": bag_name,
         "bag_mass": bag_mass,
-        "bag_type": DeformableCargoBag
-        if use_deformable_rollouts
-        else ConstraintCargoBag,
+        "bag_type": (
+            DeformableCargoBag if use_deformable_rollouts else ConstraintCargoBag
+        ),
         # We need the full ISS loaded if using deformable rollouts so save/restore state sees the same envs
         "load_full_iss": use_deformable_rollouts,
     }
