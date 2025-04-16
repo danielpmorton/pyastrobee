@@ -20,7 +20,6 @@ from pyastrobee.utils.poses import batched_pos_quats_to_tmats
 from pyastrobee.utils.debug_visualizer import visualize_frame, visualize_path
 from pyastrobee.utils.quaternions import quaternion_dist, quats_to_angular_velocities
 from pyastrobee.utils.boxes import Box
-from pyastrobee.utils.plotting import num_subplots_to_shape
 
 
 class Trajectory:
@@ -239,6 +238,7 @@ class Trajectory:
         # start_index = np.searchsorted(self.times, start_time)
         # end_index = np.searchsorted(self.times, end_time)
         raise NotImplementedError("TODO")
+
 
 class TrajectoryLogger(Trajectory):
     """Class for maintaining a history of a robot's state over time"""
@@ -1023,3 +1023,18 @@ def extrapolate_arm_traj(
         np.concatenate([traj.times, traj.times[-1] + dt + np.arange(n_steps) * dt]),
         traj.key_times,
     )
+
+
+def num_subplots_to_shape(n: int) -> tuple[int, int]:
+    """Determines the best layout of a number of subplots within a larger figure
+
+    Args:
+        n (int): Number of subplots
+
+    Returns:
+        tuple[int, int]: Number of rows and columns for the subplot divisions
+    """
+    n_rows = int(np.sqrt(n))
+    n_cols = n // n_rows + (n % n_rows > 0)
+    assert n_rows * n_cols >= n
+    return (n_rows, n_cols)

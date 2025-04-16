@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from pyastrobee.utils.math_utils import normalize, is_diagonal, safe_divide
+from pyastrobee.utils.math_utils import normalize, is_diagonal
 
 
 class MathTest(unittest.TestCase):
@@ -36,42 +36,6 @@ class MathTest(unittest.TestCase):
         self.assertTrue(is_diagonal(a))
         a = np.array([[1]])
         self.assertTrue(is_diagonal(a))
-
-    def test_safe_divide(self):
-        # Should work normally if there are no zeros
-        a = [1, 2, 3]
-        b = [1, 2, 3]
-        c = safe_divide(a, b)
-        # Test different fill methods
-        np.testing.assert_array_equal(c, [1, 1, 1])
-        b = [1, 2, 0]
-        c = safe_divide(a, b, fill="original")
-        np.testing.assert_array_equal(c, [1, 1, 3])
-        c = safe_divide(a, b, fill="nan")
-        np.testing.assert_array_equal(c, [1, 1, np.nan])
-        c = safe_divide(a, b, fill="zero")
-        np.testing.assert_array_equal(c, [1, 1, 0])
-        c = safe_divide(a, b, fill="inf")
-        np.testing.assert_array_equal(c, [1, 1, float("inf")])
-        # Check that the "out" parameter did not actually modify a
-        self.assertTrue(a == [1, 2, 3])
-        # Test when the entire array is 0
-        b = [0, 0, 0]
-        c = safe_divide(a, b, fill="original")
-        np.testing.assert_array_equal(c, a)
-        # Test scalar case
-        a = 1
-        b = 2
-        c = safe_divide(a, b)
-        self.assertTrue(c == 0.5)
-        b = 0
-        c = safe_divide(a, b, fill="original")
-        self.assertTrue(c == a)
-        # Check negative inf
-        a = -1
-        b = 0
-        c = safe_divide(a, b, fill="inf")
-        self.assertTrue(c == -np.inf)
 
 
 if __name__ == "__main__":

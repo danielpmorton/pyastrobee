@@ -15,13 +15,14 @@ import pybullet
 from pybullet_utils.bullet_client import BulletClient
 import numpy as np
 import numpy.typing as npt
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 from pyastrobee.trajectories.trajectory import (
     Trajectory,
     TrajectoryLogger,
     stopping_criteria,
 )
-from pyastrobee.control.controller import ControlLogger
 from pyastrobee.utils.quaternions import quaternion_angular_error
 from pyastrobee.utils.rotations import quat_to_rmat
 
@@ -297,3 +298,124 @@ class ForceTorqueController:
         self.traj_log.log_state(pos, quat, lin_vel, ang_vel, self.dt)
         # These are originally tuples, so convert to numpy
         return np.array(pos), np.array(quat), np.array(lin_vel), np.array(ang_vel)
+
+
+class ControlLogger:
+    """Class for maintaining a history of control inputs for plottting or further analysis
+
+    Any conversions between world frame / robot frame should be done before storing the force/torque
+    data, depending on what is of interest
+    """
+
+    def __init__(self):
+        self._forces = []
+        self._torques = []
+        self._times = []
+
+    @property
+    def forces(self) -> np.ndarray:
+        return np.atleast_2d(self._forces)
+
+    @property
+    def torques(self) -> np.ndarray:
+        return np.atleast_2d(self._torques)
+
+    @property
+    def times(self) -> np.ndarray:
+        return np.array(self._times)
+
+    def log_control(
+        self, force: npt.ArrayLike, torque: npt.ArrayLike, dt: Optional[float] = None
+    ) -> None:
+        """Logs the forces and torques applied in a simulation step
+
+        Args:
+            force (npt.ArrayLike): Applied force (Fx, Fy, Fz), shape (3,)
+            torque (npt.ArrayLike): Applied torque (Tx, Ty, Tz), shape (3,)
+            dt (Optional[float]): Time elapsed since the previous step. Defaults to None.
+        """
+        self._forces.append(force)
+        self._torques.append(torque)
+        if dt is not None and len(self._times) == 0:
+            self._times.append(0.0)
+        elif dt is not None:
+            self._times.append(self._times[-1] + dt)
+
+    def plot(
+        self,
+        max_force: Optional[npt.ArrayLike] = None,
+        max_torque: Optional[npt.ArrayLike] = None,
+        show: bool = True,
+    ) -> Figure:
+        """Plot the stored history of control inputs
+
+        Args:
+            max_force (Optional[npt.ArrayLike]): Applied force limits (Fx_max, Fy_max, Fz_max), shape (3,)
+                Defaults to None (Don't indicate the limit on the plots)
+            max_torque (Optional[npt.ArrayLike]): Applied torque limits (Tx_max, Ty_max, Tz_max), shape (3,)
+                Defaults to None (Don't indicate the limit on the plots)
+            show (bool, optional): Whether or not to show the plot. Defaults to True
+
+        Returns:
+            Figure: Matplotlib figure containing the plots
+        """
+        return plot_control(
+            self.forces, self.torques, self.times, max_force, max_torque, show
+        )
+
+
+def plot_control(
+    forces: np.ndarray,
+    torques: np.ndarray,
+    times: Optional[np.ndarray] = None,
+    max_force: Optional[npt.ArrayLike] = None,
+    max_torque: Optional[npt.ArrayLike] = None,
+    show: bool = True,
+    fmt: str = "k-",
+) -> Figure:
+    """Plots a recorded history of force/torque control inputs
+
+    Args:
+        forces (np.ndarray): Sequence of force inputs (Fx, Fy, Fz), shape (n, 3)
+        torques (np.ndarray): Sequence of torque inputs (Tx, Ty, Tz), shape (n, 3)
+        times (Optional[np.ndarray], optional): Times corresponding to control inputs, shape (n,).
+            Defaults to None, in which case control inputs will be plotted against timesteps
+        max_force (Optional[npt.ArrayLike]): Applied force limits (Fx_max, Fy_max, Fz_max), shape (3,)
+            Defaults to None (Don't indicate the limit on the plots)
+        max_torque (Optional[npt.ArrayLike]): Applied torque limits (Tx_max, Ty_max, Tz_max), shape (3,)
+            Defaults to None (Don't indicate the limit on the plots)
+        show (bool, optional): Whether or not to display the plot. Defaults to True.
+        fmt (str, optional): Matplotlib line specification. Defaults to "k-"
+
+    Returns:
+        Figure: Matplotlib figure containing the plots
+    """
+    fig = plt.figure()
+    if times is not None:
+        x_axis = times
+        x_label = "Time, s"
+    else:
+        x_axis = np.arange(forces.shape[0])
+        x_label = "Timesteps"
+    subfigs = fig.subfigures(2, 1)
+    top_axes = subfigs[0].subplots(1, 3)
+    bot_axes = subfigs[1].subplots(1, 3)
+    force_labels = ["Fx", "Fy", "Fz"]
+    torque_labels = ["Tx", "Ty", "Tz"]
+    # Plot force info on the top axes
+    for i, ax in enumerate(top_axes):
+        ax.plot(x_axis, forces[:, i], fmt)
+        if max_force is not None:
+            ax.plot(x_axis, max_force[i] * np.ones_like(x_axis), "--")
+        ax.set_title(force_labels[i])
+        ax.set_xlabel(x_label)
+    # Plot torque info on the bottom axes
+    for i, ax in enumerate(bot_axes):
+        ax.plot(x_axis, torques[:, i], fmt)
+        if max_torque is not None:
+            ax.plot(x_axis, max_torque[i] * np.ones_like(x_axis), "--")
+        ax.set_title(torque_labels[i])
+        ax.set_xlabel(x_label)
+    if show:
+        plt.show()
+    return fig

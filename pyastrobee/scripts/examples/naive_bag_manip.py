@@ -12,7 +12,7 @@ from pyastrobee.control.force_torque_control import ForceTorqueController
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 
 # Enable/disable this flag depending on if we want to record or not
-RECORD_VIDEO = True
+RECORD_VIDEO = False
 VIDEO_LOCATION = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
 )

@@ -1,9 +1,7 @@
 """Script to show the Astrobee tracking a trajectory plan through the interior of the ISS
 
-This was made so that we could record an face-forward visualization of this motion. It's a bit
-hacky, but it worked well enough to get the video we needed.
+This was made so that we could record an face-forward visualization of this motion.
 """
-# TODO switch out all of the planning stuff with the unified function once this is done
 
 import time
 
@@ -53,10 +51,6 @@ def plan_path(p0, pf, T, n_timesteps):
 
 def face_forward_test(record_video: bool = False):
     p0 = ROBOT_SAFE_SET["jpm"].center
-    # pf = ROBOT_SAFE_SET["cupola"].center
-    # There seems to be something weird going on with my relationship between quaternions
-    # and headings since it does an odd spin if we move to the cupola... (TODO debug)
-
     pf = ROBOT_SAFE_SET["node_1"].center
     T = 30
     q0 = rmat_to_quat(Rz(-np.pi))
@@ -67,7 +61,7 @@ def face_forward_test(record_video: bool = False):
     dt = pybullet.getPhysicsEngineParameters()["fixedTimeStep"]
     robot = Astrobee([*p0, *q0])
     robot.store_arm(force=True)
-    kp, kv, kq, kw = 20, 5, 1, 0.1
+    kp, kv, kq, kw = 20, 5, 1, 0.2
     controller = ForceTorqueController(
         robot.id, robot.mass, robot.inertia, kp, kv, kq, kw, dt
     )
@@ -80,8 +74,8 @@ def face_forward_test(record_video: bool = False):
     visualize_path(path, 30)
     traj = face_forward_traj(path, q0, np.zeros(3), np.zeros(3), dt)
 
-    # follow_traj_with_sleep(traj, controller, True, 1 / 120)
-    follow_traj_forced(traj, robot)
+    follow_traj_with_sleep(traj, robot, controller, True, 1 / 240)
+    # follow_traj_forced(traj, robot)
     if record_video:
         pybullet.stopStateLogging(log_id)
 
@@ -91,11 +85,16 @@ def follow_traj_forced(traj, robot):
         pybullet.resetBasePositionAndOrientation(
             robot.id, traj.positions[i], traj.quaternions[i]
         )
+        pybullet.resetBaseVelocity(
+            robot.id,
+            traj.linear_velocities[i],
+            traj.angular_velocities[i],
+        )
         pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(robot.tmat))
-        time.sleep(1 / 120)
+        time.sleep(1 / 240)
 
 
-def follow_traj_with_sleep(traj, controller, stop_at_end, sleep_dt):
+def follow_traj_with_sleep(traj, robot, controller, stop_at_end, sleep_dt):
     for i in range(traj.num_timesteps):
         pos, orn, lin_vel, ang_vel = controller.get_current_state()
         controller.step(
@@ -111,6 +110,7 @@ def follow_traj_with_sleep(traj, controller, stop_at_end, sleep_dt):
             traj.angular_accels[i, :],
         )
         time.sleep(sleep_dt)
+        pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(robot.tmat))
     if stop_at_end:
         max_iters = None
         des_pos = traj.positions[-1]
@@ -152,6 +152,7 @@ def follow_traj_with_sleep(traj, controller, stop_at_end, sleep_dt):
             )
             iters += 1
             time.sleep(sleep_dt)
+            pybullet.resetDebugVisualizerCamera(*get_viz_camera_params(robot.tmat))
 
 
 if __name__ == "__main__":

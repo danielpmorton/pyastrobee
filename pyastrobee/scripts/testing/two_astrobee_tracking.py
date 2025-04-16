@@ -23,7 +23,7 @@ from pyastrobee.utils.debug_visualizer import visualize_path
 from pyastrobee.control.multi_robot import multi_robot_control
 
 
-RECORD_VIDEO = True
+RECORD_VIDEO = False
 VIDEO_LOCATION = (
     f"artifacts/{Path(__file__).stem}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.mp4"
 )

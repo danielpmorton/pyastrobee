@@ -33,38 +33,6 @@ def is_diagonal(array: npt.ArrayLike) -> bool:
     return np.array_equal(array, np.diag(np.diag(array)))
 
 
-def safe_divide(
-    a: npt.ArrayLike, b: npt.ArrayLike, fill: str = "original", tol: float = 1e-8
-) -> npt.ArrayLike:
-    """Calculates a/b while handling division by zero
-
-    Args:
-        a (npt.ArrayLike): Dividend
-        b (npt.ArrayLike): Divisor (which may contain zeros)
-        fill (str, optional): How to fill the result where the divisor = 0. One of "original" (a/0 = a),
-            "zero" (a/0 = 0), "nan" (a/0 = nan), "inf" (a/0 = inf). Defaults to "original".
-        tol (float, optional): Tolerance for determining float equality with 0. Defaults to 1e-8.
-
-    Returns:
-        npt.ArrayLike: Division result
-    """
-    a = np.array(a, dtype=np.float64)
-    b = np.array(b, dtype=np.float64)
-    fill = fill.lower()
-    if fill == "original":
-        out = a
-    elif fill == "zero":
-        out = np.zeros_like(a)
-    elif fill == "nan":
-        out = np.full(a.shape, np.nan)
-    elif fill == "inf":
-        # Account for sign of dividend for positive or negative inf
-        out = np.array((np.sign(a) + (a == 0)) * np.inf)
-    else:
-        raise ValueError(f"Invalid fill type: {fill}")
-    return np.divide(a, b, out=out, where=np.abs(b) >= tol)
-
-
 def skew(v: npt.ArrayLike) -> np.ndarray:
     """Skew-symmetric matrix form of a vector in R3
 

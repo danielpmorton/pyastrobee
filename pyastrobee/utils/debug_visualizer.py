@@ -14,6 +14,7 @@ import numpy as np
 import numpy.typing as npt
 import pybullet
 from pybullet_utils.bullet_client import BulletClient
+import pytransform3d.coordinates as pc
 
 from pyastrobee.core.astrobee import Astrobee
 from pyastrobee.utils.rotations import (
@@ -24,9 +25,8 @@ from pyastrobee.utils.rotations import (
 )
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.transformations import make_transform_mat
-from pyastrobee.utils.coordinates import cartesian_to_spherical
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
-from pyastrobee.control.controller import PoseController
+from pyastrobee.control.controller import ConstraintController
 from pyastrobee.utils.bullet_utils import create_box
 
 
@@ -372,11 +372,31 @@ def get_viz_camera_params(
     return dist, yaw, pitch, target
 
 
+def cartesian_to_spherical(p: npt.ArrayLike) -> np.ndarray:
+    """Converts a cartesian (xyz) coordinate to spherical (radius, elevation, azimuth)
+
+    - Note that the elevation angle is traditionally measured w.r.t the +Z axis
+    - Radius >= 0
+    - Elevation is defined between 0 and pi
+    - Azimuth is defined between -pi and pi
+
+    Args:
+        p (npt.ArrayLike): XYZ cartesian coordinate to translate into spherical, shape (3,)
+
+    Returns:
+        np.ndarray: Spherical coordinates (radius, elevation, azimuth), shape (3,)
+    """
+    if len(p) != 3:
+        raise ValueError(f"Invalid coordinate size (should be 3).\nGot:{p}")
+    # Convert to float to avoid a bug in pytransform3d with integer arrays
+    return pc.spherical_from_cartesian(np.float64(p))
+
+
 def _main():
     # Quick test if the debug visualizer camera parameters are able to track the robot motion
     pybullet.connect(pybullet.GUI)
     robot = Astrobee()
-    controller = PoseController(robot)
+    controller = ConstraintController(robot)
     R = fixed_xyz_to_rmat([0, -np.pi / 4, 0])
     C2R = make_transform_mat(R, [-0.7, 0, 0.5])
     pos = np.array([0.0, 0.0, 0.0])

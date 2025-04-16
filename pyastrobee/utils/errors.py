@@ -1,12 +1,6 @@
 """Custom exceptions"""
 
-from enum import Enum
 from typing import Optional
-
-
-# TODO
-class ErrorCode(Enum):
-    pass
 
 
 class PybulletError(Exception):
@@ -23,13 +17,6 @@ class PybulletError(Exception):
         if code is not None:
             message += f"\nPybullet return value: {code}"
         super().__init__(message)
-
-
-# TODO
-class RosError(Exception):
-    """Custom exception type for dealing with ROS-related issues"""
-
-    pass
 
 
 class OptimizationError(Exception):

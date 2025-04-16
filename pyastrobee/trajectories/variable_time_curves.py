@@ -2,7 +2,7 @@
 
 We optimize using the following cost function: (integral of jerk l2 norm) + (time weight parameter) * (total duration)
 
-The weighting on the time component of this cost can be adjusted based on what component matters more. In general, 
+The weighting on the time component of this cost can be adjusted based on what component matters more. In general,
 a value of 1e-4 appears to put the two components of the cost (jerk and time) on the same order of magnitude
 
 Notes on the search method for the duration:
@@ -15,9 +15,9 @@ Notes on the search method for the duration:
   quadratic fit search. There is some T such that the trajectory is no longer feasible, given the constraints
   on velocity/accel/BCs..., and so in general, we want to solve for a T which is small, yet feasible. So, this
   search method incorporates this knowledge of this infeasible region for small time intervals.
-- Ideally, we'd just be able to plug this into CVXPY (since it should just be a quadratic program with some 
+- Ideally, we'd just be able to plug this into CVXPY (since it should just be a quadratic program with some
   constraints anyways). However, I tried a bunch of formulations of the constraints and it didn't seem to be
-  convex or DCP (often leading to either quadratic forms of two variables, or equality constraints on convex 
+  convex or DCP (often leading to either quadratic forms of two variables, or equality constraints on convex
   functions). Maybe there is a better formulation out there...
 """
 
@@ -47,9 +47,9 @@ def left_quadratic_fit_search(
     dx_tol: float,
     max_iters: int,
 ) -> tuple[float, float, list[Any]]:
-    """A version of quadratic fit search that assumes we have an infeasible region for small x (x >= 0)
+    """A modified version of quadratic fit search that assumes we have an infeasible region for small x (x >= 0)
 
-    Reference: Algorithms for Optimization (Kochenderfer), Algorithm 3.4
+    See Algorithms for Optimization (Kochenderfer), Algorithm 3.4 for quadratic fit search
 
     Args:
         f (Callable[[float], float  |  tuple[float, Any]]): Univariate function to optimize, callable as f(x).
