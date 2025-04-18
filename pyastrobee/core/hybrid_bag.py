@@ -1,6 +1,6 @@
 """Testing to see if we can attach a deformable handle to a rigid bag
 
-WORK IN PROGRESS!!!!!!
+(work in progress)
 """
 
 import time

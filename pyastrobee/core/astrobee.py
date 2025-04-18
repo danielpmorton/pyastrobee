@@ -4,15 +4,8 @@ In general, we assume that we're working with Honey. Multiple astrobees can be l
 we assume that they all have the exact same configuration
 """
 
-# TODO
-# - Get step sizes worked out!!
-# - I've removed the class attributes that keep track of which Astrobees are loaded. If this is desired in the future,
-#   make this a dictionary mapping sim client -> loaded Astrobees (since if we have multiple sim processes, keeping
-#   track of all of the IDs together will cause a mess)
-# - Determine off-diagonal inertia matrix values, and account for the arm in the inertia values?
-# - Check on if the known Astrobee inertia matches what Pybullet thinks the inertia is
-
 from typing import Optional, Union
+from enum import Enum
 
 import pybullet
 from pybullet_utils.bullet_client import BulletClient
@@ -30,7 +23,7 @@ from pyastrobee.utils.rotations import quat_to_rmat
 from pyastrobee.utils.poses import tmat_to_pos_quat, pos_quat_to_tmat
 from pyastrobee.config import astrobee_transforms
 from pyastrobee.config.astrobee_geom import COLLISION_RADIUS
-from pyastrobee.utils.python_utils import print_green, ExtendedEnum
+from pyastrobee.utils.python_utils import print_green
 from pyastrobee.utils.dynamics import (
     inertial_transformation,
     state_matrix,
@@ -99,7 +92,7 @@ class Astrobee:
     # Bounding sphere for collision modeling
     COLLISION_RADIUS = COLLISION_RADIUS
 
-    class Joints(ExtendedEnum):
+    class Joints(Enum):
         """Enumerates the different joints on the astrobee via their Pybullet index"""
 
         # Comments indicate the name of the joint in the URDF
@@ -111,7 +104,7 @@ class Astrobee:
         GRIPPER_RIGHT_PROXIMAL = 5  # top_aft_gripper_right_proximal_joint
         GRIPPER_RIGHT_DISTAL = 6  # top_aft_gripper_right_distal_joint
 
-    class Links(ExtendedEnum):
+    class Links(Enum):
         """Enumerates the different links on the astrobee via their Pybullet index
 
         Note: the URDF technically has 8 links, but it appears that pybullet considers
@@ -800,7 +793,6 @@ class Astrobee:
     @property
     def bounding_box(self) -> np.ndarray:
         """Current axis-aligned bounding box of the Astrobee body (Not including the arm), shape (2, 3)"""
-        # TODO convert to Box instance?
         return np.array(self.client.getAABB(self.id, -1))
 
 

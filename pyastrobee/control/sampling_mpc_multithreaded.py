@@ -1,4 +1,4 @@
-"""MPC with vectorized environments running in parallel
+"""Sampling-based MPC with the simulator as the model (multi-threaded version)
 
 We create three different types of environments:
 1: The main simulation
@@ -7,12 +7,11 @@ We create three different types of environments:
 
 When debugging, we visualize the nominal parallel environment as well, and show the trajectory rollout plan
 """
-# TODO:
-# - Merge this with the main MPC file?
-# - Turn this into a controller class, or just leave as a script?
-# - Update the observation and action spaces to match what we're using
-#   (robot/bag state observations). We're using dummy action values right now but we could
-#   also let the action input be a trajectory, rather than sampling in the env
+
+# Note: This is pretty slow
+# There are definitely smarter ways of doing sampling-based nonlinear MPC (or SCP nonlinear MPC),
+# and better simulators to use if parallelization is the goal (Issac gym, Mujoco MJX, Genesis, ...)
+# This was just the original design approach I took as a first-stab at the problem
 
 from pathlib import Path
 from datetime import datetime
@@ -81,9 +80,9 @@ def parallel_mpc_main(
         robot_pose=start_pose,
         bag_name=bag_name,
         bag_mass=bag_mass,
-        bag_type=DeformableCargoBag
-        if use_deformable_primary_sim
-        else ConstraintCargoBag,
+        bag_type=(
+            DeformableCargoBag if use_deformable_primary_sim else ConstraintCargoBag
+        ),
         load_full_iss=True,
     )
     # Set up vectorized environments
@@ -93,9 +92,9 @@ def parallel_mpc_main(
         "robot_pose": start_pose,
         "bag_name": bag_name,
         "bag_mass": bag_mass,
-        "bag_type": DeformableCargoBag
-        if use_deformable_rollouts
-        else ConstraintCargoBag,
+        "bag_type": (
+            DeformableCargoBag if use_deformable_rollouts else ConstraintCargoBag
+        ),
         # We need the full ISS loaded if using deformable rollouts so save/restore state sees the same envs
         "load_full_iss": use_deformable_rollouts,
     }

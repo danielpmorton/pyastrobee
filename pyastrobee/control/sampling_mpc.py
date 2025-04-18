@@ -1,21 +1,8 @@
-"""Model predictive control
+"""Sampling-based MPC with the simulator as the model (single-threaded version)
 
-NOTE
-- This is effectively obsolete since we have the parallelized version of this, but I'll keep this file for now
-- This implementation really just considers the dynamics/control of the astrobee base
-  rather than focusing on the operational space point or the bag
+See the multithreaded version for a better implementation so that the state save/resets don't
+occur in the same simulation
 """
-
-# TODOS
-# - Make a new stopping_criteria function that takes the bag dynamics into account
-# - Add different rollout methods with simplified models. Add logic/structure to incorporate the new methods
-# - Allow for physics clients to start in parallel without opening the GUI
-#   (see the gym environments Rika was mentioning)
-# QUESTIONS
-# - Is it better to define things in terms of the bag, the gripper, or the robot base?
-# - Should there be two stages to the control? Navigation vs stopping? We'll need to stabilize
-#   both the robot and the bag, stop both, and potentially disconnect from the bag. This might
-#   need multiple control modes
 
 from pybullet_utils.bullet_client import BulletClient
 import numpy as np

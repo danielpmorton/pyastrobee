@@ -29,13 +29,6 @@ Usage:
 
 Motions are only recorded on a button release to prevent over-queueing actions
 """
-# TODO
-# - Unify the coarse control toggling between the position and the arm control
-# - Add force control, velocity control, and a toggle between methods
-# - Add back finer control of the gripper rather than just an open/close toggle?
-# - Velocity / force control
-# - Angle snapping?
-# - Toggle between gripper frame and robot frame?
 
 import time
 
@@ -54,7 +47,6 @@ from pyastrobee.utils.debug_visualizer import get_viz_camera_params
 from pyastrobee.utils.python_utils import print_green, print_red
 
 
-# TODO add linear and angular speeds to the inputs?
 class KeyboardController:
     """Class to encompass the keyboard listening and corresponding robot actions
 
@@ -135,12 +127,12 @@ class KeyboardController:
         # Change the keys to be in pynput Key format, and add coarse control for uppercase letters
         self.pose_deltas = {}
         for key, delta in self.pos_euler_deltas_lowercase.items():
-            self.pose_deltas[
-                keyboard.KeyCode.from_char(key)
-            ] = pos_euler_xyz_to_pos_quat(delta)
-            self.pose_deltas[
-                keyboard.KeyCode.from_char(key.upper())
-            ] = pos_euler_xyz_to_pos_quat(self.mult * delta)
+            self.pose_deltas[keyboard.KeyCode.from_char(key)] = (
+                pos_euler_xyz_to_pos_quat(delta)
+            )
+            self.pose_deltas[keyboard.KeyCode.from_char(key.upper())] = (
+                pos_euler_xyz_to_pos_quat(self.mult * delta)
+            )
 
     def _print_commands(self):
         """Prints the keyboard/control action mapping information"""
@@ -152,6 +144,7 @@ class KeyboardController:
             + "l/j: +/- roll\n"
             + "i/k: +/- pitch\n"
             + "u/o: +/- yaw\n"
+            + "Capital letters: Coarse control of position/orientation\n"
             + "up/down: +/- arm proximal joint angle\n"
             + "right/left: +/- arm distal joint angle\n"
             + "c: Toggle coarse control for the arm\n"

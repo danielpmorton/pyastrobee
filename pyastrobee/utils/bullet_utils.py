@@ -1,10 +1,5 @@
 """Pybullet-specific helper functions"""
 
-# TODO:
-# - Clear up URDF/OBJ method confusion
-# - Decide if other connection methods (other than just GUI/DIRECT like SHARED_MEMORY, ...) should be included
-#   in the initialize_pybullet function()
-
 import os
 import time
 from typing import Optional, Union
@@ -20,8 +15,6 @@ from pyastrobee.utils.mesh_utils import get_mesh_data
 from pyastrobee.utils.python_utils import print_red
 
 
-# TODO consider clearing up some of the confusion between which inputs apply to which import methods
-# (e.g. mass/fixed differs between these, and rgba only applies to obj)
 def load_rigid_object(
     filename: str,
     texture_filename: Optional[str] = None,
@@ -167,8 +160,6 @@ def add_texture_to_deformable(
     )
 
 
-# TODO add support for deformable URDF files!
-# TODO check if it makes any sense (or is even possible) to have a fixed deformable?
 def load_deformable_object(
     filename: str,
     texture_filename: Optional[str] = None,
@@ -279,11 +270,10 @@ def initialize_pybullet(
         BulletClient: Pybullet physics simulation client
     """
     # Make sure we're in the right directory so filepaths work well with pybullet
-    # TODO: See if there is a more robust option here
     cwd = os.getcwd()
     if not cwd.endswith("pyastrobee") or cwd.endswith("pyastrobee/pyastrobee"):
         raise ConnectionRefusedError(
-            f"You are running scripts from {cwd}.\nEnsure you're at $HOME/pyastrobee"
+            f"You are running scripts from {cwd}.\nEnsure you're at the top-level pyastrobee directory."
         )
     # Ensure that the background color values are within the proper range
     bg_color = np.array(bg_color)
@@ -381,9 +371,6 @@ def load_floor(
     return floor_id
 
 
-# TODO:
-# - Add subprocessing so this can run separately?
-# - Add interrupt handling so we can pause this?
 def run_sim(
     viz_freq: float = 240,
     timeout: Optional[float] = None,

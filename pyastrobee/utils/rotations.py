@@ -37,17 +37,6 @@ Conventions:
 
 All angles are in radians
 """
-# TODO
-# - Decide if we want to get rid of the _xyz in the euler namings
-# - make a new function for custom euler angle conventions
-# - Make sure naming conventions are consistent
-# - Finish any NotImplemented functions
-# - Decide if the singularity exceptions from the old code should be re-included
-# - Update the documentation anywhere pytransform3d changed something
-# - Determine if the matrix checks should raise an exception or just return true/false
-# - Decide if it's useful to add back in other conventions (like zyx)? - Removed for now
-# - Make the angles inputs an array rather than multiple inputs
-# - Make functions to add deltas to the orientation
 
 from typing import Union
 
@@ -273,12 +262,6 @@ def check_rotation_mat(R: np.ndarray) -> bool:
         return False
 
 
-def rotate_point(rmat: np.ndarray, point: npt.ArrayLike):
-    # Use rotation matrix as operator within a single frame
-    # TODO
-    raise NotImplementedError
-
-
 def quat_to_rmat(quat: npt.ArrayLike) -> np.ndarray:
     """Converts XYZW quaternions to a rotation matrix
 
@@ -406,7 +389,7 @@ def axis_angle_to_quat(axis: npt.ArrayLike, angle: float) -> np.ndarray:
 
 
 def quat_to_axis_angle(
-    quat: Union[Quaternion, npt.ArrayLike]
+    quat: Union[Quaternion, npt.ArrayLike],
 ) -> tuple[np.ndarray, float]:
     """Converts an XYZW quaternion to an axis/angle representation
 
