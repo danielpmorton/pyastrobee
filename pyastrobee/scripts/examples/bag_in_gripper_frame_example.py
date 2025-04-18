@@ -3,6 +3,7 @@
 This was originally just supposed to be a temporary debugging script for the transformations but it
 is actually quite useful as an example of loading objects in relative locations to the Astrobee.
 """
+
 # TODO
 # - There is some weird stuff happening with the collision between the Astrobee and the bag
 #   on initialization. It seems like the collision info for the bag isn't perfect and thus the
@@ -23,49 +24,55 @@ from pyastrobee.utils.quaternions import random_quaternion
 from pyastrobee.utils.transformations import invert_transform_mat
 import pyastrobee.config.bag_properties as bag_props
 
-front_file = "pyastrobee/assets/meshes/bags/front_handle.obj"
-side_file = "pyastrobee/assets/meshes/bags/right_handle.obj"
-top_file = "pyastrobee/assets/meshes/bags/top_handle.obj"
 
-pybullet.connect(pybullet.GUI)
-np.random.seed(0)
+def main():
+    front_file = "pyastrobee/assets/meshes/bags/front_handle.obj"
+    side_file = "pyastrobee/assets/meshes/bags/right_handle.obj"
+    top_file = "pyastrobee/assets/meshes/bags/top_handle.obj"
 
-FRONT_BAG_TO_EE = invert_transform_mat(bag_props.FRONT_HANDLE_TRANSFORM)
-SIDE_BAG_TO_EE = invert_transform_mat(bag_props.RIGHT_HANDLE_TRANSFORM)
-TOP_BAG_TO_EE = invert_transform_mat(bag_props.TOP_HANDLE_TRANSFORM)
+    pybullet.connect(pybullet.GUI)
+    np.random.seed(0)
 
-robot = Astrobee(pose=[1, 1, 1, *random_quaternion()])
-EE2W = pos_quat_to_tmat(robot.ee_pose)
-visualize_frame(EE2W)
-FRONT_BAG_TO_WORLD = EE2W @ FRONT_BAG_TO_EE
-visualize_frame(FRONT_BAG_TO_WORLD)
-load_rigid_object(
-    front_file,
-    pos=FRONT_BAG_TO_WORLD[:3, 3],
-    orn=rmat_to_quat(FRONT_BAG_TO_WORLD[:3, :3]),
-)
+    FRONT_BAG_TO_EE = invert_transform_mat(bag_props.FRONT_HANDLE_TRANSFORM)
+    SIDE_BAG_TO_EE = invert_transform_mat(bag_props.RIGHT_HANDLE_TRANSFORM)
+    TOP_BAG_TO_EE = invert_transform_mat(bag_props.TOP_HANDLE_TRANSFORM)
+
+    robot = Astrobee(pose=[1, 1, 1, *random_quaternion()])
+    EE2W = pos_quat_to_tmat(robot.ee_pose)
+    visualize_frame(EE2W)
+    FRONT_BAG_TO_WORLD = EE2W @ FRONT_BAG_TO_EE
+    visualize_frame(FRONT_BAG_TO_WORLD)
+    load_rigid_object(
+        front_file,
+        pos=FRONT_BAG_TO_WORLD[:3, 3],
+        orn=rmat_to_quat(FRONT_BAG_TO_WORLD[:3, :3]),
+    )
+
+    robot_2 = Astrobee(pose=[1, -1, 1, *random_quaternion()])
+    EE2W_2 = pos_quat_to_tmat(robot_2.ee_pose)
+    visualize_frame(EE2W_2)
+    SIDE_BAG_TO_WORLD = EE2W_2 @ SIDE_BAG_TO_EE
+    visualize_frame(SIDE_BAG_TO_WORLD)
+    load_rigid_object(
+        side_file,
+        pos=SIDE_BAG_TO_WORLD[:3, 3],
+        orn=rmat_to_quat(SIDE_BAG_TO_WORLD[:3, :3]),
+    )
+
+    robot3 = Astrobee(pose=[-1, -1, 1, *random_quaternion()])
+    EE2W_3 = pos_quat_to_tmat(robot3.ee_pose)
+    visualize_frame(EE2W_3)
+    TOP_BAG_TO_WORLD = EE2W_3 @ TOP_BAG_TO_EE
+    visualize_frame(TOP_BAG_TO_WORLD)
+    load_rigid_object(
+        top_file,
+        pos=TOP_BAG_TO_WORLD[:3, 3],
+        orn=rmat_to_quat(TOP_BAG_TO_WORLD[:3, :3]),
+    )
+
+    input("Press Enter to exit...")
+    pybullet.disconnect()
 
 
-robot_2 = Astrobee(pose=[1, -1, 1, *random_quaternion()])
-EE2W_2 = pos_quat_to_tmat(robot_2.ee_pose)
-visualize_frame(EE2W_2)
-SIDE_BAG_TO_WORLD = EE2W_2 @ SIDE_BAG_TO_EE
-visualize_frame(SIDE_BAG_TO_WORLD)
-load_rigid_object(
-    side_file, pos=SIDE_BAG_TO_WORLD[:3, 3], orn=rmat_to_quat(SIDE_BAG_TO_WORLD[:3, :3])
-)
-
-
-robot3 = Astrobee(pose=[-1, -1, 1, *random_quaternion()])
-EE2W_3 = pos_quat_to_tmat(robot3.ee_pose)
-visualize_frame(EE2W_3)
-TOP_BAG_TO_WORLD = EE2W_3 @ TOP_BAG_TO_EE
-visualize_frame(TOP_BAG_TO_WORLD)
-load_rigid_object(
-    top_file, pos=TOP_BAG_TO_WORLD[:3, 3], orn=rmat_to_quat(TOP_BAG_TO_WORLD[:3, :3])
-)
-
-input("The sim is paused. Press Enter to begin looping it")
-while True:
-    pybullet.stepSimulation()
-    time.sleep(1 / 240)
+if __name__ == "__main__":
+    main()

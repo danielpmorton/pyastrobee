@@ -7,35 +7,41 @@ from pyastrobee.utils.debug_visualizer import (
 )
 from pyastrobee.utils.bullet_utils import initialize_pybullet, run_sim
 
-client = initialize_pybullet(bg_color=[0.5, 0.5, 0.5])
-robot = Astrobee()
-line_lengths = [0.5, 0.5, 0.25, 0.25, 0.1, 0.1, 0.1, 0.1]
-names = [
-    "body",
-    "top_aft",
-    "arm_proximal",
-    "arm_distal",
-    "gripper_left_proximal",
-    "gripper_left_distal",
-    "gripper_right_proximal",
-    "gripper_right_distal",
-]
-idxs = range(-1, 7)
-num_links = 8
 
-print("Now viewing all of the frames on the Astrobee")
-line_ids = []
-for i, length in zip(idxs, line_lengths):
-    line_ids += visualize_link_frame(robot.id, i, length)
+def main():
+    client = initialize_pybullet(bg_color=[0.5, 0.5, 0.5])
+    robot = Astrobee()
+    line_lengths = [0.5, 0.5, 0.25, 0.25, 0.1, 0.1, 0.1, 0.1]
+    names = [
+        "body",
+        "top_aft",
+        "arm_proximal",
+        "arm_distal",
+        "gripper_left_proximal",
+        "gripper_left_distal",
+        "gripper_right_proximal",
+        "gripper_right_distal",
+    ]
+    idxs = range(-1, 7)
+    num_links = 8
 
-input("Press enter to step through the links individually")
-remove_debug_objects(line_ids)
+    print("Now viewing all of the frames on the Astrobee")
+    line_ids = []
+    for i, length in zip(idxs, line_lengths):
+        line_ids += visualize_link_frame(robot.id, i, length)
 
-for i in range(num_links):
-    print("Now viewing link: ", names[i])
-    line_ids = visualize_link_frame(robot.id, idxs[i], line_lengths[i])
-    input("Press Enter to continue to the next link")
+    input("Press enter to step through the links individually")
     remove_debug_objects(line_ids)
 
-print("Done. Looping sim...")
-run_sim()
+    for i in range(num_links):
+        print("Now viewing link: ", names[i])
+        line_ids = visualize_link_frame(robot.id, idxs[i], line_lengths[i])
+        input("Press Enter to continue to the next link")
+        remove_debug_objects(line_ids)
+
+    print("Done. Looping sim...")
+    run_sim()
+
+
+if __name__ == "__main__":
+    main()
