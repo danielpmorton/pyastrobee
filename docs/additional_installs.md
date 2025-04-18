@@ -2,9 +2,7 @@
 
 ## Prerequisites:
 
-- Ubuntu 20.04
-  - WSL2 seems to work for some of the general pybullet functionality but the full Gazebo/ROS setup with NASA's astrobee code is (currently) untested
-- No non-Noetic versions of ROS installed
+- Ubuntu >= 20.04
 - cmake
   - `sudo apt install cmake`
 - numpy
@@ -18,6 +16,8 @@ If you're installing things on a low-memory machine, cmake may fail during the b
 Root access is required for both the ROS install and the Astrobee install. 
 
 ## Pyenv
+
+This is what I use to manage my virtual environments and python versions (`uv`, `conda`, and more also work)
 
 ```
 curl https://pyenv.run | bash
@@ -48,24 +48,11 @@ Refer to http://wiki.ros.org/noetic/Installation/Ubuntu for more info
 
 ## OpenGL
 
+This can sometimes be necessary when building Bullet from source
+
 ```
 sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 ```
-
-## Bullet
-
-Make sure numpy and OpenGL are installed first!
-
-```
-cd $HOME/software
-git clone https://github.com/bulletphysics/bullet3
-cd bullet3
-./build_cmake_pybullet_double.sh
-```
-
-## Astrobee
-
-This can be an extensive process with a lot of potential issues that may come up. There is a lot more info in a separate page [here](../docs/nasa_sim.md).
 
 ## Blender
 
@@ -97,20 +84,6 @@ cmake --build build
 3. Move the file to `$HOME/software`
 4. `chmod u+x` the AppImage to make it executable
 
-## Mujoco
-
-Download the source code (mostly just to use as a reference for now):
-
-```
-cd $HOME/software
-git clone https://github.com/deepmind/mujoco
-```
-
-Get the pre-built binaries:
-
-1. Download the latest `linux-x86_64.tar.gz` file from  https://github.com/deepmind/mujoco/releases
-2. Extract the contents to `$HOME/software`
-
 ## Assimp
 
 This is only required if you'll be modifying/converting meshes outside of Blender
@@ -123,38 +96,4 @@ sudo apt install assimp-utils
 
 This is needed for modifying/creating tetrahedral meshes
 1. Go to https://gmsh.info/ and click on the Linux download link
-2. Extract the contents to `$HOME/software`
-
-## VSCode
-
-```
-sudo snap install --classic code
-```
-
-If snap is not available:
-
-```
-sudo apt-get install wget gpg
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-rm -f packages.microsoft.gpg
-
-sudo apt install apt-transport-https
-sudo apt update
-sudo apt install code
-```
-
-Refer to https://code.visualstudio.com/docs/setup/linux for more details and alternate install methods
-
-## Other miscellaneous tweaks
-
-To get a nice visual graph of Git history via `git graph`:
-```
-git config --global alias.graph "log --all --graph --decorate --oneline"
-```
-
-To make sure Ipython (via `ipython`) uses the same python version as your environment: in `~/.bashrc`, add:
-```
-alias ipython="python -m IPython"
-```
+2. Extract the contents to `$HOME/software` or your preferred location

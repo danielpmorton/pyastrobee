@@ -15,8 +15,6 @@ We use Portray to build the documentation. Note: if you'd like a local copy of t
 
 [Additional Installs](docs/additional_installs.md): Additional installs important for working with the project
 
-[Contributing](docs/contributing.md): Help develop new features!
-
 [Loading ISS Meshes](docs/loading_iss_meshes.md): Dealing with complex meshes and textures in Pybullet
 
 [Re-texturing](docs/retexturing.md): How to modify Astrobee meshes to load the URDF with a single texture file
@@ -27,14 +25,8 @@ We use Portray to build the documentation. Note: if you'd like a local copy of t
 
 [Bag Dynamics](docs/bag_dynamics.md): Some notes on defining mass/inertia values of the cargo bag
 
-[Testing](docs/testing.md): Information about running test cases
-
-[Using NASA's simulator](docs/nasa_sim.md): Helpful commands and installation debugging
+[Using NASA's simulator](docs/nasa_sim.md): Helpful commands and installation debugging (optional)
 
 [Assorted Pybullet tips](docs/pybullet_tips.md): Important notes that might not be clear from the quickstart guide
 
 [References](docs/references.md): Links to hepful resources
-
-## Project Management
-
-[Trello link](https://trello.com/b/ib90JZ1d/pyastrobee-progress): I'll try to keep this relatively up-to-date

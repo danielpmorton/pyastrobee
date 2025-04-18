@@ -1,5 +1,7 @@
 # Notes on NASA's simulation environment
 
+`pyastrobee` is an easier-to-use version of NASA's Astrobee simulator, and installing NASA's sim is not required. But, if you would additionally like to experiment with the full simulator, I've written some notes below.
+
 ## Build/Install
 
 The go-to link here is the [Non-NASA Astrobee Install Guide](https://nasa.github.io/astrobee/v/develop/install-nonNASA.html), which contains pretty much everything you need to set up their code. Unfortunately, there are a lot of random bugs you might encounter along the way
@@ -36,7 +38,6 @@ If this stil isn't working:
 - Check that you don't have any virtual environments currently active
 - Try anothere re-build
 - Delete the repo and start over, paying *really* close attention to any warnings that pop up in the terminal (some dependencies might not actually get installed when they should have, and then you have to manually install them with `apt`)
-- (nuclear option 💣) Wipe the computer and start over (unfortunately, not joking)
 
 ### Docker
 
