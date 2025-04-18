@@ -6,7 +6,7 @@ import numpy as np
 import pybullet
 
 from pyastrobee.core.astrobee import Astrobee
-from pyastrobee.control.controller import ConstraintController
+from pyastrobee.control.constraint_controller import ConstraintController
 from pyastrobee.utils.debug_visualizer import visualize_frame, remove_debug_objects
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.quaternions import random_quaternion

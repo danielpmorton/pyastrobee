@@ -26,7 +26,7 @@ from pyastrobee.utils.rotations import (
 from pyastrobee.utils.poses import pos_quat_to_tmat
 from pyastrobee.utils.transformations import make_transform_mat
 from pyastrobee.config.astrobee_transforms import OBSERVATION_CAM
-from pyastrobee.control.controller import ConstraintController
+from pyastrobee.control.constraint_controller import ConstraintController
 from pyastrobee.utils.bullet_utils import create_box
 
 
