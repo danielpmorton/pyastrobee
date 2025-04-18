@@ -5,6 +5,7 @@ NOTE:
   non-vectorized environment will be reflected in all non-vectorized environments, but not the vectorized ones.
   You'd have to explicitly call the set_attr method for that)
 """
+
 # TODO
 # - See if there is a faster way to save/restore state in the case that we're using the rigid bag
 # - Add ability to save/restore state from a state ID (saved in memory) -- ONLY if this is useful
@@ -33,13 +34,13 @@ from pyastrobee.core.iss import ISS
 from pyastrobee.core.abstract_bag import CargoBag
 from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.constraint_bag import ConstraintCargoBag
-from pyastrobee.control.cost_functions import safe_set_cost
+from pyastrobee.control.metrics import safe_set_cost
 from pyastrobee.trajectories.sampling import generate_trajs, sample_state
 from pyastrobee.utils.debug_visualizer import remove_debug_objects
 from pyastrobee.utils.boxes import check_box_containment, visualize_3D_box
 from pyastrobee.config.iss_safe_boxes import FULL_SAFE_SET
 from pyastrobee.utils.quaternions import quaternion_dist
-from pyastrobee.control.cost_functions import robot_and_bag_termination_criteria
+from pyastrobee.control.metrics import robot_and_bag_termination_criteria
 from pyastrobee.config.astrobee_motion import MAX_FORCE_MAGNITUDE, MAX_TORQUE_MAGNITUDE
 from pyastrobee.trajectories.trajectory import Trajectory, ArmTrajectory
 from pyastrobee.utils.transformations import invert_transform_mat

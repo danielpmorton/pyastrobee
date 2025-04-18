@@ -5,6 +5,7 @@ NOTE
 - This implementation really just considers the dynamics/control of the astrobee base
   rather than focusing on the operational space point or the bag
 """
+
 # TODOS
 # - Make a new stopping_criteria function that takes the bag dynamics into account
 # - Add different rollout methods with simplified models. Add logic/structure to incorporate the new methods
@@ -25,7 +26,7 @@ from pyastrobee.core.deformable_bag import DeformableCargoBag
 from pyastrobee.core.iss import ISS
 from pyastrobee.utils.bullet_utils import initialize_pybullet
 from pyastrobee.trajectories.trajectory import stopping_criteria
-from pyastrobee.control.cost_functions import state_tracking_cost
+from pyastrobee.control.metrics import state_tracking_cost
 from pyastrobee.trajectories.planner import global_planner
 from pyastrobee.trajectories.sampling import generate_trajs
 from pyastrobee.control.force_torque_control import ForceTorqueController

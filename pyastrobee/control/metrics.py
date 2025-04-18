@@ -1,8 +1,4 @@
-"""Cost functions: For defining how well we track trajectories, remain in collision-free regions, and more"""
-
-# TODO
-# - rename this file to metrics
-# - move the original termination criteria function here
+"""Simple metrics / cost functions: For defining how well we track trajectories, remain in collision-free regions, ..."""
 
 from typing import Union, Optional
 
