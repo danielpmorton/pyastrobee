@@ -2,13 +2,6 @@
 
 Our default representation of a pose will be position (xyz) + quaternion (xyzw)
 """
-# TODO
-# - Decide if we can eliminate any representations that won't be used
-# - Add pos_fixed_xyz??
-# - Is the Pose class useful?
-
-from typing import Optional
-from enum import Enum
 
 import numpy as np
 import numpy.typing as npt
@@ -19,146 +12,6 @@ from pyastrobee.utils import transformations as tfs
 from pyastrobee.utils import quaternions as qts
 
 
-class Pose:
-    """Class to handle conversions between different representations of a pose
-
-    Args:
-        pos_euler_xyz (npt.ArrayLike, optional): Position and Euler XYZ angles (length = 6).
-            Defaults to None, in which case another representation should be provided
-        pos_quat (npt.ArrayLike, optional): Position and XYZW quaternions (length = 7).
-            Defaults to None, in which case another representation should be provided
-        tmat (np.ndarray, optional): (4,4) transformation matrix.
-            Defaults to None, in which case another representation should be provided
-
-    Raises:
-        ValueError: If either multiple inputs or no inputs are provided
-    """
-
-    class Convention(Enum):
-        """Helper class to enumerate the different formats of a pose"""
-
-        POS_EULER_XYZ = 1
-        POS_QUAT = 2
-        TMAT = 3
-
-    def __init__(
-        self,
-        pos_euler_xyz: Optional[npt.ArrayLike] = None,
-        pos_quat: Optional[npt.ArrayLike] = None,
-        tmat: Optional[np.ndarray] = None,
-    ):
-        # Check to make sure that only one format of the pose was provided at init
-        input_count = sum(val is not None for val in [pos_euler_xyz, pos_quat, tmat])
-        if input_count > 1:
-            raise ValueError(
-                f"Too many inputs provided ({input_count}). Specify one type of pose"
-            )
-        if input_count == 0:
-            # TODO: decide if it makes sense to allow for an "empty" initialization?
-            # (Would there be a case where we'd want to assign a value later on?)
-            raise ValueError("Must provide one pose input")
-
-        # Initialize our protected variables
-        self._pos_euler_xyz = None
-        self._pos_quat = None
-        self._tmat = None
-
-        # Set the properties based on the input
-        if pos_euler_xyz is not None:
-            self._orig_convention = Pose.Convention.POS_EULER_XYZ
-            self.pos_euler_xyz = pos_euler_xyz
-        elif pos_quat is not None:
-            self._orig_convention = Pose.Convention.POS_QUAT
-            self.pos_quat = pos_quat
-        elif tmat is not None:
-            self._orig_convention = Pose.Convention.TMAT
-            self.tmat = tmat
-
-    @property
-    def pos_euler_xyz(self):
-        """Position and XYZ Euler angles, shape=(6,)"""
-        if self._pos_euler_xyz is None:
-            if self._orig_convention == Pose.Convention.POS_QUAT:
-                self._pos_euler_xyz = pos_quat_to_pos_euler_xyz(self.pos_quat)
-            elif self._orig_convention == Pose.Convention.TMAT:
-                self._pos_euler_xyz = tmat_to_pos_euler_xyz(self.tmat)
-        return self._pos_euler_xyz
-
-    @pos_euler_xyz.setter
-    def pos_euler_xyz(self, pose: npt.ArrayLike):
-        """Updates the position/euler pose, and resets other stored representations"""
-        if not check_pos_euler_xyz(pose):
-            raise ValueError(
-                f"Cannot set the pose, invalid position + euler format.\nGot: {pose}"
-            )
-        # Update the pose and our knowledge of the convention
-        self._pos_euler_xyz = pose
-        self._orig_convention = Pose.Convention.POS_EULER_XYZ
-        # Reset the stored other conventions since we've updated the value
-        self._pos_quat = None
-        self._tmat = None
-
-    @property
-    def pos_quat(self):
-        """Position and XYZW quaternions, shape=(7,)"""
-        if self._pos_quat is None:
-            if self._orig_convention == Pose.Convention.POS_EULER_XYZ:
-                self._pos_quat = pos_euler_xyz_to_pos_quat(self.pos_euler_xyz)
-            elif self._orig_convention == Pose.Convention.TMAT:
-                self._pos_quat = tmat_to_pos_quat(self.tmat)
-        return self._pos_quat
-
-    @pos_quat.setter
-    def pos_quat(self, pose: npt.ArrayLike):
-        """Updates the position/quaternion pose, and resets other stored representations"""
-        if not check_pos_quat(pose):
-            raise ValueError(
-                f"Cannot set the pose, invalid position + quaternion format.\nGot: {pose}"
-            )
-        # Update the pose and our knowledge of the convention
-        self._pos_quat = pose
-        self._orig_convention = Pose.Convention.POS_QUAT
-        # Reset the stored other conventions since we've updated the value
-        self._pos_euler_xyz = None
-        self._tmat = None
-
-    @property
-    def tmat(self):
-        """Transformation matrix, shape=(4,4)"""
-        if self._tmat is None:
-            if self._orig_convention == Pose.Convention.POS_EULER_XYZ:
-                self._tmat = pos_euler_xyz_to_tmat(self.pos_euler_xyz)
-            elif self._orig_convention == Pose.Convention.POS_QUAT:
-                self._tmat = pos_quat_to_tmat(self.pos_quat)
-        return self._tmat
-
-    @tmat.setter
-    def tmat(self, pose: npt.ArrayLike):
-        """Updates the transformation matrix, and resets other stored representations"""
-        if not tfs.check_transform_mat(pose):
-            raise ValueError(
-                f"Cannot set the pose, invalid transformation matrix format.\nGot: {pose}"
-            )
-        # Update the pose and our knowledge of the convention
-        self._tmat = pose
-        self._orig_convention = Pose.Convention.TMAT
-        # Reset the stored other conventions since we've updated the value
-        self._pos_euler_xyz = None
-        self._pos_quat = None
-
-
-class ArmPose(Pose):
-    pass  # TODO
-
-
-class RobotPose(Pose):
-    pass  # TODO
-
-
-# TODO still need to decide if these checks should error or just return bool
-# Maybe make separate functions like strict_check_pos_euler_xyz?
-# I didn't like the "might error, might return the same thing" that pytransform did
-# TODO add other checks to these as well
 def check_pos_euler_xyz(pose: npt.ArrayLike) -> bool:
     """Checks to see if a position + Euler XYZ pose is valid
 
@@ -350,12 +203,6 @@ def add_local_pose_delta(pose: npt.ArrayLike, pose_delta: npt.ArrayLike) -> np.n
     T_D2R = pos_quat_to_tmat(pose_delta)  # Delta to robot
     T_D2W = T_R2W @ T_D2R  # Delta to world
     return tmat_to_pos_quat(T_D2W)
-
-
-# TODO
-# Something like a rotational difference and a translational difference??? Idk
-def distance_between_poses(pose1: Pose, pose2: Pose) -> np.ndarray:
-    raise NotImplementedError
 
 
 def pose_derivatives(

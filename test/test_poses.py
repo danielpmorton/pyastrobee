@@ -5,7 +5,6 @@ import unittest
 import numpy as np
 
 from pyastrobee.utils import poses
-from pyastrobee.utils.poses import Pose
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils import transformations as tfs
 
@@ -21,33 +20,14 @@ class PoseTest(unittest.TestCase):
         T = tfs.make_transform_mat(R, p)
         pos_euler_xyz = np.array([*p, *angles])
         pos_quat = np.array([*p, *q])
-        pose_1 = Pose(pos_euler_xyz=pos_euler_xyz)
-        pose_2 = Pose(pos_quat=pos_quat)
-        pose_3 = Pose(tmat=T)
-        np.testing.assert_array_almost_equal(pose_1.pos_euler_xyz, pose_2.pos_euler_xyz)
-        np.testing.assert_array_almost_equal(pose_2.pos_euler_xyz, pose_3.pos_euler_xyz)
-        np.testing.assert_array_almost_equal(pose_1.pos_quat, pose_2.pos_quat)
-        np.testing.assert_array_almost_equal(pose_2.pos_quat, pose_3.pos_quat)
-        np.testing.assert_array_almost_equal(pose_1.tmat, pose_2.tmat)
-        np.testing.assert_array_almost_equal(pose_2.tmat, pose_3.tmat)
-
-    def test_reassignment(self):
-        # Create a Pose with some initial pose
-        angles = [0.1, 0.2, 0.3]
-        p = [4, 5, 6]
-        pos_euler_xyz = np.array([*p, *angles])
-        pose = Pose(pos_euler_xyz=pos_euler_xyz)
-        new_angles = [0.3, 0.2, 0.1]
-        _ = pose.tmat  # Store a tmat calculation
-        # Create a new pose and update the Pose object
-        new_pos_euler_xyz = np.array([*p, *new_angles])
-        pose.pos_euler_xyz = new_pos_euler_xyz
-        new_tmat = pose.tmat
-        # The pose.tmat should have been reset since we changed the value via another convention
-        comparison_pos_euler_xyz = poses.tmat_to_pos_euler_xyz(new_tmat)
-        np.testing.assert_array_almost_equal(
-            new_pos_euler_xyz, comparison_pos_euler_xyz
-        )
+        # fmt: off
+        np.testing.assert_array_almost_equal(pos_euler_xyz, poses.pos_quat_to_pos_euler_xyz(pos_quat))
+        np.testing.assert_array_almost_equal(pos_euler_xyz, poses.tmat_to_pos_euler_xyz(T))
+        np.testing.assert_array_almost_equal(pos_quat, poses.pos_euler_xyz_to_pos_quat(pos_euler_xyz))
+        np.testing.assert_array_almost_equal(pos_quat, poses.tmat_to_pos_quat(T))
+        np.testing.assert_array_almost_equal(T, poses.pos_quat_to_tmat(pos_quat))
+        np.testing.assert_array_almost_equal(T, poses.pos_euler_xyz_to_tmat(pos_euler_xyz))
+        # fmt: on
 
     def test_adding_delta(self):
         # Evaluate the deltas based on position/euler since it is easier to see if
