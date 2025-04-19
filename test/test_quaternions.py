@@ -9,7 +9,6 @@ import numpy as np
 
 from pyastrobee.utils import rotations as rts
 from pyastrobee.utils.math_utils import normalize
-from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternions import (
     quaternion_derivative,
     quats_to_angular_velocities,
@@ -24,12 +23,6 @@ from pyastrobee.utils.quaternions import (
 
 class QuaternionTest(unittest.TestCase):
     """Contains test cases for the Quaternion class and all quaternion-associated functions"""
-
-    def test_quaternion_class(self):
-        q0 = normalize([0.1, 0.2, 0.3, 0.4])
-        q = Quaternion(wxyz=q0)
-        np.testing.assert_array_almost_equal(q0, q.wxyz, decimal=14)
-        np.testing.assert_array_almost_equal([*q0[1:], q0[0]], q.xyzw, decimal=14)
 
     def test_quaternion_conversions(self):
         q = normalize([0.1, 0.2, 0.3, 0.4])

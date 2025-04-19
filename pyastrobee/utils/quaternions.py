@@ -11,7 +11,6 @@ import pytransform3d.rotations as rt
 import pytransform3d.batch_rotations as brt
 
 from pyastrobee.utils.math_utils import normalize
-from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.rotations import (
     axis_angle_between_two_vectors,
     axis_angle_to_quat,
@@ -125,66 +124,49 @@ def wxyz_to_xyzw(quats: npt.ArrayLike) -> np.ndarray:
         return quats[:, idx]
 
 
-def quaternion_derivative(
-    q: Union[Quaternion, npt.ArrayLike], omega: npt.ArrayLike
-) -> np.ndarray:
+def quaternion_derivative(q: npt.ArrayLike, omega: npt.ArrayLike) -> np.ndarray:
     """Quaternion derivative for a given world-frame angular velocity
 
     Args:
-        q (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,)
+        q (npt.ArrayLike): XYZW quaternion, shape (4,)
         omega (npt.ArrayLike): Angular velocity (wx, wy, wz) in world frame, shape (3,)
 
     Returns:
         np.ndarray: Quaternion derivative, shape (4,)
     """
-    if isinstance(q, Quaternion):
-        q = q.xyzw
-    else:
-        q = check_quaternion(q)
+    q = check_quaternion(q)
     x, y, z, w = q
     GT = np.array([[w, z, -y], [-z, w, x], [y, -x, w], [-x, -y, -z]])
     return (1 / 2) * GT @ omega
 
 
-def quaternion_integration(
-    q: Union[Quaternion, npt.ArrayLike], w: npt.ArrayLike, dt: float
-) -> np.ndarray:
+def quaternion_integration(q: npt.ArrayLike, w: npt.ArrayLike, dt: float) -> np.ndarray:
     """Propagate a quaternion forward one timestep based on the current angular velocity
 
     Args:
-        q (Union[Quaternion, npt.ArrayLike]): Initial XYZW quaternion, shape (4,)
+        q (npt.ArrayLike): Initial XYZW quaternion, shape (4,)
         w (npt.ArrayLike): Angular velocity (wx, wy, wz), shape (3,)
         dt (float): Timestep duration (seconds)
 
     Returns:
         np.ndarray: Next XYZW quaternion, q(t + dt), shape (4,)
     """
-    if isinstance(q, Quaternion):
-        q = q.xyzw
-    else:
-        q = check_quaternion(q)
+    q = check_quaternion(q)
     return normalize(q + dt * quaternion_derivative(q, w))
 
 
-def combine_quaternions(
-    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
-) -> np.ndarray:
+def combine_quaternions(q1: npt.ArrayLike, q2: npt.ArrayLike) -> np.ndarray:
     """Combines the angular representation of two quaternions
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): First XYZW quaternion, shape (4,) if passing in an array
-        q2 (Union[Quaternion, npt.ArrayLike]): Second XYZW quaternion, shape (4,) if passing in an array
+        q1 (npt.ArrayLike): First XYZW quaternion, shape (4,) if passing in an array
+        q2 (npt.ArrayLike): Second XYZW quaternion, shape (4,) if passing in an array
 
     Returns:
         np.ndarray: Combined XYZW quaternion, shape (4,)
     """
-    if not isinstance(q1, Quaternion):
-        q1 = Quaternion(xyzw=q1)
-    if not isinstance(q2, Quaternion):
-        q2 = Quaternion(xyzw=q2)
-    q = Quaternion()
-    q.wxyz = rt.concatenate_quaternions(q1.wxyz, q2.wxyz)
-    return q.xyzw
+    wxyz = rt.concatenate_quaternions(xyzw_to_wxyz(q1), xyzw_to_wxyz(q2))
+    return wxyz_to_xyzw(wxyz)
 
 
 def quaternion_between_two_vectors(v1: npt.ArrayLike, v2: npt.ArrayLike) -> np.ndarray:
@@ -221,8 +203,8 @@ def get_closest_heading_quat(q0: npt.ArrayLike, heading: npt.ArrayLike) -> np.nd
 
 
 def quaternion_slerp(
-    q1: Union[Quaternion, npt.ArrayLike],
-    q2: Union[Quaternion, npt.ArrayLike],
+    q1: npt.ArrayLike,
+    q2: npt.ArrayLike,
     pct: Union[float, npt.ArrayLike],
 ) -> np.ndarray:
     """Interpolates between two quaternions via SLERP (spherical linear interpolation)
@@ -230,10 +212,8 @@ def quaternion_slerp(
     To interpolate at multiple points, pass in pcts as an array of interpolation percentages
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
-        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
+        q1 (npt.ArrayLike): Starting XYZW quaternion, shape (4,)
+        q2 (npt.ArrayLike): Ending XYZW quaternion, shape (4,)
         pct (Union[float, npt.ArrayLike]): Percent(s) between start -> end, expressed as float(s) in [0, 1]
 
     Returns:
@@ -245,54 +225,43 @@ def quaternion_slerp(
         raise ValueError(
             f"Interpolation percentage(s) must be between 0 and 1.\nGot: {pct}"
         )
-    if not isinstance(q1, Quaternion):
-        q1 = Quaternion(xyzw=q1)
-    if not isinstance(q2, Quaternion):
-        q2 = Quaternion(xyzw=q2)
+    q1_wxyz = xyzw_to_wxyz(q1)
+    q2_wxyz = xyzw_to_wxyz(q2)
     # The shortest path parameter does not add too much extra computation and should handle quaternion ambiguity well
     shortest_path = True
     # Simple conversion for one interpolation point, otherwise use batched process
     if n == 1:
-        q_interp = Quaternion(
-            wxyz=rt.quaternion_slerp(q1.wxyz, q2.wxyz, pct[0], shortest_path)
-        )
-        return q_interp.xyzw
+        wxyz_interp = rt.quaternion_slerp(q1_wxyz, q2_wxyz, pct[0], shortest_path)
+        return wxyz_to_xyzw(wxyz_interp)
     else:
-        wxyz_quats = brt.quaternion_slerp_batch(q1.wxyz, q2.wxyz, pct, shortest_path)
+        wxyz_quats = brt.quaternion_slerp_batch(q1_wxyz, q2_wxyz, pct, shortest_path)
         xyzw_quats = np.zeros_like(wxyz_quats)
         xyzw_quats[:, :3] = wxyz_quats[:, 1:]  # qx, qy, qz
         xyzw_quats[:, -1] = wxyz_quats[:, 0]  # qw
         return xyzw_quats  # (n, 4)
 
 
-def quaternion_dist(
-    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
-) -> float:
+def quaternion_dist(q1: npt.ArrayLike, q2: npt.ArrayLike) -> float:
     """Computes the distance between two quaternions
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
-            an array of the XYZW quaternions (length = 4)
-        q2 (Union[Quaternion, npt.ArrayLike]): A second quaterion to compare against
+        q1 (npt.ArrayLike): XYZW quaternion, shape (4,)
+        q2 (npt.ArrayLike): A second XYZW quaternion, shape (4,)
 
     Returns:
         float: Distance between the two quaternions
     """
-    if not isinstance(q1, Quaternion):
-        q1 = Quaternion(xyzw=q1)
-    if not isinstance(q2, Quaternion):
-        q2 = Quaternion(xyzw=q2)
-    return rt.quaternion_dist(q1.wxyz, q2.wxyz)
+    wxyz_1 = xyzw_to_wxyz(q1)
+    wxyz_2 = xyzw_to_wxyz(q2)
+    return rt.quaternion_dist(wxyz_1, wxyz_2)
 
 
-def quaternion_diff(
-    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
-) -> np.ndarray:
+def quaternion_diff(q1: npt.ArrayLike, q2: npt.ArrayLike) -> np.ndarray:
     """Gives the quaternion representing the rotation from q1 -> q2
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Starting XYZW quaternion, shape (4,)
-        q2 (Union[Quaternion, npt.ArrayLike]): Ending XYZW quaternion, shape (4,)
+        q1 (npt.ArrayLike): Starting XYZW quaternion, shape (4,)
+        q2 (npt.ArrayLike): Ending XYZW quaternion, shape (4,)
 
     Returns:
         np.ndarray: XYZW quaternion, shape (4,)
@@ -300,9 +269,7 @@ def quaternion_diff(
     return combine_quaternions(q2, conjugate(q1))
 
 
-def quaternion_angular_error(
-    q: Union[Quaternion, npt.ArrayLike], q_des: Union[Quaternion, npt.ArrayLike]
-) -> np.ndarray:
+def quaternion_angular_error(q: npt.ArrayLike, q_des: npt.ArrayLike) -> np.ndarray:
     """Gives the instantaneous angular error between two quaternions (q w.r.t q_des)
 
     - This is similar (but not the same) as a difference between fixed-XYZ conventions
@@ -310,21 +277,14 @@ def quaternion_angular_error(
     - This error is defined in WORLD frame, not the robot's body-fixed frame
 
     Args:
-        q (Union[Quaternion, npt.ArrayLike]): Current XYZW quaternion, shape (4,)
-        q_des (Union[Quaternion, npt.ArrayLike]): Desired XYZW quaternion, shape (4,)
+        q (npt.ArrayLike): Current XYZW quaternion, shape (4,)
+        q_des (npt.ArrayLike): Desired XYZW quaternion, shape (4,)
 
     Returns:
         np.ndarray: Instantaneous angular error, shape (3,)
     """
-    if isinstance(q, Quaternion):
-        q = q.xyzw
-    else:
-        q = check_quaternion(q)
-    if isinstance(q_des, Quaternion):
-        q_des = q_des.xyzw
-    else:
-        q_des = check_quaternion(q_des)
-
+    q = check_quaternion(q)
+    q_des = check_quaternion(q_des)
     x, y, z, w = q
     return 2 * np.array([[-w, z, -y, x], [-z, -w, x, y], [y, -x, -w, z]]) @ q_des
 
@@ -338,22 +298,20 @@ def exponential_map(v: npt.ArrayLike) -> np.ndarray:
     Returns:
         np.ndarray: XYZW quaternion, shape (4,)
     """
-    q = Quaternion(wxyz=rt.quaternion_from_compact_axis_angle(v))
-    return q.xyzw
+    wxyz = rt.quaternion_from_compact_axis_angle(v)
+    return wxyz_to_xyzw(wxyz)
 
 
-def log_map(q: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+def log_map(q: npt.ArrayLike) -> np.ndarray:
     """Logarithmic map: XYZW quaternion to Lie algebra
 
     Args:
-        q (Union[Quaternion, npt.ArrayLike]): XYZW quaternion to map
+        q (npt.ArrayLike): XYZW quaternion to map
 
     Returns:
         np.ndarray: Vector on the Lie algebra, shape (3,)
     """
-    if not isinstance(q, Quaternion):
-        q = Quaternion(xyzw=q)
-    return rt.compact_axis_angle_from_quaternion(q.wxyz)
+    return rt.compact_axis_angle_from_quaternion(xyzw_to_wxyz(q))
 
 
 def pure(v: npt.ArrayLike) -> np.ndarray:
@@ -376,22 +334,16 @@ def pure(v: npt.ArrayLike) -> np.ndarray:
 
 
 # Alternatively, can implement this with pytransform's concatenate_quaternions function
-def multiply(
-    q1: Union[Quaternion, npt.ArrayLike], q2: Union[Quaternion, npt.ArrayLike]
-) -> np.ndarray:
+def multiply(q1: npt.ArrayLike, q2: npt.ArrayLike) -> np.ndarray:
     """Multiply two XYZW quaternions
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): First XYZW quaternion
-        q2 (Union[Quaternion, npt.ArrayLike]): Second XYZW quaternion
+        q1 (npt.ArrayLike): First XYZW quaternion
+        q2 (npt.ArrayLike): Second XYZW quaternion
 
     Returns:
         np.ndarray: XYZW quaternion, shape (4,)
     """
-    if isinstance(q1, Quaternion):
-        q1 = q1.xyzw
-    if isinstance(q2, Quaternion):
-        q2 = q2.xyzw
     x1, y1, z1, w1 = q1
     x2, y2, z2, w2 = q2
     return np.array(

@@ -38,13 +38,9 @@ Conventions:
 All angles are in radians
 """
 
-from typing import Union
-
 import numpy as np
 import numpy.typing as npt
 import pytransform3d.rotations as rt
-
-from pyastrobee.utils.quaternion_class import Quaternion
 
 # Parameters to clarify meaning of pytransform3d inputs
 _EULER = 0
@@ -266,13 +262,12 @@ def quat_to_rmat(quat: npt.ArrayLike) -> np.ndarray:
     """Converts XYZW quaternions to a rotation matrix
 
     Args:
-        quat (npt.ArrayLike): XYZW quaternions
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
 
     Returns:
         np.ndarray: (3,3) rotation matrix
     """
-    q = Quaternion(quat)
-    return rt.matrix_from_quaternion(q.wxyz)
+    return rt.matrix_from_quaternion(xyzw_to_wxyz(quat))
 
 
 def rmat_to_quat(rmat: np.ndarray) -> np.ndarray:
@@ -286,11 +281,10 @@ def rmat_to_quat(rmat: np.ndarray) -> np.ndarray:
         rmat (np.ndarray): (3,3) rotation matrix
 
     Returns:
-        np.ndarray: XYZW quaternions
+        np.ndarray: XYZW quaternion, shape (4,)
     """
-    q = Quaternion()
-    q.wxyz = rt.quaternion_from_matrix(rmat)
-    return q.xyzw
+    wxyz = rt.quaternion_from_matrix(rmat)
+    return wxyz_to_xyzw(wxyz)
 
 
 def euler_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
@@ -300,13 +294,12 @@ def euler_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
         angles (npt.ArrayLike): Angles (radians), length=3
 
     Returns:
-        np.ndarray: XYZW quaternions
+        np.ndarray: XYZW quaternion, shape (4,)
     """
     if len(angles) != 3:
         raise ValueError(f"Must provide 3 angles.\nGot: {angles}")
-    q = Quaternion()
-    q.wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _EULER)
-    return q.xyzw
+    wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _EULER)
+    return wxyz_to_xyzw(wxyz)
 
 
 def fixed_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
@@ -316,43 +309,36 @@ def fixed_xyz_to_quat(angles: npt.ArrayLike) -> np.ndarray:
         angles (npt.ArrayLike): Angles (radians), length=3
 
     Returns:
-        np.ndarray: XYZW quaternions
+        np.ndarray: XYZW quaternion, shape (4,)
     """
     if len(angles) != 3:
         raise ValueError(f"Must provide 3 angles.\nGot: {angles}")
-    q = Quaternion()
-    q.wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _FIXED)
-    return q.xyzw
+    wxyz = rt.quaternion_from_euler(angles, _X, _Y, _Z, _FIXED)
+    return wxyz_to_xyzw(wxyz)
 
 
-def quat_to_euler_xyz(quat: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+def quat_to_euler_xyz(quat: npt.ArrayLike) -> np.ndarray:
     """Converts XYZW quaternions to Euler XYZ angles
 
     Args:
-        quat (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
-            an array of the XYZW quaternions (length = 4)
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
 
     Returns:
         np.ndarray: (3,) Euler XYZ angles
     """
-    if not isinstance(quat, Quaternion):
-        quat = Quaternion(xyzw=quat)
-    return rt.euler_from_quaternion(quat.wxyz, _X, _Y, _Z, _EULER)
+    return rt.euler_from_quaternion(xyzw_to_wxyz(quat), _X, _Y, _Z, _EULER)
 
 
-def quat_to_fixed_xyz(quat: Union[Quaternion, npt.ArrayLike]) -> np.ndarray:
+def quat_to_fixed_xyz(quat: npt.ArrayLike) -> np.ndarray:
     """Converts XYZW quaternions to Fixed XYZ angles
 
     Args:
-        quat (Union[Quaternion, npt.ArrayLike]): Either a Quaternion object or
-            an array of the XYZW quaternions (length = 4)
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
 
     Returns:
         np.ndarray: (3,) Fixed XYZ angles
     """
-    if not isinstance(quat, Quaternion):
-        quat = Quaternion(xyzw=quat)
-    return rt.euler_from_quaternion(quat.wxyz, _X, _Y, _Z, _FIXED)
+    return rt.euler_from_quaternion(xyzw_to_wxyz(quat), _X, _Y, _Z, _FIXED)
 
 
 def axis_angle_between_two_vectors(
@@ -381,29 +367,26 @@ def axis_angle_to_quat(axis: npt.ArrayLike, angle: float) -> np.ndarray:
         angle (float): Rotation angle, in radians
 
     Returns:
-        np.ndarray: (4,) XYZW quaternion
+        np.ndarray: XYZW quaternion, shape (4,)
     """
-    q = Quaternion()
-    q.wxyz = rt.quaternion_from_axis_angle([*axis, angle])
-    return q.xyzw
+    wxyz = rt.quaternion_from_axis_angle([*axis, angle])
+    return wxyz_to_xyzw(wxyz)
 
 
 def quat_to_axis_angle(
-    quat: Union[Quaternion, npt.ArrayLike],
+    quat: npt.ArrayLike,
 ) -> tuple[np.ndarray, float]:
     """Converts an XYZW quaternion to an axis/angle representation
 
     Args:
-        quat (Union[Quaternion, npt.ArrayLike]): XYZW quaternion, shape (4,) if passing in an array
+        quat (npt.ArrayLike): XYZW quaternion, shape (4,)
 
     Returns:
         tuple[np.ndarray, float]:
             np.ndarray: Axis of rotation. Shape (3,)
             float: Rotation angle, in radians
     """
-    if not isinstance(quat, Quaternion):
-        quat = Quaternion(xyzw=quat)
-    axis_and_angle = rt.axis_angle_from_quaternion(quat.wxyz)
+    axis_and_angle = rt.axis_angle_from_quaternion(xyzw_to_wxyz(quat))
     axis = axis_and_angle[:3]
     angle = axis_and_angle[3]
     return axis, angle
@@ -423,3 +406,42 @@ def compact_axis_angle(axis: npt.ArrayLike, angle: float) -> np.ndarray:
     if np.size(axis) != 3 or np.ndim(angle) != 0:
         raise ValueError(f"Invalid axis/angle representation: {axis}, {angle}")
     return (angle / np.linalg.norm(axis)) * axis
+
+
+# Quaternion helper functions copied here to prevent circular import
+def xyzw_to_wxyz(quats: npt.ArrayLike) -> np.ndarray:
+    """Converts a XYZW quaternion or array of quaternions to WXYZ
+
+    Args:
+        quats (npt.ArrayLike): XYZW quaternion(s), shape (4,) or (n, 4)
+
+    Returns:
+        np.ndarray: WXYZ quaternions, shape (4,) or (n, 4) (same shape as input)
+    """
+    quats = np.asarray(quats)
+    if quats.shape[-1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (4,) or (n, 4)")
+    idx = np.array([3, 0, 1, 2])
+    if np.ndim(quats) == 1:
+        return quats[idx]
+    else:
+        return quats[:, idx]
+
+
+def wxyz_to_xyzw(quats: npt.ArrayLike) -> np.ndarray:
+    """Converts a WXYZ quaternion or array of quaternions to XYZW
+
+    Args:
+        quats (npt.ArrayLike): WXYZ quaternion(s), shape (4,) or (n, 4)
+
+    Returns:
+        np.ndarray: XYZW quaternions, shape (4,) or (n, 4) (same shape as input)
+    """
+    quats = np.asarray(quats)
+    if quats.shape[-1] != 4:
+        raise ValueError("Invalid quaternion array: Must be of shape (4,) or (n, 4)")
+    idx = np.array([1, 2, 3, 0])
+    if np.ndim(quats) == 1:
+        return quats[idx]
+    else:
+        return quats[:, idx]

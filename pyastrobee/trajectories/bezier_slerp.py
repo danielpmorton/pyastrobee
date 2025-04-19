@@ -1,6 +1,6 @@
 """Using Bezier curves to optimize SLERPs with constrained derivatives and derivative magnitudes"""
 
-from typing import Union, Optional
+from typing import Optional
 
 import cvxpy as cp
 import numpy as np
@@ -8,7 +8,6 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 from pyastrobee.utils.errors import OptimizationError
-from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternions import (
     quaternion_slerp,
     quaternion_dist,
@@ -21,8 +20,8 @@ from pyastrobee.trajectories.trajectory import Trajectory
 
 
 def bezier_slerp(
-    q1: Union[npt.ArrayLike, Quaternion],
-    q2: Union[npt.ArrayLike, Quaternion],
+    q1: npt.ArrayLike,
+    q2: npt.ArrayLike,
     n: int,
     T: float,
     w_max: Optional[float] = None,
@@ -34,10 +33,8 @@ def bezier_slerp(
     The angular velocity vector has a fixed direction since this is a limitation of a single SLERP arc
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
-        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
+        q1 (npt.ArrayLike): Starting XYZW quaternion, shape (4,).
+        q2 (npt.ArrayLike): Ending XYZW quaternion, shape (4,).
         n (int): Number of points at which to evaluate the SLERP
         T (float): Time period for the SLERP. Used in conjunction with the w_max and dw_max parameters. If
             this is not of interest, set T = 1
@@ -47,11 +44,6 @@ def bezier_slerp(
     Returns:
         np.ndarray: The interpolated XYZW quaternions, shape = (n, 4)
     """
-    if isinstance(q1, Quaternion):
-        q1 = q1.xyzw
-    if isinstance(q2, Quaternion):
-        q2 = q2.xyzw
-
     # If we have constraints on the max velocity/acceleration, bump up the degree of the curve by a lot to make sure
     # that the convex hull of the control points will be a tighter bound on the curve (so that our constraints are not
     # overly restrictive)

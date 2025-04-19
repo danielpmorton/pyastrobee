@@ -6,14 +6,11 @@ Assorted ideas
   If so, increase the duration
 """
 
-from typing import Union
-
 import numpy as np
 import numpy.typing as npt
 from numpy.polynomial.polynomial import Polynomial
 
 from pyastrobee.trajectories.trajectory import Trajectory
-from pyastrobee.utils.quaternion_class import Quaternion
 from pyastrobee.utils.quaternions import (
     random_quaternion,
     quaternion_slerp,
@@ -24,21 +21,15 @@ from pyastrobee.trajectories.quaternion_interpolation import (
 )
 
 
-def polynomial_slerp(
-    q1: Union[npt.ArrayLike, Quaternion],
-    q2: Union[npt.ArrayLike, Quaternion],
-    n: int,
-) -> np.ndarray:
+def polynomial_slerp(q1: npt.ArrayLike, q2: npt.ArrayLike, n: int) -> np.ndarray:
     """SLERP based on a third-order polynomial discretization
 
     This will interpolate quaternions based on a polynomial spacing rather than a linear spacing. The resulting
     angular velocity vector has a constant direction, but will be quadratic, starting and ending at 0
 
     Args:
-        q1 (Union[Quaternion, npt.ArrayLike]): Starting quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
-        q2 (Union[Quaternion, npt.ArrayLike]): Ending quaternion. If passing in a np array,
-            must be in XYZW order (length = 4)
+        q1 (npt.ArrayLike): Starting XYZW quaternion, shape (4,)
+        q2 (npt.ArrayLike): Ending XYZW quaternion, shape (4,)
         n (int): Number of points at which to evaluate the polynomial-based SLERP
 
     Returns:
