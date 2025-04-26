@@ -23,6 +23,7 @@ jobs:
           pip install numpy
           pip install wheel
           pip install pybullet
+          pip install portray
           pip install -e .
       # Build documentation
       # NOTE: we'll wrap this run with XVFB because without it we get an error from an import
