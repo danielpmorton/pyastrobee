@@ -158,7 +158,7 @@ def parallel_mpc_main(
     # Time parameters (TODO make some of these inputs?)
     cur_time = 0.0
     traj_end_time = nominal_traj.times[-1]
-    max_stopping_time = 30  # seconds
+    max_stopping_time = 60  # seconds
     max_time = traj_end_time + max_stopping_time
     rollout_duration = 5  # seconds
     execution_duration = 1  # seconds (How much of the rollout to actually execute)
@@ -383,7 +383,7 @@ def test_mpc():
     end_pose = [6, 0, 0.2, 0, 0, 0, 1]  # Easy-to-reach location in JPM
     bag_name = "top_handle_symmetric"
     bag_mass = 10
-    n_vec_envs = 10
+    n_vec_envs = 15 # 16 threads total 
     debug = True
     use_deformable_main_sim = True
     use_deformable_rollouts = False

@@ -263,8 +263,8 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             kq,
             kw,
             self.dt,
-            max_force=MAX_FORCE_MAGNITUDE * 10,  # TODO REMOVE THIS SCALING FACTOR
-            max_torque=MAX_TORQUE_MAGNITUDE * 10,
+            max_force=MAX_FORCE_MAGNITUDE,
+            max_torque=MAX_TORQUE_MAGNITUDE,
             client=self.client,
         )
 
@@ -655,7 +655,9 @@ class AstrobeeMPCEnv(AstrobeeEnv):
             # 2) Position the robot so it's stopped at the goal pose
             # Both of these are only relevant when we're at the end of the nominal trajectory
             # TODO tune all of the scaling factors on the costs
-            if self.flight_state == self.FlightStates.STOPPING:
+            # if self.flight_state == self.FlightStates.STOPPING:
+            # NEW: Always add these costs -- they seem to be helpful even when not stopping
+            if True:
                 angular_term = np.linalg.norm(ang_vel - bag_ang_vel)
                 r_r2b = bag_pos - pos  # Vector from robot to bag
                 linear_term = np.linalg.norm(
