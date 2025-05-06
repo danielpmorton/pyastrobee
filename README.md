@@ -30,3 +30,18 @@ We use Portray to build the documentation. Note: if you'd like a local copy of t
 [Assorted Pybullet tips](docs/pybullet_tips.md): Important notes that might not be clear from the quickstart guide
 
 [References](docs/references.md): Links to hepful resources
+
+
+## Citation
+
+If this repo was helpful in your research, please consider citing the following [paper](https://arxiv.org/abs/2505.01630):
+
+```
+@article{morton2025astrobee,
+  author = {Morton, Daniel and Antonova, Rika and Coltin, Brian and Pavone, Marco and Bohg, Jeannette},
+  title = {Deformable Cargo Transport in Microgravity with Astrobee},
+  year = {2025},
+  journal = {arXiv preprint arXiv:2505.01630},
+  note = {Submitted to RSS Space Robotics Workshop, 2025},
+}
+```
